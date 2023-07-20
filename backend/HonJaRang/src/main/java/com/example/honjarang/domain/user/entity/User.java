@@ -28,7 +28,7 @@ public class User extends BaseTimeEntity {
     private String nickname;
 
     @Column
-    private String profile_image;
+    private String profileImage;
 
     @Column(nullable = false)
     @ColumnDefault("0")
@@ -53,12 +53,13 @@ public class User extends BaseTimeEntity {
     private Boolean isDeleted;
 
     @Builder
-    public User(String email, String password, String nickname, String address, Double latitude, Double longitude) {
+    public User(String email, String password, String nickname, String address, Double latitude, Double longitude, Role role) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.role = role;
     }
 }

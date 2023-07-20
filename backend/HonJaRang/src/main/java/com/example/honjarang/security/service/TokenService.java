@@ -5,9 +5,12 @@ import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.UserNotFoundException;
 import com.example.honjarang.domain.user.repository.UserRepository;
 import com.example.honjarang.security.dto.TokenDto;
-import io.jsonwebtoken.*;
+import com.example.honjarang.security.exception.InvalidTokenException;
+import com.example.honjarang.security.exception.TokenExpiredException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -15,8 +18,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Service
 public class TokenService {
-    @Value("${jwt.secret-key}")
-    private String SECRET_KEY;
+    private final String SECRET_KEY = "honjarang";
     private static final long ACCESS_TOKEN_EXPIRE_SECONDS = 60 * 60; // 1시간
     private static final long REFRESH_TOKEN_EXPIRE_SECONDS = 60 * 60 * 24 * 30; // 30일
 
@@ -44,16 +46,14 @@ public class TokenService {
         return new TokenDto(accessToken, refreshToken);
     }
 
-    public boolean verifyToken(String token) {
-        // token이 유효기간이 만료되었는지 확인
+    public Boolean verifyToken(String token) {
         try {
-            return Jwts.parser()
-                    .setSigningKey(SECRET_KEY)
-                    .parseClaimsJws(token)
-                    .getBody().getExpiration()
-                    .after(new Date());
+            Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+            return true;
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException("만료된 토큰입니다.");
         } catch (Exception e) {
-            return false;
+            throw new InvalidTokenException("유효하지 않은 토큰입니다.");
         }
     }
 
