@@ -1,0 +1,1 @@
+INSERT INTO user(id, email, password, nickname, profile_image, point, address, latitude, longitude, role, is_deleted, created_at, updated_at) VALUES (1, 'test@test.com', 'test1234', 'test', 'test.png', 0, 'test', 0, 0, 'ROLE_USER', 0, now(), now())
