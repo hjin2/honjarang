@@ -6,10 +6,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 
+@DynamicInsert
 @Getter
 @NoArgsConstructor
 @Entity
@@ -30,7 +32,7 @@ public class User extends BaseTimeEntity {
     @Column
     private String profileImage;
 
-    @Column(nullable = false)
+    @Column
     @ColumnDefault("0")
     private Integer point;
 
@@ -43,12 +45,12 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private Double longitude;
 
+    @Column
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     @ColumnDefault("'ROLE_USER'")
     private Role role;
 
-    @Column(nullable = false)
+    @Column
     @ColumnDefault("false")
     private Boolean isDeleted;
 
