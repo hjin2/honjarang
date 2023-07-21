@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,6 +31,8 @@ class UserRepositoryTest {
     private static final Double TEST_LONGITUDE = 0.0;
     private static final Role TEST_ROLE = Role.ROLE_USER;
     private static final Boolean TEST_IS_DELETED = false;
+    private static final LocalDateTime TEST_CREATED_AT = LocalDateTime.of(2000, 1, 1, 0, 0, 0, 0);
+    private static final LocalDateTime TEST_UPDATED_AT = LocalDateTime.of(2000, 1, 1, 0, 0, 0, 0);
 
     @Test
     @DisplayName("이메일로 사용자 조회")
@@ -52,5 +55,7 @@ class UserRepositoryTest {
         assertEquals(TEST_LONGITUDE, user.get().getLongitude());
         assertEquals(TEST_ROLE, user.get().getRole());
         assertEquals(TEST_IS_DELETED, user.get().getIsDeleted());
+        assertEquals(TEST_CREATED_AT, user.get().getCreatedAt());
+        assertEquals(TEST_UPDATED_AT, user.get().getUpdatedAt());
     }
 }

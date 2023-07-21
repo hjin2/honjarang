@@ -34,10 +34,11 @@ public class EmailVerification extends BaseTimeEntity {
     private Boolean isVerified;
 
     @Builder
-    public EmailVerification(String email, String code, LocalDateTime expiredAt) {
+    public EmailVerification(String email, String code, LocalDateTime expiredAt, Boolean isVerified) {
         this.email = email;
         this.code = code;
         this.expiredAt = expiredAt;
+        this.isVerified = isVerified;
     }
 
     public void verify() {
