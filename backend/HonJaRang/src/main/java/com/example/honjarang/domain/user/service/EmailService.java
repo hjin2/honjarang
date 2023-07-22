@@ -3,9 +3,11 @@ package com.example.honjarang.domain.user.service;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.model.*;
 import com.example.honjarang.domain.user.entity.EmailVerification;
+import com.example.honjarang.domain.user.exception.DuplicateNicknameException;
 import com.example.honjarang.domain.user.exception.VerificationCodeMismatchException;
 import com.example.honjarang.domain.user.exception.VerificationCodeNotFoundException;
 import com.example.honjarang.domain.user.repository.EmailVerificationRepository;
+import com.example.honjarang.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -28,8 +30,13 @@ public class EmailService {
 
     private final EmailVerificationRepository emailVerificationRepository;
 
+    private final UserRepository userRepository;
+
     @Async
     public void sendVerificationCode(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new DuplicateNicknameException("이미 가입된 이메일입니다.");
+        }
         String verificationCode = generateVerificationCode();
         SendEmailRequest sendEmailRequest = generateSendEmailRequest(email, verificationCode);
         amazonSimpleEmailService.sendEmail(sendEmailRequest);

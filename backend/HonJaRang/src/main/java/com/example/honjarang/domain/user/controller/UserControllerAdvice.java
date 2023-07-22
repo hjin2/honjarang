@@ -21,8 +21,14 @@ public class UserControllerAdvice {
     }
 
     // 409 Conflict
-    @ExceptionHandler({EmailAlreadyVerifiedException.class})
+    @ExceptionHandler({EmailAlreadyVerifiedException.class, DuplicateNicknameException.class, DuplicateEmailException.class})
     public ResponseEntity<Void> handleConflictException(RuntimeException e) {
         return ResponseEntity.status(409).build();
+    }
+
+    // 403 Forbidden
+    @ExceptionHandler({EmailNotVerifiedException.class})
+    public ResponseEntity<Void> handleForbiddenException(RuntimeException e) {
+        return ResponseEntity.status(403).build();
     }
 }
