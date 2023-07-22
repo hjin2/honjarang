@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -83,4 +84,23 @@ class UserControllerTest {
                         .param("password", TEST_PASSWORD))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("비밀번호 변경 성공")
+    void changePassword_Success() throws Exception {
+        // given
+        User user = User.builder()
+                .email(TEST_EMAIL)
+                .password(TEST_PASSWORD)
+                .build();
+
+
+        // when & then
+        mockMvc.perform(put("/api/v1/users/change-password")
+                        .param("existPassword", TEST_PASSWORD)
+                        .param("newPassword", "newtest1234"))
+                .andExpect(status().isOk());
+
+    }
+
 }

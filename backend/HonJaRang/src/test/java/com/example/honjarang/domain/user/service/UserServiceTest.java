@@ -33,6 +33,8 @@ class UserServiceTest {
     private static final String TEST_EMAIL = "test@test.com";
     private static final String TEST_PASSWORD = "test1234";
 
+    private static final String TEST_NEW_PASSWORD = "newtest1234";
+
     @Test
     @DisplayName("로그인 성공")
     void login_Success() {
@@ -78,5 +80,36 @@ class UserServiceTest {
 
         // when & then
         assertThrows(PasswordMismatchException.class, () -> userService.login(TEST_EMAIL, TEST_PASSWORD));
+    }
+
+
+    @Test
+    @DisplayName("비밀번호 변경 성공")
+    public void changePassword_Success() {
+        // given
+        User expectedUser = User.builder()
+                .email(TEST_EMAIL)
+                .password(TEST_PASSWORD)
+                .build();
+
+        given(passwordEncoder.matches(TEST_PASSWORD, expectedUser.getPassword())).willReturn(true);
+
+        // When
+        userService.changePassword(expectedUser, TEST_PASSWORD, TEST_NEW_PASSWORD);
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경 실패 - 사용자가 입력한 현재 비밀번호가 일치하지 않는 경우")
+    public void changePassword_PasswordMismatchException() {
+        // given
+        User expectedUser = User.builder()
+                .email(TEST_EMAIL)
+                .password(TEST_PASSWORD)
+                .build();
+
+        given(passwordEncoder.matches(TEST_PASSWORD, expectedUser.getPassword())).willReturn(false);
+
+        // When
+        assertThrows(PasswordMismatchException.class, () -> userService.changePassword(expectedUser, TEST_PASSWORD, TEST_NEW_PASSWORD));
     }
 }

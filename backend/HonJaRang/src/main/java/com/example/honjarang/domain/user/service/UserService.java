@@ -24,4 +24,14 @@ public class UserService {
         }
         return user;
     }
+
+
+    @Transactional
+    public void changePassword(User user, String originPassword, String newPassword){
+        if (!passwordEncoder.matches(originPassword, user.getPassword())) {
+            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
+        }else {
+            user.changePassword(newPassword);
+        }
+    }
 }

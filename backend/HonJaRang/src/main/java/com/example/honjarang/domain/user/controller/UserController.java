@@ -6,9 +6,8 @@ import com.example.honjarang.security.dto.TokenDto;
 import com.example.honjarang.security.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -22,5 +21,11 @@ public class UserController {
         User user = userService.login(email, password);
         TokenDto tokenDto = tokenService.generateToken(user.getEmail(), user.getRole());
         return ResponseEntity.ok(tokenDto);
+    }
+
+    @PutMapping("/change-password")
+    public void changePassword(String existPassword, String newPassword){
+        User logineduser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        userService.changePassword(logineduser,existPassword, newPassword);
     }
 }
