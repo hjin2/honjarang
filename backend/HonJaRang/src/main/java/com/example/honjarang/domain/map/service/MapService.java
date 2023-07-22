@@ -1,6 +1,7 @@
 package com.example.honjarang.domain.map.service;
 
 import com.example.honjarang.domain.map.dto.CoordinateDto;
+import com.example.honjarang.domain.map.exception.LocationNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,6 +45,9 @@ public class MapService {
 
         try {
             JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
+            if(jsonNode.get("documents").size() == 0) {
+                throw new LocationNotFoundException("장소를 찾을 수 없습니다.");
+            }
             Double latitude = jsonNode.get("documents").get(0).get("y").asDouble();
             Double longitude = jsonNode.get("documents").get(0).get("x").asDouble();
             return new CoordinateDto(latitude, longitude);
