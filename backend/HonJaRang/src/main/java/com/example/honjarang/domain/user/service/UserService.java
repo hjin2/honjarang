@@ -27,11 +27,10 @@ public class UserService {
 
 
     @Transactional
-    public void changePassword(User user, String originPassword, String newPassword){
-        if (!passwordEncoder.matches(originPassword, user.getPassword())) {
+    public void changePassword(User user, String password, String newPassword){
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
-        }else {
-            user.changePassword(newPassword);
         }
+        user.changePassword(newPassword);
     }
 }

@@ -24,8 +24,8 @@ public class UserController {
     }
 
     @PutMapping("/change-password")
-    public void changePassword(String existPassword, String newPassword){
+    public void changePassword(String password, String newPassword){
         User logineduser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        userService.changePassword(logineduser,existPassword, newPassword);
+        userService.changePassword(logineduser,password, newPassword);
     }
 }
