@@ -1,5 +1,6 @@
 package com.example.honjarang.domain.user.controller;
 
+import com.example.honjarang.domain.user.dto.UserCreateDto;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.*;
 import com.example.honjarang.domain.user.service.EmailService;
@@ -14,7 +15,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,6 +42,10 @@ class UserControllerTest {
     private static final String TEST_EMAIL = "test@test.com";
     private static final String TEST_PASSWORD = "test1234";
     private static final String TEST_CODE = "test";
+    private static final String TEST_NICKNAME = "test";
+    private static final String TEST_ADDRESS = "서울특별시 강남구";
+    private static final Double TEST_LATITUDE = 37.123456;
+    private static final Double TEST_LONGITUDE = 127.123456;
 
     @Test
     @DisplayName("로그인 성공")
@@ -89,14 +97,26 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("이메일 인증번호 전송")
-    void sendVerificationCode() throws Exception {
+    @DisplayName("이메일 인증번호 전송 성공")
+    void sendVerificationCode_Success() throws Exception {
         // given
 
         // when & then
         mockMvc.perform(post("/api/v1/users/send-verification-code")
                         .param("email", TEST_EMAIL))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("이메일 인증번호 전송 실패 - 이미 가입된 이메일인 경우")
+    void sendVerificationCode_DuplicateEmailException() throws Exception{
+        // given
+        doThrow(new DuplicateEmailException("")).when(emailService).sendVerificationCode(TEST_EMAIL);
+
+        // when & then
+        mockMvc.perform(post("/api/v1/users/send-verification-code")
+                        .param("email", TEST_EMAIL))
+                .andExpect(status().isConflict());
     }
 
     @Test
@@ -163,5 +183,63 @@ class UserControllerTest {
                         .param("email", TEST_EMAIL)
                         .param("code", TEST_CODE))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 검사 성공")
+    void checkNickname_Success() throws Exception{
+        // given
+        given(userService.checkNickname(TEST_NICKNAME)).willReturn(true);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/users/check-nickname")
+                        .param("nickname", TEST_NICKNAME))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(true));
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 검사 실패 - 중복된 닉네임인 경우")
+    void checkNickname_DuplicateNicknameException() throws Exception{
+        // given
+        given(userService.checkNickname(TEST_NICKNAME)).willThrow(new DuplicateNicknameException(""));
+
+        // when & then
+        mockMvc.perform(get("/api/v1/users/check-nickname")
+                        .param("nickname", TEST_NICKNAME))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @DisplayName("회원가입 성공")
+    void signup_Success() throws Exception{
+        // given
+
+        // when & then
+        mockMvc.perform(post("/api/v1/users/signup")
+                        .param("email", TEST_EMAIL)
+                        .param("password", TEST_PASSWORD)
+                        .param("nickname", TEST_NICKNAME)
+                        .param("address", TEST_ADDRESS)
+                        .param("latitude", TEST_LATITUDE.toString())
+                        .param("longitude", TEST_LONGITUDE.toString()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("회원가입 실패 - 이메일 인증이 되지 않은 경우")
+    void signup_EmailNotVerifiedException() throws Exception{
+        // given
+        doThrow(new EmailNotVerifiedException("")).when(userService).signup(any(UserCreateDto.class));
+
+        // when & then
+        mockMvc.perform(post("/api/v1/users/signup")
+                        .param("email", TEST_EMAIL)
+                        .param("password", TEST_PASSWORD)
+                        .param("nickname", TEST_NICKNAME)
+                        .param("address", TEST_ADDRESS)
+                        .param("latitude", TEST_LATITUDE.toString())
+                        .param("longitude", TEST_LONGITUDE.toString()))
+                .andExpect(status().isForbidden());
     }
 }

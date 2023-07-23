@@ -3,6 +3,7 @@ package com.example.honjarang.domain.user.service;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.model.*;
 import com.example.honjarang.domain.user.entity.EmailVerification;
+import com.example.honjarang.domain.user.exception.DuplicateEmailException;
 import com.example.honjarang.domain.user.exception.DuplicateNicknameException;
 import com.example.honjarang.domain.user.exception.VerificationCodeMismatchException;
 import com.example.honjarang.domain.user.exception.VerificationCodeNotFoundException;
@@ -35,7 +36,7 @@ public class EmailService {
     @Async
     public void sendVerificationCode(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new DuplicateNicknameException("이미 가입된 이메일입니다.");
+            throw new DuplicateEmailException("이미 가입된 이메일입니다.");
         }
         String verificationCode = generateVerificationCode();
         SendEmailRequest sendEmailRequest = generateSendEmailRequest(email, verificationCode);

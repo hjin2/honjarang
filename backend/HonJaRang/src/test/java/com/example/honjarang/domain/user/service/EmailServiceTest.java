@@ -3,9 +3,11 @@ package com.example.honjarang.domain.user.service;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 import com.example.honjarang.domain.user.entity.EmailVerification;
+import com.example.honjarang.domain.user.exception.DuplicateEmailException;
 import com.example.honjarang.domain.user.exception.VerificationCodeMismatchException;
 import com.example.honjarang.domain.user.exception.VerificationCodeNotFoundException;
 import com.example.honjarang.domain.user.repository.EmailVerificationRepository;
+import com.example.honjarang.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,19 +35,32 @@ class EmailServiceTest {
     @Mock
     private EmailVerificationRepository emailVerificationRepository;
 
+    @Mock
+    private UserRepository userRepository;
+
     private static final String TEST_EMAIL = "test@test.com";
     private static final String TEST_CODE = "test";
 
     @Test
-    @DisplayName("이메일 인증번호 전송")
-    void sendVerificationCode() {
+    @DisplayName("이메일 인증번호 전송 성공")
+    void sendVerificationCode_Success() {
         // given
-        given(amazonSimpleEmailService.sendEmail(any(SendEmailRequest.class))).willReturn(null);
+        given(userRepository.existsByEmail(TEST_EMAIL)).willReturn(false);
 
         // when
         emailService.sendVerificationCode(TEST_EMAIL);
 
         // then
+    }
+
+    @Test
+    @DisplayName("이메일 인증번호 전송 실패 - 이미 가입된 이메일인 경우")
+    void sendVerificationCode_DuplicateEmailException() {
+        // given
+        given(userRepository.existsByEmail(TEST_EMAIL)).willReturn(true);
+
+        // when & then
+        assertThrows(DuplicateEmailException.class, () -> emailService.sendVerificationCode(TEST_EMAIL));
     }
 
     @Test
