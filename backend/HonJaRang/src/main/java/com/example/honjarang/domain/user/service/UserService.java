@@ -29,16 +29,7 @@ public class UserService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
-        return user;
-    }
-
-
-    @Transactional
-    public void changePassword(User user, String password, String newPassword){
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
-        }
-        user.changePassword(newPassword);
+       return user;
     }
 
     @Transactional
@@ -64,5 +55,13 @@ public class UserService {
             throw new DuplicateNicknameException("중복된 닉네임입니다.");
         }
         return true;
+    }
+
+    @Transactional
+    public void changePassword(User user, String password, String newPassword){
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
+        }
+        user.changePassword(newPassword);
     }
 }

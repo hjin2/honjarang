@@ -1,8 +1,10 @@
 package com.example.honjarang.domain.user.controller;
 
 import com.example.honjarang.domain.user.dto.LoginDto;
+import com.example.honjarang.domain.user.dto.PasswordUpdateDto;
 import com.example.honjarang.domain.user.dto.UserCreateDto;
 import com.example.honjarang.domain.user.dto.VerifyCodeDto;
+import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.*;
 import com.example.honjarang.domain.user.service.EmailService;
@@ -47,6 +49,8 @@ class UserControllerTest {
 
     private static final String TEST_EMAIL = "test@test.com";
     private static final String TEST_PASSWORD = "test1234";
+
+    private static final String TEST_NEW_PASSWORD = "newtest1234";
     private static final String TEST_CODE = "test";
     private static final String TEST_NICKNAME = "test";
     private static final String TEST_ADDRESS = "서울특별시 강남구";
@@ -161,25 +165,6 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("비밀번호 변경 성공")
-    void changePassword_Success() throws Exception {
-        // given
-        User user = User.builder()
-                .email(TEST_EMAIL)
-                .password(TEST_PASSWORD)
-                .build();
-
-
-        // when & then
-        mockMvc.perform(put("/api/v1/users/change-password")
-                        .param("existPassword", TEST_PASSWORD)
-                        .param("newPassword", "newtest1234"))
-                .andExpect(status().isOk());
-
-    }
-
-
-    @Test
     @DisplayName("이메일 인증번호 검증 실패 - 인증번호가 만료된 경우")
     void verifyCode_VerificationCodeExpiredException() throws Exception {
         // given
@@ -272,4 +257,19 @@ class UserControllerTest {
                         .content(new ObjectMapper().writeValueAsString(userCreateDto)))
                 .andExpect(status().isForbidden());
     }
+
+
+    @Test
+    @DisplayName("비밀번호 변경 성공")
+    void changePassword_Success() throws Exception {
+        // given
+        PasswordUpdateDto passwordUpdateDto = new PasswordUpdateDto(TEST_PASSWORD, TEST_NEW_PASSWORD);
+        User user = new User(TEST_EMAIL,TEST_PASSWORD,TEST_NICKNAME,TEST_ADDRESS,TEST_LATITUDE,TEST_LONGITUDE, Role.ROLE_USER);
+        // when & then
+        mockMvc.perform(put("/api/v1/users/change-password")
+                        .contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(passwordUpdateDto)))
+                .andExpect(status().isOk());
+    }
+
 }

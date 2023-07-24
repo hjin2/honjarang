@@ -1,6 +1,7 @@
 package com.example.honjarang.domain.user.controller;
 
 import com.example.honjarang.domain.user.dto.LoginDto;
+import com.example.honjarang.domain.user.dto.PasswordUpdateDto;
 import com.example.honjarang.domain.user.dto.UserCreateDto;
 import com.example.honjarang.domain.user.dto.VerifyCodeDto;
 import com.example.honjarang.domain.user.entity.User;
@@ -62,8 +63,7 @@ public class UserController {
     }
 
     @PutMapping("/change-password")
-    public void changePassword(String password, String newPassword){
-        User logineduser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        userService.changePassword(logineduser,password, newPassword);
+    public void changePassword(@RequestBody PasswordUpdateDto passwordUpdateDto, @CurrentUser User user){
+        userService.changePassword(user,passwordUpdateDto.getPassword(), passwordUpdateDto.getNewPassword());
     }
 }
