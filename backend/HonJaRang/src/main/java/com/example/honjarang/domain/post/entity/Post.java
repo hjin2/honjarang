@@ -3,6 +3,7 @@ package com.example.honjarang.domain.post.entity;
 import com.example.honjarang.domain.BaseTimeEntity;
 import com.example.honjarang.domain.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,9 +27,11 @@ public class Post extends BaseTimeEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
+    @NotBlank(message = "제목은 필수 입력 칸입니다.")
     @Column(name="title", nullable = false)
     private String title;
 
+    @NotBlank(message = "내용은 필수 입력 칸입니다.")
     @Column(name="content", columnDefinition = "TEXT", nullable = false)
     private String content;
 

@@ -2,6 +2,7 @@ package com.example.honjarang.domain.post.dto;
 
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.user.entity.User;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +10,10 @@ import lombok.Setter;
 @Setter
 public class PostCreateDto {
 
+    @NotBlank(message = "제목은 필수 입력 칸입니다.")
     private String title;
+
+    @NotBlank(message = "내용은 필수 입력 칸입니다.")
     private String content;
 
     public PostCreateDto() {
