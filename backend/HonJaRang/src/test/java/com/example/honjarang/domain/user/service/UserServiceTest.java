@@ -1,8 +1,13 @@
 package com.example.honjarang.domain.user.service;
 
+import com.example.honjarang.domain.user.dto.UserCreateDto;
+import com.example.honjarang.domain.user.entity.EmailVerification;
 import com.example.honjarang.domain.user.entity.User;
+import com.example.honjarang.domain.user.exception.DuplicateNicknameException;
+import com.example.honjarang.domain.user.exception.EmailNotVerifiedException;
 import com.example.honjarang.domain.user.exception.PasswordMismatchException;
 import com.example.honjarang.domain.user.exception.UserNotFoundException;
+import com.example.honjarang.domain.user.repository.EmailVerificationRepository;
 import com.example.honjarang.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,11 +33,18 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private EmailVerificationRepository emailVerificationRepository;
+
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     private static final String TEST_EMAIL = "test@test.com";
     private static final String TEST_PASSWORD = "test1234";
-
+    private static final String TEST_NICKNAME = "test";
+    private static final String TEST_ADDRESS = "서울특별시 강남구";
+    private static final Double TEST_LATITUDE = 37.123456;
+    private static final Double TEST_LONGITUDE = 127.123456;
+    private static final String TEST_CODE = "test";
     private static final String TEST_NEW_PASSWORD = "newtest1234";
 
     @Test
@@ -80,6 +92,66 @@ class UserServiceTest {
 
         // when & then
         assertThrows(PasswordMismatchException.class, () -> userService.login(TEST_EMAIL, TEST_PASSWORD));
+    }
+
+    @Test
+    @DisplayName("회원가입 성공")
+    void signup_Success() {
+        // given
+        UserCreateDto userCreateDto = new UserCreateDto(TEST_EMAIL, TEST_PASSWORD, TEST_NICKNAME, TEST_ADDRESS, TEST_LATITUDE, TEST_LONGITUDE);
+        EmailVerification emailVerification = EmailVerification.builder()
+                .email(TEST_EMAIL)
+                .code(TEST_CODE)
+                .isVerified(true)
+                .build();
+
+        given(emailVerificationRepository.findByEmail(TEST_EMAIL)).willReturn(Optional.of(emailVerification));
+
+        // when
+        userService.signup(userCreateDto);
+
+        // then
+
+    }
+
+    @Test
+    @DisplayName("회원가입 실패 - 이메일 인증이 되지 않은 경우")
+    void signup_EmailNotVerifiedException() {
+        // given
+        UserCreateDto userCreateDto = new UserCreateDto(TEST_EMAIL, TEST_PASSWORD, TEST_NICKNAME, TEST_ADDRESS, TEST_LATITUDE, TEST_LONGITUDE);
+        EmailVerification emailVerification = EmailVerification.builder()
+                .email(TEST_EMAIL)
+                .code(TEST_CODE)
+                .isVerified(false)
+                .build();
+
+        given(emailVerificationRepository.findByEmail(TEST_EMAIL)).willReturn(Optional.of(emailVerification));
+
+        // when & then
+        assertThrows(EmailNotVerifiedException.class, () -> userService.signup(userCreateDto));
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 체크 성공")
+    void checkNickname_Success() {
+        // given
+        given(userRepository.existsByNickname("test")).willReturn(false);
+
+        // when
+        Boolean isAvailable = userService.checkNickname("test");
+
+        // then
+        assertThat(isAvailable).isTrue();
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 체크 실패 - 중복된 닉네임인 경우")
+    void checkNickname_DuplicateNicknameException() {
+        // given
+        given(userRepository.existsByNickname("test")).willReturn(true);
+
+        // when & then
+        assertThrows(DuplicateNicknameException.class, () -> userService.checkNickname("test"));
     }
 
 
