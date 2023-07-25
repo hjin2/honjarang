@@ -61,4 +61,8 @@ public class User extends BaseTimeEntity {
         this.longitude = longitude;
         this.role = role;
     }
+
+    public void setIdForTest(Long id) {
+        this.id = id;
+    }
 }

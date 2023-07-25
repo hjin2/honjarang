@@ -52,4 +52,8 @@ public class JointDelivery extends BaseTimeEntity {
     public void cancel() {
         this.isCanceled = true;
     }
+
+    public void setIdForTest(Long id) {
+        this.id = id;
+    }
 }

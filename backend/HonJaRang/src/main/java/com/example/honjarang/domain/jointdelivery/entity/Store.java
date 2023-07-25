@@ -31,12 +31,15 @@ public class Store {
     private Double longitude;
 
     @Builder
-    public Store(Long id, String storeName, String image, String address, Double latitude, Double longitude) {
-        this.id = id;
+    public Store(String storeName, String image, String address, Double latitude, Double longitude) {
         this.storeName = storeName;
         this.image = image;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public void setIdForTest(Long id) {
+        this.id = id;
     }
 }

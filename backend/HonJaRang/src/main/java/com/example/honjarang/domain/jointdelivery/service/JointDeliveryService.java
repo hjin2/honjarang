@@ -7,6 +7,7 @@ import com.example.honjarang.domain.jointdelivery.dto.StoreListDto;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
 import com.example.honjarang.domain.jointdelivery.entity.Store;
 import com.example.honjarang.domain.jointdelivery.exception.JointDeliveryNotFoundException;
+import com.example.honjarang.domain.jointdelivery.exception.StoreNotFoundException;
 import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryRepository;
 import com.example.honjarang.domain.jointdelivery.repository.MenuListDtoRepository;
 import com.example.honjarang.domain.jointdelivery.repository.StoreRepository;
@@ -55,8 +56,8 @@ public class JointDeliveryService {
 
         try {
             JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
-            if(jsonNode.get("result").get("place") == null) {
-                throw new RuntimeException("장소를 찾을 수 없습니다.");
+            if(jsonNode.get("result").get("place").isNull()) {
+                throw new StoreNotFoundException("가게를 찾을 수 없습니다.");
             }
             JsonNode storeList = jsonNode.get("result").get("place").get("list");
             List<StoreListDto> storeListDtoList = new ArrayList<>();
@@ -70,12 +71,12 @@ public class JointDeliveryService {
                 storeListDtoList.add(storeListDto);
             }
             return storeListDtoList;
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public StoreDto getStore(Long storeId) {
+    private StoreDto getStoreByApi(Long storeId) {
         String url = "https://map.naver.com/v5/api/sites/summary/" + storeId +"?lang=ko";
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
 
@@ -100,7 +101,7 @@ public class JointDeliveryService {
         return menuListDtoRepository.findAllByStoreId(jointDelivery.getStore().getId());
     }
 
-    public List<MenuListDto> getMenuListByApi(Long storeId) {
+    private List<MenuListDto> getMenuListByApi(Long storeId) {
         List<MenuListDto> menuListDtoList = new ArrayList<>();
         String html = fetchHtmlByStoreId(storeId);
         Document document = Jsoup.parse(html);
@@ -131,9 +132,8 @@ public class JointDeliveryService {
 
     @Transactional
     public void createJointDelivery(CreateJoinDeliveryDto createJoinDeliveryDto, User user) {
-        StoreDto storeDto = getStore(createJoinDeliveryDto.getStoreId());
+        StoreDto storeDto = getStoreByApi(createJoinDeliveryDto.getStoreId());
         Store store = Store.builder()
-                .id(storeDto.getId())
                 .storeName(storeDto.getName())
                 .image(storeDto.getImage())
                 .address(storeDto.getAddress())
