@@ -3,6 +3,7 @@ package com.example.honjarang.domain.jointdelivery.service;
 import com.example.honjarang.domain.jointdelivery.document.Menu;
 import com.example.honjarang.domain.jointdelivery.dto.*;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
+import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryCart;
 import com.example.honjarang.domain.jointdelivery.entity.Store;
 import com.example.honjarang.domain.jointdelivery.exception.JointDeliveryNotFoundException;
 import com.example.honjarang.domain.jointdelivery.exception.StoreNotFoundException;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -167,8 +169,12 @@ public class JointDeliveryService {
     public JointDeliveryDto getJointDelivery(Long jointDeliveryId) {
         JointDelivery jointDelivery = jointDeliveryRepository.findById(jointDeliveryId).orElseThrow(() -> new JointDeliveryNotFoundException("해당 공동배달이 존재하지 않습니다."));
         Integer currentTotalPrice = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDeliveryId).stream()
-                .mapToInt(jointDeliveryCart -> jointDeliveryCart.getMenu().getPrice() * jointDeliveryCart.getQuantity())
-                .sum();
+                .map(jointDeliveryCart -> {
+                    Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
+                            .orElseThrow(() -> new RuntimeException("메뉴를 찾을 수 없습니다."));
+                    return menu.getPrice() * jointDeliveryCart.getQuantity();
+                })
+                .reduce(0, Integer::sum);
         return new JointDeliveryDto(jointDelivery, currentTotalPrice);
     }
 
@@ -179,8 +185,12 @@ public class JointDeliveryService {
         return jointDeliveryList.stream()
                 .map(jointDelivery -> {
                     Integer currentTotalPrice = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDelivery.getId()).stream()
-                            .mapToInt(jointDeliveryCart -> jointDeliveryCart.getMenu().getPrice() * jointDeliveryCart.getQuantity())
-                            .sum();
+                            .map(jointDeliveryCart -> {
+                                Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
+                                        .orElseThrow(() -> new RuntimeException("메뉴를 찾을 수 없습니다."));
+                                return menu.getPrice() * jointDeliveryCart.getQuantity();
+                            })
+                            .reduce(0, Integer::sum);
                     return new JointDeliveryListDto(jointDelivery, currentTotalPrice);
                 })
                 .toList();

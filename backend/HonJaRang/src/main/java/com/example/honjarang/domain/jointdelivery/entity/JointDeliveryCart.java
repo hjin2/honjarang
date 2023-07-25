@@ -15,8 +15,8 @@ public class JointDeliveryCart {
     @Id
     private Long id;
 
-    @Transient
-    private Menu menu;
+    @Column(nullable = false)
+    private String menuId;
 
     @JoinColumn(name = "joint_delivery_id")
     @ManyToOne
