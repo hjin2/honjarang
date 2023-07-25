@@ -3,14 +3,11 @@ package com.example.honjarang.domain.post.entity;
 import com.example.honjarang.domain.BaseTimeEntity;
 import com.example.honjarang.domain.user.entity.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @DynamicInsert
 @Getter
@@ -22,32 +19,30 @@ public class Post extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name="user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    @NotBlank(message = "제목은 필수 입력 칸입니다.")
-    @Column(name="title", nullable = false)
+    @Column(nullable = false)
     private String title;
 
-    @NotBlank(message = "내용은 필수 입력 칸입니다.")
-    @Column(name="content", columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Column(name="is_notice", columnDefinition ="TINYINT", nullable = false)
+    @Column(nullable = false)
     @ColumnDefault("false")
     private Boolean isNotice;
 
-    @Column(name="views", nullable = false)
+    @Column(nullable = false)
     @ColumnDefault("0")
     private Integer views;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @ColumnDefault("sdfs")
-    private String category;
+    private Category category;
+
     @Builder
-    public Post(User user, String category, String title, Boolean isNotice, String content, int views ) {
+    public Post(User user, Category category, String title, Boolean isNotice, String content, Integer views) {
         this.category = category;
         this.title = title;
         this.user = user;
@@ -56,6 +51,8 @@ public class Post extends BaseTimeEntity {
         this.views = views;
     }
 
-    public void IncreaseViews() { this.views++; }
+    public void increaseViews() {
+        this.views++;
+    }
 
 }
