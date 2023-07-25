@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,6 +27,9 @@ class MapControllerTest {
 
     @MockBean
     private MapService mapService;
+
+    @MockBean
+    private MongoTemplate mongoTemplate;
 
     private static final String TEST_KEYWORD = "멀티캠퍼스";
 
