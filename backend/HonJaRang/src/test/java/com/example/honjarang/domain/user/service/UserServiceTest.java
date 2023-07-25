@@ -45,6 +45,7 @@ class UserServiceTest {
     private static final Double TEST_LATITUDE = 37.123456;
     private static final Double TEST_LONGITUDE = 127.123456;
     private static final String TEST_CODE = "test";
+    private static final String TEST_NEW_PASSWORD = "newtest1234";
 
     @Test
     @DisplayName("로그인 성공")
@@ -151,5 +152,36 @@ class UserServiceTest {
 
         // when & then
         assertThrows(DuplicateNicknameException.class, () -> userService.checkNickname("test"));
+    }
+
+
+    @Test
+    @DisplayName("비밀번호 변경 성공")
+    public void changePassword_Success() {
+        // given
+        User expectedUser = User.builder()
+                .email(TEST_EMAIL)
+                .password(TEST_PASSWORD)
+                .build();
+
+        given(passwordEncoder.matches(TEST_PASSWORD, expectedUser.getPassword())).willReturn(true);
+
+        // When
+        userService.changePassword(expectedUser, TEST_PASSWORD, TEST_NEW_PASSWORD);
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경 실패 - 사용자가 입력한 현재 비밀번호가 일치하지 않는 경우")
+    public void changePassword_PasswordMismatchException() {
+        // given
+        User expectedUser = User.builder()
+                .email(TEST_EMAIL)
+                .password(TEST_PASSWORD)
+                .build();
+
+        given(passwordEncoder.matches(TEST_PASSWORD, expectedUser.getPassword())).willReturn(false);
+
+        // When
+        assertThrows(PasswordMismatchException.class, () -> userService.changePassword(expectedUser, TEST_PASSWORD, TEST_NEW_PASSWORD));
     }
 }
