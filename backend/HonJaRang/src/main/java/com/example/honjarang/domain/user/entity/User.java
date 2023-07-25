@@ -65,4 +65,13 @@ public class User extends BaseTimeEntity {
     public void setIdForTest(Long id) {
         this.id = id;
     }
+
+    public void changePassword(String newPassword){
+        this.password = newPassword;
+    }
+
+    public void changeUserInfo(String nickname, String address){
+        this.nickname = nickname;
+        this.address = address;
+    }
 }

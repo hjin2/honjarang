@@ -1,7 +1,9 @@
 package com.example.honjarang.domain.user.controller;
 
 import com.example.honjarang.domain.user.dto.LoginDto;
+import com.example.honjarang.domain.user.dto.PasswordUpdateDto;
 import com.example.honjarang.domain.user.dto.UserCreateDto;
+import com.example.honjarang.domain.user.dto.UserInfoUpdateDto;
 import com.example.honjarang.domain.user.dto.VerifyCodeDto;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.service.EmailService;
@@ -17,6 +19,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -56,6 +60,17 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(@RequestBody UserCreateDto userCreateDto) {
         userService.signup(userCreateDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/change-password")
+    public void changePassword(@RequestBody PasswordUpdateDto passwordUpdateDto, @CurrentUser User user){
+        userService.changePassword(user,passwordUpdateDto.getPassword(), passwordUpdateDto.getNewPassword());
+    }
+
+    @PutMapping("/users")
+    public ResponseEntity<Void> changeUserInfo(@RequestBody UserInfoUpdateDto userInfoUpdateDto, @CurrentUser User user){
+        userService.changeUserInfo(user, userInfoUpdateDto.getNickname(), userInfoUpdateDto.getAddress());
         return ResponseEntity.ok().build();
     }
 }

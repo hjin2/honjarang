@@ -1,8 +1,11 @@
 package com.example.honjarang.domain.user.controller;
 
 import com.example.honjarang.domain.user.dto.LoginDto;
+import com.example.honjarang.domain.user.dto.PasswordUpdateDto;
 import com.example.honjarang.domain.user.dto.UserCreateDto;
+import com.example.honjarang.domain.user.dto.UserInfoUpdateDto;
 import com.example.honjarang.domain.user.dto.VerifyCodeDto;
+import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.*;
 import com.example.honjarang.domain.user.service.EmailService;
@@ -17,6 +20,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Map;
@@ -24,8 +29,7 @@ import java.util.Map;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -50,9 +54,14 @@ class UserControllerTest {
 
     private static final String TEST_EMAIL = "test@test.com";
     private static final String TEST_PASSWORD = "test1234";
+
+    private static final String TEST_NEW_PASSWORD = "newtest1234";
     private static final String TEST_CODE = "test";
     private static final String TEST_NICKNAME = "test";
+
+    private static final String TEST_NEW_NICKNAME = "newtest";
     private static final String TEST_ADDRESS = "서울특별시 강남구";
+    private static final String TEST_NEW_ADDRESS = "경상북도 구미시";
     private static final Double TEST_LATITUDE = 37.123456;
     private static final Double TEST_LONGITUDE = 127.123456;
 
@@ -256,4 +265,37 @@ class UserControllerTest {
                         .content(new ObjectMapper().writeValueAsString(userCreateDto)))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    @DisplayName("회원정보 수정 성공")
+    void changeUserInfo_Success() throws Exception {
+        // given
+        UserInfoUpdateDto userInfoUpdateDto = new UserInfoUpdateDto(TEST_NEW_NICKNAME, TEST_NEW_ADDRESS);
+        User user = new User(TEST_EMAIL,TEST_PASSWORD,TEST_NICKNAME,TEST_ADDRESS,TEST_LATITUDE,TEST_LONGITUDE, Role.ROLE_USER);
+
+        // when & then
+        mockMvc.perform(put("/api/v1/users/users")
+                        .contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(userInfoUpdateDto)))
+                .andExpect(status().isOk());
+}
+
+
+
+
+    @Test
+    @DisplayName("비밀번호 변경 성공")
+    void changePassword_Success() throws Exception {
+        // given
+        PasswordUpdateDto passwordUpdateDto = new PasswordUpdateDto(TEST_PASSWORD, TEST_NEW_PASSWORD);
+        User user = new User(TEST_EMAIL,TEST_PASSWORD,TEST_NICKNAME,TEST_ADDRESS,TEST_LATITUDE,TEST_LONGITUDE, Role.ROLE_USER);
+        // when & then
+        mockMvc.perform(put("/api/v1/users/change-password")
+                        .contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(passwordUpdateDto))
+                .principal(new UsernamePasswordAuthenticationToken(user,null)))
+                .andExpect(status().isOk());
+    }
+
+
 }
