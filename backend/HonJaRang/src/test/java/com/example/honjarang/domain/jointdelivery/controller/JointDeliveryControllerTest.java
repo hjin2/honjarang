@@ -1,16 +1,13 @@
 package com.example.honjarang.domain.jointdelivery.controller;
 
-import com.example.honjarang.domain.jointdelivery.dto.CreateJoinDeliveryDto;
+import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryCreateDto;
 import com.example.honjarang.domain.jointdelivery.dto.MenuListDto;
 import com.example.honjarang.domain.jointdelivery.dto.StoreListDto;
 import com.example.honjarang.domain.jointdelivery.exception.JointDeliveryNotFoundException;
 import com.example.honjarang.domain.jointdelivery.exception.StoreNotFoundException;
 import com.example.honjarang.domain.jointdelivery.service.JointDeliveryService;
-import com.example.honjarang.domain.map.service.MapService;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
-import com.example.honjarang.domain.user.service.UserService;
-import com.example.honjarang.security.service.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -130,7 +127,7 @@ class JointDeliveryControllerTest {
     @DisplayName("공동배달 생성")
     void createJointDelivery() throws Exception{
         // given
-        CreateJoinDeliveryDto dto = new CreateJoinDeliveryDto(TEST_JOINT_DELIVERY_CONTENT, TEST_STORE_ID, TEST_JOINT_DELIVERY_DELIVERY_CHARGE, TEST_JOINT_TARGET_MIN_PRICE, LocalDateTime.now());
+        JointDeliveryCreateDto dto = new JointDeliveryCreateDto(TEST_JOINT_DELIVERY_CONTENT, TEST_STORE_ID, TEST_JOINT_DELIVERY_DELIVERY_CHARGE, TEST_JOINT_TARGET_MIN_PRICE, LocalDateTime.now());
 
         // when & then
         mockMvc.perform(post("/api/v1/joint-deliveries")

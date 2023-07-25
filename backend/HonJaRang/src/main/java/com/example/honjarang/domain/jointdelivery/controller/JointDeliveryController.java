@@ -1,8 +1,6 @@
 package com.example.honjarang.domain.jointdelivery.controller;
 
-import com.example.honjarang.domain.jointdelivery.dto.CreateJoinDeliveryDto;
-import com.example.honjarang.domain.jointdelivery.dto.MenuListDto;
-import com.example.honjarang.domain.jointdelivery.dto.StoreListDto;
+import com.example.honjarang.domain.jointdelivery.dto.*;
 import com.example.honjarang.domain.jointdelivery.service.JointDeliveryService;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.security.CurrentUser;
@@ -24,15 +22,27 @@ public class JointDeliveryController {
         return ResponseEntity.ok(storeListDtoList);
     }
 
-    @GetMapping("{deliveryId}/menus")
-    public ResponseEntity<List<MenuListDto>> getMenuList(@PathVariable Long deliveryId) {
-        List<MenuListDto> menuListDtoList = jointDeliveryService.getMenuList(deliveryId);
+    @GetMapping("{jointDeliveryId}/menus")
+    public ResponseEntity<List<MenuListDto>> getMenuList(@PathVariable Long jointDeliveryId) {
+        List<MenuListDto> menuListDtoList = jointDeliveryService.getMenuList(jointDeliveryId);
         return ResponseEntity.ok(menuListDtoList);
     }
 
     @PostMapping("")
-    public ResponseEntity<Void> createJointDelivery(@RequestBody CreateJoinDeliveryDto dto, @CurrentUser User user) {
+    public ResponseEntity<Void> createJointDelivery(@RequestBody JointDeliveryCreateDto dto, @CurrentUser User user) {
         jointDeliveryService.createJointDelivery(dto, user);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<JointDeliveryListDto>> getJointDeliveryList(@RequestParam Integer page, @RequestParam Integer size) {
+        List<JointDeliveryListDto> jointDeliveryList = jointDeliveryService.getJointDeliveryList(page, size);
+        return ResponseEntity.ok(jointDeliveryList);
+    }
+
+    @GetMapping("/{jointDeliveryId}")
+    public ResponseEntity<JointDeliveryDto> getJointDelivery(@PathVariable Long jointDeliveryId) {
+        JointDeliveryDto jointDelivery = jointDeliveryService.getJointDelivery(jointDeliveryId);
+        return ResponseEntity.ok(jointDelivery);
     }
 }
