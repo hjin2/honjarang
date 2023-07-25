@@ -64,4 +64,8 @@ public class UserService {
         }
         user.changePassword(newPassword);
     }
+
+    public void changeUserInfo(User user, String nickname, String address){
+        user.changeUserInfo(nickname, address);
+    }
 }

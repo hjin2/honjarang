@@ -41,7 +41,10 @@ class UserServiceTest {
     private static final String TEST_EMAIL = "test@test.com";
     private static final String TEST_PASSWORD = "test1234";
     private static final String TEST_NICKNAME = "test";
+    
+    private static final String TEST_NEW_NICKNAME = "newtest";
     private static final String TEST_ADDRESS = "서울특별시 강남구";
+    private static final String TEST_NEW_ADDRESS = "경상북도 구미시";
     private static final Double TEST_LATITUDE = 37.123456;
     private static final Double TEST_LONGITUDE = 127.123456;
     private static final String TEST_CODE = "test";
@@ -184,4 +187,22 @@ class UserServiceTest {
         // When
         assertThrows(PasswordMismatchException.class, () -> userService.changePassword(expectedUser, TEST_PASSWORD, TEST_NEW_PASSWORD));
     }
+
+    @Test
+    @DisplayName("회원정보 수정 성공")
+    void changeUserInfo_Success() {
+        // given
+        User user = User.builder()
+                .nickname(TEST_NICKNAME)
+                .address(TEST_ADDRESS)
+                .email(TEST_EMAIL)
+                .build();
+
+        user.changeUserInfo(TEST_NEW_NICKNAME,TEST_NEW_ADDRESS);
+
+        assertThat(user.getNickname()).isEqualTo(TEST_NEW_NICKNAME);
+        assertThat(user.getAddress()).isEqualTo(TEST_NEW_ADDRESS);
+    }
+
+
 }
