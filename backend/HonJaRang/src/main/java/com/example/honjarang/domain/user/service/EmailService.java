@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,5 +102,12 @@ public class EmailService {
                                         .withData(generateHtmlBody(verificationCode))))
                         .withSubject(new Content()
                                 .withCharset("UTF-8").withData("회원가입 인증번호")));
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void deleteExpiredEmailVerifications() {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        emailVerificationRepository.deleteByExpiredAtBefore(currentDateTime);
     }
 }
