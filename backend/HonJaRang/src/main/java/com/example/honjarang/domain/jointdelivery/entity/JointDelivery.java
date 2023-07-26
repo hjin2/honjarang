@@ -1,19 +1,20 @@
 package com.example.honjarang.domain.jointdelivery.entity;
 
 import com.example.honjarang.domain.BaseTimeEntity;
-import com.example.honjarang.domain.jointdelivery.dto.CreateJoinDeliveryDto;
 import com.example.honjarang.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
 @Entity
+@DynamicInsert
 public class JointDelivery extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,6 +35,9 @@ public class JointDelivery extends BaseTimeEntity {
     private Integer deliveryCharge;
 
     @Column(nullable = false)
+    private Integer targetMinPrice;
+
+    @Column(nullable = false)
     private LocalDateTime deadline;
 
     @Column
@@ -41,9 +45,10 @@ public class JointDelivery extends BaseTimeEntity {
     private Boolean isCanceled;
 
     @Builder
-    public JointDelivery(String content, Integer deliveryCharge, LocalDateTime deadline, Store store, User user) {
+    public JointDelivery(String content, Integer deliveryCharge, Integer targetMinPrice, LocalDateTime deadline, Store store, User user) {
         this.content = content;
         this.deliveryCharge = deliveryCharge;
+        this.targetMinPrice = targetMinPrice;
         this.deadline = deadline;
         this.store = store;
         this.user = user;

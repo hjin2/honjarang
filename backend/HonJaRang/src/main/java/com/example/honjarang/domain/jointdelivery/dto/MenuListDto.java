@@ -1,5 +1,6 @@
 package com.example.honjarang.domain.jointdelivery.dto;
 
+import com.example.honjarang.domain.jointdelivery.document.Menu;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -17,4 +18,11 @@ public class MenuListDto {
     private Integer price;
     private String image;
     private Long storeId;
+
+    public MenuListDto(Menu menu) {
+        this.name = menu.getName();
+        this.price = menu.getPrice();
+        this.image = menu.getImage();
+        this.storeId = menu.getStoreId();
+    }
 }
