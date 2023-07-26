@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -91,6 +91,21 @@ public class PostControllerTest {
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(postCreateDto)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("게시글 삭제 성공")
+    void deletePost_Success() throws Exception {
+
+        // given
+        Long postId = 1L;
+
+        // when & then
+        mockMvc.perform(delete("/api/v1/posts/"+postId).
+                        contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(postId)))
+                .andExpect(status().isOk());
     }
 
 
