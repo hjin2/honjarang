@@ -22,4 +22,10 @@ public class PostController {
     public ResponseEntity<Long> createPost(@Valid @RequestBody PostCreateDto postCreateDto, @CurrentUser User user) {
         return ResponseEntity.created(null).body(postService.createPost(postCreateDto, user));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Long> deletePost(@PathVariable long id, @CurrentUser User user) {
+        postService.deletePost(id, user);
+        return ResponseEntity.ok().build();
+    }
 }
