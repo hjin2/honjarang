@@ -16,22 +16,33 @@ import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(JointDeliveryController.class)
 class JointDeliveryControllerTest {
@@ -47,7 +58,10 @@ class JointDeliveryControllerTest {
     private JointDelivery jointDelivery;
 
     @BeforeEach
-    void setUp() {
+    void setUp(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentation) {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                .apply(documentationConfiguration(restDocumentation))
+                .build();
         user = User.builder()
                 .email("test@test.com")
                 .password("test1234")
@@ -75,6 +89,7 @@ class JointDeliveryControllerTest {
                 .user(user)
                 .build();
         jointDelivery.setIdForTest(1L);
+        jointDelivery.setCreatedAtForTest(LocalDateTime.now());
         menu = Menu.builder()
                 .name("테스트 메뉴")
                 .price(10000)
@@ -100,7 +115,20 @@ class JointDeliveryControllerTest {
                 .andExpect(jsonPath("$[0].id").value(1L))
                 .andExpect(jsonPath("$[0].name").value("테스트 가게"))
                 .andExpect(jsonPath("$[0].image").value("test.jpg"))
-                .andExpect(jsonPath("$[0].address").value("서울특별시 강남구"));
+                .andExpect(jsonPath("$[0].address").value("서울특별시 강남구"))
+                .andDo(document("joint-deliveries/stores",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("keyword").description("검색할 키워드")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("가게 ID"),
+                                fieldWithPath("[].name").type(JsonFieldType.STRING).description("가게 이름"),
+                                fieldWithPath("[].image").type(JsonFieldType.STRING).description("가게 이미지"),
+                                fieldWithPath("[].address").type(JsonFieldType.STRING).description("가게 주소")
+                        )
+                ));
     }
 
     @Test
@@ -110,14 +138,14 @@ class JointDeliveryControllerTest {
         given(jointDeliveryService.getStoreListByApi("테스트")).willThrow(new StoreNotFoundException(""));
 
         // when & then
-       mockMvc.perform(get("/api/v1/joint-deliveries/stores")
+        mockMvc.perform(get("/api/v1/joint-deliveries/stores")
                         .param("keyword", "테스트"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("메뉴 리스트 조회 성공")
-    void getMenuList_Success() throws Exception{
+    void getMenuList_Success() throws Exception {
         // given
         List<MenuListDto> menuListDtoList = List.of(new MenuListDto(menu));
         given(jointDeliveryService.getMenuList(1L)).willReturn(menuListDtoList);
@@ -129,12 +157,27 @@ class JointDeliveryControllerTest {
                 .andExpect(jsonPath("$[0].id").value("60f0b0b7e0b9a72e7c7b3b3a"))
                 .andExpect(jsonPath("$[0].name").value("테스트 메뉴"))
                 .andExpect(jsonPath("$[0].price").value(10000))
-                .andExpect(jsonPath("$[0].image").value("test.jpg"));
+                .andExpect(jsonPath("$[0].image").value("test.jpg"))
+                .andExpect(jsonPath("$[0].store_id").value(1L))
+                .andDo(document("joint-deliveries/menus",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("jointDeliveryId").description("공동배달 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.STRING).description("메뉴 ID"),
+                                fieldWithPath("[].name").type(JsonFieldType.STRING).description("메뉴 이름"),
+                                fieldWithPath("[].price").type(JsonFieldType.NUMBER).description("메뉴 가격"),
+                                fieldWithPath("[].image").type(JsonFieldType.STRING).description("메뉴 이미지"),
+                                fieldWithPath("[].store_id").type(JsonFieldType.NUMBER).description("가게 ID")
+                        )
+                ));
     }
 
     @Test
     @DisplayName("메뉴 리스트 조회 실패 - 공동배달을 찾을 수 없는 경우")
-    void getMenuList_JointDeliveryNotFoundException() throws Exception{
+    void getMenuList_JointDeliveryNotFoundException() throws Exception {
         // given
         given(jointDeliveryService.getMenuList(1L)).willThrow(new JointDeliveryNotFoundException(""));
 
@@ -145,16 +188,26 @@ class JointDeliveryControllerTest {
 
     @Test
     @DisplayName("공동배달 생성")
-    void createJointDelivery() throws Exception{
+    void createJointDelivery() throws Exception {
         // given
         JointDeliveryCreateDto dto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, LocalDateTime.now().plusHours(1));
 
         // when & then
         mockMvc.perform(post("/api/v1/joint-deliveries")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(dto))
-                        .sessionAttr("user", user))
-                .andExpect(status().isOk());
+                        .content(new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andDo(document("joint-deliveries/create",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("공동배달 내용"),
+                                fieldWithPath("store_id").type(JsonFieldType.NUMBER).description("가게 ID"),
+                                fieldWithPath("delivery_charge").type(JsonFieldType.NUMBER).description("배달비"),
+                                fieldWithPath("target_min_price").type(JsonFieldType.NUMBER).description("최소 주문 금액"),
+                                fieldWithPath("deadline").type(JsonFieldType.STRING).description("마감 시간")
+                        )
+                ));
     }
 
     @Test
@@ -178,7 +231,25 @@ class JointDeliveryControllerTest {
                 .andExpect(jsonPath("$[0].store_name").value("테스트 가게"))
                 .andExpect(jsonPath("$[0].store_image").value("test.jpg"))
                 .andExpect(jsonPath("$[0].user_id").value(1L))
-                .andExpect(jsonPath("$[0].nickname").value("테스트"));
+                .andExpect(jsonPath("$[0].nickname").value("테스트"))
+                .andDo(document("joint-deliveries/list",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("page").description("페이지 번호"),
+                                parameterWithName("size").description("페이지 크기")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("공동배달 ID"),
+                                fieldWithPath("[].current_total_price").type(JsonFieldType.NUMBER).description("현재까지 모인 금액"),
+                                fieldWithPath("[].target_min_price").type(JsonFieldType.NUMBER).description("최소 주문 금액"),
+                                fieldWithPath("[].store_id").type(JsonFieldType.NUMBER).description("가게 ID"),
+                                fieldWithPath("[].store_name").type(JsonFieldType.STRING).description("가게 이름"),
+                                fieldWithPath("[].store_image").type(JsonFieldType.STRING).description("가게 이미지"),
+                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("유저 ID"),
+                                fieldWithPath("[].nickname").type(JsonFieldType.STRING).description("유저 닉네임")
+                        )
+                ));
     }
 
     @Test
@@ -196,7 +267,7 @@ class JointDeliveryControllerTest {
 
     @Test
     @DisplayName("공동배달 조회 성공")
-    void getJointDelivery_Success() throws Exception{
+    void getJointDelivery_Success() throws Exception {
         // given
         JointDeliveryDto jointDeliveryDto = new JointDeliveryDto(jointDelivery, 10000);
         given(jointDeliveryService.getJointDelivery(1L)).willReturn(jointDeliveryDto);
@@ -215,12 +286,34 @@ class JointDeliveryControllerTest {
                 .andExpect(jsonPath("$.store_name").value("테스트 가게"))
                 .andExpect(jsonPath("$.store_image").value("test.jpg"))
                 .andExpect(jsonPath("$.user_id").value(1L))
-                .andExpect(jsonPath("$.nickname").value("테스트"));
+                .andExpect(jsonPath("$.nickname").value("테스트"))
+                .andExpect(jsonPath("$.created_at").exists())
+                .andDo(document("joint-deliveries/detail",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("jointDeliveryId").description("공동배달 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("공동배달 ID"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("공동배달 내용"),
+                                fieldWithPath("delivery_charge").type(JsonFieldType.NUMBER).description("배달비"),
+                                fieldWithPath("current_total_price").type(JsonFieldType.NUMBER).description("현재까지 모인 금액"),
+                                fieldWithPath("target_min_price").type(JsonFieldType.NUMBER).description("최소 주문 금액"),
+                                fieldWithPath("deadline").type(JsonFieldType.STRING).description("마감 시간"),
+                                fieldWithPath("store_id").type(JsonFieldType.NUMBER).description("가게 ID"),
+                                fieldWithPath("store_name").type(JsonFieldType.STRING).description("가게 이름"),
+                                fieldWithPath("store_image").type(JsonFieldType.STRING).description("가게 이미지"),
+                                fieldWithPath("user_id").type(JsonFieldType.NUMBER).description("유저 ID"),
+                                fieldWithPath("nickname").type(JsonFieldType.STRING).description("유저 닉네임"),
+                                fieldWithPath("created_at").type(JsonFieldType.STRING).description("생성 시간")
+                        )
+                ));
     }
 
     @Test
     @DisplayName("공동배달 조회 실패 - 공동배달을 찾을 수 없는 경우")
-    void getJointDelivery_JointDeliveryNotFoundException() throws Exception{
+    void getJointDelivery_JointDeliveryNotFoundException() throws Exception {
         // given
         given(jointDeliveryService.getJointDelivery(1L)).willThrow(new JointDeliveryNotFoundException(""));
 
@@ -231,7 +324,7 @@ class JointDeliveryControllerTest {
 
     @Test
     @DisplayName("공동배달 조회 실패 - 메뉴를 찾을 수 없는 경우")
-    void getJointDelivery_MenuNotFoundException() throws Exception{
+    void getJointDelivery_MenuNotFoundException() throws Exception {
         // given
         given(jointDeliveryService.getJointDelivery(1L)).willThrow(new MenuNotFoundException(""));
 
