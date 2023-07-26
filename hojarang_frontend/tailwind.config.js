@@ -11,6 +11,7 @@ export default {
         main2: "#88B451",
         main3: "#FFD57E",
         main4: "#B8DA8D",
+        main5: "#FF7D1F",
         gray1: "#E3E3E3",
         gray2: "#BEBEBE",
         gray3: "#888888",
