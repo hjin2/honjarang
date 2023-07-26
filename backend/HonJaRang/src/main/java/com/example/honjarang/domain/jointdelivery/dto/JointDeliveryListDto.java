@@ -3,11 +3,13 @@ package com.example.honjarang.domain.jointdelivery.dto;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
+@AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class JointDeliveryListDto {
     private Long id;
