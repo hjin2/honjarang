@@ -84,8 +84,8 @@ class UserControllerTest {
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(loginDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").value(expectedTokenDto.getAccessToken()))
-                .andExpect(jsonPath("$.refreshToken").value(expectedTokenDto.getRefreshToken()));
+                .andExpect(jsonPath("$.access_token").value(expectedTokenDto.getAccessToken()))
+                .andExpect(jsonPath("$.refresh_token").value(expectedTokenDto.getRefreshToken()));
     }
 
     @Test

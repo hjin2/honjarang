@@ -1,5 +1,6 @@
 package com.example.honjarang.domain.jointdelivery.service;
 
+import com.example.honjarang.domain.jointdelivery.document.Menu;
 import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryCreateDto;
 import com.example.honjarang.domain.jointdelivery.dto.MenuListDto;
 import com.example.honjarang.domain.jointdelivery.dto.StoreListDto;
@@ -162,11 +163,14 @@ class JointDeliveryServiceTest {
                 .store(store)
                 .build();
 
-        List<MenuListDto> expectedMenuListDtoList = List.of(
-                new MenuListDto(TEST_MENU_NAME, TEST_MENU_PRICE, TEST_MENU_IMAGE, TEST_STORE_ID)
-        );
+        List<Menu> menuList = List.of(Menu.builder()
+                .storeId(TEST_STORE_ID)
+                .name(TEST_MENU_NAME)
+                .price(TEST_MENU_PRICE)
+                .image(TEST_MENU_IMAGE)
+                .build());
         given(jointDeliveryRepository.findById(TEST_JOINT_DELIVERY_ID)).willReturn(java.util.Optional.ofNullable(jointDelivery));
-        given(menuRepository.findAllByStoreId(TEST_STORE_ID)).willReturn(expectedMenuListDtoList);
+        given(menuRepository.findAllByStoreId(TEST_STORE_ID)).willReturn(menuList);
 
         // when
         List<MenuListDto> menuListDtoList = jointDeliveryService.getMenuList(TEST_JOINT_DELIVERY_ID);
@@ -190,7 +194,7 @@ class JointDeliveryServiceTest {
 
     @Test
     @DisplayName("공동배달 생성 성공")
-    void createJointDelivery() throws JsonProcessingException{
+    void createJointDelivery() throws JsonProcessingException {
         // given
         JointDeliveryCreateDto jointDeliveryCreateDto = new JointDeliveryCreateDto(TEST_JOINT_DELIVERY_CONTENT, TEST_STORE_ID, TEST_JOINT_DELIVERY_DELIVERY_CHARGE, TEST_JOINT_TARGET_MIN_PRICE, LocalDateTime.now());
         String responseBody = """
