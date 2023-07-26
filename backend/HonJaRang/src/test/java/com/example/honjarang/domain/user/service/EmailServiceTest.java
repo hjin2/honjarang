@@ -8,6 +8,7 @@ import com.example.honjarang.domain.user.exception.VerificationCodeMismatchExcep
 import com.example.honjarang.domain.user.exception.VerificationCodeNotFoundException;
 import com.example.honjarang.domain.user.repository.EmailVerificationRepository;
 import com.example.honjarang.domain.user.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,17 +39,28 @@ class EmailServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    private static final String TEST_EMAIL = "test@test.com";
-    private static final String TEST_CODE = "test";
+    private EmailVerification emailVerification;
+
+    @BeforeEach
+    void setUp() {
+        emailVerification = EmailVerification.builder()
+                .email("test@test.com")
+                .code("123456")
+                .expiredAt(LocalDateTime.now().plusMinutes(1))
+                .isVerified(false)
+                .build();
+        emailVerification.setIdForTest(1L);
+    }
+
 
     @Test
     @DisplayName("이메일 인증번호 전송 성공")
     void sendVerificationCode_Success() {
         // given
-        given(userRepository.existsByEmail(TEST_EMAIL)).willReturn(false);
+        given(userRepository.existsByEmail("test@test.com")).willReturn(false);
 
         // when
-        emailService.sendVerificationCode(TEST_EMAIL);
+        emailService.sendVerificationCode("test@test.com");
 
         // then
     }
@@ -57,20 +69,20 @@ class EmailServiceTest {
     @DisplayName("이메일 인증번호 전송 실패 - 이미 가입된 이메일인 경우")
     void sendVerificationCode_DuplicateEmailException() {
         // given
-        given(userRepository.existsByEmail(TEST_EMAIL)).willReturn(true);
+        given(userRepository.existsByEmail("test@test.com")).willReturn(true);
 
         // when & then
-        assertThrows(DuplicateEmailException.class, () -> emailService.sendVerificationCode(TEST_EMAIL));
+        assertThrows(DuplicateEmailException.class, () -> emailService.sendVerificationCode("test@test.com"));
     }
 
     @Test
     @DisplayName("이메일 인증번호 저장")
     void saveVerificationCode() {
         // given
-        given(emailVerificationRepository.findByEmail(TEST_EMAIL)).willReturn(Optional.empty());
+        given(emailVerificationRepository.findByEmail("test@test.com")).willReturn(Optional.empty());
 
         // when
-        emailService.saveVerificationCode(TEST_EMAIL, TEST_CODE);
+        emailService.saveVerificationCode("test@test.com", "123456");
 
         // then
     }
@@ -79,17 +91,10 @@ class EmailServiceTest {
     @DisplayName("이메일 인증번호 검증 성공")
     void verifyCode_Success() {
         // given
-        EmailVerification emailVerification = EmailVerification.builder()
-                .email(TEST_EMAIL)
-                .code(TEST_CODE)
-                .expiredAt(LocalDateTime.now().plusMinutes(1))
-                .isVerified(false)
-                .build();
-
-        given(emailVerificationRepository.findByEmail(TEST_EMAIL)).willReturn(Optional.of(emailVerification));
+        given(emailVerificationRepository.findByEmail("test@test.com")).willReturn(Optional.of(emailVerification));
 
         // when
-        Boolean result = emailService.verifyCode(TEST_EMAIL, TEST_CODE);
+        Boolean result = emailService.verifyCode("test@test.com", "123456");
 
         // then
         assertTrue(result);
@@ -99,60 +104,41 @@ class EmailServiceTest {
     @DisplayName("이메일 인증번호 검증 실패 - 인증번호가 일치하지 않는 경우")
     void verifyCode_VerificationCodeMismatchException() {
         // given
-        EmailVerification emailVerification = EmailVerification.builder()
-                .email(TEST_EMAIL)
-                .code(TEST_CODE)
-                .expiredAt(LocalDateTime.now().plusMinutes(1))
-                .isVerified(false)
-                .build();
-
-        given(emailVerificationRepository.findByEmail(TEST_EMAIL)).willReturn(Optional.of(emailVerification));
+        given(emailVerificationRepository.findByEmail("test@test.com")).willReturn(Optional.of(emailVerification));
 
         // when & then
-        assertThrows(VerificationCodeMismatchException.class, () -> emailService.verifyCode(TEST_EMAIL, "wrongCode"));
+        assertThrows(VerificationCodeMismatchException.class, () -> emailService.verifyCode("test@test.com", "654321"));
     }
 
     @Test
     @DisplayName("이메일 인증번호 검증 실패 - 인증번호가 만료된 경우")
     void verifyCode_VerificationCodeExpiredException() {
         // given
-        EmailVerification emailVerification = EmailVerification.builder()
-                .email(TEST_EMAIL)
-                .code(TEST_CODE)
-                .expiredAt(LocalDateTime.now().minusMinutes(1))
-                .isVerified(false)
-                .build();
-
-        given(emailVerificationRepository.findByEmail(TEST_EMAIL)).willReturn(Optional.of(emailVerification));
+        emailVerification.setExpiredAtForTest(LocalDateTime.now().minusMinutes(1));
+        given(emailVerificationRepository.findByEmail("test@test.com")).willReturn(Optional.of(emailVerification));
 
         // when & then
-        assertThrows(VerificationCodeMismatchException.class, () -> emailService.verifyCode(TEST_EMAIL, TEST_CODE));
+        assertThrows(VerificationCodeMismatchException.class, () -> emailService.verifyCode("test@test.com", "123456"));
     }
 
     @Test
     @DisplayName("이메일 인증번호 검증 실패 - 이미 인증된 이메일인 경우")
     void verifyCode_EmailAlreadyVerifiedException() {
         // given
-        EmailVerification emailVerification = EmailVerification.builder()
-                .email(TEST_EMAIL)
-                .code(TEST_CODE)
-                .expiredAt(LocalDateTime.now().plusMinutes(1))
-                .isVerified(true)
-                .build();
-
-        given(emailVerificationRepository.findByEmail(TEST_EMAIL)).willReturn(Optional.of(emailVerification));
+        emailVerification.verify();
+        given(emailVerificationRepository.findByEmail("test@test,com")).willReturn(Optional.of(emailVerification));
 
         // when & then
-        assertThrows(VerificationCodeMismatchException.class, () -> emailService.verifyCode(TEST_EMAIL, TEST_CODE));
+        assertThrows(VerificationCodeMismatchException.class, () -> emailService.verifyCode("test@test,com", "123456"));
     }
 
     @Test
     @DisplayName("이메일 인증번호 검증 실패 - 인증번호를 찾을 수 없는 경우")
     void verifyCode_VerificationCodeNotFoundException() {
         // given
-        given(emailVerificationRepository.findByEmail(TEST_EMAIL)).willReturn(Optional.empty());
+        given(emailVerificationRepository.findByEmail("test@test,com")).willReturn(Optional.empty());
 
         // when & then
-        assertThrows(VerificationCodeNotFoundException.class, () -> emailService.verifyCode(TEST_EMAIL, TEST_CODE));
+        assertThrows(VerificationCodeNotFoundException.class, () -> emailService.verifyCode("test@test,com", "123456"));
     }
 }

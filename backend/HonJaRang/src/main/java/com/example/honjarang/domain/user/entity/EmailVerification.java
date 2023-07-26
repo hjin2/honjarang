@@ -44,4 +44,16 @@ public class EmailVerification extends BaseTimeEntity {
     public void verify() {
         this.isVerified = true;
     }
+
+    public void setIdForTest(Long id) {
+        this.id = id;
+    }
+
+    public void setExpiredAtForTest(LocalDateTime expiredAt) {
+        this.expiredAt = expiredAt;
+    }
+
+    public void setIsVerifiedForTest(Boolean isVerified) {
+        this.isVerified = isVerified;
+    }
 }
