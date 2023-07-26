@@ -7,10 +7,12 @@ import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@DynamicInsert
 public class Store {
     @Id
     private Long id;
@@ -31,7 +33,8 @@ public class Store {
     private Double longitude;
 
     @Builder
-    public Store(String storeName, String image, String address, Double latitude, Double longitude) {
+    public Store(Long id, String storeName, String image, String address, Double latitude, Double longitude) {
+        this.id = id;
         this.storeName = storeName;
         this.image = image;
         this.address = address;
