@@ -8,13 +8,13 @@ import {
 import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup';
 import Notfound from './pages/Notfound/Notfound';
-import Header from './components/header';
+import Header from './components/Header';
 import Market from './pages/Market/Market';
 import WebRTC from './pages/WebRTC/WebRTC';
 import Board from './pages/Board/Board';
 import Chatting from './pages/Chatting/Chatting';
 import Map from './pages/Map/Map';
-
+import MyPage from './pages/MyPage/MyPage';
 
 
 
@@ -32,6 +32,7 @@ function App() {
           <Route path="/market" element={<Market />}/>
           <Route path="/board" element={<Board />}/>
           <Route path="/map" element={<Map />}/>
+          <Route path="/mypage/:nickname" element={<MyPage />}/>
           <Route path="/*" element={<Notfound />}/>
         </Routes>
       </BrowserRouter>
