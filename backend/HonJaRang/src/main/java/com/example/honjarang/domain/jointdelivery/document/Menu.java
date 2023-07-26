@@ -25,4 +25,8 @@ public class Menu {
         this.image = image;
         this.storeId = storeId;
     }
+
+    public void setIdForTest(ObjectId id) {
+        this.id = id;
+    }
 }

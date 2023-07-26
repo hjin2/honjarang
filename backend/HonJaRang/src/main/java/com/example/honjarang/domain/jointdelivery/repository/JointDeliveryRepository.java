@@ -6,7 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Repository
 public interface JointDeliveryRepository extends JpaRepository<JointDelivery, Long> {
-    Page<JointDelivery> findAll(Pageable pageable);
+    Page<JointDelivery> findAllByDeadlineAfter(LocalDateTime now, Pageable pageable);
 }
