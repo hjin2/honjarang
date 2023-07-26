@@ -18,7 +18,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -35,8 +36,6 @@ class MapServiceTest {
     @Mock
     private RestTemplate restTemplate;
 
-    private final String TEST_KEYWORD = "멀티캠퍼스";
-
     @Test
     @DisplayName("키워드로 좌표 조회 성공")
     void getCoordinate_Success() throws JsonProcessingException {
@@ -45,8 +44,8 @@ class MapServiceTest {
                 {
                     "documents": [
                         {
-                            "x": "127.039604663862",
-                            "y": "37.5012860931305"
+                            "x": 127.123456,
+                            "y": 37.123456
                         }
                     ]
                 }""";
@@ -58,11 +57,11 @@ class MapServiceTest {
         given(objectMapper.readTree(eq(responseEntity.getBody()))).willReturn(jsonNode);
 
         // when
-        CoordinateDto coordinateDto = mapService.getCoordinate(TEST_KEYWORD);
+        CoordinateDto coordinateDto = mapService.getCoordinate("서울특별시 강남구");
 
         // then
-        assertEquals(37.5012860931305, coordinateDto.getLatitude());
-        assertEquals(127.039604663862, coordinateDto.getLongitude());
+        assertThat(coordinateDto.getLatitude()).isEqualTo(37.123456);
+        assertThat(coordinateDto.getLongitude()).isEqualTo(127.123456);
     }
 
     @Test
@@ -81,6 +80,6 @@ class MapServiceTest {
         given(objectMapper.readTree(eq(responseEntity.getBody()))).willReturn(jsonNode);
 
         // when & then
-        assertThrows(LocationNotFoundException.class, () -> mapService.getCoordinate(TEST_KEYWORD));
+        assertThrows(LocationNotFoundException.class, () -> mapService.getCoordinate("서울특별시 강남구"));
     }
 }
