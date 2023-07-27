@@ -1,5 +1,6 @@
 package com.example.honjarang.domain.jointdelivery.dto;
 
+import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -15,8 +16,8 @@ public class JointDeliveryDto {
     private Integer deliveryCharge;
     private Integer currentTotalPrice;
     private Integer targetMinPrice;
-    private LocalDateTime deadline;
-    private LocalDateTime createdAt;
+    private String deadline;
+    private String createdAt;
 
     private Long storeId;
     private String storeName;
@@ -31,8 +32,8 @@ public class JointDeliveryDto {
         this.deliveryCharge = jointDelivery.getDeliveryCharge();
         this.currentTotalPrice = currentTotalPrice;
         this.targetMinPrice = jointDelivery.getTargetMinPrice();
-        this.deadline = jointDelivery.getDeadline();
-        this.createdAt = jointDelivery.getCreatedAt();
+        this.deadline = DateTimeUtils.formatLocalDateTime(jointDelivery.getDeadline());
+        this.createdAt = DateTimeUtils.formatLocalDateTime(jointDelivery.getCreatedAt());
         this.storeId = jointDelivery.getStore().getId();
         this.storeName = jointDelivery.getStore().getStoreName();
         this.storeImage = jointDelivery.getStore().getImage();

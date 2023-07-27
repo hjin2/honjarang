@@ -1,5 +1,6 @@
 package com.example.honjarang.domain.jointdelivery.service;
 
+import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.jointdelivery.document.Menu;
 import com.example.honjarang.domain.jointdelivery.dto.*;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
@@ -89,11 +90,12 @@ class JointDeliveryServiceTest {
                 .content("테스트 공동배달")
                 .deliveryCharge(3000)
                 .targetMinPrice(10000)
-                .deadline(LocalDateTime.now().plusHours(1))
+                .deadline(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"))
                 .store(store)
                 .user(user)
                 .build();
         jointDelivery.setIdForTest(1L);
+        jointDelivery.setCreatedAt(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
         menu = Menu.builder()
                 .name("테스트 메뉴")
                 .price(10000)
@@ -208,7 +210,7 @@ class JointDeliveryServiceTest {
     @DisplayName("공동배달 생성 성공")
     void createJointDelivery() throws JsonProcessingException {
         // given
-        JointDeliveryCreateDto jointDeliveryCreateDto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, LocalDateTime.now().plusHours(1));
+        JointDeliveryCreateDto jointDeliveryCreateDto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, "2000-01-01 00:00:00");
         String responseBody = """
                 {
                     "id": 1,
@@ -262,8 +264,8 @@ class JointDeliveryServiceTest {
         assertThat(jointDeliveryDto.getDeliveryCharge()).isEqualTo(3000);
         assertThat(jointDeliveryDto.getCurrentTotalPrice()).isEqualTo(10000);
         assertThat(jointDeliveryDto.getTargetMinPrice()).isEqualTo(10000);
-        assertThat(jointDeliveryDto.getDeadline()).isEqualTo(jointDelivery.getDeadline());
-        assertThat(jointDeliveryDto.getCreatedAt()).isEqualTo(jointDelivery.getCreatedAt());
+        assertThat(jointDeliveryDto.getDeadline()).isEqualTo("2000-01-01 00:00:00");
+        assertThat(jointDeliveryDto.getCreatedAt()).isEqualTo("2000-01-01 00:00:00");
         assertThat(jointDeliveryDto.getStoreId()).isEqualTo(1L);
         assertThat(jointDeliveryDto.getStoreName()).isEqualTo("테스트 가게");
         assertThat(jointDeliveryDto.getStoreImage()).isEqualTo("test.jpg");

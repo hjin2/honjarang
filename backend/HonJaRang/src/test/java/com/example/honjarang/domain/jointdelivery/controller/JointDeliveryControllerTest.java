@@ -1,5 +1,6 @@
 package com.example.honjarang.domain.jointdelivery.controller;
 
+import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.jointdelivery.document.Menu;
 import com.example.honjarang.domain.jointdelivery.dto.*;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
@@ -70,11 +71,12 @@ class JointDeliveryControllerTest {
                 .content("테스트 공동배달")
                 .deliveryCharge(3000)
                 .targetMinPrice(10000)
-                .deadline(LocalDateTime.now().plusHours(1))
+                .deadline(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"))
                 .store(store)
                 .user(user)
                 .build();
         jointDelivery.setIdForTest(1L);
+        jointDelivery.setCreatedAt(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
         menu = Menu.builder()
                 .name("테스트 메뉴")
                 .price(10000)
@@ -147,7 +149,7 @@ class JointDeliveryControllerTest {
     @DisplayName("공동배달 생성")
     void createJointDelivery() throws Exception{
         // given
-        JointDeliveryCreateDto dto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, LocalDateTime.now().plusHours(1));
+        JointDeliveryCreateDto dto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, "2000-01-01 00:00:00");
 
         // when & then
         mockMvc.perform(post("/api/v1/joint-deliveries")
