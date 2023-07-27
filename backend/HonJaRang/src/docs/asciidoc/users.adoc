@@ -1,23 +1,23 @@
 == 회원
 
 === 로그인
-operation::users/login[snippets='request-fields,response-fields']
+operation::users/login[snippets='http-request,request-fields,response-fields']
 
 === 회원가입
-operation::users/signup[snippets='request-fields']
+operation::users/signup[snippets='http-request,request-fields']
 
-== 인증번호 전송
-operation::users/send-verification-code[snippets='request-fields']
+=== 인증번호 전송
+operation::users/send-verification-code[snippets='http-request,request-fields']
 
-== 인증번호 확인
-operation::users/verify-code[snippets='request-fields']
+=== 인증번호 확인
+operation::users/verify-code[snippets='http-request,request-fields']
 
-== 닉네임 중복 확인
-operation::users/check-nickname[snippets='query-parameters']
+=== 닉네임 중복 확인
+operation::users/check-nickname[snippets='http-request,query-parameters']
 
-== 비밀번호 변경
-operation::users/change-password[snippets='request-fields']
+=== 비밀번호 변경
+operation::users/change-password[snippets='http-request,request-fields']
 
-== 회원 정보 수정
-operation::users/change-user-info[snippets='request-fields']
+=== 회원 정보 수정
+operation::users/change-user-info[snippets='http-request,request-fields']
 
