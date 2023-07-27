@@ -20,7 +20,7 @@ public class BaseTimeEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAtForTest(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 }

@@ -95,7 +95,7 @@ class JointDeliveryServiceTest {
                 .user(user)
                 .build();
         jointDelivery.setIdForTest(1L);
-        jointDelivery.setCreatedAt(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
+        jointDelivery.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
         menu = Menu.builder()
                 .name("테스트 메뉴")
                 .price(10000)

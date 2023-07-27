@@ -47,14 +47,14 @@ public class UserController {
 
     @PostMapping("/verify-code")
     public ResponseEntity<Boolean> verifyCode(@RequestBody VerifyCodeDto verifyCodeDto) {
-        Boolean isVerified = emailService.verifyCode(verifyCodeDto.getEmail(), verifyCodeDto.getCode());
-        return ResponseEntity.ok(isVerified);
+        emailService.verifyCode(verifyCodeDto.getEmail(), verifyCodeDto.getCode());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/check-nickname")
-    public ResponseEntity<Boolean> checkNickname(@RequestParam String nickname) {
-        Boolean isAvailable = userService.checkNickname(nickname);
-        return ResponseEntity.ok(isAvailable);
+    public ResponseEntity<Void> checkNickname(@RequestParam String nickname) {
+        userService.checkNickname(nickname);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/signup")

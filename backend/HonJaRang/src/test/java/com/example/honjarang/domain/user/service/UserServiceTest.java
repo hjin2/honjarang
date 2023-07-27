@@ -145,10 +145,9 @@ class UserServiceTest {
         given(userRepository.existsByNickname("테스트")).willReturn(false);
 
         // when
-        Boolean isAvailable = userService.checkNickname("테스트");
+        userService.checkNickname("테스트");
 
         // then
-        assertThat(isAvailable).isTrue();
     }
 
     @Test
