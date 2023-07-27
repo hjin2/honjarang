@@ -1,5 +1,6 @@
 package com.example.honjarang.domain.jointdelivery.controller;
 
+import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.jointdelivery.document.Menu;
 import com.example.honjarang.domain.jointdelivery.dto.*;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
@@ -84,7 +85,7 @@ class JointDeliveryControllerTest {
                 .content("테스트 공동배달")
                 .deliveryCharge(3000)
                 .targetMinPrice(10000)
-                .deadline(LocalDateTime.now().plusHours(1))
+                .deadline(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"))
                 .store(store)
                 .user(user)
                 .build();
@@ -186,29 +187,29 @@ class JointDeliveryControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-//    @Test
-//    @DisplayName("공동배달 생성")
-//    void createJointDelivery() throws Exception {
-//        // given
-//        JointDeliveryCreateDto dto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, LocalDateTime.now().plusHours(1));
-//
-//        // when & then
-//        mockMvc.perform(post("/api/v1/joint-deliveries")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(dto)))
-//                .andExpect(status().isOk())
-//                .andDo(document("joint-deliveries/create",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(prettyPrint()),
-//                        requestFields(
-//                                fieldWithPath("content").type(JsonFieldType.STRING).description("공동배달 내용"),
-//                                fieldWithPath("store_id").type(JsonFieldType.NUMBER).description("가게 ID"),
-//                                fieldWithPath("delivery_charge").type(JsonFieldType.NUMBER).description("배달비"),
-//                                fieldWithPath("target_min_price").type(JsonFieldType.NUMBER).description("최소 주문 금액"),
-//                                fieldWithPath("deadline").type(JsonFieldType.STRING).description("마감 시간")
-//                        )
-//                ));
-//    }
+    @Test
+    @DisplayName("공동배달 생성")
+    void createJointDelivery() throws Exception {
+        // given
+        JointDeliveryCreateDto dto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, "2000-01-01 00:00:00");
+
+        // when & then
+        mockMvc.perform(post("/api/v1/joint-deliveries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andDo(document("joint-deliveries/create",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("공동배달 내용"),
+                                fieldWithPath("store_id").type(JsonFieldType.NUMBER).description("가게 ID"),
+                                fieldWithPath("delivery_charge").type(JsonFieldType.NUMBER).description("배달비"),
+                                fieldWithPath("target_min_price").type(JsonFieldType.NUMBER).description("최소 주문 금액"),
+                                fieldWithPath("deadline").type(JsonFieldType.STRING).description("마감 시간")
+                        )
+                ));
+    }
 
     @Test
     @DisplayName("공동배달 리스트 조회 성공")
