@@ -94,10 +94,10 @@ class EmailServiceTest {
         given(emailVerificationRepository.findByEmail("test@test.com")).willReturn(Optional.of(emailVerification));
 
         // when
-        Boolean result = emailService.verifyCode("test@test.com", "123456");
+        emailService.verifyCode("test@test.com", "123456");
 
         // then
-        assertTrue(result);
+        assertTrue(emailVerification.getIsVerified());
     }
 
     @Test

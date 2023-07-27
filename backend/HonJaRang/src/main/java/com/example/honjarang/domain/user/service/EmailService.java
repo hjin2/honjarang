@@ -57,7 +57,7 @@ public class EmailService {
     }
 
     @Transactional
-    public Boolean verifyCode(String email, String code) {
+    public void verifyCode(String email, String code) {
         EmailVerification emailVerification = emailVerificationRepository.findByEmail(email)
                 .orElseThrow(() -> new VerificationCodeNotFoundException("인증번호를 찾을 수 없습니다."));
         if (emailVerification.getIsVerified()) {
@@ -69,7 +69,6 @@ public class EmailService {
             throw new VerificationCodeMismatchException("인증번호가 일치하지 않습니다.");
         }
         emailVerification.verify();
-        return true;
     }
 
     private String generateVerificationCode() {

@@ -52,11 +52,10 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Boolean checkNickname(String nickname) {
+    public void checkNickname(String nickname) {
         if(userRepository.existsByNickname(nickname)) {
             throw new DuplicateNicknameException("중복된 닉네임입니다.");
         }
-        return true;
     }
 
     @Transactional
