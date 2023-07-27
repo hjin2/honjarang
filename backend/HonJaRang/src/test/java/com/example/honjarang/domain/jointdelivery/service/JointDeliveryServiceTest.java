@@ -35,10 +35,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalMatchers.not;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -132,17 +133,18 @@ class JointDeliveryServiceTest {
         JsonNode jsonNode = new ObjectMapper().readTree(responseEntity.getBody());
 
         given(restTemplate.getForEntity(any(URI.class), eq(String.class))).willReturn(responseEntity);
-        given(objectMapper.readTree(eq(responseEntity.getBody()))).willReturn(jsonNode);
+        given(objectMapper.readTree(responseEntity.getBody())).willReturn(jsonNode);
 
         // when
         List<StoreListDto> storeListDtoList = jointDeliveryService.getStoreListByApi("테스트");
 
         // then
-        assertEquals(1, storeListDtoList.size());
-        assertEquals(1, storeListDtoList.get(0).getId());
-        assertEquals("테스트", storeListDtoList.get(0).getName());
-        assertEquals("이미지", storeListDtoList.get(0).getImage());
-        assertEquals("주소", storeListDtoList.get(0).getAddress());
+        assertThat(storeListDtoList).isNotNull();
+        assertThat(storeListDtoList.size()).isEqualTo(1);
+        assertThat(storeListDtoList.get(0).getId()).isEqualTo(1L);
+        assertThat(storeListDtoList.get(0).getName()).isEqualTo("테스트");
+        assertThat(storeListDtoList.get(0).getImage()).isEqualTo("이미지");
+        assertThat(storeListDtoList.get(0).getAddress()).isEqualTo("주소");
     }
 
     @Test
@@ -162,13 +164,14 @@ class JointDeliveryServiceTest {
         JsonNode jsonNode = new ObjectMapper().readTree(responseEntity.getBody());
 
         given(restTemplate.getForEntity(any(URI.class), eq(String.class))).willReturn(responseEntity);
-        given(objectMapper.readTree(eq(responseEntity.getBody()))).willReturn(jsonNode);
+        given(objectMapper.readTree(responseEntity.getBody())).willReturn(jsonNode);
 
         // when
         List<StoreListDto> storeListDtoList = jointDeliveryService.getStoreListByApi("테스트");
 
         // then
-        assertEquals(0, storeListDtoList.size());
+        assertThat(storeListDtoList).isNotNull();
+        assertThat(storeListDtoList.size()).isEqualTo(0);
     }
 
     @Test
@@ -183,11 +186,12 @@ class JointDeliveryServiceTest {
         List<MenuListDto> menuListDtoList = jointDeliveryService.getMenuList(1L);
 
         // then
-        assertEquals(1, menuListDtoList.size());
-        assertEquals("60f0b0b7e0b9a72e7c7b3b3a", menuListDtoList.get(0).getId());
-        assertEquals("테스트 메뉴", menuListDtoList.get(0).getName());
-        assertEquals(10000, menuListDtoList.get(0).getPrice());
-        assertEquals("test.jpg", menuListDtoList.get(0).getImage());
+        assertThat(menuListDtoList).isNotNull();
+        assertThat(menuListDtoList.size()).isEqualTo(1);
+        assertThat(menuListDtoList.get(0).getId()).isEqualTo("60f0b0b7e0b9a72e7c7b3b3a");
+        assertThat(menuListDtoList.get(0).getName()).isEqualTo("테스트 메뉴");
+        assertThat(menuListDtoList.get(0).getPrice()).isEqualTo(10000);
+        assertThat(menuListDtoList.get(0).getImage()).isEqualTo("test.jpg");
     }
 
     @Test
@@ -231,7 +235,7 @@ class JointDeliveryServiceTest {
         JsonNode jsonNode1 = new ObjectMapper().readTree(responseBody1);
 
         given(restTemplate.getForEntity(any(String.class), eq(String.class))).willReturn(responseEntity);
-        given(objectMapper.readTree(eq(responseEntity.getBody()))).willReturn(jsonNode);
+        given(objectMapper.readTree(responseEntity.getBody())).willReturn(jsonNode);
         given(objectMapper.readTree(not(eq(responseEntity.getBody())))).willReturn(jsonNode1);
 
         // when
@@ -252,18 +256,19 @@ class JointDeliveryServiceTest {
         JointDeliveryDto jointDeliveryDto = jointDeliveryService.getJointDelivery(1L);
 
         // then
-        assertEquals(1L, jointDeliveryDto.getId());
-        assertEquals("테스트 공동배달", jointDeliveryDto.getContent());
-        assertEquals(3000, jointDeliveryDto.getDeliveryCharge());
-        assertEquals(10000, jointDeliveryDto.getCurrentTotalPrice());
-        assertEquals(10000, jointDeliveryDto.getTargetMinPrice());
-        assertEquals(jointDelivery.getDeadline(), jointDeliveryDto.getDeadline());
-        assertEquals(jointDelivery.getCreatedAt(), jointDeliveryDto.getCreatedAt());
-        assertEquals(1L, jointDeliveryDto.getStoreId());
-        assertEquals("테스트 가게", jointDeliveryDto.getStoreName());
-        assertEquals("test.jpg", jointDeliveryDto.getStoreImage());
-        assertEquals(1L, jointDeliveryDto.getUserId());
-        assertEquals("테스트", jointDeliveryDto.getNickname());
+        assertThat(jointDeliveryDto).isNotNull();
+        assertThat(jointDeliveryDto.getId()).isEqualTo(1L);
+        assertThat(jointDeliveryDto.getContent()).isEqualTo("테스트 공동배달");
+        assertThat(jointDeliveryDto.getDeliveryCharge()).isEqualTo(3000);
+        assertThat(jointDeliveryDto.getCurrentTotalPrice()).isEqualTo(10000);
+        assertThat(jointDeliveryDto.getTargetMinPrice()).isEqualTo(10000);
+        assertThat(jointDeliveryDto.getDeadline()).isEqualTo(jointDelivery.getDeadline());
+        assertThat(jointDeliveryDto.getCreatedAt()).isEqualTo(jointDelivery.getCreatedAt());
+        assertThat(jointDeliveryDto.getStoreId()).isEqualTo(1L);
+        assertThat(jointDeliveryDto.getStoreName()).isEqualTo("테스트 가게");
+        assertThat(jointDeliveryDto.getStoreImage()).isEqualTo("test.jpg");
+        assertThat(jointDeliveryDto.getUserId()).isEqualTo(1L);
+        assertThat(jointDeliveryDto.getNickname()).isEqualTo("테스트");
     }
 
     @Test
@@ -303,15 +308,16 @@ class JointDeliveryServiceTest {
         List<JointDeliveryListDto> jointDeliveryListDtoList = jointDeliveryService.getJointDeliveryList(1, 10);
 
         // then
-        assertEquals(1, jointDeliveryListDtoList.size());
-        assertEquals(1L, jointDeliveryListDtoList.get(0).getId());
-        assertEquals(10000, jointDeliveryListDtoList.get(0).getCurrentTotalPrice());
-        assertEquals(10000, jointDeliveryListDtoList.get(0).getTargetMinPrice());
-        assertEquals(1L, jointDeliveryListDtoList.get(0).getStoreId());
-        assertEquals("테스트 가게", jointDeliveryListDtoList.get(0).getStoreName());
-        assertEquals("test.jpg", jointDeliveryListDtoList.get(0).getStoreImage());
-        assertEquals(1L, jointDeliveryListDtoList.get(0).getUserId());
-        assertEquals("테스트", jointDeliveryListDtoList.get(0).getNickname());
+        assertThat(jointDeliveryListDtoList).isNotNull();
+        assertThat(jointDeliveryListDtoList.size()).isEqualTo(1);
+        assertThat(jointDeliveryListDtoList.get(0).getId()).isEqualTo(1L);
+        assertThat(jointDeliveryListDtoList.get(0).getCurrentTotalPrice()).isEqualTo(10000);
+        assertThat(jointDeliveryListDtoList.get(0).getTargetMinPrice()).isEqualTo(10000);
+        assertThat(jointDeliveryListDtoList.get(0).getStoreId()).isEqualTo(1L);
+        assertThat(jointDeliveryListDtoList.get(0).getStoreName()).isEqualTo("테스트 가게");
+        assertThat(jointDeliveryListDtoList.get(0).getStoreImage()).isEqualTo("test.jpg");
+        assertThat(jointDeliveryListDtoList.get(0).getUserId()).isEqualTo(1L);
+        assertThat(jointDeliveryListDtoList.get(0).getNickname()).isEqualTo("테스트");
     }
 
     @Test

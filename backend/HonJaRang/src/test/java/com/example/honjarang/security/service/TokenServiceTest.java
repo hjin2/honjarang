@@ -8,6 +8,7 @@ import com.example.honjarang.security.exception.InvalidTokenException;
 import com.example.honjarang.security.exception.TokenExpiredException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,10 +32,23 @@ class TokenServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    private static final String TEST_EMAIL = "test@test.com";
-    private static final Role TEST_ROLE = Role.ROLE_USER;
-    private static final String TEST_SECRET_KEY = "honjarang";
+    private User user;
 
+    private final String TEST_SECRET_KEY = "honjarang";
+
+    @BeforeEach
+    void setUp() {
+        user = User.builder()
+                .email("test@test.com")
+                .password("test1234")
+                .nickname("테스트")
+                .address("서울특별시 강남구")
+                .latitude(37.123456)
+                .longitude(127.123456)
+                .role(Role.ROLE_USER)
+                .build();
+        user.setIdForTest(1L);
+    }
 
     @Test
     @DisplayName("토큰 생성")
@@ -42,10 +56,12 @@ class TokenServiceTest {
         // given
 
         // when
-        TokenDto tokenDto = tokenService.generateToken(TEST_EMAIL, TEST_ROLE);
+        TokenDto tokenDto = tokenService.generateToken("test@test.com", Role.ROLE_USER);
 
         // then
         assertThat(tokenDto).isNotNull();
+        assertThat(tokenDto.getAccessToken()).isNotNull();
+        assertThat(tokenDto.getRefreshToken()).isNotNull();
     }
 
     @Test
@@ -53,8 +69,8 @@ class TokenServiceTest {
     void verifyToken_Success() {
         // given
         String token = Jwts.builder()
-                .setSubject(TEST_EMAIL)
-                .claim("role", TEST_ROLE)
+                .setSubject("test@test.com")
+                .claim("role", Role.ROLE_USER)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
                 .signWith(SignatureAlgorithm.HS256, TEST_SECRET_KEY)
@@ -72,8 +88,8 @@ class TokenServiceTest {
     void verifyToken_TokenExpiredException() {
         // given
         String token = Jwts.builder()
-                .setSubject(TEST_EMAIL)
-                .claim("role", TEST_ROLE)
+                .setSubject("test@test.com")
+                .claim("role", Role.ROLE_USER)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() - 60 * 60 * 1000))
                 .signWith(SignatureAlgorithm.HS256, TEST_SECRET_KEY)
@@ -88,8 +104,8 @@ class TokenServiceTest {
     void verifyToken_InvalidTokenException() {
         // given
         String token = Jwts.builder()
-                .setSubject(TEST_EMAIL)
-                .claim("role", TEST_ROLE)
+                .setSubject("test@test.com")
+                .claim("role", Role.ROLE_USER)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
                 .signWith(SignatureAlgorithm.HS256, "invalidSecretKey")
@@ -104,25 +120,26 @@ class TokenServiceTest {
     void getUserByToken() {
         // given
         String token = Jwts.builder()
-                .setSubject(TEST_EMAIL)
-                .claim("role", TEST_ROLE)
+                .setSubject("test@test.com")
+                .claim("role", Role.ROLE_USER)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
                 .signWith(SignatureAlgorithm.HS256, TEST_SECRET_KEY)
                 .compact();
 
-        User expectedUser = User.builder()
-                .email(TEST_EMAIL)
-                .role(TEST_ROLE)
-                .build();
-        given(userRepository.findByEmail(TEST_EMAIL)).willReturn(Optional.of(expectedUser));
+        given(userRepository.findByEmail("test@test.com")).willReturn(Optional.of(user));
 
         // when
         User user = tokenService.getUserByToken(token);
 
         // then
         assertThat(user).isNotNull();
-        assertThat(user.getEmail()).isEqualTo(TEST_EMAIL);
-        assertThat(user.getRole()).isEqualTo(TEST_ROLE);
+        assertThat(user.getEmail()).isEqualTo("test@test.com");
+        assertThat(user.getPassword()).isEqualTo("test1234");
+        assertThat(user.getNickname()).isEqualTo("테스트");
+        assertThat(user.getAddress()).isEqualTo("서울특별시 강남구");
+        assertThat(user.getLatitude()).isEqualTo(37.123456);
+        assertThat(user.getLongitude()).isEqualTo(127.123456);
+        assertThat(user.getRole()).isEqualTo(Role.ROLE_USER);
     }
 }
