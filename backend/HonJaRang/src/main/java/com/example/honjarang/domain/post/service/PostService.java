@@ -2,6 +2,7 @@ package com.example.honjarang.domain.post.service;
 
 
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
 import com.example.honjarang.domain.post.repository.PostRepository;
@@ -43,5 +44,15 @@ public class PostService {
             throw new InvalidUserException("작성자만 삭제할 수 있습니다.");
         }
         postRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void updatePost(Long id, PostUpdateDto postUpdateDto, User user) {
+        Post post = postRepository.findById(id).orElseThrow(() ->
+                new PostNotFoundException("존재하지 않는 게시글입니다."));
+        if (!Objects.equals(post.getUser().getId(), user.getId())) {
+            throw new InvalidUserException("작성자만 수정할 수 있습니다.");
+        }
+        post.update(postUpdateDto);
     }
 }

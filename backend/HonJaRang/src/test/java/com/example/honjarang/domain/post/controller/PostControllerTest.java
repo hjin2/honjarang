@@ -2,6 +2,8 @@ package com.example.honjarang.domain.post.controller;
 
 
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostUpdateDto;
+import com.example.honjarang.domain.post.entity.Category;
 import com.example.honjarang.domain.post.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -13,8 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -109,5 +110,24 @@ public class PostControllerTest {
     }
 
 
+    @Test
+    @WithMockUser
+    @DisplayName("게시글 수정 성공")
+    void updatePost_Success() throws Exception {
 
+        // given
+        Long postId = 1L;
+        String title = "제목1";
+        String content = "content1";
+        Boolean isNotice = true;
+        Category category = Category.FREE;
+
+        PostUpdateDto postUpdateDto = new PostUpdateDto(postId, title, content, isNotice, category);
+
+        // when & then
+        mockMvc.perform(patch("/api/v1/posts/"+postId)
+                .contentType("application/json")
+                .content(new ObjectMapper().writeValueAsString(postUpdateDto)))
+                .andExpect(status().isOk());
+    }
 }

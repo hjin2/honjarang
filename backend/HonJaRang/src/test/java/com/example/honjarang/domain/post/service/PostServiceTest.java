@@ -2,11 +2,11 @@ package com.example.honjarang.domain.post.service;
 
 
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
 import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.user.entity.User;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.amazonaws.services.simpleemail.model.TlsPolicy.Optional;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -190,6 +191,70 @@ public class PostServiceTest {
         doThrow(new InvalidUserException("사용자가 다릅니다.")).when(postService).deletePost(postId, invalidUser);
         // when
         assertThrows(InvalidUserException.class, () -> postService.deletePost(postId, invalidUser));
+    }
+
+    @Test
+    @DisplayName("게시글 수정 성공")
+    void updatePost_Success() {
+
+        // given
+        User user = User.builder()
+                .email(TEST_EMAIL)
+                .password(TEST_PASSWORD)
+                .build();
+
+        Post post = Post.builder()
+                .title(TEST_TITLE)
+                .content(TEST_CONTENT)
+                .build();
+
+        String testTitle = "testtest";
+        String testContent = "contentcontent";
+
+        PostUpdateDto postUpdateDto = new PostUpdateDto(post.getId(), testTitle, testContent,
+                post.getIsNotice(), post.getCategory());
+
+        // when
+        post.update(postUpdateDto);
+
+        // then
+        assertThat(post.getId()).isEqualTo(postUpdateDto.getId());
+        assertThat(post.getTitle()).isEqualTo(postUpdateDto.getTitle());
+        assertThat(post.getContent()).isEqualTo(postUpdateDto.getContent());
+    }
+
+    @Test
+    @DisplayName("게시글 수정 실패 - 작성자가 아닐 경우")
+    void updatePost_DisMatchUserException() {
+
+        // given
+        User user = User.builder()
+                .email(TEST_EMAIL)
+                .password(TEST_PASSWORD)
+                .build();
+
+        Post post = Post.builder()
+                .title(TEST_TITLE)
+                .content(TEST_CONTENT)
+                .build();
+
+        User invalidUser = User.builder()
+                .email("invalid")
+                .password(TEST_PASSWORD)
+                .build();
+
+        String testTitle = "testtest";
+        String testContent = "contentcontent";
+
+        PostUpdateDto postUpdateDto = new PostUpdateDto(post.getId(), testTitle, testContent,
+                post.getIsNotice(), post.getCategory());
+        
+        doThrow(new InvalidUserException("작성자가 아닙니다.")).when(postService).
+                updatePost(post.getId(), postUpdateDto, invalidUser);
+
+        // when & 소
+        assertThrows(InvalidUserException.class, () -> postService.updatePost(post.getId(), postUpdateDto, invalidUser));
+
     }
 
 
