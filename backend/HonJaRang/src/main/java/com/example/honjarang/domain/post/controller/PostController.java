@@ -2,6 +2,7 @@ package com.example.honjarang.domain.post.controller;
 
 
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.service.PostService;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.security.CurrentUser;
@@ -26,6 +27,13 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Long> deletePost(@PathVariable long id, @CurrentUser User user) {
         postService.deletePost(id, user);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Long> updatePost(@PathVariable Long id,
+                                           @RequestBody PostUpdateDto postUpdateDto, @CurrentUser User user) {
+        postService.updatePost(id, postUpdateDto, user);
         return ResponseEntity.ok().build();
     }
 }

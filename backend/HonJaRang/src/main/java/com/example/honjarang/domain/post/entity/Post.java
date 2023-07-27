@@ -1,16 +1,19 @@
 package com.example.honjarang.domain.post.entity;
 
 import com.example.honjarang.domain.BaseTimeEntity;
+import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 @DynamicInsert
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 public class Post extends BaseTimeEntity {
@@ -53,6 +56,13 @@ public class Post extends BaseTimeEntity {
 
     public void increaseViews() {
         this.views++;
+    }
+
+    public void update(PostUpdateDto postUpdateDto) {
+        this.setTitle(postUpdateDto.getTitle());
+        this.setContent(postUpdateDto.getContent());
+        this.setIsNotice(postUpdateDto.getIsNotice());
+        this.setCategory(postUpdateDto.getCategory());
     }
 
 }
