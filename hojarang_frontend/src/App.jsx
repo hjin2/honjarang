@@ -15,6 +15,8 @@ import Board from './pages/Board/Board';
 import Chatting from './pages/Chatting/Chatting';
 import Map from './pages/Map/Map';
 import MyPage from './pages/MyPage/MyPage';
+import FindPassword from './pages/FindPassword/FindPassword';
+import ChangePassword from './pages/FindPassword/ChangePassword';
 import './styles/button.css'
 
 
@@ -33,6 +35,8 @@ function App() {
           <Route path="/board" element={<Board />}/>
           <Route path="/map" element={<Map />}/>
           <Route path="/mypage/:nickname" element={<MyPage />}/>
+          <Route path="/findpassword" element={<FindPassword/>}/>
+          <Route path="/findpassword/changepassword" element={<ChangePassword/>}></Route>
           <Route path="/*" element={<Notfound />}/>
         </Routes>
       </BrowserRouter>
