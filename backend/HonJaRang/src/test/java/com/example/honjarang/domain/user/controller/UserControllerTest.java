@@ -5,6 +5,7 @@ import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.*;
 import com.example.honjarang.domain.user.service.EmailService;
+import com.example.honjarang.domain.user.service.S3Uploader;
 import com.example.honjarang.domain.user.service.UserService;
 import com.example.honjarang.security.dto.TokenDto;
 import com.example.honjarang.security.service.TokenService;
@@ -56,6 +57,9 @@ class UserControllerTest {
 
     @MockBean
     private EmailService emailService;
+
+    @MockBean
+    private S3Uploader s3Uploader;
 
     private User user;
 

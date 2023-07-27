@@ -63,10 +63,19 @@ public class UserService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
-        user.changePassword(newPassword);
+        User loginedUser = userRepository.findByEmail(user.getEmail()).orElseThrow(()->new UserNotFoundException("존재하지 않는 사용자입니다."));
+        loginedUser.changePassword(passwordEncoder.encode(newPassword));
     }
 
+    @Transactional
     public void changeUserInfo(User user, String nickname, String address){
-        user.changeUserInfo(nickname, address);
+        User loginedUser = userRepository.findByEmail(user.getEmail()).orElseThrow(()->new UserNotFoundException("존재하지 않는 사용자입니다."));
+        loginedUser.changeUserInfo(nickname,address);
+    }
+
+    @Transactional
+    public void changeUserImage(User user, String profileImage){
+        User loginedUser = userRepository.findByEmail(user.getEmail()).orElseThrow(()->new UserNotFoundException("존재하지 않는 회원입니다."));
+        loginedUser.changeProfileImage(profileImage);
     }
 }
