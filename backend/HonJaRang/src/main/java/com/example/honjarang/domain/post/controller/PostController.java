@@ -2,6 +2,7 @@ package com.example.honjarang.domain.post.controller;
 
 
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.service.PostService;
 import com.example.honjarang.domain.user.entity.User;
@@ -10,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -36,4 +39,13 @@ public class PostController {
         postService.updatePost(id, postUpdateDto, user);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("")
+    public List<PostListDto> getPosts(@RequestParam(value = "page", defaultValue = "1") int page,
+                                      @RequestParam(value = "keyword", defaultValue = "") String keyword) {
+        return postService.getPostList(page, keyword);
+    }
+
+
+
 }
