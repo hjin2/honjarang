@@ -2,6 +2,7 @@ package com.example.honjarang.domain.post.service;
 
 
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
@@ -9,8 +10,11 @@ import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -54,5 +58,27 @@ public class PostService {
             throw new InvalidUserException("작성자만 수정할 수 있습니다.");
         }
         post.update(postUpdateDto);
+    }
+
+    @Transactional
+    public List<PostListDto> getPostList(int page, String keyword) {
+        Pageable pageable = PageRequest.of(page -1, 15);
+        return postRepository.findAllByTitleContainingIgnoreCaseOrderByIsNoticeDescIdDesc(keyword, pageable)
+                .stream()
+                .map(post -> toPostListDto(post))
+                .toList();
+    }
+
+    private PostListDto toPostListDto(Post post) {
+        return new PostListDto(
+                post.getId(),
+                post.getUser().getId(),
+                post.getTitle(),
+                post.getCategory(),
+                post.getContent(),
+                post.getViews(),
+                post.getIsNotice(),
+                post.getCreatedAt()
+        );
     }
 }
