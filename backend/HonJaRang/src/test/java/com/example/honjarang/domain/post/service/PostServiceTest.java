@@ -2,7 +2,9 @@ package com.example.honjarang.domain.post.service;
 
 
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
+import com.example.honjarang.domain.post.entity.Category;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
 import com.example.honjarang.domain.post.repository.PostRepository;
@@ -16,6 +18,9 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.test.context.support.WithMockUser;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -255,6 +260,24 @@ public class PostServiceTest {
         // when & 소
         assertThrows(InvalidUserException.class, () -> postService.updatePost(post.getId(), postUpdateDto, invalidUser));
 
+    }
+
+    @Test
+    @DisplayName("게시글 목록 조회 성공")
+    void getPostList_Success() {
+
+
+        // given
+        Integer testPage = 1;
+        String testKeyword = "kk";
+        PostListDto postListDto = new PostListDto(1L, 1L, "title",
+                Category.FREE, "content", 1, false, LocalDateTime.now());
+        List<PostListDto> postList = new ArrayList<>();
+        postList.add(postListDto);
+
+        when(postService.getPostList(testPage, testKeyword)).thenReturn(postList);
+        // when & then
+        assertThat(postService.getPostList(testPage, testKeyword)).isEqualTo((postList));
     }
 
 

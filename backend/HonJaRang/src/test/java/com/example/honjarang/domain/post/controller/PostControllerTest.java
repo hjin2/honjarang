@@ -2,6 +2,7 @@ package com.example.honjarang.domain.post.controller;
 
 
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Category;
 import com.example.honjarang.domain.post.service.PostService;
@@ -129,5 +130,16 @@ public class PostControllerTest {
                 .contentType("application/json")
                 .content(new ObjectMapper().writeValueAsString(postUpdateDto)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("게시글 목록 조회 성공")
+    void getPostList_Success() throws Exception {
+
+        // given
+
+        // when & then
+        mockMvc.perform(get("/api/v1/posts"))
+                        .andExpect(status().isOk());
     }
 }
