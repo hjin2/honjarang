@@ -72,8 +72,14 @@ public class User extends BaseTimeEntity {
         this.password = newPassword;
     }
 
-    public void changeUserInfo(String nickname, String address){
+    public void changeUserInfo(String nickname, String address, Double latitude, Double longitude){
         this.nickname = nickname;
         this.address = address;
+        this.latitude = latitude;
+        this.longitude=longitude;
+    }
+
+    public void changeProfileImage(String profileImage){
+        this.profileImage = profileImage;
     }
 }
