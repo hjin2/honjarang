@@ -1,9 +1,19 @@
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import { useState } from "react"
 
 export default function FindPassword() {
+    const input = useState({
+      id: ''
+    })
+
+    const address = useState('')
+
+
+    const id = input
 
     const movePage = useNavigate();
+    const email = id + '@' + address
 
     const email_code = () => {
         axios.post('http://localhost:8080/users/send-verification-code',
