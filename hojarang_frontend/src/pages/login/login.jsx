@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import store from '../../redux/store';
 import { loginAccount } from '../../redux/slice/loginSlice';
+
 
 
 
@@ -10,22 +11,24 @@ export default function Login() {
   
   // dispatch에 action 전달하면 동작 실시됨
   const dispatch = useDispatch();
+  const loginAccount = useSelector(state => state.login.loginAccount)
 
   return (
-    <div className="container flex flex-col items-center justify-center  mx-auto ">
+    <div className="container flex flex-col items-center justify-center mx-auto ">
       <form className="space-y-4 md:space-y-6" action="#">
-        <div>
-          <label htmlFor="email" className="block mb-2 ">이메일</label>
-          <input type="email" />
+        <div className="h-20">
+          <label htmlFor="email" className="block mb-2">이메일</label> 
+          <input type="email" className="border-gray3 rounded-lg block focus:outline-main2 focus:outline-2"/>
         </div>
         <div>
           <label htmlFor="password" className="block mb-2">비밀번호</label>
-          <input type="empassword"  />
+          <input type="password" className="border-gray3 rounded-lg block focus:outline-main2 focus:outline-2"/>
         </div>
       </form>
-      <button onClick={() => {dispatch(loginAccount)}} className="border w-32 h-10 rounded-lg bg-main1 text-white" >로그인</button>
-      
-      <div>
+      <div className="my-5">
+        <button onClick={() => {dispatch(loginAccount)}} className="border w-32 h-10 rounded-lg bg-main1 text-white " >로그인</button>
+      </div>
+      <div className="">
         <Link to='/findpassword'>비밀번호 찾기</Link> | <Link to='/signup'>회원가입</Link>
       </div>
       <div>
