@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -198,19 +199,15 @@ class UserServiceTest {
     @Test
     @DisplayName("회원정보 수정 성공")
     void changeUserInfo_Success() {
-        // given
-        User user = User.builder()
-                .nickname("테스트")
-                .address("경상북도 구미시")
-                .email("test@test.com")
-                .build();
-
-
+        // when
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
-        userService.changeUserInfo(user, "수정된 테스트","서울광역시");
+        userService.changeUserInfo(user, "수정된 테스트 닉네임","경상북도 구미시", 10.23445, 23.32423);
 
-        assertThat(user.getNickname()).isEqualTo("수정된 테스트");
-        assertThat(user.getAddress()).isEqualTo("서울광역시");
+        // then
+        assertThat(user.getNickname()).isEqualTo("수정된 테스트 닉네임");
+        assertThat(user.getAddress()).isEqualTo("경상북도 구미시");
+        assertThat(user.getLatitude()).isEqualTo(10.23445);
+        assertThat(user.getLongitude()).isEqualTo(23.32423);
     }
 
 
@@ -218,29 +215,19 @@ class UserServiceTest {
     @DisplayName("회원정보 수정 실패 - 사용자가 존재하지 않는 경우")
     void changeUserInfo_UserNotFoundException() {
         // given
-        User user = User.builder()
-                .nickname("테스트")
-                .address("경상북도 구미시")
-                .email("test@test.com")
-                .build();
+        given(userRepository.findByEmail("test@test.com")).willReturn(Optional.empty());
 
-        // when & then
-        assertThrows(UserNotFoundException.class, () -> userService.changeUserInfo(user,"새로운 닉네임","경상북도 구미시"));
+        // then
+        assertThrows(UserNotFoundException.class, () -> userService.changeUserInfo(user,"수정된 테스트 닉네임","경상북도 구미시",10.23445,23.32423));
     }
 
     @Test
-    @DisplayName("회원정보 이미지 변경 - 기존에 이미지가 없을 경우")
+    @DisplayName("회원정보 이미지 변경 성공 - 기존에 이미지가 없을 경우")
     void changeImage_Success() {
         // given
-        User user = User.builder()
-                .nickname("테스트")
-                .address("경상북도 구미시")
-                .email("test@test.com")
-                .build();
-
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // when
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
         userService.changeUserImage(user,"test.jpg");
 
         // then
@@ -249,18 +236,12 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("회원정보 이미지 변경 - 기존에 이미지가 있을 경우")
+    @DisplayName("회원정보 이미지 변경 성공 - 기존에 이미지가 있을 경우")
     void changeImage_exist() {
         // given
-        User user = User.builder()
-                .nickname("테스트")
-                .address("경상북도 구미시")
-                .email("test@test.com")
-                .build();
-
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // when
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
         userService.changeUserImage(user,"test.jpg");
         userService.changeUserImage(user,"changetest.jpg");
 
@@ -273,11 +254,7 @@ class UserServiceTest {
     @DisplayName("회원정보 이미지 변경 실패 - 사용자가 존재하지 않는 경우")
     void changeImage_UserNotFoundException() {
         // given
-        User user = User.builder()
-                .nickname("테스트")
-                .address("경상북도 구미시")
-                .email("test@test.com")
-                .build();
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.empty());
 
         // when & then
         assertThrows(UserNotFoundException.class, () -> userService.changeUserImage(user,"test.jpg"));

@@ -68,9 +68,9 @@ public class UserService {
     }
 
     @Transactional
-    public void changeUserInfo(User user, String nickname, String address){
+    public void changeUserInfo(User user, String nickname, String address, Double latitude, Double longitude){
         User loginedUser = userRepository.findByEmail(user.getEmail()).orElseThrow(()->new UserNotFoundException("존재하지 않는 사용자입니다."));
-        loginedUser.changeUserInfo(nickname,address);
+        loginedUser.changeUserInfo(nickname,address,latitude,longitude);
     }
 
     @Transactional

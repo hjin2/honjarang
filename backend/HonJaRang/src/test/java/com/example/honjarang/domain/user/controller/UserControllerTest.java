@@ -322,7 +322,7 @@ class UserControllerTest {
     @DisplayName("회원정보 수정 성공")
     void changeUserInfo_Success() throws Exception {
         // given
-        UserInfoUpdateDto userInfoUpdateDto = new UserInfoUpdateDto("테스트", "서울특별시 강남구");
+        UserInfoUpdateDto userInfoUpdateDto = new UserInfoUpdateDto("테스트", "서울특별시 강남구",50.1234, 60.1234);
 
         // when & then
         mockMvc.perform(put("/api/v1/users/users")
@@ -334,7 +334,9 @@ class UserControllerTest {
                         preprocessResponse(prettyPrint()),
                         requestFields(
                                 fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
-                                fieldWithPath("address").type(JsonFieldType.STRING).description("주소")
+                                fieldWithPath("address").type(JsonFieldType.STRING).description("주소"),
+                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
+                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도")
                         )
                 ));
 }
