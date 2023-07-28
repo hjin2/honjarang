@@ -1,58 +1,52 @@
 import axios from 'axios'
 import { useState } from 'react'
+import Verify_check from './verify_input'
 
 
 function Email_verify() {
-  const [inputs, setInputs] = useState({
-    id: '',
-    nickname: ''
-  })
-
+  const [id, setInput] = useState('')
   const [address, setAddress] = useState('')
+  const [emailMsg, setemailMsg] = useState('')
+  const [emailCheck, setemailCheck] = useState(false)
 
   const onSelect = (event) => {
     setAddress(event.target.value)
   }
 
-  const {id, nickname} = inputs
-
   const onChange = (event) => {
-    const {value, name} = event.target
-    setInputs({...inputs,
-    [name]: value})
+    setInput(event.target.value)
   }
   
   const email = id + '@' + address
-  
+
   const email_code = () => {
-    axios.post('http://localhost:8080/users/send-verification-code',
+    if (address === '' || address === 'default') {
+      setemailMsg('이메일을 선택해주세요')
+    }
+    else {
+      axios.post('http://localhost:8080/users/send-verification-code',
     {
       email: email
     })
     .then(function (response) {
       console.log(response)
+      setemailMsg('')
+      setemailCheck(true)
+      console.log(emailCheck)
     })
+    .catch(function (error) {
+      console.log(error)
+      console.log(email)
+      setemailCheck(true)
+      alert('인증번호를 전송했습니다!')
+      setemailMsg('사용할 수 없는 이메일입니다.')
+
+    })
+    }
+    
   }
   
-  let nicknameCheck = /^[A-Za-z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{2,15}$/
-  const nickname_check = () => {
-    if (nicknameCheck.test(nickname)) {
-  axios.get('http://localhost:8080/users/check-nickname',
-  {
-    nickname : nickname
-  })
-  .then(function (response) {
-    console.log(response)
-  })
-  .catch(function (error) {
-    console.log(error)
-    console.log(nickname)
-  })
- }
-else {
-  console.log('닉네임 오류')
-}}
-  return (
+return (
     <div>
       <div>
             이메일
@@ -69,20 +63,12 @@ else {
             <button className='border-solid border border-black rounded bg-gray2 ml-2'
             onClick = {email_code}
             >인증번호 전송</button>
-          </div>
-          <div>
-            인증번호 입력
             <br />
-            <input type="number" />
-            <button className='border-solid border border-black rounded bg-gray2 ml-2'>인증번호 확인</button>
+            <span>{emailMsg} {emailCheck}</span>
+            {emailCheck && <Verify_check/>}
           </div>
-          <div>
-            닉네임
-            <br />
-            <input type="text" name="nickname" onChange={onChange} value={nickname}/>
-            <button className='border-solid border border-black rounded bg-gray2 ml-2'
-            onClick = { nickname_check }>중복 확인</button>
-          </div>
+          
+          
     </div>
   )
 

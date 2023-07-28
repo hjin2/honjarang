@@ -1,6 +1,7 @@
+import Post from "./Post"
+import { Link } from "react-router-dom"
 
-function Address() {
-  
+function Address_check() {
 
   return (
     <div>
@@ -8,7 +9,8 @@ function Address() {
             주소
             <br />
             <input type="text" />
-            <button className='border-solid border border-black rounded bg-gray2 ml-2'>주소 검색</button>
+            <button className='border-solid border border-black rounded bg-gray2 ml-2'>
+              <Link to='/post' target="_blank" element={<Post />}>주소 검색</Link></button>
           </div>
           <div>
             상세주소
@@ -20,4 +22,4 @@ function Address() {
 }
 
 
-export default Address
+export default Address_check
