@@ -17,7 +17,6 @@ import Map from './pages/Map/Map';
 import MyPage from './pages/MyPage/MyPage';
 import FindPassword from './pages/FindPassword/FindPassword';
 import ChangePassword from './pages/FindPassword/ChangePassword';
-import './styles/button.css'
 
 
 function App() {

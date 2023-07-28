@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components{
+    .main1-button{
+        @apply border h-10 rounded-lg text-white bg-main1
+    }
+    .main2-button{
+        @apply border h-10 rounded-lg text-white bg-main2
+    }
+    
+    .main5-button{
+        @apply border h-10 rounded-lg text-white bg-main5
+    }
+    
+}

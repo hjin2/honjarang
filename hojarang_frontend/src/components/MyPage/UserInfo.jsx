@@ -2,9 +2,9 @@ import { useState } from 'react'
 import EditModal from './EditModal';
 
 export default function UserInfo(props) {
-  const [modatlState, setModalState] = useState(false);
+  const [modalState, setModalState] = useState(false);
   const onModalOpen = () => {
-    setModalState(!modatlState)
+    setModalState(!modalState)
   }
 
   return (
@@ -18,8 +18,8 @@ export default function UserInfo(props) {
             <button type="button" className="main1-button w-32" onClick={onModalOpen}>회원정보 수정</button>
             <button type="button" className="main5-button w-32">회원 탈퇴</button>
           </div>
-          {modatlState && (
-            <EditModal modalState = {modatlState} setModalState = {setModalState}/>
+          {modalState && (
+            <EditModal modalState = {modalState} setModalState = {setModalState}/>
           )}
         </div>
       </div>
