@@ -13,10 +13,7 @@ export default function ChargeModal({ modalState, setModalState }) {
             <div>포인트 결제</div>
             <div>포인트 환급</div>
           </div>
-          <div>5000p</div>
-          <div>10000p</div>
-          <div>30000p</div>
-          <div>50000p</div>
+    
           <hr />
           <div>현재 포인트 결제할 포인트 결제 후 포인트</div>
           <div>결제 수단 선택</div>
