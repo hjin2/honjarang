@@ -2,6 +2,7 @@ package com.example.honjarang.domain.post.controller;
 
 
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Category;
 import com.example.honjarang.domain.post.service.PostService;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.BDDAssumptions.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -130,4 +132,33 @@ public class PostControllerTest {
                 .content(new ObjectMapper().writeValueAsString(postUpdateDto)))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("게시글 목록 조회 성공")
+    void getPostList_Success() throws Exception {
+
+        // given
+
+        // when & then
+        mockMvc.perform(get("/api/v1/posts"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("게시글 조회 성공")
+    void getPost_Success() throws Exception {
+
+        //given
+        Long postId = 1L;
+
+        // when & then
+        mockMvc.perform(get("/api/v1/posts")
+                .contentType("application/json")
+                .content(new ObjectMapper().writeValueAsString(postId)))
+                .andExpect(status().isOk());
+
+    }
+
+
+
 }

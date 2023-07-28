@@ -1,16 +1,23 @@
 package com.example.honjarang.domain.post.service;
 
 
+import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostDto;
+import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
 import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.user.entity.User;
-import jakarta.transaction.Transactional;
+import com.example.honjarang.security.CurrentUser;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -54,5 +61,52 @@ public class PostService {
             throw new InvalidUserException("작성자만 수정할 수 있습니다.");
         }
         post.update(postUpdateDto);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostListDto> getPostList(int page, String keyword) {
+
+        Pageable pageable = PageRequest.of(page -1, 15);
+        return postRepository.findAllByTitleContainingIgnoreCaseOrderByIsNoticeDescIdDesc(keyword, pageable)
+                .stream()
+                .map(post -> toPostListDto(post))
+                .toList();
+    }
+
+    @Transactional
+    public PostDto getPost(long id, @CurrentUser User user) {
+
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
+        postRepository.increaseViews(id);
+        post.increaseViews();
+        return toPostDto(post);
+
+    }
+
+    private PostListDto toPostListDto(Post post) {
+        return new PostListDto(
+                post.getId(),
+                post.getUser().getId(),
+                post.getTitle(),
+                post.getCategory(),
+                post.getContent(),
+                post.getViews(),
+                post.getIsNotice(),
+                DateTimeUtils.formatLocalDateTime(post.getCreatedAt())
+        );
+    }
+
+    private PostDto toPostDto(Post post) {
+        return new PostDto(
+                post.getId(),
+                post.getUser().getId(),
+                post.getTitle(),
+                post.getCategory(),
+                post.getContent(),
+                post.getViews(),
+                post.getIsNotice(),
+                DateTimeUtils.formatLocalDateTime(post.getCreatedAt()),
+                DateTimeUtils.formatLocalDateTime(post.getUpdatedAt())
+        );
     }
 }
