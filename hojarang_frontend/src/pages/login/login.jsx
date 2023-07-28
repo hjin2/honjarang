@@ -25,10 +25,8 @@ export default function Login() {
           <input type="password" className="border-gray3 rounded-lg block focus:outline-main2 focus:outline-2"/>
         </div>
       </form>
-      <div className="my-5">
-        <button onClick={() => {dispatch(loginAccount)}} className="border w-32 h-10 rounded-lg bg-main1 text-white " >로그인</button>
-      </div>
-      <div className="">
+      <button onClick={() => {dispatch(loginAccount)}} className="w-32 main1-button" >로그인</button>
+      <div>
         <Link to='/findpassword'>비밀번호 찾기</Link> | <Link to='/signup'>회원가입</Link>
       </div>
       <div>

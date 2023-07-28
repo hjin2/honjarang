@@ -3,7 +3,7 @@ import { NavLink, Link } from 'react-router-dom';
 export default function Header() {
   return (
     <div className='Header'>
-      <nav className="px-12 py-6">
+      <nav className="py-6">
         <div className="flex items-center justify-between">
           <Link to="/" className="text-2xl text-main2 hover:text-main1">혼자랑</Link>
           <div className="flex space-x-12">

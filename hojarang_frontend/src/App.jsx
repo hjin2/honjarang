@@ -21,23 +21,25 @@ import ChangePassword from './pages/FindPassword/ChangePassword';
 
 function App() {
   return (
-    <div className='App'>
+    <div className='app w-5/6 mx-auto'>
       <BrowserRouter>
         <Header/>
-        <Routes>
-          <Route exact path="/" element={<Login />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />}/>
-          <Route path="/webrtc" element={<WebRTC />}/>
-          <Route path="/chatting" element={<Chatting />}/>
-          <Route path="/market" element={<Market />}/>
-          <Route path="/board" element={<Board />}/>
-          <Route path="/map" element={<Map />}/>
-          <Route path="/mypage/:nickname" element={<MyPage />}/>
-          <Route path="/findpassword" element={<FindPassword/>}/>
-          <Route path="/findpassword/changepassword" element={<ChangePassword/>}></Route>
-          <Route path="/*" element={<Notfound />}/>
-        </Routes>
+        <div>
+          <Routes>
+            <Route exact path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />}/>
+            <Route path="/webrtc" element={<WebRTC />}/>
+            <Route path="/chatting" element={<Chatting />}/>
+            <Route path="/market" element={<Market />}/>
+            <Route path="/board" element={<Board />}/>
+            <Route path="/map" element={<Map />}/>
+            <Route path="/mypage/:nickname" element={<MyPage />}/>
+            <Route path="/findpassword" element={<FindPassword/>}/>
+            <Route path="/findpassword/changepassword" element={<ChangePassword/>}></Route>
+            <Route path="/*" element={<Notfound />}/>
+          </Routes>
+        </div>
       </BrowserRouter>
     </div>
   );
