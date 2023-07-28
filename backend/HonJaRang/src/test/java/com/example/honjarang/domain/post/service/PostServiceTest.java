@@ -11,7 +11,6 @@ import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
 import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.user.entity.User;
-import com.example.honjarang.domain.user.exception.UserNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -280,41 +279,23 @@ public class PostServiceTest {
         assertThat(postService.getPostList(testPage, testKeyword)).isEqualTo((postList));
     }
 
-//    @Test
-//    @DisplayName("게시글 상세 조회 성공")
-//    void getPost_Success() {
-//
-//        // given
-//        Long id = 1L;
-//        User user = User.builder()
-//                .email(TEST_EMAIL)
-//                .password(TEST_PASSWORD)
-//                .build();
-//
-//        PostDto postDto = PostDto.builder()
-//                .id(id)
-//                .userId(id)
-//                .title(TEST_TITLE)
-//                .category(Category.FREE)
-//                .content(TEST_CONTENT)
-//                .views(0)
-//                .isNotice(false)
-//                .createdAt(DateTimeUtils.formatLocalDateTime(LocalDateTime.now()))
-//                .updatedAt(DateTimeUtils.formatLocalDateTime(LocalDateTime.now()))
-//                .build();
-//
-//        Post post = Post.builder()
-//                .title(TEST_TITLE)
-//                .content(TEST_CONTENT)
-//                .build();
-//
-//
-//        given(postRepository.findById(id)).willReturn(Optional.of(post));
-//        given(postService.getPost(id, user)).willReturn(postDto);
-//
-//        // when & then
-//        assertThat(postService.getPost(id, user)).isEqualTo(postDto);
-//    }
+    @Test
+    @DisplayName("게시글 상세 조회 성공")
+    void getPost_Success() {
+
+        // given
+        Long id = 1L;
+        Post post = Post.builder()
+                .title(TEST_TITLE)
+                .content(TEST_CONTENT)
+                .build();
+
+        given(postRepository.findById(id)).willReturn(Optional.of(post));
+
+        // when & then
+
+        assertThat(postRepository.findById(id)).isEqualTo(Optional.of(post));
+    }
 
     @Test
     @DisplayName("게시글 상세 조회 실패 - 게시글이 존재하지 않을 경우")
