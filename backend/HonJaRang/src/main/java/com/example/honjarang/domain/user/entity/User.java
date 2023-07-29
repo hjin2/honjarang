@@ -11,7 +11,6 @@ import org.hibernate.annotations.DynamicInsert;
 
 @DynamicInsert
 @Getter
-@Setter
 @NoArgsConstructor
 @Entity
 public class User extends BaseTimeEntity {
@@ -54,18 +53,15 @@ public class User extends BaseTimeEntity {
     private Boolean isDeleted;
 
     @Builder
-    public User(String email, String password, String nickname, String address, Double latitude, Double longitude, Role role) {
+    public User(String email, String password, String nickname, Integer point, String address, Double latitude, Double longitude, Role role) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.point = point;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
         this.role = role;
-    }
-
-    public void setIdForTest(Long id) {
-        this.id = id;
     }
 
     public void changePassword(String newPassword){
@@ -81,5 +77,17 @@ public class User extends BaseTimeEntity {
 
     public void changeProfileImage(String profileImage){
         this.profileImage = profileImage;
+    }
+
+    public void addPoint(Integer point) {
+        this.point += point;
+    }
+
+    public void subtractPoint(Integer point) {
+        this.point -= point;
+    }
+
+    public void setIdForTest(Long id) {
+        this.id = id;
     }
 }

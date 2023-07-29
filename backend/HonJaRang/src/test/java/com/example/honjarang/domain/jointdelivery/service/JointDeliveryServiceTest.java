@@ -6,14 +6,15 @@ import com.example.honjarang.domain.jointdelivery.dto.*;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
 import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryCart;
 import com.example.honjarang.domain.jointdelivery.entity.Store;
+import com.example.honjarang.domain.jointdelivery.exception.JointDeliveryCartAccessException;
+import com.example.honjarang.domain.jointdelivery.exception.JointDeliveryExpiredException;
 import com.example.honjarang.domain.jointdelivery.exception.JointDeliveryNotFoundException;
 import com.example.honjarang.domain.jointdelivery.exception.MenuNotFoundException;
-import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryCartRepository;
-import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryRepository;
-import com.example.honjarang.domain.jointdelivery.repository.MenuRepository;
-import com.example.honjarang.domain.jointdelivery.repository.StoreRepository;
+import com.example.honjarang.domain.jointdelivery.repository.*;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
+import com.example.honjarang.domain.user.exception.InsufficientPointsException;
+import com.example.honjarang.domain.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,7 +56,11 @@ class JointDeliveryServiceTest {
     @Mock
     private JointDeliveryCartRepository jointDeliveryCartRepository;
     @Mock
+    private JointDeliveryApplicantRepository jointDeliveryApplicantRepository;
+    @Mock
     private StoreRepository storeRepository;
+    @Mock
+    UserRepository userRepository;
     @Mock
     private RestTemplate restTemplate;
     @Mock
@@ -72,9 +77,11 @@ class JointDeliveryServiceTest {
                 .email("test@test.com")
                 .password("test1234")
                 .nickname("테스트")
+                .point(10000)
                 .address("서울특별시 강남구")
                 .latitude(37.123456)
                 .longitude(127.123456)
+                .point(10000)
                 .role(Role.ROLE_USER)
                 .build();
         user.setIdForTest(1L);
@@ -90,7 +97,7 @@ class JointDeliveryServiceTest {
                 .content("테스트 공동배달")
                 .deliveryCharge(3000)
                 .targetMinPrice(10000)
-                .deadline(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"))
+                .deadline(DateTimeUtils.parseLocalDateTime("2030-01-01 00:00:00"))
                 .store(store)
                 .user(user)
                 .build();
@@ -107,6 +114,7 @@ class JointDeliveryServiceTest {
                 .jointDelivery(jointDelivery)
                 .menuId("60f0b0b7e0b9a72e7c7b3b3a")
                 .quantity(1)
+                .user(user)
                 .build();
         jointDeliveryCart.setIdForTest(1L);
     }
@@ -208,7 +216,7 @@ class JointDeliveryServiceTest {
 
     @Test
     @DisplayName("공동배달 생성 성공")
-    void createJointDelivery() throws JsonProcessingException {
+    void createJointDelivery_Success() throws JsonProcessingException {
         // given
         JointDeliveryCreateDto jointDeliveryCreateDto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, "2000-01-01 00:00:00");
         String responseBody = """
@@ -239,12 +247,26 @@ class JointDeliveryServiceTest {
         given(restTemplate.getForEntity(any(String.class), eq(String.class))).willReturn(responseEntity);
         given(objectMapper.readTree(responseEntity.getBody())).willReturn(jsonNode);
         given(objectMapper.readTree(not(eq(responseEntity.getBody())))).willReturn(jsonNode1);
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
 
         // when
         jointDeliveryService.createJointDelivery(jointDeliveryCreateDto, user);
 
         // then
     }
+
+    @Test
+    @DisplayName("공동배달 생성 실패 - 보증금이 부족한 경우")
+    public void createJointDelivery_InsufficientPointException() {
+        // given
+        JointDeliveryCreateDto jointDeliveryCreateDto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, "2000-01-01 00:00:00");
+        user.subtractPoint(10000);
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+
+        // when & then
+        assertThrows(InsufficientPointsException.class, () -> jointDeliveryService.createJointDelivery(jointDeliveryCreateDto, user));
+    }
+
 
     @Test
     @DisplayName("공동배달 상세조회 성공")
@@ -264,7 +286,7 @@ class JointDeliveryServiceTest {
         assertThat(jointDeliveryDto.getDeliveryCharge()).isEqualTo(3000);
         assertThat(jointDeliveryDto.getCurrentTotalPrice()).isEqualTo(10000);
         assertThat(jointDeliveryDto.getTargetMinPrice()).isEqualTo(10000);
-        assertThat(jointDeliveryDto.getDeadline()).isEqualTo("2000-01-01 00:00:00");
+        assertThat(jointDeliveryDto.getDeadline()).isEqualTo("2030-01-01 00:00:00");
         assertThat(jointDeliveryDto.getCreatedAt()).isEqualTo("2000-01-01 00:00:00");
         assertThat(jointDeliveryDto.getStoreId()).isEqualTo(1L);
         assertThat(jointDeliveryDto.getStoreName()).isEqualTo("테스트 가게");
@@ -335,5 +357,171 @@ class JointDeliveryServiceTest {
 
         // when & then
         assertThrows(MenuNotFoundException.class, () -> jointDeliveryService.getJointDeliveryList(1, 10));
+    }
+
+    @Test
+    @DisplayName("공동배달 모집 취소 성공")
+    void cancelJointDelivery_Success() {
+        // given
+        given(jointDeliveryRepository.findById(1L)).willReturn(Optional.of(jointDelivery));
+        given(jointDeliveryCartRepository.findAllByJointDeliveryId(1L)).willReturn(List.of(jointDeliveryCart));
+        given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+
+        // when
+        jointDeliveryService.cancelJointDelivery(1L, user);
+
+        // then
+    }
+
+    @Test
+    @DisplayName("공동배달 모집 취소 실패 - 공동배달을 찾을 수 없는 경우")
+    void cancelJointDelivery_JointDeliveryNotFoundException() {
+        // given
+        given(jointDeliveryRepository.findById(1L)).willReturn(Optional.empty());
+
+        // when & then
+        assertThrows(JointDeliveryNotFoundException.class, () -> jointDeliveryService.cancelJointDelivery(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 목록 조회 성공")
+    void getJointDeliveryCartList_Success() {
+        // given
+        List<JointDeliveryCart> jointDeliveryCartList = List.of(jointDeliveryCart);
+        given(jointDeliveryRepository.findById(1L)).willReturn(Optional.of(jointDelivery));
+        given(jointDeliveryCartRepository.findAllByJointDeliveryId(1L)).willReturn(jointDeliveryCartList);
+        given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
+
+        // when
+        List<JointDeliveryCartListDto> jointDeliveryCartListDtoList = jointDeliveryService.getJointDeliveryCartList(1L, user);
+
+        // then
+        assertThat(jointDeliveryCartListDtoList).isNotNull();
+        assertThat(jointDeliveryCartListDtoList.size()).isEqualTo(1);
+        assertThat(jointDeliveryCartListDtoList.get(0).getId()).isEqualTo(1L);
+        assertThat(jointDeliveryCartListDtoList.get(0).getMenuId()).isEqualTo("60f0b0b7e0b9a72e7c7b3b3a");
+        assertThat(jointDeliveryCartListDtoList.get(0).getMenuName()).isEqualTo("테스트 메뉴");
+        assertThat(jointDeliveryCartListDtoList.get(0).getMenuPrice()).isEqualTo(10000);
+        assertThat(jointDeliveryCartListDtoList.get(0).getMenuImage()).isEqualTo("test.jpg");
+        assertThat(jointDeliveryCartListDtoList.get(0).getQuantity()).isEqualTo(1);
+        assertThat(jointDeliveryCartListDtoList.get(0).getUserId()).isEqualTo(1L);
+        assertThat(jointDeliveryCartListDtoList.get(0).getUserNickname()).isEqualTo("테스트");
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 목록 조회 실패 - 공동배달을 찾을 수 없는 경우")
+    void getJointDeliveryCartList_JointDeliveryNotFoundException() {
+        // given
+        given(jointDeliveryRepository.findById(1L)).willReturn(Optional.empty());
+
+        // when & then
+        assertThrows(JointDeliveryNotFoundException.class, () -> jointDeliveryService.getJointDeliveryCartList(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 목록 조회 실패 - 접근 권한이 없는 경우")
+    void getJointDeliveryCartList_JointDeliveryCartAccessException() {
+        // given
+        User userForTest = User.builder().build();
+        userForTest.setIdForTest(2L);
+        jointDelivery.setUserForTest(userForTest);
+
+        given(jointDeliveryRepository.findById(1L)).willReturn(Optional.of(jointDelivery));
+        given(jointDeliveryApplicantRepository.existsByJointDeliveryIdAndUserId(1L, 1L)).willReturn(false);
+
+        // when & then
+        assertThrows(JointDeliveryCartAccessException.class, () -> jointDeliveryService.getJointDeliveryCartList(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 추가 성공")
+    void addJointDeliveryCart_Success() {
+        // given
+        JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCreateDto(1L, "60f0b0b7e0b9a72e7c7b3b3a", 1);
+
+        given(jointDeliveryRepository.findById(1L)).willReturn(Optional.of(jointDelivery));
+        given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+
+        // when
+        jointDeliveryService.addJointDeliveryCart(jointDeliveryCartCreateDto, user);
+
+        // then
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 추가 실패 - 공동배달을 찾을 수 없는 경우")
+    void addJointDeliveryCart_JointDeliveryNotFoundException() {
+        // given
+        JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCreateDto(1L, "60f0b0b7e0b9a72e7c7b3b3a", 1);
+
+        given(jointDeliveryRepository.findById(1L)).willReturn(Optional.empty());
+
+        // when & then
+        assertThrows(JointDeliveryNotFoundException.class, () -> jointDeliveryService.addJointDeliveryCart(jointDeliveryCartCreateDto, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 추가 실패 - 공동배달이 마감된 경우")
+    void addJointDeliveryCart_JointDeliveryExpiredException() {
+        // given
+        JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCreateDto(1L, "60f0b0b7e0b9a72e7c7b3b3a", 1);
+        jointDelivery.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
+
+        given(jointDeliveryRepository.findById(1L)).willReturn(Optional.of(jointDelivery));
+
+        // when & then
+        assertThrows(JointDeliveryExpiredException.class, () -> jointDeliveryService.addJointDeliveryCart(jointDeliveryCartCreateDto, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 추가 실패 - 포인트가 부족한 경우")
+    void addJointDeliveryCart_InsufficientPointsException() {
+        // given
+        JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCreateDto(1L, "60f0b0b7e0b9a72e7c7b3b3a", 1);
+        user.subtractPoint(10000);
+
+        given(jointDeliveryRepository.findById(1L)).willReturn(Optional.of(jointDelivery));
+        given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+
+        // when & then
+        assertThrows(InsufficientPointsException.class, () -> jointDeliveryService.addJointDeliveryCart(jointDeliveryCartCreateDto, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 삭제 성공")
+    void removeJointDeliveryCart_Success() {
+        // given
+        given(jointDeliveryCartRepository.findById(1L)).willReturn(Optional.of(jointDeliveryCart));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
+
+        // when
+        jointDeliveryService.removeJointDeliveryCart(1L, user);
+
+        // then
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 삭제 실패 - 공동배달을 찾을 수 없는 경우")
+    void removeJointDeliveryCart_JointDeliveryNotFoundException() {
+        // given
+        given(jointDeliveryCartRepository.findById(1L)).willReturn(Optional.empty());
+
+        // when & then
+        assertThrows(JointDeliveryNotFoundException.class, () -> jointDeliveryService.removeJointDeliveryCart(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 삭제 실패 - 공동배달이 마감된 경우")
+    void removeJointDeliveryCart_JointDeliveryExpiredException() {
+        // given
+        jointDelivery.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
+        given(jointDeliveryCartRepository.findById(1L)).willReturn(Optional.of(jointDeliveryCart));
+
+        // when & then
+        assertThrows(JointDeliveryExpiredException.class, () -> jointDeliveryService.removeJointDeliveryCart(1L, user));
     }
 }

@@ -27,7 +27,7 @@ public class UserControllerAdvice {
     }
 
     // 403 Forbidden
-    @ExceptionHandler({EmailNotVerifiedException.class})
+    @ExceptionHandler({EmailNotVerifiedException.class, InsufficientPointsException.class})
     public ResponseEntity<Void> handleForbiddenException(RuntimeException e) {
         return ResponseEntity.status(403).build();
     }
