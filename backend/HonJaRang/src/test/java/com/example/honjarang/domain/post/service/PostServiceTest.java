@@ -1,6 +1,7 @@
 package com.example.honjarang.domain.post.service;
 
 
+import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
@@ -271,7 +272,7 @@ public class PostServiceTest {
         Integer testPage = 1;
         String testKeyword = "kk";
         PostListDto postListDto = new PostListDto(1L, 1L, "title",
-                Category.FREE, "content", 1, false, LocalDateTime.now());
+                Category.FREE, "content", 1, false, DateTimeUtils.formatLocalDateTime(LocalDateTime.now()));
         List<PostListDto> postList = new ArrayList<>();
         postList.add(postListDto);
 
