@@ -69,4 +69,8 @@ public class JointDelivery extends BaseTimeEntity {
     public void setUserForTest(User user) {
         this.user = user;
     }
+
+    public void setCanceledForTest(Boolean isCanceled) {
+        this.isCanceled = isCanceled;
+    }
 }

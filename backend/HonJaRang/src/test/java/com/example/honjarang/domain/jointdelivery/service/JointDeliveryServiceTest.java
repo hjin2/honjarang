@@ -4,12 +4,10 @@ import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.jointdelivery.document.Menu;
 import com.example.honjarang.domain.jointdelivery.dto.*;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
+import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryApplicant;
 import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryCart;
 import com.example.honjarang.domain.jointdelivery.entity.Store;
-import com.example.honjarang.domain.jointdelivery.exception.JointDeliveryCartAccessException;
-import com.example.honjarang.domain.jointdelivery.exception.JointDeliveryExpiredException;
-import com.example.honjarang.domain.jointdelivery.exception.JointDeliveryNotFoundException;
-import com.example.honjarang.domain.jointdelivery.exception.MenuNotFoundException;
+import com.example.honjarang.domain.jointdelivery.exception.*;
 import com.example.honjarang.domain.jointdelivery.repository.*;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
@@ -70,6 +68,7 @@ class JointDeliveryServiceTest {
     private Menu menu;
     private JointDelivery jointDelivery;
     private JointDeliveryCart jointDeliveryCart;
+    private JointDeliveryApplicant jointDeliveryApplicant;
 
     @BeforeEach
     void setUp() {
@@ -103,6 +102,7 @@ class JointDeliveryServiceTest {
                 .build();
         jointDelivery.setIdForTest(1L);
         jointDelivery.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
+        jointDelivery.setCanceledForTest(false);
         menu = Menu.builder()
                 .name("테스트 메뉴")
                 .price(10000)
@@ -117,6 +117,12 @@ class JointDeliveryServiceTest {
                 .user(user)
                 .build();
         jointDeliveryCart.setIdForTest(1L);
+        jointDeliveryApplicant = JointDeliveryApplicant.builder()
+                .jointDelivery(jointDelivery)
+                .user(user)
+                .isReceived(false)
+                .build();
+        jointDeliveryApplicant.setIdForTest(1L);
     }
 
     @Test
@@ -324,7 +330,7 @@ class JointDeliveryServiceTest {
         Page<JointDelivery> jointDeliveryPage = new PageImpl<>(List.of(jointDelivery));
         List<JointDeliveryCart> jointDeliveryCartList = List.of(jointDeliveryCart);
 
-        given(jointDeliveryRepository.findAllByDeadlineAfter(any(LocalDateTime.class), any(Pageable.class))).willReturn(jointDeliveryPage);
+        given(jointDeliveryRepository.findAllByDeadlineAfterAndIsCanceledFalse(any(LocalDateTime.class), any(Pageable.class))).willReturn(jointDeliveryPage);
         given(jointDeliveryCartRepository.findAllByJointDeliveryId(1L)).willReturn(jointDeliveryCartList);
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
 
@@ -351,7 +357,7 @@ class JointDeliveryServiceTest {
         Page<JointDelivery> jointDeliveryPage = new PageImpl<>(List.of(jointDelivery));
         List<JointDeliveryCart> jointDeliveryCartList = List.of(jointDeliveryCart);
 
-        given(jointDeliveryRepository.findAllByDeadlineAfter(any(LocalDateTime.class), any(Pageable.class))).willReturn(jointDeliveryPage);
+        given(jointDeliveryRepository.findAllByDeadlineAfterAndIsCanceledFalse(any(LocalDateTime.class), any(Pageable.class))).willReturn(jointDeliveryPage);
         given(jointDeliveryCartRepository.findAllByJointDeliveryId(1L)).willReturn(jointDeliveryCartList);
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.empty());
 
@@ -382,6 +388,31 @@ class JointDeliveryServiceTest {
 
         // when & then
         assertThrows(JointDeliveryNotFoundException.class, () -> jointDeliveryService.cancelJointDelivery(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 모집 취소 실패 - 접근 권한이 없는 경우")
+    void cancelJointDelivery_UnauthorizedJointDeliveryAccessException() {
+        // given
+        User userForTest = User.builder().build();
+        userForTest.setIdForTest(2L);
+        jointDelivery.setUserForTest(userForTest);
+
+        given(jointDeliveryRepository.findById(1L)).willReturn(Optional.of(jointDelivery));
+
+        // when & then
+        assertThrows(UnauthorizedJointDeliveryAccessException.class, () -> jointDeliveryService.cancelJointDelivery(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 모집 취소 실패 - 공동배달이 취소된 경우")
+    void cancelJointDelivery_JointDeliveryCanceledException() {
+        // given
+        jointDelivery.cancel();
+        given(jointDeliveryRepository.findById(1L)).willReturn(Optional.of(jointDelivery));
+
+        // when & then
+        assertThrows(JointDeliveryCanceledException.class, () -> jointDeliveryService.cancelJointDelivery(1L, user));
     }
 
     @Test
@@ -476,11 +507,27 @@ class JointDeliveryServiceTest {
     }
 
     @Test
+    @DisplayName("공동배달 장바구니 추가 실패 - 공동배달이 취소된 경우")
+    void addJointDeliveryCart_JointDeliveryCanceledException() {
+        // given
+        JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCreateDto(1L, "60f0b0b7e0b9a72e7c7b3b3a", 1);
+        jointDelivery.cancel();
+
+        given(jointDeliveryRepository.findById(1L)).willReturn(Optional.of(jointDelivery));
+
+        // when & then
+        assertThrows(JointDeliveryCanceledException.class, () -> jointDeliveryService.addJointDeliveryCart(jointDeliveryCartCreateDto, user));
+    }
+
+    @Test
     @DisplayName("공동배달 장바구니 추가 실패 - 포인트가 부족한 경우")
     void addJointDeliveryCart_InsufficientPointsException() {
         // given
-        JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCreateDto(1L, "60f0b0b7e0b9a72e7c7b3b3a", 1);
+JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCreateDto(1L, "60f0b0b7e0b9a72e7c7b3b3a", 1);
         user.subtractPoint(10000);
+        User userForTest = User.builder().build();
+        userForTest.setIdForTest(2L);
+        jointDelivery.setUserForTest(userForTest);
 
         given(jointDeliveryRepository.findById(1L)).willReturn(Optional.of(jointDelivery));
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
@@ -523,5 +570,75 @@ class JointDeliveryServiceTest {
 
         // when & then
         assertThrows(JointDeliveryExpiredException.class, () -> jointDeliveryService.removeJointDeliveryCart(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 삭제 실패 - 공동배달이 취소된 경우")
+    void removeJointDeliveryCart_JointDeliveryCanceledException() {
+        // given
+        jointDelivery.cancel();
+        given(jointDeliveryCartRepository.findById(1L)).willReturn(Optional.of(jointDeliveryCart));
+
+        // when & then
+        assertThrows(JointDeliveryCanceledException.class, () -> jointDeliveryService.removeJointDeliveryCart(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 수령 확인 성공")
+    void confirmReceived_Success() {
+        // given
+        jointDelivery.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
+        given(jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(1L, 1L)).willReturn(Optional.of(jointDeliveryApplicant));
+
+        // when
+        jointDeliveryService.confirmReceived(1L, user);
+
+        // then
+    }
+
+    @Test
+    @DisplayName("공동배달 수령 확인 실패 - 공동배달 신청자가 아닌 경우")
+    void confirmReceived_JointDeliveryApplicantNotFoundException() {
+        // given
+        given(jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(1L, 1L)).willReturn(Optional.empty());
+
+        // when & then
+        assertThrows(JointDeliveryApplicantNotFoundException.class, () -> jointDeliveryService.confirmReceived(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 수령 확인 실패 - 공동배달이 마감되지 않은 경우")
+    void confirmReceived_JointDeliveryNotClosedException() {
+        // given
+        given(jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(1L, 1L)).willReturn(Optional.of(jointDeliveryApplicant));
+
+        // when & then
+        assertThrows(JointDeliveryNotClosedException.class, () -> jointDeliveryService.confirmReceived(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 수령 확인 실패 - 공동배달이 취소된 경우")
+    void confirmReceived_JointDeliveryCanceledException() {
+        // given
+        jointDelivery.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
+        jointDelivery.cancel();
+
+        given(jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(1L, 1L)).willReturn(Optional.of(jointDeliveryApplicant));
+
+        // when & then
+        assertThrows(JointDeliveryCanceledException.class, () -> jointDeliveryService.confirmReceived(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 수령 확인 실패 - 이미 수령 확인한 경우")
+    void confirmReceived_ReceiptAlreadyConfirmedException() {
+        // given
+        jointDelivery.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
+        jointDeliveryApplicant.confirmReceived();
+
+        given(jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(1L, 1L)).willReturn(Optional.of(jointDeliveryApplicant));
+
+        // when & then
+        assertThrows(ReceiptAlreadyConfirmedException.class, () -> jointDeliveryService.confirmReceived(1L, user));
     }
 }

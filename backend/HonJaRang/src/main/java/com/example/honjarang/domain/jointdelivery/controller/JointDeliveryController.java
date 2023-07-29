@@ -70,7 +70,7 @@ public class JointDeliveryController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{jointDeliveryId}/receive")
+    @PutMapping("/{jointDeliveryId}/receive")
     public ResponseEntity<Void> confirmReceipt(@PathVariable Long jointDeliveryId, @CurrentUser User user) {
         jointDeliveryService.confirmReceived(jointDeliveryId, user);
         return ResponseEntity.ok().build();
