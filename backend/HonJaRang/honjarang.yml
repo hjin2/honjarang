@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: honjarang
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: honjarang
+  template:
+    metadata:
+      labels:
+        app: honjarang
+    spec:
+      containers:
+        - name: honjarang
+          image: psh3253/honjarang
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: datasource_url
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: datasource_username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: datasource_password
+            - name: AWS_SES_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: aws_ses_access_key
+            - name: AWS_SES_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: aws_ses_secret_key
+            - name: AWS_SES_SENDER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: aws_ses_sender_email
+            - name: MONGODB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: mongodb_host
+            - name: MONGODB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: mongodb_port
+            - name: MONGODB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: mongodb_database
+            - name: KAKAO_REST_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: kakao_rest_api_key
+            - name: AWS_S3_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: aws_s3_access_key
+            - name: AWS_S3_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: aws_s3_secret_key
+      imagePullSecrets:
+        - name: honjarang-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: honjarang
+spec:
+  selector:
+    app: honjarang
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: 30000
+  type: NodePort
