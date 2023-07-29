@@ -3,16 +3,15 @@ package com.example.honjarang.domain.jointdelivery.service;
 import com.example.honjarang.domain.jointdelivery.document.Menu;
 import com.example.honjarang.domain.jointdelivery.dto.*;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
+import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryApplicant;
 import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryCart;
 import com.example.honjarang.domain.jointdelivery.entity.Store;
-import com.example.honjarang.domain.jointdelivery.exception.JointDeliveryNotFoundException;
-import com.example.honjarang.domain.jointdelivery.exception.MenuNotFoundException;
-import com.example.honjarang.domain.jointdelivery.exception.StoreNotFoundException;
-import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryCartRepository;
-import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryRepository;
-import com.example.honjarang.domain.jointdelivery.repository.MenuRepository;
-import com.example.honjarang.domain.jointdelivery.repository.StoreRepository;
+import com.example.honjarang.domain.jointdelivery.exception.*;
+import com.example.honjarang.domain.jointdelivery.repository.*;
 import com.example.honjarang.domain.user.entity.User;
+import com.example.honjarang.domain.user.exception.InsufficientPointsException;
+import com.example.honjarang.domain.user.exception.UserNotFoundException;
+import com.example.honjarang.domain.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,10 +42,12 @@ public class JointDeliveryService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
+    private final UserRepository userRepository;
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
     private final JointDeliveryRepository jointDeliveryRepository;
     private final JointDeliveryCartRepository jointDeliveryCartRepository;
+    private final JointDeliveryApplicantRepository jointDeliveryApplicantRepository;
 
     public List<StoreListDto> getStoreListByApi(String keyword) {
         String url = "https://map.naver.com/v5/api/search";
@@ -140,7 +141,12 @@ public class JointDeliveryService {
     }
 
     @Transactional
-    public void createJointDelivery(JointDeliveryCreateDto jointDeliveryCreateDto, User user) {
+    public void createJointDelivery(JointDeliveryCreateDto jointDeliveryCreateDto, User loginUser) {
+        User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        if (user.getPoint() < 1000) {
+            throw new InsufficientPointsException("포인트가 부족합니다.");
+        }
+        user.setPoint(user.getPoint() - 1000);
         StoreDto storeDto = getStoreByApi(jointDeliveryCreateDto.getStoreId());
         Store store = Store.builder()
                 .id(storeDto.getId())
@@ -185,7 +191,7 @@ public class JointDeliveryService {
         Pageable pageable = Pageable.ofSize(size).withPage(page);
         List<JointDelivery> jointDeliveryList = jointDeliveryRepository.findAllByDeadlineAfter(LocalDateTime.now(), pageable).toList();
         List<JointDeliveryListDto> jointDeliveryListDtoList = new ArrayList<>();
-        for(JointDelivery jointDelivery : jointDeliveryList) {
+        for (JointDelivery jointDelivery : jointDeliveryList) {
             Integer currentTotalPrice = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDelivery.getId()).stream()
                     .map(jointDeliveryCart -> {
                         Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
@@ -199,4 +205,74 @@ public class JointDeliveryService {
         return jointDeliveryListDtoList;
     }
 
+    @Transactional
+    public void cancelJointDelivery(Long jointDeliveryId, User loginUser) {
+        JointDelivery jointDelivery = jointDeliveryRepository.findById(jointDeliveryId).orElseThrow(() -> new JointDeliveryNotFoundException("해당 공동배달이 존재하지 않습니다."));
+        if (jointDelivery.getDeadline().isAfter(LocalDateTime.now())) {
+            User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+            user.setPoint(user.getPoint() + 1000);
+        }
+        List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDeliveryId);
+        for (JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
+            User user = jointDeliveryCart.getUser();
+            Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
+                    .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
+            user.setPoint(user.getPoint() + menu.getPrice() * jointDeliveryCart.getQuantity());
+        }
+        jointDelivery.cancel();
+    }
+
+    @Transactional
+    public List<JointDeliveryCartListDto> getJointDeliveryCartList(Long jointDeliveryId, User loginUser) {
+        JointDelivery jointDelivery = jointDeliveryRepository.findById(jointDeliveryId).orElseThrow(() -> new JointDeliveryNotFoundException("해당 공동배달이 존재하지 않습니다."));
+        if (!jointDelivery.getUser().getId().equals(loginUser.getId()) && !jointDeliveryApplicantRepository.existsByJointDeliveryIdAndUserId(jointDeliveryId, loginUser.getId())) {
+            throw new JointDeliveryCartAccessException("장바구니에 접근할 수 없습니다.");
+        }
+        return jointDeliveryCartRepository
+                .findAllByJointDeliveryId(jointDeliveryId)
+                .stream()
+                .map(jointDeliveryCart -> {
+                    Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
+                            .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
+                    return new JointDeliveryCartListDto(jointDeliveryCart, menu);
+                }).toList();
+    }
+
+    @Transactional
+    public void addJointDeliveryCart(JointDeliveryCartCreateDto jointDeliveryCartCreateDto, User loginUser) {
+        JointDelivery jointDelivery = jointDeliveryRepository.findById(jointDeliveryCartCreateDto.getJointDeliveryId()).orElseThrow(() -> new JointDeliveryNotFoundException("해당 공동배달이 존재하지 않습니다."));
+        if (jointDelivery.getDeadline().isBefore(LocalDateTime.now())) {
+            throw new JointDeliveryExpiredException("공동배달이 마감되었습니다.");
+        }
+        User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCartCreateDto.getMenuId()))
+                .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
+        if (user.getPoint() < menu.getPrice() * jointDeliveryCartCreateDto.getQuantity()) {
+            throw new InsufficientPointsException("포인트가 부족합니다.");
+        }
+        user.setPoint(user.getPoint() - menu.getPrice() * jointDeliveryCartCreateDto.getQuantity());
+        jointDeliveryCartRepository.save(jointDeliveryCartCreateDto.toEntity(jointDeliveryCartCreateDto, user));
+        if (!jointDeliveryApplicantRepository.existsByJointDeliveryIdAndUserId(jointDelivery.getId(), user.getId())) {
+            jointDeliveryApplicantRepository.save(JointDeliveryApplicant.builder()
+                    .jointDelivery(jointDelivery)
+                    .user(user)
+                    .build());
+        }
+    }
+
+    @Transactional
+    public void removeJointDeliveryCart(Long jointDeliveryCartId, User loginUser) {
+        JointDeliveryCart jointDeliveryCart = jointDeliveryCartRepository.findById(jointDeliveryCartId).orElseThrow(() -> new JointDeliveryNotFoundException("해당 공동배달이 존재하지 않습니다."));
+        if (jointDeliveryCart.getJointDelivery().getDeadline().isBefore(LocalDateTime.now())) {
+            throw new JointDeliveryExpiredException("공동배달이 마감되었습니다.");
+        }
+        User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
+                .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
+        user.setPoint(user.getPoint() + menu.getPrice() * jointDeliveryCart.getQuantity());
+        jointDeliveryCartRepository.delete(jointDeliveryCart);
+        if (!jointDeliveryCartRepository.existsByJointDeliveryIdAndUserId(jointDeliveryCart.getJointDelivery().getId(), user.getId())) {
+            jointDeliveryApplicantRepository.deleteByJointDeliveryIdAndUserId(jointDeliveryCart.getJointDelivery().getId(), user.getId());
+        }
+    }
 }

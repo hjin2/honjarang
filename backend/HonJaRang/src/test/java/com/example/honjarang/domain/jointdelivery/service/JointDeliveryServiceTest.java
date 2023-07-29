@@ -14,6 +14,8 @@ import com.example.honjarang.domain.jointdelivery.repository.MenuRepository;
 import com.example.honjarang.domain.jointdelivery.repository.StoreRepository;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
+import com.example.honjarang.domain.user.exception.InsufficientPointsException;
+import com.example.honjarang.domain.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +31,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -57,6 +61,8 @@ class JointDeliveryServiceTest {
     @Mock
     private StoreRepository storeRepository;
     @Mock
+    UserRepository userRepository;
+    @Mock
     private RestTemplate restTemplate;
     @Mock
     private ObjectMapper objectMapper;
@@ -72,9 +78,11 @@ class JointDeliveryServiceTest {
                 .email("test@test.com")
                 .password("test1234")
                 .nickname("테스트")
+                .point(10000)
                 .address("서울특별시 강남구")
                 .latitude(37.123456)
                 .longitude(127.123456)
+                .point(10000)
                 .role(Role.ROLE_USER)
                 .build();
         user.setIdForTest(1L);
@@ -109,6 +117,7 @@ class JointDeliveryServiceTest {
                 .quantity(1)
                 .build();
         jointDeliveryCart.setIdForTest(1L);
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null));
     }
 
     @Test
@@ -208,7 +217,7 @@ class JointDeliveryServiceTest {
 
     @Test
     @DisplayName("공동배달 생성 성공")
-    void createJointDelivery() throws JsonProcessingException {
+    void createJointDelivery_Success() throws JsonProcessingException {
         // given
         JointDeliveryCreateDto jointDeliveryCreateDto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, "2000-01-01 00:00:00");
         String responseBody = """
@@ -239,12 +248,26 @@ class JointDeliveryServiceTest {
         given(restTemplate.getForEntity(any(String.class), eq(String.class))).willReturn(responseEntity);
         given(objectMapper.readTree(responseEntity.getBody())).willReturn(jsonNode);
         given(objectMapper.readTree(not(eq(responseEntity.getBody())))).willReturn(jsonNode1);
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
 
         // when
         jointDeliveryService.createJointDelivery(jointDeliveryCreateDto, user);
 
         // then
     }
+
+    @Test
+    @DisplayName("공동배달 생성 실패 - 보증금이 부족한 경우")
+    public void createJointDelivery_InsufficientPointException() {
+        // given
+        JointDeliveryCreateDto jointDeliveryCreateDto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, "2000-01-01 00:00:00");
+        user.setPoint(0);
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+
+        // when & then
+        assertThrows(InsufficientPointsException.class, () -> jointDeliveryService.createJointDelivery(jointDeliveryCreateDto, user));
+    }
+
 
     @Test
     @DisplayName("공동배달 상세조회 성공")

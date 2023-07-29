@@ -11,6 +11,7 @@ import com.example.honjarang.domain.jointdelivery.exception.StoreNotFoundExcepti
 import com.example.honjarang.domain.jointdelivery.service.JointDeliveryService;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
+import com.example.honjarang.domain.user.exception.InsufficientPointsException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.bson.types.ObjectId;
@@ -26,6 +27,10 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -33,7 +38,9 @@ import org.springframework.web.context.WebApplicationContext;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -41,6 +48,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(RestDocumentationExtension.class)
@@ -67,6 +75,7 @@ class JointDeliveryControllerTest {
                 .email("test@test.com")
                 .password("test1234")
                 .nickname("테스트")
+                .point(10000)
                 .address("서울특별시 강남구")
                 .latitude(37.123456)
                 .longitude(127.123456)
@@ -188,8 +197,8 @@ class JointDeliveryControllerTest {
     }
 
     @Test
-    @DisplayName("공동배달 생성")
-    void createJointDelivery() throws Exception {
+    @DisplayName("공동배달 생성 성공")
+    void createJointDelivery_Success() throws Exception {
         // given
         JointDeliveryCreateDto dto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, "2000-01-01 00:00:00");
 
@@ -209,6 +218,23 @@ class JointDeliveryControllerTest {
                                 fieldWithPath("deadline").type(JsonFieldType.STRING).description("마감 시간")
                         )
                 ));
+    }
+
+    @Test
+    @DisplayName("공동배달 생성 실패 - 보증금이 부족한 경우")
+    void createJointDelivery_InsufficientPointsException() throws Exception {
+        // given
+        JointDeliveryCreateDto dto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, "2000-01-01 00:00:00");
+        doThrow(new InsufficientPointsException("")).when(jointDeliveryService).createJointDelivery(any(JointDeliveryCreateDto.class), any(User.class));
+
+        Authentication auth = new UsernamePasswordAuthenticationToken(user, null);
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        // when & then
+        mockMvc.perform(post("/api/v1/joint-deliveries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(dto)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
