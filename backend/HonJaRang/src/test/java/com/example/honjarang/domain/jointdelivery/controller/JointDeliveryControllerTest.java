@@ -4,16 +4,14 @@ import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.jointdelivery.document.Menu;
 import com.example.honjarang.domain.jointdelivery.dto.*;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
+import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryCart;
 import com.example.honjarang.domain.jointdelivery.entity.Store;
-import com.example.honjarang.domain.jointdelivery.exception.JointDeliveryNotFoundException;
-import com.example.honjarang.domain.jointdelivery.exception.MenuNotFoundException;
-import com.example.honjarang.domain.jointdelivery.exception.StoreNotFoundException;
+import com.example.honjarang.domain.jointdelivery.exception.*;
 import com.example.honjarang.domain.jointdelivery.service.JointDeliveryService;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.InsufficientPointsException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,9 +26,7 @@ import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -43,12 +39,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(RestDocumentationExtension.class)
@@ -58,13 +52,13 @@ class JointDeliveryControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private JointDeliveryService jointDeliveryService;
     private User user;
     private Store store;
     private Menu menu;
     private JointDelivery jointDelivery;
+    private JointDeliveryCart jointDeliveryCart;
 
     @BeforeEach
     void setUp(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentation) {
@@ -94,7 +88,7 @@ class JointDeliveryControllerTest {
                 .content("테스트 공동배달")
                 .deliveryCharge(3000)
                 .targetMinPrice(10000)
-                .deadline(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"))
+                .deadline(DateTimeUtils.parseLocalDateTime("2030-01-01 00:00:00"))
                 .store(store)
                 .user(user)
                 .build();
@@ -107,6 +101,14 @@ class JointDeliveryControllerTest {
                 .storeId(1L)
                 .build();
         menu.setIdForTest(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"));
+        jointDeliveryCart = JointDeliveryCart.builder()
+                .jointDelivery(jointDelivery)
+                .menuId("60f0b0b7e0b9a72e7c7b3b3a")
+                .quantity(1)
+                .user(user)
+                .build();
+        jointDeliveryCart.setIdForTest(1L);
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null));
     }
 
     @Test
@@ -226,9 +228,6 @@ class JointDeliveryControllerTest {
         // given
         JointDeliveryCreateDto dto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, "2000-01-01 00:00:00");
         doThrow(new InsufficientPointsException("")).when(jointDeliveryService).createJointDelivery(any(JointDeliveryCreateDto.class), any(User.class));
-
-        Authentication auth = new UsernamePasswordAuthenticationToken(user, null);
-        SecurityContextHolder.getContext().setAuthentication(auth);
 
         // when & then
         mockMvc.perform(post("/api/v1/joint-deliveries")
@@ -358,5 +357,207 @@ class JointDeliveryControllerTest {
         // when & then
         mockMvc.perform(get("/api/v1/joint-deliveries/{jointDeliveryId}", 1L))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("공봉배달 장바구니 목록 조회 성공")
+    void getJointDeliveryCartList_Success() throws Exception {
+        // given
+        List<JointDeliveryCartListDto> jointDeliveryCartListDtoList = List.of(new JointDeliveryCartListDto(jointDeliveryCart, menu));
+        given(jointDeliveryService.getJointDeliveryCartList(1L, user)).willReturn(jointDeliveryCartListDtoList);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/joint-deliveries/{jointDeliveryId}/carts", 1L))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].menu_id").value("60f0b0b7e0b9a72e7c7b3b3a"))
+                .andExpect(jsonPath("$[0].menu_name").value("테스트 메뉴"))
+                .andExpect(jsonPath("$[0].menu_price").value(10000))
+                .andExpect(jsonPath("$[0].menu_image").value("test.jpg"))
+                .andExpect(jsonPath("$[0].quantity").value(1))
+                .andExpect(jsonPath("$[0].user_id").value(1L))
+                .andExpect(jsonPath("$[0].user_nickname").value("테스트"))
+                .andDo(document("joint-deliveries/carts/list",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("jointDeliveryId").description("공동배달 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("공동배달 장바구니 ID"),
+                                fieldWithPath("[].menu_id").type(JsonFieldType.STRING).description("메뉴 ID"),
+                                fieldWithPath("[].menu_name").type(JsonFieldType.STRING).description("메뉴 이름"),
+                                fieldWithPath("[].menu_price").type(JsonFieldType.NUMBER).description("메뉴 가격"),
+                                fieldWithPath("[].menu_image").type(JsonFieldType.STRING).description("메뉴 이미지"),
+                                fieldWithPath("[].quantity").type(JsonFieldType.NUMBER).description("수량"),
+                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("유저 ID"),
+                                fieldWithPath("[].user_nickname").type(JsonFieldType.STRING).description("유저 닉네임")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("공봉배달 장바구니 목록 조회 실패 - 공동배달을 찾을 수 없는 경우")
+    void getJointDeliveryCartList_JointDeliveryNotFoundException() throws Exception {
+        // given
+        given(jointDeliveryService.getJointDeliveryCartList(1L, user)).willThrow(new JointDeliveryNotFoundException(""));
+
+        // when & then
+        mockMvc.perform(get("/api/v1/joint-deliveries/{jointDeliveryId}/carts", 1L))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("공봉배달 장바구니 목록 조회 실패 - 접근 권한이 없는 경우")
+    void getJointDeliveryCartList_JointDeliveryCartAccessException() throws Exception {
+        // given
+        given(jointDeliveryService.getJointDeliveryCartList(1L, user)).willThrow(new JointDeliveryCartAccessException(""));
+
+        // when & then
+        mockMvc.perform(get("/api/v1/joint-deliveries/{jointDeliveryId}/carts", 1L))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 추가 성공")
+    void addJointDeliveryCart_Success() throws Exception {
+        // given
+        JointDeliveryCartCreateDto dto = new JointDeliveryCartCreateDto(1L, "60f0b0b7e0b9a72e7c7b3b3a", 1);
+
+        // when & then
+        mockMvc.perform(post("/api/v1/joint-deliveries/{jointDeliveryId}/carts", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andDo(document("joint-deliveries/carts/create",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("jointDeliveryId").description("공동배달 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("joint_delivery_id").type(JsonFieldType.NUMBER).description("공동배달 ID"),
+                                fieldWithPath("menu_id").type(JsonFieldType.STRING).description("메뉴 ID"),
+                                fieldWithPath("quantity").type(JsonFieldType.NUMBER).description("수량")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 추가 실패 - 공동배달을 찾을 수 없는 경우")
+    void addJointDeliveryCart_JointDeliveryNotFoundException() throws Exception {
+        // given
+        JointDeliveryCartCreateDto dto = new JointDeliveryCartCreateDto(1L, "60f0b0b7e0b9a72e7c7b3b3a", 1);
+
+        doThrow(new JointDeliveryNotFoundException("")).when(jointDeliveryService).addJointDeliveryCart(any(JointDeliveryCartCreateDto.class), any(User.class));
+
+        // when & then
+        mockMvc.perform(post("/api/v1/joint-deliveries/{jointDeliveryId}/carts", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(dto)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 추가 실패 - 공동배달이 마감된 경우")
+    void addJointDeliveryCart_JointDeliveryExpiredException() throws Exception {
+        // given
+        JointDeliveryCartCreateDto dto = new JointDeliveryCartCreateDto(1L, "60f0b0b7e0b9a72e7c7b3b3a", 1);
+
+        doThrow(new JointDeliveryExpiredException("")).when(jointDeliveryService).addJointDeliveryCart(any(JointDeliveryCartCreateDto.class), any(User.class));
+
+        // when & then
+        mockMvc.perform(post("/api/v1/joint-deliveries/{jointDeliveryId}/carts", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 추가 실패 - 포인트가 부족한 경우")
+    void addJointDeliveryCart_InsufficientPointsException() throws Exception {
+        // given
+        JointDeliveryCartCreateDto dto = new JointDeliveryCartCreateDto(1L, "60f0b0b7e0b9a72e7c7b3b3a", 1);
+
+        doThrow(new InsufficientPointsException("")).when(jointDeliveryService).addJointDeliveryCart(any(JointDeliveryCartCreateDto.class), any(User.class));
+
+        // when & then
+        mockMvc.perform(post("/api/v1/joint-deliveries/{jointDeliveryId}/carts", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(dto)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 삭제 성공")
+    void removeJointDeliveryCart_Success() throws Exception {
+        // given
+
+        // when & then
+        mockMvc.perform(delete("/api/v1/joint-deliveries/{jointDeliveryId}/carts/{jointDeliveryCartId}", 1L, 1L))
+                .andExpect(status().isOk())
+                .andDo(document("joint-deliveries/carts/delete",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("jointDeliveryId").description("공동배달 ID"),
+                                parameterWithName("jointDeliveryCartId").description("공동배달 장바구니 ID")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 삭제 실패 - 공동배달을 찾을 수 없는 경우")
+    void removeJointDeliveryCart_JointDeliveryNotFoundException() throws Exception {
+        // given
+        doThrow(new JointDeliveryNotFoundException("")).when(jointDeliveryService).removeJointDeliveryCart(any(Long.class), any(User.class));
+
+        // when & then
+        mockMvc.perform(delete("/api/v1/joint-deliveries/{jointDeliveryId}/carts/{jointDeliveryCartId}", 1L, 1L))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 삭제 실패 - 공동배달이 마감된 경우")
+    void removeJointDeliveryCart_JointDeliveryExpiredException() throws Exception {
+        // given
+        doThrow(new JointDeliveryExpiredException("")).when(jointDeliveryService).removeJointDeliveryCart(any(Long.class), any(User.class));
+
+        // when & then
+        mockMvc.perform(delete("/api/v1/joint-deliveries/{jointDeliveryId}/carts/{jointDeliveryCartId}", 1L, 1L))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("공봉배달 취소 성공")
+    void cancelJointDelivery_Success() throws Exception {
+        //  given
+
+        // when & then
+        mockMvc.perform(delete("/api/v1/joint-deliveries/{jointDeliveryId}", 1L))
+                .andExpect(status().isOk())
+                .andDo(document("joint-deliveries/delete",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("jointDeliveryId").description("공동배달 ID")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("공봉배달 취소 실패 - 공동배달을 찾을 수 없는 경우")
+    void cancelJointDelivery_JointDeliveryNotFoundException() {
+        // given
+        doThrow(new JointDeliveryNotFoundException("")).when(jointDeliveryService).cancelJointDelivery(any(Long.class), any(User.class));
+
+        // when & then
+        try {
+            mockMvc.perform(delete("/api/v1/joint-deliveries/{jointDeliveryId}", 1L))
+                    .andExpect(status().isNotFound());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

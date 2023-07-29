@@ -11,7 +11,6 @@ import org.hibernate.annotations.DynamicInsert;
 
 @DynamicInsert
 @Getter
-@Setter
 @NoArgsConstructor
 @Entity
 public class User extends BaseTimeEntity {
@@ -65,10 +64,6 @@ public class User extends BaseTimeEntity {
         this.role = role;
     }
 
-    public void setIdForTest(Long id) {
-        this.id = id;
-    }
-
     public void changePassword(String newPassword){
         this.password = newPassword;
     }
@@ -82,5 +77,17 @@ public class User extends BaseTimeEntity {
 
     public void changeProfileImage(String profileImage){
         this.profileImage = profileImage;
+    }
+
+    public void addPoint(Integer point) {
+        this.point += point;
+    }
+
+    public void subtractPoint(Integer point) {
+        this.point -= point;
+    }
+
+    public void setIdForTest(Long id) {
+        this.id = id;
     }
 }

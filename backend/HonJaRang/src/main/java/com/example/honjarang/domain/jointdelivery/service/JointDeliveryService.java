@@ -146,7 +146,7 @@ public class JointDeliveryService {
         if (user.getPoint() < 1000) {
             throw new InsufficientPointsException("포인트가 부족합니다.");
         }
-        user.setPoint(user.getPoint() - 1000);
+        user.subtractPoint(1000);
         StoreDto storeDto = getStoreByApi(jointDeliveryCreateDto.getStoreId());
         Store store = Store.builder()
                 .id(storeDto.getId())
@@ -210,14 +210,14 @@ public class JointDeliveryService {
         JointDelivery jointDelivery = jointDeliveryRepository.findById(jointDeliveryId).orElseThrow(() -> new JointDeliveryNotFoundException("해당 공동배달이 존재하지 않습니다."));
         if (jointDelivery.getDeadline().isAfter(LocalDateTime.now())) {
             User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
-            user.setPoint(user.getPoint() + 1000);
+            user.addPoint(1000);
         }
         List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDeliveryId);
         for (JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
             User user = jointDeliveryCart.getUser();
             Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
                     .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
-            user.setPoint(user.getPoint() + menu.getPrice() * jointDeliveryCart.getQuantity());
+            user.addPoint(menu.getPrice() * jointDeliveryCart.getQuantity());
         }
         jointDelivery.cancel();
     }
@@ -250,7 +250,7 @@ public class JointDeliveryService {
         if (user.getPoint() < menu.getPrice() * jointDeliveryCartCreateDto.getQuantity()) {
             throw new InsufficientPointsException("포인트가 부족합니다.");
         }
-        user.setPoint(user.getPoint() - menu.getPrice() * jointDeliveryCartCreateDto.getQuantity());
+        user.subtractPoint(menu.getPrice() * jointDeliveryCartCreateDto.getQuantity());
         jointDeliveryCartRepository.save(jointDeliveryCartCreateDto.toEntity(jointDeliveryCartCreateDto, user));
         if (!jointDeliveryApplicantRepository.existsByJointDeliveryIdAndUserId(jointDelivery.getId(), user.getId())) {
             jointDeliveryApplicantRepository.save(JointDeliveryApplicant.builder()
@@ -269,7 +269,7 @@ public class JointDeliveryService {
         User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
         Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
                 .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
-        user.setPoint(user.getPoint() + menu.getPrice() * jointDeliveryCart.getQuantity());
+        user.addPoint(menu.getPrice() * jointDeliveryCart.getQuantity());
         jointDeliveryCartRepository.delete(jointDeliveryCart);
         if (!jointDeliveryCartRepository.existsByJointDeliveryIdAndUserId(jointDeliveryCart.getJointDelivery().getId(), user.getId())) {
             jointDeliveryApplicantRepository.deleteByJointDeliveryIdAndUserId(jointDeliveryCart.getJointDelivery().getId(), user.getId());
