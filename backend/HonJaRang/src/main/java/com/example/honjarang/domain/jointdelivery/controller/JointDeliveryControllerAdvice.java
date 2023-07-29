@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class JointDeliveryControllerAdvice {
     // 404 Not Found
-    @ExceptionHandler({JointDeliveryNotFoundException.class, StoreNotFoundException.class, MenuNotFoundException.class})
+    @ExceptionHandler({JointDeliveryNotFoundException.class, StoreNotFoundException.class, MenuNotFoundException.class, JointDeliveryApplicantNotFoundException.class, JointDeliveryCanceledException.class})
     public ResponseEntity<Void> handleNotFoundException(RuntimeException e) {
         return ResponseEntity.notFound().build();
     }
 
     // 403 Forbidden
-    @ExceptionHandler({JointDeliveryCartAccessException.class})
+    @ExceptionHandler({JointDeliveryCartAccessException.class, JointDeliveryNotClosedException.class, UnauthorizedJointDeliveryAccessException.class})
     public ResponseEntity<Void> handleForbiddenException(RuntimeException e) {
         return ResponseEntity.status(403).build();
     }
@@ -23,5 +23,11 @@ public class JointDeliveryControllerAdvice {
     @ExceptionHandler({JointDeliveryExpiredException.class})
     public ResponseEntity<Void> handleBadRequestException(RuntimeException e) {
         return ResponseEntity.badRequest().build();
+    }
+
+    // 409 Conflict
+    @ExceptionHandler({ReceiptAlreadyConfirmedException.class})
+    public ResponseEntity<Void> handleConflictException(RuntimeException e) {
+        return ResponseEntity.status(409).build();
     }
 }

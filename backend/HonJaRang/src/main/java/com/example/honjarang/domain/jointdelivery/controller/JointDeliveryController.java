@@ -69,4 +69,10 @@ public class JointDeliveryController {
         jointDeliveryService.removeJointDeliveryCart(jointDeliveryCartId, user);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/{jointDeliveryId}/receive")
+    public ResponseEntity<Void> confirmReceipt(@PathVariable Long jointDeliveryId, @CurrentUser User user) {
+        jointDeliveryService.confirmReceived(jointDeliveryId, user);
+        return ResponseEntity.ok().build();
+    }
 }

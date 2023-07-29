@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface JointDeliveryCartRepository extends JpaRepository<JointDeliveryCart, Long> {
     List<JointDeliveryCart> findAllByJointDeliveryId(Long jointDeliveryId);
-
+    List<JointDeliveryCart> findAllByJointDeliveryIdAndUserId(Long jointDeliveryId, Long userId);
     boolean existsByJointDeliveryIdAndUserId(Long jointDeliveryId, Long userId);
+
 }
