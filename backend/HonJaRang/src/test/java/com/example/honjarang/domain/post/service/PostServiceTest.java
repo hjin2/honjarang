@@ -1,14 +1,18 @@
 package com.example.honjarang.domain.post.service;
 
 
+import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Category;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
 import com.example.honjarang.domain.post.repository.PostRepository;
+import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,14 +28,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.amazonaws.services.simpleemail.model.TlsPolicy.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -44,10 +46,38 @@ public class PostServiceTest {
     @Mock
     private PostRepository postRepository;
 
+    private Post post;
+    private User user;
+
     private static final String TEST_TITLE = "title";
     private static final String TEST_CONTENT = "content";
     private static final String TEST_EMAIL = "test@test.com";
     private static final String TEST_PASSWORD = "test1234";
+
+    @BeforeEach
+    void setUp() {
+        user = User.builder()
+                .email("test@test.com")
+                .password("test1234")
+                .nickname("테스트")
+                .address("서울특별시 강남구")
+                .latitude(37.123456)
+                .longitude(127.123456)
+                .role(Role.ROLE_USER)
+                .build();
+        user.setIdForTest(1L);
+
+        post = Post.builder()
+                .category(Category.FREE)
+                .title("test")
+                .user(user)
+                .isNotice(false)
+                .content("content")
+                .views(1)
+                .build();
+        post.setId(1L);
+        post.setCreatedAt(DateTimeUtils.parseLocalDateTime("2023-07-29 04:12:32"));
+    }
 
     @Test
     @DisplayName("게시글 작성 성공")
@@ -266,12 +296,11 @@ public class PostServiceTest {
     @DisplayName("게시글 목록 조회 성공")
     void getPostList_Success() {
 
-
         // given
         Integer testPage = 1;
         String testKeyword = "kk";
         PostListDto postListDto = new PostListDto(1L, 1L, "title",
-                Category.FREE, "content", 1, false, LocalDateTime.now());
+                Category.FREE, "content", 1, false, DateTimeUtils.formatLocalDateTime(LocalDateTime.now()));
         List<PostListDto> postList = new ArrayList<>();
         postList.add(postListDto);
 
@@ -280,5 +309,48 @@ public class PostServiceTest {
         assertThat(postService.getPostList(testPage, testKeyword)).isEqualTo((postList));
     }
 
+    @Test
+    @DisplayName("게시글 상세 조회 성공")
+    void getPost_Success() {
 
+        // given
+        PostDto postDto = PostDto.builder()
+                .id(post.getId())
+                .userId(post.getUser().getId())
+                .title(post.getTitle())
+                .category(post.getCategory())
+                .content(post.getContent())
+                .nickname(post.getUser().getNickname())
+                .views(post.getViews())
+                .isNotice(post.getIsNotice())
+                .createdAt(DateTimeUtils.formatLocalDateTime(post.getCreatedAt()))
+                .build();
+
+        given(postRepository.findById(any(Long.class))).willReturn(Optional.of(post));
+
+        // when
+        PostDto testPostDto = postService.getPost(1L);
+
+        // then
+        assertThat(testPostDto.getId()).isEqualTo(1L);
+        assertThat(testPostDto.getUserId()).isEqualTo(1L);
+        assertThat(testPostDto.getTitle()).isEqualTo("test");
+        assertThat(testPostDto.getCategory()).isEqualTo(Category.FREE);
+        assertThat(testPostDto.getContent()).isEqualTo("content");
+        assertThat(testPostDto.getNickname()).isEqualTo("테스트");
+        assertThat(testPostDto.getViews()).isEqualTo(2);
+        assertThat(testPostDto.getIsNotice()).isEqualTo(false);
+        assertThat(testPostDto.getCreatedAt()).isEqualTo("2023-07-29 04:12:32");
+    }
+
+    @Test
+    @DisplayName("게시글 상세 조회 실패 - 게시글이 존재하지 않을 경우")
+    void getPost_PostNotFoundException() {
+
+        // given
+        given(postRepository.findById(any(Long.class))).willReturn(Optional.empty());
+
+        // when & then
+        assertThrows(PostNotFoundException.class, () -> postService.getPost(1L));
+    }
 }

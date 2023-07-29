@@ -4,11 +4,7 @@ import com.example.honjarang.domain.post.entity.Category;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -21,7 +17,5 @@ public class PostListDto {
     private String content;
     private Integer views;
     private Boolean isNotice;
-    private LocalDateTime createdAt;
-
-
+    private String createdAt;
 }

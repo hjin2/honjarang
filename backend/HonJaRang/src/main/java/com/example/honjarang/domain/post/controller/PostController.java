@@ -2,6 +2,7 @@ package com.example.honjarang.domain.post.controller;
 
 
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.service.PostService;
@@ -46,6 +47,10 @@ public class PostController {
         return postService.getPostList(page, keyword);
     }
 
-
+    @GetMapping("/{id}")
+    public ResponseEntity<PostDto> getPost(@PathVariable long id) {
+        PostDto postDto = postService.getPost(id);
+        return ResponseEntity.ok(postDto);
+    }
 
 }
