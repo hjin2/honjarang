@@ -82,4 +82,6 @@ public class User extends BaseTimeEntity {
     public void changeProfileImage(String profileImage){
         this.profileImage = profileImage;
     }
+
+    public void changePoint(Integer point) {this.point = point;}
 }
