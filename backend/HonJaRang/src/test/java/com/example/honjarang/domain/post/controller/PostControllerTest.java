@@ -1,12 +1,19 @@
 package com.example.honjarang.domain.post.controller;
 
 
+import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Category;
+import com.example.honjarang.domain.post.entity.Post;
+import com.example.honjarang.domain.post.exception.PostNotFoundException;
 import com.example.honjarang.domain.post.service.PostService;
+import com.example.honjarang.domain.user.entity.Role;
+import com.example.honjarang.domain.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +23,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(PostController.class)
@@ -30,6 +42,35 @@ public class PostControllerTest {
     @MockBean
     private PostService postService;
 
+    private Post post;
+
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+        user = User.builder()
+                .email("test@test.com")
+                .password("test1234")
+                .nickname("테스트")
+                .address("서울특별시 강남구")
+                .latitude(37.123456)
+                .longitude(127.123456)
+                .role(Role.ROLE_USER)
+                .build();
+        user.setIdForTest(1L);
+
+        post = Post.builder()
+                .category(Category.FREE)
+                .title("test")
+                .user(user)
+                .isNotice(false)
+                .content("content")
+                .views(1)
+                .build();
+        post.setId(1L);
+        post.setCreatedAt(DateTimeUtils.parseLocalDateTime("2023-07-29 04:12:32"));
+
+    }
 
     @Test
     @WithMockUser
@@ -140,6 +181,43 @@ public class PostControllerTest {
 
         // when & then
         mockMvc.perform(get("/api/v1/posts"))
-                        .andExpect(status().isOk());
+                .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("게시글 조회 성공")
+    void getPost_Success() throws Exception {
+
+        //given
+        PostDto postDto = PostDto.builder()
+                .id(post.getId())
+                .userId(post.getUser().getId())
+                .title(post.getTitle())
+                .category(post.getCategory())
+                .content(post.getContent())
+                .nickname(post.getUser().getNickname())
+                .views(post.getViews())
+                .isNotice(post.getIsNotice())
+                .createdAt(DateTimeUtils.formatLocalDateTime(post.getCreatedAt()))
+                .build();
+
+        given(postService.getPost(1L)).willReturn(postDto);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/posts/{id}", 1L)
+                .contentType("application/json"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("id").value(1L))
+                .andExpect(jsonPath("userId").value(1L))
+                .andExpect(jsonPath("$.title").value("test"))
+                .andExpect(jsonPath("$.category").value("FREE"))
+                .andExpect(jsonPath("$.content").value("content"))
+                .andExpect(jsonPath("$.nickname").value("테스트"))
+                .andExpect(jsonPath("$.views").value(1))
+                .andExpect(jsonPath("$.isNotice").value(false))
+                .andExpect(jsonPath("$.createdAt").exists());
+
+    }
+
 }
