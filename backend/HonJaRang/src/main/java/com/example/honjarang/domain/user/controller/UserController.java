@@ -1,10 +1,7 @@
 package com.example.honjarang.domain.user.controller;
 
-import com.example.honjarang.domain.user.dto.LoginDto;
-import com.example.honjarang.domain.user.dto.PasswordUpdateDto;
-import com.example.honjarang.domain.user.dto.UserCreateDto;
-import com.example.honjarang.domain.user.dto.UserInfoUpdateDto;
-import com.example.honjarang.domain.user.dto.VerifyCodeDto;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.example.honjarang.domain.user.dto.*;
 import com.example.honjarang.domain.user.entity.User;
 
 import com.example.honjarang.domain.user.service.EmailService;
@@ -20,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
 import java.util.Map;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -80,7 +78,7 @@ public class UserController {
     }
 
     @PostMapping("/change-image")
-    public ResponseEntity<Void> upload(@RequestParam String profileImage, @CurrentUser User user){
+    public ResponseEntity<Void> uploadUserImage(@RequestBody String profileImage, @CurrentUser User user){
         if (user.getProfileImage() != null && !user.getProfileImage().isEmpty()) {
             if(!user.getProfileImage().equals(profileImage)) {
                 s3Uploader.delete(user.getProfileImage());
@@ -90,4 +88,9 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/success")
+    public ResponseEntity<Void> successPayment(@RequestBody PointDto pointDto, @CurrentUser User user){
+        userService.successPayment(pointDto, user);
+        return ResponseEntity.ok().build();
+    }
 }
