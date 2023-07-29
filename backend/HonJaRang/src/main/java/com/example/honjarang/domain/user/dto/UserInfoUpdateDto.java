@@ -15,4 +15,6 @@ import lombok.Setter;
 public class UserInfoUpdateDto {
     private String nickname;
     private String address;
+    private Double latitude;
+    private Double longitude;
 }

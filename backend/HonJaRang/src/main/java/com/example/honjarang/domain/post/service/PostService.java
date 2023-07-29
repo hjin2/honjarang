@@ -63,9 +63,9 @@ public class PostService {
         post.update(postUpdateDto);
     }
 
+
     @Transactional(readOnly = true)
     public List<PostListDto> getPostList(int page, String keyword) {
-
         Pageable pageable = PageRequest.of(page -1, 15);
         return postRepository.findAllByTitleContainingIgnoreCaseOrderByIsNoticeDescIdDesc(keyword, pageable)
                 .stream()

@@ -265,7 +265,6 @@ public class PostServiceTest {
     @Test
     @DisplayName("게시글 목록 조회 성공")
     void getPostList_Success() {
-
         // given
         Integer testPage = 1;
         String testKeyword = "kk";
@@ -275,6 +274,7 @@ public class PostServiceTest {
         postList.add(postListDto);
 
         when(postService.getPostList(testPage, testKeyword)).thenReturn(postList);
+
         // when & then
         assertThat(postService.getPostList(testPage, testKeyword)).isEqualTo((postList));
     }

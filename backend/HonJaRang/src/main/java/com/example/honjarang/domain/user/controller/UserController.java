@@ -6,7 +6,9 @@ import com.example.honjarang.domain.user.dto.UserCreateDto;
 import com.example.honjarang.domain.user.dto.UserInfoUpdateDto;
 import com.example.honjarang.domain.user.dto.VerifyCodeDto;
 import com.example.honjarang.domain.user.entity.User;
+
 import com.example.honjarang.domain.user.service.EmailService;
+import com.example.honjarang.domain.user.service.S3Uploader;
 import com.example.honjarang.domain.user.service.UserService;
 import com.example.honjarang.security.CurrentUser;
 import com.example.honjarang.security.dto.TokenDto;
@@ -19,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +34,8 @@ public class UserController {
     private final TokenService tokenService;
 
     private final EmailService emailService;
+
+    private final S3Uploader s3Uploader;
 
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto) {
@@ -47,14 +52,14 @@ public class UserController {
 
     @PostMapping("/verify-code")
     public ResponseEntity<Boolean> verifyCode(@RequestBody VerifyCodeDto verifyCodeDto) {
-        Boolean isVerified = emailService.verifyCode(verifyCodeDto.getEmail(), verifyCodeDto.getCode());
-        return ResponseEntity.ok(isVerified);
+        emailService.verifyCode(verifyCodeDto.getEmail(), verifyCodeDto.getCode());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/check-nickname")
-    public ResponseEntity<Boolean> checkNickname(@RequestParam String nickname) {
-        Boolean isAvailable = userService.checkNickname(nickname);
-        return ResponseEntity.ok(isAvailable);
+    public ResponseEntity<Void> checkNickname(@RequestParam String nickname) {
+        userService.checkNickname(nickname);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/signup")
@@ -64,13 +69,25 @@ public class UserController {
     }
 
     @PutMapping("/change-password")
-    public void changePassword(@RequestBody PasswordUpdateDto passwordUpdateDto, @CurrentUser User user){
-        userService.changePassword(user,passwordUpdateDto.getPassword(), passwordUpdateDto.getNewPassword());
+    public void changePassword(@RequestBody PasswordUpdateDto passwordUpdateDto, @CurrentUser User user) {
+        userService.changePassword(user, passwordUpdateDto.getPassword(), passwordUpdateDto.getNewPassword());
     }
 
     @PutMapping("/users")
-    public ResponseEntity<Void> changeUserInfo(@RequestBody UserInfoUpdateDto userInfoUpdateDto, @CurrentUser User user){
-        userService.changeUserInfo(user, userInfoUpdateDto.getNickname(), userInfoUpdateDto.getAddress());
+    public ResponseEntity<Void> changeUserInfo(@RequestBody UserInfoUpdateDto userInfoUpdateDto, @CurrentUser User user) {
+        userService.changeUserInfo(user, userInfoUpdateDto.getNickname(), userInfoUpdateDto.getAddress(), userInfoUpdateDto.getLatitude(), userInfoUpdateDto.getLongitude());
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/change-image")
+    public ResponseEntity<Void> upload(@RequestParam String profileImage, @CurrentUser User user){
+        if (user.getProfileImage() != null && !user.getProfileImage().isEmpty()) {
+            if(!user.getProfileImage().equals(profileImage)) {
+                s3Uploader.delete(user.getProfileImage());
+            }
+        }
+        userService.changeUserImage(user, profileImage);
+        return ResponseEntity.ok().build();
+    }
+
 }

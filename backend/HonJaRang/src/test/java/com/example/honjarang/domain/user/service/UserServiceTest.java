@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -145,10 +146,9 @@ class UserServiceTest {
         given(userRepository.existsByNickname("테스트")).willReturn(false);
 
         // when
-        Boolean isAvailable = userService.checkNickname("테스트");
+        userService.checkNickname("테스트");
 
         // then
-        assertThat(isAvailable).isTrue();
     }
 
     @Test
@@ -166,36 +166,98 @@ class UserServiceTest {
     @DisplayName("비밀번호 변경 성공")
     public void changePassword_Success() {
         // given
-        given(passwordEncoder.matches("test1234", "test1234")).willReturn(true);
+        User expectedUser = User.builder()
+                .email("test@test.com")
+                .password("test1234")
+                .build();
 
-        // when
-        userService.changePassword(user, "test1234", "test1234");
+        given(passwordEncoder.matches("test1234", expectedUser.getPassword())).willReturn(true);
+        given(userRepository.findByEmail("test@test.com")).willReturn(Optional.of(expectedUser));
+        // When
+        userService.changePassword(expectedUser, "test1234", "new1234");
 
-        // then
-        assertThat(user.getPassword()).isEqualTo("test1234");
+        assertThat(expectedUser.getPassword()).isEqualTo(passwordEncoder.encode("new1234"));
     }
 
     @Test
     @DisplayName("비밀번호 변경 실패 - 사용자가 입력한 현재 비밀번호가 일치하지 않는 경우")
     public void changePassword_PasswordMismatchException() {
         // given
-        given(passwordEncoder.matches("test1234", "test1234")).willReturn(false);
+        User expectedUser = User.builder()
+                .email("test@test.com")
+                .password("test1234")
+                .build();
+
+        given(passwordEncoder.matches("test1234", expectedUser.getPassword())).willReturn(false);
 
         // When
-        assertThrows(PasswordMismatchException.class, () -> userService.changePassword(user, "test1234", "test1234"));
+        assertThrows(PasswordMismatchException.class, () -> userService.changePassword(expectedUser, "test1234", "new1234"));
     }
+
+
 
     @Test
     @DisplayName("회원정보 수정 성공")
     void changeUserInfo_Success() {
-        // given
-
         // when
-        userService.changeUserInfo(user, "테스트", "서울특별시 강남구");
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+        userService.changeUserInfo(user, "수정된 테스트 닉네임","경상북도 구미시", 10.23445, 23.32423);
 
         // then
-        assertThat(user.getNickname()).isEqualTo("테스트");
-        assertThat(user.getAddress()).isEqualTo("서울특별시 강남구");
+        assertThat(user.getNickname()).isEqualTo("수정된 테스트 닉네임");
+        assertThat(user.getAddress()).isEqualTo("경상북도 구미시");
+        assertThat(user.getLatitude()).isEqualTo(10.23445);
+        assertThat(user.getLongitude()).isEqualTo(23.32423);
+    }
+
+
+    @Test
+    @DisplayName("회원정보 수정 실패 - 사용자가 존재하지 않는 경우")
+    void changeUserInfo_UserNotFoundException() {
+        // given
+        given(userRepository.findByEmail("test@test.com")).willReturn(Optional.empty());
+
+        // then
+        assertThrows(UserNotFoundException.class, () -> userService.changeUserInfo(user,"수정된 테스트 닉네임","경상북도 구미시",10.23445,23.32423));
+    }
+
+    @Test
+    @DisplayName("회원정보 이미지 변경 성공 - 기존에 이미지가 없을 경우")
+    void changeImage_Success() {
+        // given
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+
+        // when
+        userService.changeUserImage(user,"test.jpg");
+
+        // then
+        assertThat(user.getProfileImage()).isEqualTo("test.jpg");
+
+    }
+
+    @Test
+    @DisplayName("회원정보 이미지 변경 성공 - 기존에 이미지가 있을 경우")
+    void changeImage_exist() {
+        // given
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+
+        // when
+        userService.changeUserImage(user,"test.jpg");
+        userService.changeUserImage(user,"changetest.jpg");
+
+        // then
+        assertThat(user.getProfileImage()).isEqualTo("changetest.jpg");
+
+    }
+
+    @Test
+    @DisplayName("회원정보 이미지 변경 실패 - 사용자가 존재하지 않는 경우")
+    void changeImage_UserNotFoundException() {
+        // given
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.empty());
+
+        // when & then
+        assertThrows(UserNotFoundException.class, () -> userService.changeUserImage(user,"test.jpg"));
     }
 
 
