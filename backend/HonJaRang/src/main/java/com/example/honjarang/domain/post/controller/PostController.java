@@ -48,9 +48,14 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostDto> getPost(@PathVariable long id) {
+    public ResponseEntity<PostDto> getPost(@PathVariable Long id) {
         PostDto postDto = postService.getPost(id);
         return ResponseEntity.ok(postDto);
+    }
+
+    @GetMapping("/{id}/like")
+    public void likePost(@PathVariable Long id, @CurrentUser User user) {
+        postService.togglePostLike(id, user);
     }
 
 }
