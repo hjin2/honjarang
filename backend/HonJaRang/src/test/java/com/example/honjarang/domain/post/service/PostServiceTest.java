@@ -8,7 +8,9 @@ import com.example.honjarang.domain.post.entity.Category;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
 import com.example.honjarang.domain.post.repository.PostRepository;
+import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +26,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.amazonaws.services.simpleemail.model.TlsPolicy.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,10 +45,49 @@ public class PostServiceTest {
     @Mock
     private PostRepository postRepository;
 
+    private Post post;
+
+    private User user;
+
+    private User invalidUser;
+
     private static final String TEST_TITLE = "title";
     private static final String TEST_CONTENT = "content";
     private static final String TEST_EMAIL = "test@test.com";
     private static final String TEST_PASSWORD = "test1234";
+
+    @BeforeEach
+    void setUp() {
+        user = User.builder()
+                .email("test@test.com")
+                .password("test1234")
+                .nickname("테스트")
+                .address("서울특별시 강남구")
+                .latitude(37.123456)
+                .longitude(127.123456)
+                .role(Role.ROLE_ADMIN)
+                .build();
+        user.setIdForTest(1L);
+
+        invalidUser = User.builder()
+                .email("test1@test.com")
+                .password("test12345")
+                .nickname("테스트2")
+                .address("서울특별시 강남구")
+                .latitude(37.123456)
+                .longitude(127.123456)
+                .role(Role.ROLE_USER)
+                .build();
+        user.setIdForTest(1L);
+        post = Post.builder()
+                .title("테스트")
+                .content("테스트내용")
+                .isNotice(false)
+                .views(0)
+                .category(Category.FREE)
+                .user(user)
+                .build();
+    }
 
     @Test
     @DisplayName("게시글 작성 성공")
@@ -220,7 +260,7 @@ public class PostServiceTest {
                 post.getIsNotice(), post.getCategory());
 
         // when
-        post.update(postUpdateDto);
+//        post.update(post.getu);
 
         // then
         assertThat(post.getId()).isEqualTo(postUpdateDto.getId());
@@ -280,5 +320,40 @@ public class PostServiceTest {
         assertThat(postService.getPostList(testPage, testKeyword)).isEqualTo((postList));
     }
 
+    @Test
+    @DisplayName("게시글 공지 설정 성공")
+    void togglePostNotice_Success() {
+
+        // given
+        given(postRepository.findById(1L)).willReturn(Optional.of(post));
+
+        // when
+        postService.togglePostNotice(1L, user);
+
+        // then
+
+    }
+
+    @Test
+    @DisplayName("게시글 공지 설정 실패 - 관리자가 아닐 경우")
+    void togglePostNotice_InvalidUserException() {
+
+        // given
+        given(postRepository.findById(1L)).willReturn(Optional.of(post));
+
+        // when & then
+        assertThrows(InvalidUserException.class, (() -> postService.togglePostNotice(1L, invalidUser)));
+    }
+
+    @Test
+    @DisplayName("게시글 공지 설정 실패 - 게시글이 존재하지 않을 경우 ")
+    void togglePostNotice_PostNotFoundException() {
+
+        // given
+        given(postRepository.findById(1L)).willThrow(new PostNotFoundException("게시글이 존재하지 않습니다."));
+
+        // when & then
+        assertThrows(PostNotFoundException.class, (() -> postService.togglePostNotice(1L, user)));
+    }
 
 }

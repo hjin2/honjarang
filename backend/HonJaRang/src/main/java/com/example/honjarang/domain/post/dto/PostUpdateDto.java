@@ -3,15 +3,16 @@ package com.example.honjarang.domain.post.dto;
 
 import com.example.honjarang.domain.post.entity.Category;
 import com.example.honjarang.domain.post.entity.Post;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PostUpdateDto {
     private Long id;
     private String title;

@@ -142,4 +142,16 @@ public class PostControllerTest {
         mockMvc.perform(get("/api/v1/posts"))
                         .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("게시글 공지 설정 성공")
+    void noticePost_Success() throws Exception {
+
+        // given
+
+        // when & then
+        mockMvc.perform(get("/api/v/posts/{id}/noticec", 1L))
+                .andExpect(status().isOk());
+
+    }
 }
