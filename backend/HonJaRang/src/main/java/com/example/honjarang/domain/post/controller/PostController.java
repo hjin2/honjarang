@@ -47,5 +47,10 @@ public class PostController {
     }
 
 
+    @PostMapping(value = "/{id}/notice")
+    public ResponseEntity<Void> noticePost(@PathVariable Long id, @CurrentUser User user) {
+        postService.togglePostNotice(id, user);
+        return ResponseEntity.ok().build();
+    }
 
 }

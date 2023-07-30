@@ -7,12 +7,15 @@ import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
 import com.example.honjarang.domain.post.repository.PostRepository;
+import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Objects;
@@ -57,7 +60,7 @@ public class PostService {
         if (!Objects.equals(post.getUser().getId(), user.getId())) {
             throw new InvalidUserException("작성자만 수정할 수 있습니다.");
         }
-        post.update(postUpdateDto);
+        postRepository.save(post.update(postUpdateDto.toEntity(post.getIsNotice())));
     }
 
     @Transactional
@@ -80,5 +83,14 @@ public class PostService {
                 post.getIsNotice(),
                 post.getCreatedAt()
         );
+    }
+
+    @Transactional
+    public void togglePostNotice(Long id, User user) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
+        if (user.getRole().equals(Role.ROLE_USER)) {
+            throw new InvalidUserException("관리자만 공지사항을 설정 및 해제할 수 있습니다.");
+        }
+        post.updateIsNotice(!post.getIsNotice());
     }
 }
