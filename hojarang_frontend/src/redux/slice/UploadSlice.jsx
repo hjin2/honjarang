@@ -10,7 +10,7 @@ const UploadSlice = createSlice({
   reducers : {
     imageUpload : (state, action) =>{
       state.image = action.payload
-      console.log(state.image)
+      // console.log(state.image)
     }
   }
 })
