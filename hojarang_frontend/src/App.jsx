@@ -17,6 +17,8 @@ import Map from './pages/Map/Map';
 import MyPage from './pages/MyPage/MyPage';
 import FindPassword from './pages/FindPassword/FindPassword';
 import ChangePassword from './pages/FindPassword/ChangePassword';
+import ArticleCreate from './pages/Board/ArticleCreate';
+import { ArticleDetail } from './pages/Board/ArticleDetail';
 
 
 function App() {
@@ -37,6 +39,9 @@ function App() {
             <Route path="/mypage/:nickname" element={<MyPage />}/>
             <Route path="/findpassword" element={<FindPassword/>}/>
             <Route path="/findpassword/changepassword" element={<ChangePassword/>}></Route>
+            <Route path="/board/articlecreate" element={<ArticleCreate/>}></Route>
+            <Route path="/board/article/:id" element={<ArticleDetail />} />
+
             <Route path="/*" element={<Notfound />}/>
           </Routes>
         </div>

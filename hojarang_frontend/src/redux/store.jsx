@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import loginSlice from "./slice/loginSlice";
+import articleSlice from "./slice/articleSlice";
 
 // 스토어 생성
 const store = configureStore({
     reducer: {
         login:loginSlice.reducer,
+        articles:articleSlice.reducer,
     }
 })
 
