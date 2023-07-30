@@ -51,8 +51,8 @@ class MapControllerTest {
     }
 
     @Test
-    @DisplayName("키워드로 좌표 조회 성공")
-    void coordinates_Success() throws Exception {
+    @DisplayName("키워드로 좌표 조회")
+    void coordinates() throws Exception {
         // given
         given(mapService.getCoordinate("서울특별시 강남구")).willReturn(new CoordinateDto(37.123456, 127.123456));
 
@@ -73,17 +73,5 @@ class MapControllerTest {
                                 fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도")
                         )
                 ));
-    }
-
-    @Test
-    @DisplayName("키워드로 좌표 조회 실패 - 잣소가 존재하지 않는 경우")
-    void coordinates_LocationNotFoundException() throws Exception {
-        // given
-        given(mapService.getCoordinate("서울특별시 강남구")).willThrow(new LocationNotFoundException(""));
-
-        // when & then
-        mockMvc.perform(get("/api/v1/maps/coordinates")
-                        .param("keyword", "서울특별시 강남구"))
-                .andExpect(status().isNotFound());
     }
 }

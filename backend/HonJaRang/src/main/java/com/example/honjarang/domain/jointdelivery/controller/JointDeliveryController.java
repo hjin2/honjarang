@@ -34,6 +34,12 @@ public class JointDeliveryController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/{jointDeliveryId}")
+    public ResponseEntity<Void> cancelJointDelivery(@PathVariable Long jointDeliveryId, @CurrentUser User user) {
+        jointDeliveryService.cancelJointDelivery(jointDeliveryId, user);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("")
     public ResponseEntity<List<JointDeliveryListDto>> getJointDeliveryList(@RequestParam Integer page, @RequestParam Integer size) {
         List<JointDeliveryListDto> jointDeliveryList = jointDeliveryService.getJointDeliveryList(page, size);
@@ -44,5 +50,29 @@ public class JointDeliveryController {
     public ResponseEntity<JointDeliveryDto> getJointDelivery(@PathVariable Long jointDeliveryId) {
         JointDeliveryDto jointDelivery = jointDeliveryService.getJointDelivery(jointDeliveryId);
         return ResponseEntity.ok(jointDelivery);
+    }
+
+    @GetMapping("/{jointDeliveryId}/carts")
+    public ResponseEntity<List<JointDeliveryCartListDto>> getJointDeliveryCartList(@PathVariable Long jointDeliveryId, @CurrentUser User user) {
+        List<JointDeliveryCartListDto> jointDeliveryCartList = jointDeliveryService.getJointDeliveryCartList(jointDeliveryId, user);
+        return ResponseEntity.ok(jointDeliveryCartList);
+    }
+
+    @PostMapping("/{jointDeliveryId}/carts")
+    public ResponseEntity<Void> addJointDeliveryCart(@PathVariable Long jointDeliveryId, @RequestBody JointDeliveryCartCreateDto dto, @CurrentUser User user) {
+        jointDeliveryService.addJointDeliveryCart(dto, user);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{jointDeliveryId}/carts/{jointDeliveryCartId}")
+    public ResponseEntity<Void> removeJointDeliveryCart(@PathVariable Long jointDeliveryId, @PathVariable Long jointDeliveryCartId, @CurrentUser User user) {
+        jointDeliveryService.removeJointDeliveryCart(jointDeliveryCartId, user);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{jointDeliveryId}/receive")
+    public ResponseEntity<Void> confirmReceipt(@PathVariable Long jointDeliveryId, @CurrentUser User user) {
+        jointDeliveryService.confirmReceived(jointDeliveryId, user);
+        return ResponseEntity.ok().build();
     }
 }
