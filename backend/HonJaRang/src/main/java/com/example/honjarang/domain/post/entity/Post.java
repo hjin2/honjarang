@@ -64,5 +64,4 @@ public class Post extends BaseTimeEntity {
         this.setIsNotice(postUpdateDto.getIsNotice());
         this.setCategory(postUpdateDto.getCategory());
     }
-
 }
