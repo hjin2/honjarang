@@ -1,6 +1,7 @@
 package com.example.honjarang.domain.user.controller;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.user.dto.*;
 import com.example.honjarang.domain.user.entity.User;
 
@@ -93,4 +94,11 @@ public class UserController {
         userService.successPayment(pointDto, user);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/withdraw")
+    public ResponseEntity<Void> withdrawPoint(@RequestBody Map<String, Integer> point, @CurrentUser User user){
+        userService.withdrawPoint(point.get("point"),user);
+        return ResponseEntity.ok().build();
+    }
+
 }
