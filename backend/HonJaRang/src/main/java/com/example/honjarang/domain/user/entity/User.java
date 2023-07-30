@@ -90,4 +90,6 @@ public class User extends BaseTimeEntity {
     public void setIdForTest(Long id) {
         this.id = id;
     }
+
+    public void changePoint(Integer point) {this.point = point;}
 }
