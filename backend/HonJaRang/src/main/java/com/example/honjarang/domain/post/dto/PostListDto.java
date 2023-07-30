@@ -21,7 +21,5 @@ public class PostListDto {
     private String content;
     private Integer views;
     private Boolean isNotice;
-    private LocalDateTime createdAt;
-
-
+    private String createdAt;
 }

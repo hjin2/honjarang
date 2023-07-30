@@ -1,23 +1,26 @@
 package com.example.honjarang.domain.post.dto;
 
 
+import com.example.honjarang.domain.post.entity.Category;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 public class PostDto {
-    private long id;
-    private long userId;
+    private Long id;
+    private Long userId;
     private String title;
-    private String category;
+    private Category category;
     private String content;
-    private int views;
-    private boolean isNotice;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Integer views;
+    private Boolean isNotice;
+    private String createdAt;
+    private String updatedAt;
+
+
 }
