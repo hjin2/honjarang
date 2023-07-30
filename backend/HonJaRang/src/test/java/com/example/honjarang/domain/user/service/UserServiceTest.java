@@ -51,6 +51,7 @@ class UserServiceTest {
                 .email("test@test.com")
                 .password("test1234")
                 .nickname("테스트")
+                .point(10000)
                 .address("서울특별시 강남구")
                 .latitude(37.123456)
                 .longitude(127.123456)
