@@ -1,6 +1,7 @@
 package com.example.honjarang.domain.post.controller;
 
 
+import com.example.honjarang.domain.post.dto.CommentCreateDto;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
@@ -44,6 +45,11 @@ public class PostController {
     public List<PostListDto> getPosts(@RequestParam(value = "page", defaultValue = "1") int page,
                                       @RequestParam(value = "keyword", defaultValue = "") String keyword) {
         return postService.getPostList(page, keyword);
+    }
+
+    @PostMapping(value = "/{id}/comments")
+    public ResponseEntity<Long> createComment(@PathVariable Long id, @RequestBody CommentCreateDto commentCreateDto, @CurrentUser User user) {
+        return ResponseEntity.created(null).body(postService.createComment(id, commentCreateDto, user));
     }
 
 
