@@ -39,3 +39,4 @@ out/
 application-secret.properties
 application-dev.properties
 secret.yml
+.idea

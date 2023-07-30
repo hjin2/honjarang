@@ -52,5 +52,4 @@ public class PostController {
         PostDto postDto = postService.getPost(id);
         return ResponseEntity.ok(postDto);
     }
-
 }

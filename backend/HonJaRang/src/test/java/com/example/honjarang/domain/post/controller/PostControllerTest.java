@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.BDDAssumptions.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -140,6 +141,21 @@ public class PostControllerTest {
 
         // when & then
         mockMvc.perform(get("/api/v1/posts"))
-                        .andExpect(status().isOk());
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("게시글 조회 성공")
+    void getPost_Success() throws Exception {
+
+        //given
+        Long postId = 1L;
+
+        // when & then
+        mockMvc.perform(get("/api/v1/posts")
+                .contentType("application/json")
+                .content(new ObjectMapper().writeValueAsString(postId)))
+                .andExpect(status().isOk());
+
     }
 }

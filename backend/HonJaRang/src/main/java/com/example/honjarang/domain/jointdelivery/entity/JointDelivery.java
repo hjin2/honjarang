@@ -61,4 +61,16 @@ public class JointDelivery extends BaseTimeEntity {
     public void setIdForTest(Long id) {
         this.id = id;
     }
+
+    public void setDeadlineForTest(LocalDateTime deadline) {
+        this.deadline = deadline;
+    }
+
+    public void setUserForTest(User user) {
+        this.user = user;
+    }
+
+    public void setCanceledForTest(Boolean isCanceled) {
+        this.isCanceled = isCanceled;
+    }
 }
