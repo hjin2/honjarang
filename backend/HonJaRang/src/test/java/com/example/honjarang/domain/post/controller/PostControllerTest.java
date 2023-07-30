@@ -1,27 +1,41 @@
 package com.example.honjarang.domain.post.controller;
 
 
+import com.example.honjarang.domain.post.dto.CommentCreateDto;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Category;
+import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.service.PostService;
+import com.example.honjarang.domain.user.entity.Role;
+import com.example.honjarang.domain.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.FactoryBasedNavigableListAssert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(PostController.class)
+@AutoConfigureRestDocs
 public class PostControllerTest {
 
     @Autowired
@@ -30,6 +44,31 @@ public class PostControllerTest {
     @MockBean
     private PostService postService;
 
+    private Post post;
+
+    private User user;
+
+
+    @BeforeEach
+    void setUp() {
+        user = User.builder()
+                .email("test@test.com")
+                .password("test1234")
+                .nickname("테스트")
+                .address("서울특별시 강남구")
+                .latitude(37.123456)
+                .longitude(127.123456)
+                .role(Role.ROLE_ADMIN)
+                .build();
+        post = Post.builder()
+                .title("test")
+                .user(user)
+                .views(0)
+                .category(Category.FREE)
+                .isNotice(false)
+                .content("test")
+                .build();
+    }
 
     @Test
     @WithMockUser
@@ -141,5 +180,26 @@ public class PostControllerTest {
         // when & then
         mockMvc.perform(get("/api/v1/posts"))
                         .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("댓글 작성 성공")
+    void creaetComment_Success() throws Exception {
+
+        // given
+        CommentCreateDto commentCreateDto = new CommentCreateDto("test");
+
+        // when & then
+        mockMvc.perform(post("/api/v1/posts/{id}/comments", 1L)
+                 .contentType("application/json")
+                .content(new ObjectMapper().writeValueAsString(commentCreateDto)))
+                .andExpect(status().isCreated())
+                .andDo(document("posts/1/comments",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("댓글")
+                        )
+                ));
     }
 }

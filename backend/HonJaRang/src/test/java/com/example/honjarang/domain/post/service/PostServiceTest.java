@@ -1,14 +1,19 @@
 package com.example.honjarang.domain.post.service;
 
 
+import com.example.honjarang.domain.post.dto.CommentCreateDto;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Category;
+import com.example.honjarang.domain.post.entity.Comment;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
+import com.example.honjarang.domain.post.repository.CommentRepository;
 import com.example.honjarang.domain.post.repository.PostRepository;
+import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import java.time.LocalDateTime;
@@ -24,7 +30,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.amazonaws.services.simpleemail.model.TlsPolicy.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,6 +48,35 @@ public class PostServiceTest {
 
     @Mock
     private PostRepository postRepository;
+
+    @Mock
+    private CommentRepository commentRepository;
+
+    private Post post;
+
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+        user = User.builder()
+                .email("test@test.com")
+                .password("test1234")
+                .nickname("테스트")
+                .address("서울특별시 강남구")
+                .latitude(37.123456)
+                .longitude(127.123456)
+                .role(Role.ROLE_ADMIN)
+                .build();
+        post = Post.builder()
+                .title("test")
+                .user(user)
+                .views(0)
+                .category(Category.FREE)
+                .isNotice(false)
+                .content("test")
+                .build();
+    }
+
 
     private static final String TEST_TITLE = "title";
     private static final String TEST_CONTENT = "content";
@@ -280,5 +314,31 @@ public class PostServiceTest {
         assertThat(postService.getPostList(testPage, testKeyword)).isEqualTo((postList));
     }
 
+    @Test
+    @DisplayName("댓글 작성 성공")
+    void createComment_Success() {
 
+        // given
+
+        CommentCreateDto commentCreateDto = new CommentCreateDto("test");
+        Comment comment = commentCreateDto.toEntity(post, user);
+       //  given(postRepository.findById(1L)).willReturn(Optional.of(post));
+        // when
+        commentRepository.save(comment);
+         // postService.createComment(1L, commentCreateDto, user);
+        // then
+    }
+
+    @Test
+    @DisplayName("댓글 작성 실패 - 게시글이 존재하지 않을 경우")
+    void createComment_PostNotException() {
+
+        // given
+        CommentCreateDto commentCreateDto = new CommentCreateDto("test");
+        given(postRepository.findById(1L)).willThrow(new PostNotFoundException("게시글이 존재하지 않습니다."));
+
+        // when & then
+        assertThrows(PostNotFoundException.class, () -> postService.createComment(1L, commentCreateDto, user));
+    }
+    
 }
