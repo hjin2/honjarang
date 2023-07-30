@@ -1,7 +1,9 @@
 package com.example.honjarang.domain.post.service;
 
 
+import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Category;
@@ -24,14 +26,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.amazonaws.services.simpleemail.model.TlsPolicy.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -265,20 +265,50 @@ public class PostServiceTest {
     @Test
     @DisplayName("게시글 목록 조회 성공")
     void getPostList_Success() {
-
-
         // given
         Integer testPage = 1;
         String testKeyword = "kk";
         PostListDto postListDto = new PostListDto(1L, 1L, "title",
-                Category.FREE, "content", 1, false, LocalDateTime.now());
+                Category.FREE, "content", 1, false, DateTimeUtils.formatLocalDateTime(LocalDateTime.now()));
         List<PostListDto> postList = new ArrayList<>();
         postList.add(postListDto);
 
         when(postService.getPostList(testPage, testKeyword)).thenReturn(postList);
+
         // when & then
         assertThat(postService.getPostList(testPage, testKeyword)).isEqualTo((postList));
     }
 
+    @Test
+    @DisplayName("게시글 상세 조회 성공")
+    void getPost_Success() {
 
+        // given
+        Long id = 1L;
+        Post post = Post.builder()
+                .title(TEST_TITLE)
+                .content(TEST_CONTENT)
+                .build();
+
+        given(postRepository.findById(id)).willReturn(Optional.of(post));
+
+        // when & then
+
+        assertThat(postRepository.findById(id)).isEqualTo(Optional.of(post));
+    }
+
+    @Test
+    @DisplayName("게시글 상세 조회 실패 - 게시글이 존재하지 않을 경우")
+    void getPost_PostNotFoundException() {
+
+        // given
+        Long id = 1L;
+        User user = User.builder()
+                .email(TEST_EMAIL)
+                .password(TEST_PASSWORD)
+                .build();
+
+        // when & then
+        assertThrows(PostNotFoundException.class, () -> postService.getPost(id, user));
+    }
 }
