@@ -10,6 +10,7 @@ import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.security.CurrentUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,10 +50,9 @@ public class PostController {
     }
 
     @PostMapping(value = "/{id}/comments")
-    public ResponseEntity<Long> createComment(@PathVariable Long id, @RequestBody CommentCreateDto commentCreateDto, @CurrentUser User user) {
+    public ResponseEntity<Void> createComment(@PathVariable Long id, @RequestBody CommentCreateDto commentCreateDto, @CurrentUser User user) {
         postService.createComment(id, commentCreateDto, user);
-        return ResponseEntity.created(null).body(postService.createComment(id, commentCreateDto, user));
+        return ResponseEntity.status(201).build();
     }
-
 
 }

@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentCreateDto {
+
     private String content;
 
     public Comment toEntity(Post post, User user) {

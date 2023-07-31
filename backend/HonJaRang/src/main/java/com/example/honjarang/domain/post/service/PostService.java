@@ -63,9 +63,12 @@ public class PostService {
     }
 
     @Transactional
-    public Long createComment(Long id, CommentCreateDto commentCreateDto, User user) {
+    public void createComment(Long id, CommentCreateDto commentCreateDto, User user) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
-        return commentRepository.save(commentCreateDto.toEntity(post, user)).getId();
+        if (commentCreateDto.getContent().isEmpty()) {
+            throw new ContentEmptyException("댓글을 작성하세요.");
+        }
+        commentRepository.save(commentCreateDto.toEntity(post, user));
     }
 
 
