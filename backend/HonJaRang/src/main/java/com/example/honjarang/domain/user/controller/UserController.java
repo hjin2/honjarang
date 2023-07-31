@@ -102,4 +102,10 @@ public class UserController {
     public ResponseEntity<List<PostListDto>> getMyPostList(@RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
         return ResponseEntity.ok(userService.getMyPostList(page,user));
     }
+
+    @PutMapping("/withdraw")
+    public ResponseEntity<Void> withdrawPoint(@RequestBody Map<String, Integer> point, @CurrentUser User user){
+        userService.withdrawPoint(point.get("point"),user);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -153,5 +153,9 @@ public class UserService {
                 .toList();
     }
 
-
+    @Transactional
+    public void withdrawPoint(Integer point, User user){
+        User loginedUser = userRepository.findByEmail(user.getEmail()).orElseThrow(()->new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        loginedUser.subtractPoint(point);
+    }
 }
