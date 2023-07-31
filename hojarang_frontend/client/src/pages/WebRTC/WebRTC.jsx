@@ -1,5 +1,3 @@
 export default function WebRTC() {
-  return (
-    <div>WebRTC</div>
-  )
+  return <div>WebRTC</div>;
 }

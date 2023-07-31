@@ -1,5 +1,3 @@
 export default function SideBar() {
-  return (
-    <input type="text" />
-  )
+  return <input type="text" />;
 }
