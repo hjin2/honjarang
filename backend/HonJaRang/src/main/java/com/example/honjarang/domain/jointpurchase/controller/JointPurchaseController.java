@@ -1,9 +1,6 @@
 package com.example.honjarang.domain.jointpurchase.controller;
 
-import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseApplicantListDto;
-import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseCreateDto;
-import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseDto;
-import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseListDto;
+import com.example.honjarang.domain.jointpurchase.dto.*;
 import com.example.honjarang.domain.jointpurchase.service.JointPurchaseService;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.security.CurrentUser;
@@ -47,5 +44,17 @@ public class JointPurchaseController {
     public ResponseEntity<List<JointPurchaseApplicantListDto>> getJointPurchaseApplicants(@PathVariable Long jointPurchaseId) {
         List<JointPurchaseApplicantListDto> jointPurchaseApplicantListDtos = jointPurchaseService.getJointPurchaseApplicantList(jointPurchaseId);
         return ResponseEntity.ok(jointPurchaseApplicantListDtos);
+    }
+
+    @PostMapping("/{jointPurchaseId}/applicants")
+    public ResponseEntity<Void> applyJointPurchase(@PathVariable Long jointPurchaseId, @RequestBody JointPurchaseApplyDto jointPurchaseApplyDto, @CurrentUser User user) {
+        jointPurchaseService.applyJointPurchase(jointPurchaseApplyDto, user);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{jointPurchaseId}/applicants")
+    public ResponseEntity<Void> cancelJointPurchaseApplicant(@PathVariable Long jointPurchaseId, @CurrentUser User user) {
+        jointPurchaseService.cancelJointPurchaseApplicant(jointPurchaseId, user);
+        return ResponseEntity.ok().build();
     }
 }
