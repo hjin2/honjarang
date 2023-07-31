@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import TextField from '../../components/Board/TextFields';
 import { createArticle } from '../../redux/slice/articleSlice';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 import { Dropdown } from '../../components/Board/Dropdown';
 import { Link } from 'react-router-dom';
 
@@ -31,9 +31,8 @@ const ArticleCreate = () => {
     // const { value, name } = event.target; //event.target에서 name과 value만 가져오기
     setValues({ cate:'', category: '', title: '', content:'' });
     dispatch(createArticle({
-      id: uuidv4(),
+      // id: uuidv4(),
       ...values,
-      
     }));
     navigate('/board'); 
   };
