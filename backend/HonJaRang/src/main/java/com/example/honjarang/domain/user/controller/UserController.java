@@ -85,4 +85,11 @@ public class UserController {
         userService.successPayment(pointDto, user);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/withdraw")
+    public ResponseEntity<Void> withdrawPoint(@RequestBody Map<String, Integer> point, @CurrentUser User user){
+        userService.withdrawPoint(point.get("point"),user);
+        return ResponseEntity.ok().build();
+    }
+
 }
