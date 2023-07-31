@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Pagination from "./Pagination";
 
 function Posts() {
@@ -106,11 +106,11 @@ function Posts() {
   const [page, setPage] = useState(1);
   const offset = (page - 1) * limit;
 
-  useEffect(() => {
-    fetch("http://localhost8080://boards/1/posts")
-      .then((res) => res.json())
-      .then((data) => setPosts(data));
-  }, []);
+  // useEffect(() => {
+  //   fetch("http://localhost8080://boards/1/posts")
+  //     .then((res) => res.json())
+  //     .then((data) => setPosts(data));
+  // }, []);
 
 
 
