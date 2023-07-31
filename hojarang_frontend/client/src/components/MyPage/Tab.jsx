@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 const Tab = ({ tabs, activeTabIndex, setActiveTabIndex }) => {
   return (
@@ -10,13 +10,15 @@ const Tab = ({ tabs, activeTabIndex, setActiveTabIndex }) => {
             onClick={() => setActiveTabIndex(index)}
             className="m-auto content-evenly cursor-pointer"
           >
-            <div className={`${activeTabIndex === index ? "font-bold" : ""}`}>
+            <div className={`${activeTabIndex === index ? 'font-bold' : ''}`}>
               {tab.title}
             </div>
           </li>
         ))}
       </ul>
-      <div className="border border-main1 rounded-lg basis-5/6">{tabs[activeTabIndex].content}</div>
+      <div className="border border-main1 rounded-lg basis-5/6">
+        {tabs[activeTabIndex].content}
+      </div>
     </div>
   );
 };

@@ -1,10 +1,10 @@
-import Delivery from "../../components/Market/Delivery"
+import Delivery from '../../components/Market/Delivery';
 
 export default function Market() {
   return (
-    <div>Market
-
-    <Delivery />
+    <div>
+      Market
+      <Delivery />
     </div>
-  )
+  );
 }

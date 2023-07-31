@@ -1,8 +1,5 @@
-import React from 'react'
+import React from 'react';
 
 export const ArticleUpdate = () => {
-  return (
-    <div>ArticleUpdate</div>
-    
-  )
-}
+  return <div>ArticleUpdate</div>;
+};
