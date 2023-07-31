@@ -1,5 +1,3 @@
 export default function Chatting() {
-  return (
-    <div>Chatting</div>
-  )
+  return <div>Chatting</div>;
 }

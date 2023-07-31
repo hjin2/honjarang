@@ -2,21 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components{
-    .main1-button{
-        @apply border-2 h-8 rounded-lg border-main1 text-main1 text-xs font-bold
-    }
-    .main2-button{
-        @apply border-2 h-8 rounded-lg border-main2 text-main2 text-xs font-bold
-    }
-    
-    .main5-button{
-        @apply border-2 h-8 rounded-lg border-main5 text-main5 text-xs font-bold
-    }
-    .main1-full-button{
-        @apply border-2 h-8 rounded-lg bg-main1 text-white text-xs font-bold
-    }
-    .main5-full-button{
-        @apply border-2 h-8 rounded-lg bg-main5 text-white text-xs font-bold
-    }
+@layer components {
+  .main1-button {
+    @apply border-2 h-8 rounded-lg border-main1 text-main1 text-xs font-bold;
+  }
+  .main2-button {
+    @apply border-2 h-8 rounded-lg border-main2 text-main2 text-xs font-bold;
+  }
+
+  .main5-button {
+    @apply border-2 h-8 rounded-lg border-main5 text-main5 text-xs font-bold;
+  }
+  .main1-full-button {
+    @apply border-2 h-8 rounded-lg bg-main1 text-white text-xs font-bold;
+  }
+  .main5-full-button {
+    @apply border-2 h-8 rounded-lg bg-main5 text-white text-xs font-bold;
+  }
 }
