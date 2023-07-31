@@ -5,6 +5,8 @@ import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.user.dto.*;
 import com.example.honjarang.domain.user.entity.User;
 
+import com.example.honjarang.domain.post.dto.PostListDto;
+
 import com.example.honjarang.domain.user.service.EmailService;
 import com.example.honjarang.domain.user.service.S3Uploader;
 import com.example.honjarang.domain.user.service.UserService;
@@ -19,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -95,10 +98,14 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostListDto>> getMyPostList(@RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
+        return ResponseEntity.ok(userService.getMyPostList(page,user));
+    }
+
     @PutMapping("/withdraw")
     public ResponseEntity<Void> withdrawPoint(@RequestBody Map<String, Integer> point, @CurrentUser User user){
         userService.withdrawPoint(point.get("point"),user);
         return ResponseEntity.ok().build();
     }
-
 }
