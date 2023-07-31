@@ -1,24 +1,37 @@
 package com.example.honjarang.domain.post.controller;
 
 
+import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Category;
+import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.service.PostService;
+import com.example.honjarang.domain.user.entity.Role;
+import com.example.honjarang.domain.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.context.WebApplicationContext;
 
-import static org.assertj.core.api.BDDAssumptions.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc(addFilters = false)
@@ -31,7 +44,34 @@ public class PostControllerTest {
     @MockBean
     private PostService postService;
 
+    private User user;
 
+    private Post post;
+
+
+    @BeforeEach
+    void setUp() {
+        user = User.builder()
+                .email("test@test.com")
+                .password("test1234")
+                .nickname("테스트")
+                .address("서울특별시 강남구")
+                .latitude(37.123456)
+                .longitude(127.123456)
+                .role(Role.ROLE_USER)
+                .build();
+        user.setIdForTest(1L);
+        post = Post.builder()
+                .title("테스트")
+                .content("콘텐츠")
+                .views(0)
+                .isNotice(false)
+                .category(Category.FREE)
+                .user(user)
+                .build();
+        post.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2023-07-29 04:23:23"));
+
+    }
     @Test
     @WithMockUser
     @DisplayName("create Post")
@@ -158,4 +198,18 @@ public class PostControllerTest {
                 .andExpect(status().isOk());
 
     }
+
+    @Test
+    @WithMockUser
+    @DisplayName("게시글 좋아요 성공")
+    void likePost_Success() throws Exception {
+
+        // given
+        Long id = 1L;
+
+        // when & then
+        mockMvc.perform(get("/api/v1/posts/{id}/like", id))
+                .andExpect(status().isOk());
+    }
+
 }
