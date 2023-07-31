@@ -49,7 +49,7 @@ public class JointPurchaseService {
         jointPurchaseRepository.save(jointPurchase);
     }
 
-    public String getProductImage(String productName) {
+    private String getProductImage(String productName) {
         String url = "https://openapi.naver.com/v1/search/shop.json";
 
         HttpHeaders headers = new HttpHeaders();
@@ -76,7 +76,7 @@ public class JointPurchaseService {
         }
     }
 
-    public PlaceDto getPlace(String keyword) {
+    private PlaceDto getPlace(String keyword) {
         String url = "https://dapi.kakao.com/v2/local/search/keyword.json";
 
         HttpHeaders headers = new HttpHeaders();

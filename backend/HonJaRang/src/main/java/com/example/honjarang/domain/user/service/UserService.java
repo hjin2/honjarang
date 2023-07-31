@@ -1,11 +1,7 @@
 package com.example.honjarang.domain.user.service;
 
-import com.amazonaws.HttpMethod;
-import com.example.honjarang.domain.post.entity.Post;
-import com.example.honjarang.domain.post.exception.PaymentException;
-
 import com.example.honjarang.domain.post.dto.PostListDto;
-
+import com.example.honjarang.domain.post.exception.PaymentException;
 import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.post.service.PostService;
 import com.example.honjarang.domain.user.dto.LoginDto;
@@ -24,16 +20,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-
-import java.net.URI;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service

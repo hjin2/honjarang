@@ -72,4 +72,8 @@ public class JointPurchase extends BaseTimeEntity {
         this.latitude = latitude;
         this.longitude = longitude;
     }
+
+    public void setIdForTest(Long id) {
+        this.id = id;
+    }
 }
