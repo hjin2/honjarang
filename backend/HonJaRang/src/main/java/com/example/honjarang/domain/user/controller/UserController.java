@@ -3,6 +3,8 @@ package com.example.honjarang.domain.user.controller;
 import com.example.honjarang.domain.user.dto.*;
 import com.example.honjarang.domain.user.entity.User;
 
+import com.example.honjarang.domain.post.dto.PostListDto;
+
 import com.example.honjarang.domain.user.service.EmailService;
 import com.example.honjarang.domain.user.service.S3UploadService;
 import com.example.honjarang.domain.user.service.UserService;
@@ -12,7 +14,7 @@ import com.example.honjarang.security.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -86,10 +88,14 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostListDto>> getMyPostList(@RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
+        return ResponseEntity.ok(userService.getMyPostList(page,user));
+    }
+
     @PutMapping("/withdraw")
     public ResponseEntity<Void> withdrawPoint(@RequestBody Map<String, Integer> point, @CurrentUser User user){
         userService.withdrawPoint(point.get("point"),user);
         return ResponseEntity.ok().build();
     }
-
 }
