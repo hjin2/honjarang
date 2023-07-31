@@ -1,7 +1,7 @@
 import axios from "axios"
 import { useState } from "react"
 
-export default function Nickname_check() {
+export default function Nickname_check({ChangeNicknameValid}) {
   const [nickname, setInput] = useState('')
   const [nicknameMsg, setnicknameMsg] = useState('')
 
@@ -19,6 +19,7 @@ export default function Nickname_check() {
   .then(function (response) {
     console.log(response)
     setnicknameMsg('')
+    ChangeNicknameValid()
 
   })
   .catch(function (error) {
