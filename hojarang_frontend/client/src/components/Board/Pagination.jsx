@@ -1,5 +1,3 @@
-
-
 function Pagination({ total, limit, page, setPage }) {
   const numPages = Math.ceil(total / limit);
 
@@ -27,8 +25,6 @@ function Pagination({ total, limit, page, setPage }) {
     </div>
   );
 }
-
-const [cate, setCate] = useState('')
 
 
 export default Pagination;
