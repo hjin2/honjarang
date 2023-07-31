@@ -1,7 +1,13 @@
 package com.example.honjarang.domain.user.service;
 
 import com.amazonaws.HttpMethod;
+import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.PaymentException;
+
+import com.example.honjarang.domain.post.dto.PostListDto;
+
+import com.example.honjarang.domain.post.repository.PostRepository;
+import com.example.honjarang.domain.post.service.PostService;
 import com.example.honjarang.domain.user.dto.LoginDto;
 import com.example.honjarang.domain.user.dto.PointDto;
 import com.example.honjarang.domain.user.dto.UserCreateDto;
@@ -16,6 +22,8 @@ import com.example.honjarang.domain.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,10 +33,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 
 import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -37,11 +42,15 @@ public class UserService {
 
     private final EmailVerificationRepository emailVerificationRepository;
 
+    private final PostRepository postRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     private final RestTemplate restTemplate;
 
     private final ObjectMapper objectMapper;
+
+    private final PostService postService;
 
     @Transactional(readOnly = true)
     public User login(LoginDto loginDto) {
@@ -133,6 +142,15 @@ public class UserService {
 
 
 
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostListDto> getMyPostList(int page, User user){
+        Pageable pageable = PageRequest.of(page-1, 15);
+        return postRepository.findAllByUserIdOrderByIdDesc(user.getId(), pageable)
+                .stream()
+                .map(post -> postService.toPostListDto(post))
+                .toList();
     }
 
     @Transactional
