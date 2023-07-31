@@ -1,6 +1,5 @@
 package com.example.honjarang.domain.jointdelivery.entity;
 
-import com.example.honjarang.domain.jointdelivery.document.Menu;
 import com.example.honjarang.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
