@@ -22,6 +22,5 @@ public class PostDto {
     private Integer views;
     private Boolean isNotice;
     private String createdAt;
-
 }
 

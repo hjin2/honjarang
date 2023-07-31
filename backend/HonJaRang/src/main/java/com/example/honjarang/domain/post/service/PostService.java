@@ -67,7 +67,8 @@ public class PostService {
         post.update(postUpdateDto);
     }
 
-    @Transactional
+
+    @Transactional(readOnly = true)
     public List<PostListDto> getPostList(int page, String keyword) {
         Pageable pageable = PageRequest.of(page -1, 15);
         return postRepository.findAllByTitleContainingIgnoreCaseOrderByIsNoticeDescIdDesc(keyword, pageable)
@@ -78,7 +79,6 @@ public class PostService {
 
     @Transactional
     public PostDto getPost(long id) {
-
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
         postRepository.increaseViews(id);
         post.increaseViews();

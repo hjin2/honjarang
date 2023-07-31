@@ -57,5 +57,4 @@ public class PostController {
     public void likePost(@PathVariable Long id, @CurrentUser User user) {
         postService.togglePostLike(id, user);
     }
-
 }

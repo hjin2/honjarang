@@ -181,7 +181,22 @@ public class PostControllerTest {
 
         // when & then
         mockMvc.perform(get("/api/v1/posts"))
-                        .andExpect(status().isOk());
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("게시글 조회 성공")
+    void getPost_Success() throws Exception {
+
+        //given
+        Long postId = 1L;
+
+        // when & then
+        mockMvc.perform(get("/api/v1/posts")
+                .contentType("application/json")
+                .content(new ObjectMapper().writeValueAsString(postId)))
+                .andExpect(status().isOk());
+
     }
 
     @Test
