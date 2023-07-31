@@ -74,8 +74,7 @@ public class PostService {
     }
 
     @Transactional
-    public PostDto getPost(long id, @CurrentUser User user) {
-
+    public PostDto getPost(long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
         postRepository.increaseViews(id);
         post.increaseViews();
@@ -103,10 +102,10 @@ public class PostService {
                 post.getTitle(),
                 post.getCategory(),
                 post.getContent(),
+                post.getUser().getNickname(),
                 post.getViews(),
                 post.getIsNotice(),
-                DateTimeUtils.formatLocalDateTime(post.getCreatedAt()),
-                DateTimeUtils.formatLocalDateTime(post.getUpdatedAt())
+                DateTimeUtils.formatLocalDateTime(post.getCreatedAt())
         );
     }
 }
