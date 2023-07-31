@@ -4,11 +4,10 @@ import {
   Routes 
 } from 'react-router-dom';
 
-
+import Chatting from './pages/Chatting/Chatting';
 import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup';
 import Notfound from './pages/Notfound/Notfound';
-import Header from './components/Header/Header';
 import Market from './pages/Market/Market';
 import WebRTC from './pages/WebRTC/WebRTC';
 import Board from './pages/Board/Board';
@@ -29,7 +28,6 @@ function App() {
   return (
     <div className='app'>
       <BrowserRouter>
-        <Header/>
         <Routes>
           <Route element={ <DefaultLayout/> }>
             <Route exact path="/" element={<Login />} />
@@ -47,10 +45,10 @@ function App() {
             <Route path="/board/articlecreate" element={<ArticleCreate/>}></Route>
             <Route path="/board/article/:id" element={<ArticleDetail />} />
             <Route path="/*" element={<Notfound />}/>
-            <Route path="/checkout" element={ <Checkout/> }/>
-            <Route path="/checkout/fail" element={ <Fail/> }/>
-            <Route path="/checkout/success" element={ <Success/> }/>
           </Route>
+          <Route path="/checkout" element={ <Checkout/> }/>
+          <Route path="/checkout/fail" element={ <Fail/> }/>
+          <Route path="/checkout/success" element={ <Success/> }/>
         </Routes>
       </BrowserRouter>
     </div>
