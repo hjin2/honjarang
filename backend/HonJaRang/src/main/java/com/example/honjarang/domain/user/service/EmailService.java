@@ -1,10 +1,7 @@
 package com.example.honjarang.domain.user.service;
 
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.model.*;
 import com.example.honjarang.domain.user.entity.EmailVerification;
 import com.example.honjarang.domain.user.exception.DuplicateEmailException;
-import com.example.honjarang.domain.user.exception.DuplicateNicknameException;
 import com.example.honjarang.domain.user.exception.VerificationCodeMismatchException;
 import com.example.honjarang.domain.user.exception.VerificationCodeNotFoundException;
 import com.example.honjarang.domain.user.repository.EmailVerificationRepository;
@@ -16,6 +13,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import software.amazon.awssdk.services.ses.SesClient;
+import software.amazon.awssdk.services.ses.model.*;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -28,7 +27,7 @@ public class EmailService {
     @Value("${aws.ses.sender-email}")
     private String senderEmail;
 
-    private final AmazonSimpleEmailService amazonSimpleEmailService;
+    private final SesClient sesClient;
 
     private final EmailVerificationRepository emailVerificationRepository;
 
@@ -41,7 +40,7 @@ public class EmailService {
         }
         String verificationCode = generateVerificationCode();
         SendEmailRequest sendEmailRequest = generateSendEmailRequest(email, verificationCode);
-        amazonSimpleEmailService.sendEmail(sendEmailRequest);
+        sesClient.sendEmail(sendEmailRequest);
         saveVerificationCode(email, verificationCode);
     }
 
@@ -91,16 +90,22 @@ public class EmailService {
     }
 
     private SendEmailRequest generateSendEmailRequest(String email, String verificationCode) {
-        return new SendEmailRequest()
-                .withDestination(new Destination().withToAddresses(email))
-                .withSource(senderEmail)
-                .withMessage(new Message()
-                        .withBody(new Body()
-                                .withHtml(new Content()
-                                        .withCharset("UTF-8")
-                                        .withData(generateHtmlBody(verificationCode))))
-                        .withSubject(new Content()
-                                .withCharset("UTF-8").withData("회원가입 인증번호")));
+        return SendEmailRequest.builder()
+                .destination(Destination.builder().toAddresses(email).build())
+                .source(senderEmail)
+                .message(Message.builder()
+                        .body(Body.builder()
+                                .html(Content.builder()
+                                        .charset("UTF-8")
+                                        .data(generateHtmlBody(verificationCode))
+                                        .build())
+                                .build())
+                        .subject(Content.builder()
+                                .charset("UTF-8")
+                                .data("회원가입 인증번호")
+                                .build())
+                        .build())
+                .build();
     }
 
     @Transactional

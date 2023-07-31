@@ -1,6 +1,5 @@
 package com.example.honjarang.domain.user.service;
 
-import com.amazonaws.HttpMethod;
 import com.example.honjarang.domain.post.exception.PaymentException;
 import com.example.honjarang.domain.user.dto.LoginDto;
 import com.example.honjarang.domain.user.dto.PointDto;
