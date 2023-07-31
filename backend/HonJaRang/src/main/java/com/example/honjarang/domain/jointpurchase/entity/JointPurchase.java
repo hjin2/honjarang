@@ -54,7 +54,7 @@ public class JointPurchase extends BaseTimeEntity {
     @Column(nullable = false)
     private Double longitude;
 
-    @Column(nullable = false)
+    @Column
     @ColumnDefault("false")
     private Boolean isCanceled;
 
@@ -71,6 +71,10 @@ public class JointPurchase extends BaseTimeEntity {
         this.placeName = placeName;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public void cancel() {
+        this.isCanceled = true;
     }
 
     public void setIdForTest(Long id) {

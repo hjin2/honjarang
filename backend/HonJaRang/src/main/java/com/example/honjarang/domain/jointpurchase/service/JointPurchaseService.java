@@ -1,9 +1,13 @@
 package com.example.honjarang.domain.jointpurchase.service;
 
-import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseCreateDto;
-import com.example.honjarang.domain.jointpurchase.dto.PlaceDto;
+import com.example.honjarang.domain.jointpurchase.dto.*;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchase;
+import com.example.honjarang.domain.jointpurchase.entity.JointPurchaseApplicant;
+import com.example.honjarang.domain.jointpurchase.exception.JointPurchaseCanceledException;
+import com.example.honjarang.domain.jointpurchase.exception.JointPurchaseNotFoundException;
 import com.example.honjarang.domain.jointpurchase.exception.ProductNotFoundException;
+import com.example.honjarang.domain.jointpurchase.exception.UnauthorizedJointPurchaseAccessException;
+import com.example.honjarang.domain.jointpurchase.repository.JointPurchaseApplicantRepository;
 import com.example.honjarang.domain.jointpurchase.repository.JointPurchaseRepository;
 import com.example.honjarang.domain.map.exception.PlaceNotFoundException;
 import com.example.honjarang.domain.user.entity.User;
@@ -12,6 +16,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,12 +29,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class JointPurchaseService {
 
     private final JointPurchaseRepository jointPurchaseRepository;
+    private final JointPurchaseApplicantRepository jointPurchaseApplicantRepository;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
@@ -67,7 +76,7 @@ public class JointPurchaseService {
 
         try {
             JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
-            if(jsonNode.get("items").size() == 0) {
+            if (jsonNode.get("items").size() == 0) {
                 throw new ProductNotFoundException("상품을 찾을 수 없습니다.");
             }
             return jsonNode.get("items").get(0).get("image").asText();
@@ -94,7 +103,7 @@ public class JointPurchaseService {
 
         try {
             JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
-            if(jsonNode.get("documents").size() == 0) {
+            if (jsonNode.get("documents").size() == 0) {
                 throw new PlaceNotFoundException("장소를 찾을 수 없습니다.");
             }
             String placeName = jsonNode.get("documents").get(0).get("place_name").asText();
@@ -104,5 +113,55 @@ public class JointPurchaseService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Transactional
+    public void cancelJointPurchase(Long jointPurchaseId, User loginUser) {
+        JointPurchase jointPurchase = jointPurchaseRepository.findById(jointPurchaseId).orElseThrow(() -> new JointPurchaseNotFoundException("공동구매를 찾을 수 없습니다."));
+
+        if (!jointPurchase.getUser().getId().equals(loginUser.getId())) {
+            throw new UnauthorizedJointPurchaseAccessException("공동구매를 취소할 권한이 없습니다.");
+        }
+
+        if (jointPurchase.getIsCanceled()) {
+            throw new JointPurchaseCanceledException("이미 취소된 공동구매입니다.");
+        }
+
+        if (jointPurchase.getDeadline().isAfter(LocalDateTime.now())) {
+            jointPurchase.getUser().addPoint(1000);
+        }
+
+        List<JointPurchaseApplicant> jointPurchaseApplicants = jointPurchaseApplicantRepository.findAllByJointPurchaseId(jointPurchaseId);
+        for (JointPurchaseApplicant jointPurchaseApplicant : jointPurchaseApplicants) {
+            jointPurchaseApplicant.getUser().addPoint(jointPurchase.getPrice() * jointPurchaseApplicant.getQuantity());
+        }
+        jointPurchase.cancel();
+    }
+
+    @Transactional(readOnly = true)
+    public List<JointPurchaseListDto> getJointPurchaseList(Integer page, Integer size) {
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        Page<JointPurchase> jointPurchases = jointPurchaseRepository.findAllByDeadlineAfterAndIsCanceledFalse(LocalDateTime.now(), pageable);
+        return jointPurchases.getContent().stream()
+                .filter(jointPurchase -> {
+                    Integer currentPersonCount = jointPurchaseApplicantRepository.countByJointPurchaseId(jointPurchase.getId());
+                    return currentPersonCount < jointPurchase.getTargetPersonCount();
+                })
+                .map(jointPurchase -> new JointPurchaseListDto(jointPurchase, jointPurchaseApplicantRepository.countByJointPurchaseId(jointPurchase.getId())))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public JointPurchaseDto getJointPurchase(Long jointPurchaseId) {
+        JointPurchase jointPurchase = jointPurchaseRepository.findById(jointPurchaseId).orElseThrow(() -> new JointPurchaseNotFoundException("공동구매를 찾을 수 없습니다."));
+        Integer currentPersonCount = jointPurchaseApplicantRepository.countByJointPurchaseId(jointPurchaseId);
+        return new JointPurchaseDto(jointPurchase, currentPersonCount);
+    }
+
+    @Transactional(readOnly = true)
+    public List<JointPurchaseApplicantListDto> getJointPurchaseApplicantList(Long jointPurchaseId) {
+        return jointPurchaseApplicantRepository.findAllByJointPurchaseId(jointPurchaseId).stream()
+                .map(JointPurchaseApplicantListDto::new)
+                .toList();
     }
 }
