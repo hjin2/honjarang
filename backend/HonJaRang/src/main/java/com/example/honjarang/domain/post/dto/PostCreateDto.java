@@ -3,11 +3,13 @@ package com.example.honjarang.domain.post.dto;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PostCreateDto {
 
     @NotBlank(message = "제목은 필수 입력 칸입니다.")
@@ -15,14 +17,6 @@ public class PostCreateDto {
 
     @NotBlank(message = "내용은 필수 입력 칸입니다.")
     private String content;
-
-    public PostCreateDto() {
-
-    }
-    public PostCreateDto(String title, String content) {
-        this.title = title;
-        this.content = content;
-    }
 
     public Post toEntity(User user) {
         return Post.builder()

@@ -35,15 +35,6 @@ public class PostService {
 
     @Transactional
     public Long createPost(PostCreateDto postCreateDto, User user) {
-        if (postCreateDto.getTitle().equals(null) || postCreateDto.getTitle().equals("") || postCreateDto.getTitle().equals(" ")) {
-            if (postCreateDto.getContent().equals(null) || postCreateDto.getContent().equals("") || postCreateDto.getTitle().equals(" ")) {
-                throw new TitleAndContentEmptyException("제목과 내용은 필수 값입니다.");
-            } else
-                throw new TitleEmptyException("제목은 필수 값입니다.");
-        } else if (postCreateDto.getContent().equals(null) || postCreateDto.getContent().equals("") || postCreateDto.getTitle().equals(" ")) {
-            throw new ContentEmptyException("내용은 필수 값입니다.");
-        }
-
         return postRepository.save(postCreateDto.toEntity(user)).getId();
     }
 
