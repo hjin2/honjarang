@@ -8,7 +8,6 @@ import {
 import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup';
 import Notfound from './pages/Notfound/Notfound';
-import Header from './components/Header/Header';
 import Market from './pages/Market/Market';
 import WebRTC from './pages/WebRTC/WebRTC';
 import Board from './pages/Board/Board';
@@ -17,15 +16,17 @@ import Map from './pages/Map/Map';
 import MyPage from './pages/MyPage/MyPage';
 import FindPassword from './pages/FindPassword/FindPassword';
 import ChangePassword from './pages/FindPassword/ChangePassword';
-
+import Checkout from './pages/Checkout/Checkout';
+import Fail from './pages/Checkout/Fail';
+import Success from './pages/Checkout/Success';
+import DefaultLayout from './components/DefaultLayout';
 
 function App() {
   return (
-    <div className='app w-5/6 mx-auto'>
+    <div className='app'>
       <BrowserRouter>
-        <Header/>
-        <div>
-          <Routes>
+        <Routes>
+          <Route element={ <DefaultLayout/> }>
             <Route exact path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />}/>
@@ -38,8 +39,11 @@ function App() {
             <Route path="/findpassword" element={<FindPassword/>}/>
             <Route path="/findpassword/changepassword" element={<ChangePassword/>}></Route>
             <Route path="/*" element={<Notfound />}/>
-          </Routes>
-        </div>
+          </Route>
+          <Route path="/checkout" element={ <Checkout/> }/>
+          <Route path="/checkout/fail" element={ <Fail/> }/>
+          <Route path="/checkout/success" element={ <Success/> }/>
+        </Routes>
       </BrowserRouter>
     </div>
   );
