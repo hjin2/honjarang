@@ -106,7 +106,7 @@ public class PostService {
         }
     }
 
-    private PostListDto toPostListDto(Post post) {
+    public PostListDto toPostListDto(Post post) {
         return new PostListDto(
                 post.getId(),
                 post.getUser().getId(),
