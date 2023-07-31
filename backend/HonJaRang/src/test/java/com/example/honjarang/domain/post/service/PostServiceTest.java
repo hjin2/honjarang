@@ -316,18 +316,18 @@ public class PostServiceTest {
         assertThat(postService.getPostList(testPage, testKeyword)).isEqualTo((postList));
     }
 
-//    @Test
-//    @DisplayName("댓글 작성 성공")
-//    void createComment_Success() {
-//
-//        // given
-//        CommentCreateDto commentCreateDto = new CommentCreateDto("test");
-//        Comment comment = commentCreateDto.toEntity(post, user);
-//        given(postRepository.findById(1L)).willReturn(Optional.of(post));
-//
-//        // when
-//        assertThat(commentRepository.save(comment).getId()).isEqualTo(1L);
-//    }
+    @Test
+    @DisplayName("댓글 작성 성공")
+    void createComment_Success() {
+
+        // given
+        CommentCreateDto commentCreateDto = new CommentCreateDto("test");
+        Comment comment = commentCreateDto.toEntity(post, user);
+        given(postRepository.findById(1L)).willReturn(Optional.of(post));
+
+        // when
+        postService.createComment(1L, commentCreateDto, user);
+    }
 
     @Test
     @DisplayName("댓글 작성 실패 - 게시글이 존재하지 않을 경우")
@@ -339,6 +339,19 @@ public class PostServiceTest {
 
         // when & then
         assertThrows(PostNotFoundException.class, () -> postService.createComment(1L, commentCreateDto, user));
+    }
+
+    @Test
+    @DisplayName("댓글 작성 실패 - 댓글 내용이 없을 경우")
+    void createComment_ContentEmptyException() {
+
+        // given
+        CommentCreateDto commentCreateDto = new CommentCreateDto("");
+        given(postRepository.findById(1L)).willReturn(Optional.of(post));
+
+        // WHEN & THEN
+        assertThrows(ContentEmptyException.class, () -> postService.createComment(1L, commentCreateDto, user));
+
     }
     
 }
