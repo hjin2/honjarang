@@ -58,6 +58,8 @@ public class PostServiceTest {
 
     private User user;
 
+    private Comment comment;
+
     @BeforeEach
     void setUp() {
         user = User.builder()
@@ -76,6 +78,11 @@ public class PostServiceTest {
                 .category(Category.FREE)
                 .isNotice(false)
                 .content("test")
+                .build();
+        comment = Comment.builder()
+                .post(post)
+                .content("test")
+                .user(user)
                 .build();
     }
 
@@ -268,6 +275,29 @@ public class PostServiceTest {
 
     }
 
+    @Test
+    @DisplayName("댓글 삭제 성공")
+    void deleteComment_Success() {
+
+        // given
+        given(commentRepository.findById(1L)).willReturn(Optional.of(comment));
+        // when
+        postService.deleteComment(1L, user);
+    }
+
+
+
+    @Test
+    @DisplayName("댓글 삭제 실패 - 존재하지 않는 댓글일 경우")
+    void deleteComment_CommentNotFoundException() {
+
+        // given
+        given(commentRepository.findById(1L)).willThrow(new CommentNotFoundException("댓글이 존재하지 않습니다."));
+
+        // when & then
+        assertThrows(CommentNotFoundException.class, (() -> postService.deleteComment(1L, user));
+
+    }
     @Test
     @DisplayName("게시글 좋아요 성공")
     void togglePostLike_Success() {

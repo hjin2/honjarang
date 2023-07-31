@@ -27,7 +27,9 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc(addFilters = false)
@@ -226,6 +228,25 @@ public class PostControllerTest {
                         preprocessResponse(prettyPrint()),
                         requestFields(
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("댓글")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 성공")
+    void deleteComment_Success() throws Exception {
+
+        // given
+
+        // when & then
+        mockMvc.perform(delete("/api/v1/posts/{postId}/comments/{id}", 1L, 1L))
+                .andExpect(status().isOk())
+                .andDo(document("posts/comments/delete",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("postId").description("게시글 ID"),
+                                parameterWithName("id").description("댓글 ID")
                         )
                 ));
     }
