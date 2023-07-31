@@ -1,5 +1,10 @@
+import Delivery from "../../components/Market/Delivery"
+
 export default function Market() {
   return (
-    <div>Market</div>
+    <div>Market
+
+    <Delivery />
+    </div>
   )
 }
