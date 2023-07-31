@@ -1,8 +1,11 @@
 package com.example.honjarang.domain.user.controller;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.user.dto.*;
 import com.example.honjarang.domain.user.entity.User;
+
+import com.example.honjarang.domain.post.dto.PostListDto;
 
 import com.example.honjarang.domain.user.service.EmailService;
 import com.example.honjarang.domain.user.service.S3Uploader;
@@ -18,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -92,5 +96,10 @@ public class UserController {
     public ResponseEntity<Void> successPayment(@RequestBody PointDto pointDto, @CurrentUser User user){
         userService.successPayment(pointDto, user);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostListDto>> getMyPostList(@RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
+        return ResponseEntity.ok(userService.getMyPostList(page,user));
     }
 }
