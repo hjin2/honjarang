@@ -43,6 +43,8 @@ public class MapService {
                 .toUri();
         ResponseEntity<String> responseEntity = restTemplate.exchange(targetUrl, HttpMethod.GET, entity, String.class);
 
+
+
         try {
             JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
             if(jsonNode.get("documents").size() == 0) {

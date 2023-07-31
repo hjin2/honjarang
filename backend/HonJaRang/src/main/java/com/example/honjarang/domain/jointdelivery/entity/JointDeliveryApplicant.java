@@ -1,22 +1,22 @@
 package com.example.honjarang.domain.jointdelivery.entity;
 
+import com.example.honjarang.domain.BaseTimeEntity;
 import com.example.honjarang.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 @Getter
 @NoArgsConstructor
 @Entity
 @DynamicInsert
-public class JointDeliveryCart {
+public class JointDeliveryApplicant extends BaseTimeEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
-    private String menuId;
 
     @JoinColumn(name = "joint_delivery_id")
     @ManyToOne
@@ -26,15 +26,20 @@ public class JointDeliveryCart {
     @ManyToOne
     private User user;
 
+    // 수령여부
     @Column(nullable = false)
-    private Integer quantity;
+    @ColumnDefault("false")
+    private Boolean isReceived;
 
     @Builder
-    public JointDeliveryCart(String menuId, Integer quantity, JointDelivery jointDelivery, User user) {
-        this.menuId = menuId;
-        this.quantity = quantity;
+    public JointDeliveryApplicant(JointDelivery jointDelivery, User user, Boolean isReceived) {
         this.jointDelivery = jointDelivery;
         this.user = user;
+        this.isReceived = isReceived;
+    }
+
+    public void confirmReceived() {
+        this.isReceived = true;
     }
 
     public void setIdForTest(Long id) {

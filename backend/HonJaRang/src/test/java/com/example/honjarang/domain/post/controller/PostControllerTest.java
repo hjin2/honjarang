@@ -1,9 +1,9 @@
 package com.example.honjarang.domain.post.controller;
 
 
+import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.post.dto.CommentCreateDto;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
-import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Category;
 import com.example.honjarang.domain.post.entity.Post;
@@ -23,14 +23,11 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.FactoryBasedNavigableListAssert.assertThat;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc(addFilters = false)
@@ -44,9 +41,9 @@ public class PostControllerTest {
     @MockBean
     private PostService postService;
 
-    private Post post;
-
     private User user;
+
+    private Post post;
 
 
     @BeforeEach
@@ -58,18 +55,20 @@ public class PostControllerTest {
                 .address("서울특별시 강남구")
                 .latitude(37.123456)
                 .longitude(127.123456)
-                .role(Role.ROLE_ADMIN)
+                .role(Role.ROLE_USER)
                 .build();
+        user.setIdForTest(1L);
         post = Post.builder()
-                .title("test")
-                .user(user)
+                .title("테스트")
+                .content("콘텐츠")
                 .views(0)
-                .category(Category.FREE)
                 .isNotice(false)
-                .content("test")
+                .category(Category.FREE)
+                .user(user)
                 .build();
-    }
+        post.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2023-07-29 04:23:23"));
 
+    }
     @Test
     @WithMockUser
     @DisplayName("create Post")
@@ -183,6 +182,34 @@ public class PostControllerTest {
     }
 
     @Test
+    @DisplayName("게시글 조회 성공")
+    void getPost_Success() throws Exception {
+
+        //given
+        Long postId = 1L;
+
+        // when & then
+        mockMvc.perform(get("/api/v1/posts")
+                .contentType("application/json")
+                .content(new ObjectMapper().writeValueAsString(postId)))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("게시글 좋아요 성공")
+    void likePost_Success() throws Exception {
+
+        // given
+        Long id = 1L;
+
+        // when & then
+        mockMvc.perform(get("/api/v1/posts/{id}/like", id))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     @DisplayName("댓글 작성 성공")
     void creaetComment_Success() throws Exception {
 
@@ -202,4 +229,5 @@ public class PostControllerTest {
                         )
                 ));
     }
+
 }

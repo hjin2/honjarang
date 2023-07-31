@@ -3,6 +3,7 @@ package com.example.honjarang.domain.post.controller;
 
 import com.example.honjarang.domain.post.dto.CommentCreateDto;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.service.PostService;
@@ -47,6 +48,17 @@ public class PostController {
     public List<PostListDto> getPosts(@RequestParam(value = "page", defaultValue = "1") int page,
                                       @RequestParam(value = "keyword", defaultValue = "") String keyword) {
         return postService.getPostList(page, keyword);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PostDto> getPost(@PathVariable Long id) {
+        PostDto postDto = postService.getPost(id);
+        return ResponseEntity.ok(postDto);
+    }
+
+    @GetMapping("/{id}/like")
+    public void likePost(@PathVariable Long id, @CurrentUser User user) {
+        postService.togglePostLike(id, user);
     }
 
     @PostMapping(value = "/{id}/comments")

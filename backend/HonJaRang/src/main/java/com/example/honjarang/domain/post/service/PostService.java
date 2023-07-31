@@ -2,12 +2,16 @@ package com.example.honjarang.domain.post.service;
 
 
 import com.example.honjarang.domain.post.dto.CommentCreateDto;
+import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
+import com.example.honjarang.domain.post.entity.LikePost;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
 import com.example.honjarang.domain.post.repository.CommentRepository;
+import com.example.honjarang.domain.post.repository.LikePostRepository;
 import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,8 @@ public class PostService {
     private final PostRepository postRepository;
 
     private final CommentRepository commentRepository;
+
+    private final LikePostRepository likePostRepository;
 
     @Transactional
     public Long createPost(PostCreateDto postCreateDto, User user) {
@@ -72,13 +78,32 @@ public class PostService {
     }
 
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<PostListDto> getPostList(int page, String keyword) {
-        Pageable pageable = PageRequest.of(page - 1, 15);
+        Pageable pageable = PageRequest.of(page -1, 15);
         return postRepository.findAllByTitleContainingIgnoreCaseOrderByIsNoticeDescIdDesc(keyword, pageable)
                 .stream()
                 .map(post -> toPostListDto(post))
                 .toList();
+    }
+
+    @Transactional
+    public PostDto getPost(long id) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
+        postRepository.increaseViews(id);
+        post.increaseViews();
+        return toPostDto(post);
+
+    }
+
+    @Transactional
+    public void togglePostLike(Long id, User user) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
+        if (likePostRepository.countByPostIdAndUserId(id, user.getId()) == 0) {
+            likePostRepository.save(LikePost.builder().post(post).user(user).build());
+        } else {
+            likePostRepository.deleteByPostIdAndUserId(id, user.getId());
+        }
     }
 
     private PostListDto toPostListDto(Post post) {
@@ -90,9 +115,23 @@ public class PostService {
                 post.getContent(),
                 post.getViews(),
                 post.getIsNotice(),
-                post.getCreatedAt()
+                DateTimeUtils.formatLocalDateTime(post.getCreatedAt())
         );
     }
+
+    private PostDto toPostDto(Post post) {
+        return new PostDto(
+                post.getId(),
+                post.getUser().getId(),
+                post.getTitle(),
+                post.getCategory(),
+                post.getContent(),
+                post.getUser().getNickname(),
+                post.getViews(),
+                post.getIsNotice(),
+                DateTimeUtils.formatLocalDateTime(post.getCreatedAt())
+        );
+    }
+
+
 }
-
-
