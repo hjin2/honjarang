@@ -1,4 +1,5 @@
 import React from 'react';
+import ImageInput from './ImageInput';
 
 export default function EditModal({ modalState, setModalState }) {
   const onClickCloseButton = () => {
@@ -19,7 +20,7 @@ export default function EditModal({ modalState, setModalState }) {
                 </svg>
               </button>
             </div>
-            <div className='mx-auto border w-32 h-32'></div>
+            <ImageInput/>
             <div className='flex justify-center'>
               <button type="button" className='main1-button w-48'>프로필 사진 변경하기</button>
             </div>
