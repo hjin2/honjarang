@@ -28,7 +28,7 @@ export default function EditModal({ modalState, setModalState }) {
               <div className="font-bold">이메일</div>
               <div className="flex space-x-2">
                 <div>samsung@ssafy.com</div>
-                <button type="button" className='main2-button w-24'>변경하기</button>
+                <div className='w-24'></div>
               </div>
             </div>
             <div className='flex justify-between'>
@@ -47,7 +47,7 @@ export default function EditModal({ modalState, setModalState }) {
             </div>
           </div>  
           <div className='mt-10 space-y-2'>
-            <div className="cursor-pointer text-xs text-main1">변경 사항 저장하기</div>
+            <div className="cursor-pointer text-xs text-main1">비밀번호 변경</div>
             <div className="cursor-pointer text-xs text-main5">회원 탈퇴</div>
           </div>
         </div>
