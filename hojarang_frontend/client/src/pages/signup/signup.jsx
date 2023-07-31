@@ -8,7 +8,8 @@ import Password_check from '../../components/Signup/Password_Check'
 export default function Signup() {
 
   return (
-    <div className="center w-3/5 h-screen border border-solid border-black rounded">
+    <div className="w-3/5 h-screen border border-solid border-black rounded
+    flex flex-col items-center justify-around">
           <h1>회원가입</h1>
           <Email_verify />
           <Nickname_check />
