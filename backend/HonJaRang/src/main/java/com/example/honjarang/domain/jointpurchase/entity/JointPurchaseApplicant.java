@@ -40,4 +40,8 @@ public class JointPurchaseApplicant extends BaseTimeEntity {
         this.quantity = quantity;
         this.isReceived = isReceived;
     }
+
+    public void setIdForTest(Long id) {
+        this.id = id;
+    }
 }

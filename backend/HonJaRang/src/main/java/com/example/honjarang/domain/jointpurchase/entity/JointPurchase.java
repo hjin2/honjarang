@@ -80,4 +80,8 @@ public class JointPurchase extends BaseTimeEntity {
     public void setIdForTest(Long id) {
         this.id = id;
     }
+
+    public void setCanceledForTest(Boolean isCanceled) {
+        this.isCanceled = isCanceled;
+    }
 }

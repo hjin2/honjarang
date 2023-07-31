@@ -1,5 +1,6 @@
 package com.example.honjarang.domain.jointpurchase.dto;
 
+import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchase;
 import com.example.honjarang.domain.user.entity.User;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -34,11 +35,11 @@ public class JointPurchaseDto {
         this.currentPersonCount = currentPersonCount;
         this.targetPersonCount = jointPurchase.getTargetPersonCount();
         this.deliveryCharge = jointPurchase.getDeliveryCharge();
-        this.deadline = jointPurchase.getDeadline().toString();
+        this.deadline = DateTimeUtils.formatLocalDateTime(jointPurchase.getDeadline());
         this.placeName = jointPurchase.getPlaceName();
         this.placeLatitude = jointPurchase.getLatitude();
         this.placeLongitude = jointPurchase.getLongitude();
-        this.createdAt = jointPurchase.getCreatedAt().toString();
+        this.createdAt = DateTimeUtils.formatLocalDateTime(jointPurchase.getCreatedAt());
         this.userId = jointPurchase.getUser().getId();
         this.nickname = jointPurchase.getUser().getNickname();
     }
