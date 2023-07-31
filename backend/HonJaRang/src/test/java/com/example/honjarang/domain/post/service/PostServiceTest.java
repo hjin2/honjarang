@@ -7,10 +7,14 @@ import com.example.honjarang.domain.post.dto.PostDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Category;
+import com.example.honjarang.domain.post.entity.LikePost;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
+import com.example.honjarang.domain.post.repository.LikePostRepository;
 import com.example.honjarang.domain.post.repository.PostRepository;
+import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,15 +27,15 @@ import org.springframework.security.test.context.support.WithMockUser;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -44,10 +48,41 @@ public class PostServiceTest {
     @Mock
     private PostRepository postRepository;
 
+    @Mock
+    private LikePostRepository likePostRepository;
+
+    private Post post;
+
+    private User user;
+
     private static final String TEST_TITLE = "title";
     private static final String TEST_CONTENT = "content";
     private static final String TEST_EMAIL = "test@test.com";
     private static final String TEST_PASSWORD = "test1234";
+
+
+    @BeforeEach
+    void setUp() {
+        user = User.builder()
+                .email("test@test.com")
+                .password("test1234")
+                .nickname("테스트")
+                .address("서울특별시 강남구")
+                .latitude(37.123456)
+                .longitude(127.123456)
+                .role(Role.ROLE_USER)
+                .build();
+        user.setIdForTest(1L);
+        post = Post.builder()
+                .title("테스트")
+                .content("콘텐츠")
+                .views(0)
+                .isNotice(false)
+                .category(Category.FREE)
+                .user(user)
+                .build();
+        post.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2023-07-29 04:23:23"));
+    }
 
     @Test
     @DisplayName("게시글 작성 성공")
@@ -280,9 +315,33 @@ public class PostServiceTest {
     }
 
     @Test
+    @DisplayName("게시글 좋아요 성공")
+    void togglePostLike_Success() {
+
+        // given
+        given(postRepository.findById(1L)).willReturn(Optional.of(post));
+
+        // when
+        postService.togglePostLike(1L, user);
+
+        // then
+        then(postRepository).should().findById(1L);
+        then(likePostRepository).should().countByPostIdAndUserId(1L, user.getId());
+    }
+
+    @Test
+    @DisplayName("게시글 좋아요 실패 - 게시글이 존재하지 않을 경우")
+    void togglePostLike_PostNotFoundException() {
+
+        // given
+        given(postRepository.findById(1L)).willThrow(PostNotFoundException.class);
+
+        // when & then
+        assertThrows(PostNotFoundException.class, () -> postService.togglePostLike(1L, user));
+    }
+
     @DisplayName("게시글 상세 조회 성공")
     void getPost_Success() {
-
         // given
         Long id = 1L;
         Post post = Post.builder()
@@ -293,7 +352,6 @@ public class PostServiceTest {
         given(postRepository.findById(id)).willReturn(Optional.of(post));
 
         // when & then
-
         assertThat(postRepository.findById(id)).isEqualTo(Optional.of(post));
     }
 
@@ -309,6 +367,6 @@ public class PostServiceTest {
                 .build();
 
         // when & then
-        assertThrows(PostNotFoundException.class, () -> postService.getPost(id, user));
+        assertThrows(PostNotFoundException.class, () -> postService.getPost(id));
     }
 }

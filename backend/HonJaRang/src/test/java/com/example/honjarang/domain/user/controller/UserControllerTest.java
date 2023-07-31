@@ -4,7 +4,7 @@ import com.example.honjarang.domain.user.dto.*;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.service.EmailService;
-import com.example.honjarang.domain.user.service.S3Uploader;
+import com.example.honjarang.domain.user.service.S3UploadService;
 import com.example.honjarang.domain.user.service.UserService;
 import com.example.honjarang.security.dto.TokenDto;
 import com.example.honjarang.security.service.TokenService;
@@ -56,14 +56,18 @@ class UserControllerTest {
     private EmailService emailService;
 
     @MockBean
-    private S3Uploader s3Uploader;
+    private S3UploadService s3UploadService;
 
     private User user;
 
     @BeforeEach
     void setup(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentation) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .apply(documentationConfiguration(restDocumentation))
+                .apply(documentationConfiguration(restDocumentation)
+                        .uris()
+                        .withScheme("http")
+                        .withHost("honjarang.kro.kr")
+                        .withPort(80))
                 .build();
         user = User.builder()
                 .email("test@test.com")

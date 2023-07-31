@@ -1,7 +1,5 @@
 package com.example.honjarang.domain.user.service;
 
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 import com.example.honjarang.domain.user.entity.EmailVerification;
 import com.example.honjarang.domain.user.exception.DuplicateEmailException;
 import com.example.honjarang.domain.user.exception.VerificationCodeMismatchException;
@@ -15,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import software.amazon.awssdk.services.ses.SesClient;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -31,7 +30,7 @@ class EmailServiceTest {
     private EmailService emailService;
 
     @Mock
-    private AmazonSimpleEmailService amazonSimpleEmailService;
+    private SesClient sesClient;
 
     @Mock
     private EmailVerificationRepository emailVerificationRepository;

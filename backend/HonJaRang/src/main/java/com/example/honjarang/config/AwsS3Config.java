@@ -1,25 +1,26 @@
 package com.example.honjarang.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.ses.SesClient;
+import software.amazon.awssdk.services.s3.S3Client;
 
+@Slf4j
 @Configuration
-public class AwsSesConfig {
-
-    @Value("${aws.ses.access-key}")
+public class AwsS3Config {
+    @Value("${aws.s3.access-key}")
     private String accessKey;
 
-    @Value("${aws.ses.secret-key}")
+    @Value("${aws.s3.secret-key}")
     private String secretKey;
 
     @Bean
-    public SesClient amazonSimpleEmailService() {
-        return SesClient.builder()
+    public S3Client amazonS3Client() {
+        return S3Client.builder()
                 .region(Region.AP_NORTHEAST_2)
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey)))
                 .build();

@@ -6,8 +6,10 @@ import com.example.honjarang.domain.post.dto.PostCreateDto;
 import com.example.honjarang.domain.post.dto.PostDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
+import com.example.honjarang.domain.post.entity.LikePost;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
+import com.example.honjarang.domain.post.repository.LikePostRepository;
 import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.security.CurrentUser;
@@ -25,6 +27,8 @@ import java.util.Objects;
 public class PostService {
 
     private final PostRepository postRepository;
+
+    private final LikePostRepository likePostRepository;
 
     @Transactional
     public Long createPost(PostCreateDto postCreateDto, User user) {
@@ -74,8 +78,7 @@ public class PostService {
     }
 
     @Transactional
-    public PostDto getPost(long id, @CurrentUser User user) {
-
+    public PostDto getPost(long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
         postRepository.increaseViews(id);
         post.increaseViews();
@@ -83,7 +86,17 @@ public class PostService {
 
     }
 
-    private PostListDto toPostListDto(Post post) {
+    @Transactional
+    public void togglePostLike(Long id, User user) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
+        if (likePostRepository.countByPostIdAndUserId(id, user.getId()) == 0) {
+            likePostRepository.save(LikePost.builder().post(post).user(user).build());
+        } else {
+            likePostRepository.deleteByPostIdAndUserId(id, user.getId());
+        }
+    }
+
+    public PostListDto toPostListDto(Post post) {
         return new PostListDto(
                 post.getId(),
                 post.getUser().getId(),
@@ -103,10 +116,12 @@ public class PostService {
                 post.getTitle(),
                 post.getCategory(),
                 post.getContent(),
+                post.getUser().getNickname(),
                 post.getViews(),
                 post.getIsNotice(),
-                DateTimeUtils.formatLocalDateTime(post.getCreatedAt()),
-                DateTimeUtils.formatLocalDateTime(post.getUpdatedAt())
+                DateTimeUtils.formatLocalDateTime(post.getCreatedAt())
         );
     }
+
+
 }

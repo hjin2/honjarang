@@ -76,6 +76,11 @@ spec:
                 secretKeyRef:
                   name: honjarang-secret
                   key: aws_s3_secret_key
+            - name: AWS_S3_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: aws_s3_bucket_name
       imagePullSecrets:
         - name: honjarang-secret
 

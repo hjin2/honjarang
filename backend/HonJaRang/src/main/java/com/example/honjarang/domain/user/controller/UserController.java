@@ -1,27 +1,21 @@
 package com.example.honjarang.domain.user.controller;
 
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.honjarang.domain.user.dto.*;
 import com.example.honjarang.domain.user.entity.User;
 
+import com.example.honjarang.domain.post.dto.PostListDto;
+
 import com.example.honjarang.domain.user.service.EmailService;
-import com.example.honjarang.domain.user.service.S3Uploader;
+import com.example.honjarang.domain.user.service.S3UploadService;
 import com.example.honjarang.domain.user.service.UserService;
 import com.example.honjarang.security.CurrentUser;
 import com.example.honjarang.security.dto.TokenDto;
 import com.example.honjarang.security.service.TokenService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.awt.*;
+import java.util.List;
 import java.util.Map;
-
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -33,7 +27,7 @@ public class UserController {
 
     private final EmailService emailService;
 
-    private final S3Uploader s3Uploader;
+    private final S3UploadService s3UploadService;
 
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto) {
@@ -81,7 +75,7 @@ public class UserController {
     public ResponseEntity<Void> uploadUserImage(@RequestBody String profileImage, @CurrentUser User user){
         if (user.getProfileImage() != null && !user.getProfileImage().isEmpty()) {
             if(!user.getProfileImage().equals(profileImage)) {
-                s3Uploader.delete(user.getProfileImage());
+                s3UploadService.delete(user.getProfileImage());
             }
         }
         userService.changeUserImage(user, profileImage);
@@ -91,6 +85,17 @@ public class UserController {
     @PostMapping("/success")
     public ResponseEntity<Void> successPayment(@RequestBody PointDto pointDto, @CurrentUser User user){
         userService.successPayment(pointDto, user);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostListDto>> getMyPostList(@RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
+        return ResponseEntity.ok(userService.getMyPostList(page,user));
+    }
+
+    @PutMapping("/withdraw")
+    public ResponseEntity<Void> withdrawPoint(@RequestBody Map<String, Integer> point, @CurrentUser User user){
+        userService.withdrawPoint(point.get("point"),user);
         return ResponseEntity.ok().build();
     }
 }
