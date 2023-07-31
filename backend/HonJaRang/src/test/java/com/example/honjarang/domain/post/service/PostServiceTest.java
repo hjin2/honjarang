@@ -367,6 +367,6 @@ public class PostServiceTest {
                 .build();
 
         // when & then
-        assertThrows(PostNotFoundException.class, () -> postService.getPost(id, user));
+        assertThrows(PostNotFoundException.class, () -> postService.getPost(id));
     }
 }
