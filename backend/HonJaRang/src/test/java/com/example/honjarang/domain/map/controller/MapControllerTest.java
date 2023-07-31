@@ -46,7 +46,11 @@ class MapControllerTest {
     @BeforeEach
     void setUp(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentation) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .apply(documentationConfiguration(restDocumentation))
+                .apply(documentationConfiguration(restDocumentation)
+                        .uris()
+                        .withScheme("http")
+                        .withHost("honjarang.kro.kr")
+                        .withPort(80))
                 .build();
     }
 
