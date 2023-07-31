@@ -1,16 +1,20 @@
 import { useState } from 'react'
 import EditModal from './EditModal';
-
+import { useSelector } from 'react-redux';
 
 export default function UserInfo(props) {
   const [modalState, setModalState] = useState(false);
   const onModalOpen = () => {
     setModalState(!modalState)
   }
-
+  const image = useSelector((state) => state.upload.image)
   return (
     <div className="flex justify-center space-x-10">
-        <div className="border w-32 h-32"></div>
+        <img
+          className='h-20 w-20 rounded-full'
+          src={image} 
+          size={200} 
+        ></img>
         <div className="space-y-2">
           <div className="flex">
             <div className="font-bold text-lg mr-3">{props.nickname}</div>
