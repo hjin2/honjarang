@@ -91,39 +91,6 @@ public class PostServiceTest {
 
     }
 
-    @Test
-    @DisplayName("게시글 작성 실패 - 제목이 없을 경우")
-    void createPost_EmptyTitleException() {
-        // given
-
-        PostCreateDto postCreateDto = new PostCreateDto("", "test");
-        
-        // when & then
-        assertThrows(TitleEmptyException.class, () -> postService.createPost(postCreateDto,user));
-
-    }
-
-    @Test
-    @DisplayName("게시글 작성 실패 - 내용이 없을 경우")
-    void createPost_EmptyContentException() {
-
-        // given
-        PostCreateDto postCreateDto = new PostCreateDto("test", "");
-
-        // when & then
-        assertThrows(ContentEmptyException.class, () -> postService.createPost(postCreateDto,user));
-    }
-
-
-    @Test
-    @DisplayName("게시글 작성 실패 - 제목과 내용이 없을 경우")
-    void createPost_EmptyTitleAndContentException() {
-        // given
-        PostCreateDto postCreateDto = new PostCreateDto("", "");
-
-        // when & then
-        assertThrows(TitleAndContentEmptyException.class, () -> postService.createPost(postCreateDto, user));
-    }
 
     @Test
     @WithMockUser

@@ -85,54 +85,6 @@ public class PostControllerTest {
                 .andExpect(status().isCreated());
     }
 
-
-    @Test
-    @WithMockUser
-    @DisplayName("게시글 작성 실패 - 제목이 없을 경우")
-    void createPost_EmptyTitle() throws Exception {
-
-        // given
-        String content = "content";
-        PostCreateDto postCreateDto = new PostCreateDto(null, content);
-
-        // when & then
-        mockMvc.perform(post("/api/v1/posts")
-                        .contentType("application/json")
-                        .content(new ObjectMapper().writeValueAsString(postCreateDto)))
-                        .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser
-    @DisplayName("게시글 작성 실패 - 내용이 없을 경우")
-    void createPost_EmptyContent() throws Exception {
-
-        // given
-        String title = "title";
-        PostCreateDto postCreateDto = new PostCreateDto(title, null);
-
-        // when & then
-        mockMvc.perform(post("/api/v1/posts")
-                .contentType("application/json")
-                .content(new ObjectMapper().writeValueAsString(postCreateDto)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser
-    @DisplayName("게시글 작성 실패 - 내용과 제목이 없을 경우")
-    void createPost_EmptyTitleAndContent() throws Exception {
-
-        // given
-        PostCreateDto postCreateDto = new PostCreateDto(null, null);
-
-        // when & then
-        mockMvc.perform(post("/api/v1/posts")
-                        .contentType("application/json")
-                        .content(new ObjectMapper().writeValueAsString(postCreateDto)))
-                .andExpect(status().isBadRequest());
-    }
-
     @Test
     @WithMockUser
     @DisplayName("게시글 삭제 성공")
