@@ -2,7 +2,6 @@ package com.example.honjarang.domain.post.dto;
 
 
 import com.example.honjarang.domain.post.entity.Category;
-import com.example.honjarang.domain.post.entity.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
