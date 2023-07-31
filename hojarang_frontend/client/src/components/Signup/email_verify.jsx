@@ -3,7 +3,7 @@ import { useState } from 'react'
 import Verify_check from './verify_input'
 
 
-function Email_verify() {
+function Email_verify({ChangeEmailValid}) {
   const [id, setInput] = useState('')
   const [address, setAddress] = useState('')
   const [emailMsg, setemailMsg] = useState('')
@@ -32,13 +32,12 @@ function Email_verify() {
       console.log(response)
       setemailMsg('')
       setemailCheck(true)
+      alert('인증번호를 전송했습니다!')
       console.log(emailCheck)
+      ChangeEmailValid()
     })
     .catch(function (error) {
       console.log(error)
-      console.log(email)
-      setemailCheck(true)
-      alert('인증번호를 전송했습니다!')
       setemailMsg('사용할 수 없는 이메일입니다.')
 
     })

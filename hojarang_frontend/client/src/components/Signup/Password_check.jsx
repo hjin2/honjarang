@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-export default function Password_check() {
+export default function Password_check({ChangePwdValid}) {
   const [password, setPassword] = useState('')
   const [password_cfm, setPassword_cfm] = useState('')
   const [pwdMsg, setpwdMsg] = useState('')
@@ -14,14 +14,21 @@ export default function Password_check() {
 else {
   setpwdMsg('사용할 수 없는 비밀번호입니다.')
 }}
-  
+
+const PwdValidCheck = () => {
+  if (password !== '' && password_cfm !== '') {
+    ChangePwdValid()
+  }
+}
   const pwd_cfm_check = (pwd_cfm) => {
     if (pwd_cfm !== password) {
       setpwdcfmMsg('비밀번호가 일치하지 않습니다.')
     }
     else {
+      PwdValidCheck()
       setpwdcfmMsg('')
     }}
+
     
     
     const onChange_password = (event) => {
