@@ -16,7 +16,7 @@ export default function Login() {
   return (
     <div className="container flex flex-col items-center justify-center mx-auto ">
       <form className="space-y-4 md:space-y-6" action="#">
-        <div className="h-20">
+        <div>
           <label htmlFor="email" className="block mb-2">이메일</label> 
           <input type="email" className="border-gray3 rounded-lg block focus:outline-main2 focus:outline-2"/>
         </div>
@@ -25,7 +25,7 @@ export default function Login() {
           <input type="password" className="border-gray3 rounded-lg block focus:outline-main2 focus:outline-2"/>
         </div>
       </form>
-      <button onClick={() => {dispatch(loginAccount)}} className="w-32 main1-button" >로그인</button>
+      <button onClick={() => {dispatch(loginAccount)}} className="w-32 main1-button my-5" >로그인</button>
       <div>
         <Link to='/findpassword'>비밀번호 찾기</Link> | <Link to='/signup'>회원가입</Link>
       </div>

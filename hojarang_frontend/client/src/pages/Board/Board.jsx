@@ -1,4 +1,4 @@
-import AricleList from "../../components/Board/ArticleList"
+import AricleList from "./ArticleList"
 
 export default function Board() {
   return (

@@ -16,10 +16,16 @@ import Map from './pages/Map/Map';
 import MyPage from './pages/MyPage/MyPage';
 import FindPassword from './pages/FindPassword/FindPassword';
 import ChangePassword from './pages/FindPassword/ChangePassword';
+<<<<<<< HEAD:hojarang_frontend/src/App.jsx
+import ArticleCreate from './pages/Board/ArticleCreate';
+import { ArticleDetail } from './pages/Board/ArticleDetail';
+
+=======
 import Checkout from './pages/Checkout/Checkout';
 import Fail from './pages/Checkout/Fail';
 import Success from './pages/Checkout/Success';
 import DefaultLayout from './components/DefaultLayout';
+>>>>>>> frontend:hojarang_frontend/client/src/App.jsx
 
 function App() {
   return (
@@ -38,6 +44,9 @@ function App() {
             <Route path="/mypage/:nickname" element={<MyPage />}/>
             <Route path="/findpassword" element={<FindPassword/>}/>
             <Route path="/findpassword/changepassword" element={<ChangePassword/>}></Route>
+            <Route path="/board/articlecreate" element={<ArticleCreate/>}></Route>
+            <Route path="/board/article/:id" element={<ArticleDetail />} />
+
             <Route path="/*" element={<Notfound />}/>
           </Route>
           <Route path="/checkout" element={ <Checkout/> }/>
