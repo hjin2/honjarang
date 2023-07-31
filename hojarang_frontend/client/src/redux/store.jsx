@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import loginSlice from "./slice/loginSlice";
+import articleSlice from "./slice/articleSlice";
 import UploadSlice from "./slice/UploadSlice";
 
 // 스토어 생성
 const store = configureStore({
     reducer: {
         login:loginSlice.reducer,
+        articles:articleSlice.reducer,
         upload:UploadSlice.reducer,
     },
     middleware: getDefaultMiddleware => getDefaultMiddleware({ serializableCheck: false }),
