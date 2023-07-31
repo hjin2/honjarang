@@ -13,7 +13,7 @@ function Pagination({ total, limit, page, setPage }) {
             <button
               key={i + 1}
               onClick={() => setPage(i + 1)}
-              aria-current={page === i + 1 ? "page" : null}
+              aria-current={page === i + 1 ? 'page' : null}
             >
               {i + 1}
             </button>
@@ -25,6 +25,5 @@ function Pagination({ total, limit, page, setPage }) {
     </div>
   );
 }
-
 
 export default Pagination;

@@ -1,16 +1,13 @@
 import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { imageUpload } from '../../redux/slice/UploadSlice';
-import axios from 'axios'
-import AWS from 'aws-sdk'
-
-
-
+import axios from 'axios';
+import AWS from 'aws-sdk';
 
 const ImageInput = () => {
   const fileInput = useRef(null);
   const dispatch = useDispatch();
-  const image = useSelector((state) => state.upload.image)
+  const image = useSelector((state) => state.upload.image);
 
   const REGION = import.meta.env.VITE_APP_REGION;
   const ACCESS_KEY_ID = import.meta.env.VITE_APP_ACCESS_KEY_ID;
@@ -20,9 +17,8 @@ const ImageInput = () => {
     region: REGION,
     accessKeyId: ACCESS_KEY_ID,
     secretAccessKey: SECRET_ACCESS_KEY,
-  })
+  });
   const onChange = (e) => {
-
     if (e.target.files[0]) {
       const selectedFile = e.target.files[0];
       dispatch(imageUpload(selectedFile));
@@ -42,21 +38,24 @@ const ImageInput = () => {
       //     console.log(err)
       //   })
 
-      const formData = new FormData()
-      formData.append('image',selectedFile)
-      axios.post("http://localhost:5000/upload", formData,{
-        headers:{
-          'Content-Type' : 'multipart/form-data'
-        }
-      }).then(res => {
-        // console.log(FormData)
-        console.log(res)
-        alert('성공')
-      }).catch(err => {
-        console.log(err)
-        alert('실패')
-      })
-      
+      const formData = new FormData();
+      formData.append('image', selectedFile);
+      axios
+        .post('http://localhost:5000/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        .then((res) => {
+          // console.log(FormData)
+          console.log(res);
+          alert('성공');
+        })
+        .catch((err) => {
+          console.log(err);
+          alert('실패');
+        });
+
       const reader = new FileReader();
       reader.onload = () => {
         if (reader.readyState === 2) {
@@ -67,8 +66,8 @@ const ImageInput = () => {
     } else {
       dispatch(
         imageUpload(
-          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
-        )
+          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+        ),
       );
     }
   };

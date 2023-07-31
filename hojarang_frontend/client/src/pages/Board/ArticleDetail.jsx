@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 export const ArticleDetail = () => {
@@ -12,9 +12,5 @@ export const ArticleDetail = () => {
   //   content
   // });
 
-  
-  return (
-    <div>ArticleDetail</div>
-   
-  )
-}
+  return <div>ArticleDetail</div>;
+};

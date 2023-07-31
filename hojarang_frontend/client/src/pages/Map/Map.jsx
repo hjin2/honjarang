@@ -1,5 +1,3 @@
 export default function Map() {
-  return (
-    <div>Map</div>
-  )
+  return <div>Map</div>;
 }
