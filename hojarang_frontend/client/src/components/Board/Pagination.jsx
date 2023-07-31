@@ -18,9 +18,9 @@ function Pagination({ total, limit, page, setPage }) {
               {i + 1}
             </button>
           ))}
-        <buitton onClick={() => setPage(page + 1)} disabled={page === numPages}>
+        <button onClick={() => setPage(page + 1)} disabled={page === numPages}>
           &gt;
-        </buitton>
+        </button>
       </nav>
     </div>
   );
