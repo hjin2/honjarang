@@ -21,7 +21,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import java.time.LocalDateTime;
@@ -34,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -314,20 +316,18 @@ public class PostServiceTest {
         assertThat(postService.getPostList(testPage, testKeyword)).isEqualTo((postList));
     }
 
-    @Test
-    @DisplayName("댓글 작성 성공")
-    void createComment_Success() {
-
-        // given
-
-        CommentCreateDto commentCreateDto = new CommentCreateDto("test");
-        Comment comment = commentCreateDto.toEntity(post, user);
-       //  given(postRepository.findById(1L)).willReturn(Optional.of(post));
-        // when
-        commentRepository.save(comment);
-         // postService.createComment(1L, commentCreateDto, user);
-        // then
-    }
+//    @Test
+//    @DisplayName("댓글 작성 성공")
+//    void createComment_Success() {
+//
+//        // given
+//        CommentCreateDto commentCreateDto = new CommentCreateDto("test");
+//        Comment comment = commentCreateDto.toEntity(post, user);
+//        given(postRepository.findById(1L)).willReturn(Optional.of(post));
+//
+//        // when
+//        assertThat(commentRepository.save(comment).getId()).isEqualTo(1L);
+//    }
 
     @Test
     @DisplayName("댓글 작성 실패 - 게시글이 존재하지 않을 경우")

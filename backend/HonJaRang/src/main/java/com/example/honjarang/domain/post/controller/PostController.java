@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 
@@ -49,9 +50,9 @@ public class PostController {
 
     @PostMapping(value = "/{id}/comments")
     public ResponseEntity<Long> createComment(@PathVariable Long id, @RequestBody CommentCreateDto commentCreateDto, @CurrentUser User user) {
+        postService.createComment(id, commentCreateDto, user);
         return ResponseEntity.created(null).body(postService.createComment(id, commentCreateDto, user));
     }
-
 
 
 }
