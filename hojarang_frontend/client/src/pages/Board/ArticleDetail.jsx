@@ -15,5 +15,6 @@ export const ArticleDetail = () => {
   
   return (
     <div>ArticleDetail</div>
+   
   )
 }
