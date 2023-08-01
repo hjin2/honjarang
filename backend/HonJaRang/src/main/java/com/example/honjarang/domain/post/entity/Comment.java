@@ -21,12 +21,12 @@ public class Comment extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "post_id")
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Post post;
 
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
@@ -41,4 +41,10 @@ public class Comment extends BaseTimeEntity {
         this.content = content;
 
     }
+
+    public void setUserForTest(User user) {
+        this.user = user;
+    }
+
+    public void setIdForTest(Long id) { this.id = id; }
 }
