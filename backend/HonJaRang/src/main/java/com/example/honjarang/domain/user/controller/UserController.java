@@ -1,10 +1,8 @@
 package com.example.honjarang.domain.user.controller;
 
+import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.user.dto.*;
 import com.example.honjarang.domain.user.entity.User;
-
-import com.example.honjarang.domain.post.dto.PostListDto;
-
 import com.example.honjarang.domain.user.service.EmailService;
 import com.example.honjarang.domain.user.service.S3UploadService;
 import com.example.honjarang.domain.user.service.UserService;
@@ -14,6 +12,7 @@ import com.example.honjarang.security.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 
