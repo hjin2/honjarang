@@ -1,6 +1,7 @@
 package com.example.honjarang.domain.post.controller;
 
 
+import com.example.honjarang.domain.post.dto.CommentCreateDto;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
 import com.example.honjarang.domain.post.dto.PostDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
@@ -57,4 +58,11 @@ public class PostController {
     public void likePost(@PathVariable Long id, @CurrentUser User user) {
         postService.togglePostLike(id, user);
     }
+
+    @PostMapping(value = "/{id}/comments")
+    public ResponseEntity<Void> createComment(@PathVariable Long id, @RequestBody CommentCreateDto commentCreateDto, @CurrentUser User user) {
+        postService.createComment(id, commentCreateDto, user);
+        return ResponseEntity.status(201).build();
+    }
+
 }
