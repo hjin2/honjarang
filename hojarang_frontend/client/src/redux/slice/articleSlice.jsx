@@ -17,7 +17,14 @@ export const articleSlice = createSlice({
         existingArticle.content = content;
       }
     },
+    deleteArticle: (state, action) => {
+      const {id} = action.payload;
+      const existingArticle = state.find(article => article.id === id);
+      if (existingArticle){
+        return state.filter(article => article.id != id);
+      }
+    },
   },
 });
-export const { createArticle, updateArticle } = articleSlice.actions;
+export const { createArticle, updateArticle, deleteArticle } = articleSlice.actions;
 export default articleSlice;
