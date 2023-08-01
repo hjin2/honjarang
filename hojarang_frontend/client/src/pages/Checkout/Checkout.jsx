@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { loadPaymentWidget } from '@tosspayments/payment-widget-sdk';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -20,7 +20,7 @@ export default function Checkout() {
   }, []);
 
   return (
-    <div className="App">
+    <div>
       <h1>주문서</h1>
       <div id="payment-widget" />
       <button
@@ -43,7 +43,6 @@ export default function Checkout() {
       >
         결제하기
       </button>
-      ;
     </div>
   );
 }

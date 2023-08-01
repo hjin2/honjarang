@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Pagination from '../Board/Pagination';
 import { Link } from 'react-router-dom';
 
@@ -10,11 +10,11 @@ function Delivery() {
   const limit = 15;
   const offset = (page - 1) * limit;
 
-  useEffect(() => {
-    fetch('http://localhost:8080//api/v1/joint-delivery')
-      .then((res) => res.json())
-      .then((data) => setList(data));
-  });
+  // useEffect(() => {
+  //   fetch('http://localhost:8080/api/v1/joint-delivery')
+  //     .then((res) => res.json())
+  //     .then((data) => setList(data));
+  // });
   return (
     <div className="flex flex-col items-center m-0">
       <header>
