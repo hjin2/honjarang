@@ -1,12 +1,8 @@
 package com.example.honjarang.domain.post.service;
 
 
-import com.example.honjarang.domain.post.dto.CommentCreateDto;
+import com.example.honjarang.domain.post.dto.*;
 import com.example.honjarang.domain.DateTimeUtils;
-import com.example.honjarang.domain.post.dto.PostCreateDto;
-import com.example.honjarang.domain.post.dto.PostDto;
-import com.example.honjarang.domain.post.dto.PostListDto;
-import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Comment;
 import com.example.honjarang.domain.post.entity.LikePost;
 import com.example.honjarang.domain.post.entity.Post;
@@ -125,6 +121,16 @@ public class PostService {
         );
     }
 
+    private CommentListDto toCommentListDto(Comment comment) {
+        return new CommentListDto(
+                comment.getId(),
+                comment.getContent(),
+                comment.getUser().getId(),
+                comment.getUser().getNickname(),
+                DateTimeUtils.formatLocalDateTime(comment.getCreatedAt())
+        );
+    }
+
     @Transactional
     public void deleteComment(Long id, User user) {
         Comment comment = commentRepository.findById(id).orElseThrow(() -> new CommentNotFoundException("존재하지 않는 댓글 입니다."));
@@ -132,6 +138,15 @@ public class PostService {
             throw new InvalidUserException("작성자만 삭제할 수 있습니다.");
         }
         commentRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CommentListDto> getCommentList(Long id) {
+        postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("게시글이 존재하지 않습니다."));
+        return commentRepository.findAllByPostId(id).stream()
+                .map(this::toCommentListDto)
+                .toList();
+
     }
 
 }
