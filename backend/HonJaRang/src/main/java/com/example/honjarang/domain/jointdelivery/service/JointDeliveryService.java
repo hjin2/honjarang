@@ -323,7 +323,7 @@ public class JointDeliveryService {
             throw new JointDeliveryCanceledException("공동배달이 취소되었습니다.");
         }
         if (jointDeliveryApplicant.getIsReceived()) {
-            throw new ReceiptAlreadyConfirmedException("이미 수령확인을 하였습니다.");
+            throw new JointDeliveryAlreadyReceivedException("이미 수령확인을 하였습니다.");
         }
 
         jointDeliveryApplicant.confirmReceived();
