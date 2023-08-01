@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Tab = ({ tabs, activeTabIndex, setActiveTabIndex }) => {
   return (
     <div className="flex space-x-14 h-96 mx-auto">
