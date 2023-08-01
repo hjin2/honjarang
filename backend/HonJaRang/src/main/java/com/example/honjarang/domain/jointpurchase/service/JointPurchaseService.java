@@ -142,7 +142,7 @@ public class JointPurchaseService {
 
     @Transactional(readOnly = true)
     public List<JointPurchaseListDto> getJointPurchaseList(Integer page, Integer size) {
-        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
         Page<JointPurchase> jointPurchases = jointPurchaseRepository.findAllByDeadlineAfterAndIsCanceledFalse(LocalDateTime.now(), pageable);
         return jointPurchases.getContent().stream()
                 .filter(jointPurchase -> {
