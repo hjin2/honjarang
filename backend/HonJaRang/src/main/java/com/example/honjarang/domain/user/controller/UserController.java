@@ -1,5 +1,7 @@
 package com.example.honjarang.domain.user.controller;
 
+import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryDto;
+import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.user.dto.*;
 import com.example.honjarang.domain.user.entity.User;
@@ -71,18 +73,16 @@ public class UserController {
     }
 
     @PostMapping("/change-image")
-    public ResponseEntity<Void> uploadUserImage(@RequestBody String profileImage, @CurrentUser User user){
-        if (user.getProfileImage() != null && !user.getProfileImage().isEmpty()) {
-            if(!user.getProfileImage().equals(profileImage)) {
+    public ResponseEntity<Void> uploadUserImage(@RequestBody Map<String,String> profileImage, @CurrentUser User user){
+        if (user.getProfileImage()!=null) {
                 s3UploadService.delete(user.getProfileImage());
             }
-        }
-        userService.changeUserImage(user, profileImage);
+        userService.changeUserImage(user, profileImage.get("profile_image"));
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/success")
-    public ResponseEntity<Void> successPayment(@RequestBody PointDto pointDto, @CurrentUser User user){
+    public ResponseEntity<Void> successPayment(@RequestBody PointChargeDto pointDto, @CurrentUser User user){
         userService.successPayment(pointDto, user);
         return ResponseEntity.ok().build();
     }
@@ -92,9 +92,25 @@ public class UserController {
         return ResponseEntity.ok(userService.getMyPostList(page,user));
     }
 
+    @GetMapping("/joint-deliveries-writer")
+    public ResponseEntity<List<JointDeliveryListDto>> getMyWrittenJointDeliveries(@RequestParam(value = "size", defaultValue = "1") int size, @RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
+        List<JointDeliveryListDto> myWrittenJointDeliveryListDtoList = userService.getMyWrittenJointDeliveries(page,size,user);
+        return ResponseEntity.ok(myWrittenJointDeliveryListDtoList);
+    }
+
+    @GetMapping("/joint-deliveries-participating")
+    public ResponseEntity<List<JointDeliveryListDto>> getMyJoinedJointDeliveries(@RequestParam(value = "size", defaultValue = "1") int size, @RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
+        List<JointDeliveryListDto> myJoinedJointDeliveryListDtoList = userService.getMyJoinedJointDeliveries(page,size,user);
+        return ResponseEntity.ok(myJoinedJointDeliveryListDtoList);
+    }
+
+
+
+
+
     @PutMapping("/withdraw")
-    public ResponseEntity<Void> withdrawPoint(@RequestBody Map<String, Integer> point, @CurrentUser User user){
-        userService.withdrawPoint(point.get("point"),user);
+    public ResponseEntity<Void> withdrawPoint(@RequestBody PointWithdrawDto pointWithdrawDto, @CurrentUser User user){
+        userService.withdrawPoint(pointWithdrawDto.getPoint(),user);
         return ResponseEntity.ok().build();
     }
 }

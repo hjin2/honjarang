@@ -31,4 +31,14 @@ public class JointDeliveryListDto {
         this.userId = jointDelivery.getUser().getId();
         this.nickname = jointDelivery.getUser().getNickname();
     }
+
+    public JointDeliveryListDto(JointDelivery jointDelivery) {
+        this.id = jointDelivery.getId();
+        this.targetMinPrice = jointDelivery.getTargetMinPrice();
+        this.storeId = jointDelivery.getStore().getId();
+        this.storeName = jointDelivery.getStore().getStoreName();
+        this.storeImage = jointDelivery.getStore().getImage();
+        this.userId = jointDelivery.getUser().getId();
+        this.nickname = jointDelivery.getUser().getNickname();
+    }
 }

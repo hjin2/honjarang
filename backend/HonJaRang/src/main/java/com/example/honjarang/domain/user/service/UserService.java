@@ -1,11 +1,20 @@
 package com.example.honjarang.domain.user.service;
 
+import com.example.honjarang.domain.jointdelivery.document.Menu;
+import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryDto;
+import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
+import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
+import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryCart;
+import com.example.honjarang.domain.jointdelivery.exception.MenuNotFoundException;
+import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryCartRepository;
+import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryRepository;
+import com.example.honjarang.domain.jointdelivery.repository.MenuRepository;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.exception.PaymentException;
 import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.post.service.PostService;
 import com.example.honjarang.domain.user.dto.LoginDto;
-import com.example.honjarang.domain.user.dto.PointDto;
+import com.example.honjarang.domain.user.dto.PointChargeDto;
 import com.example.honjarang.domain.user.dto.UserCreateDto;
 import com.example.honjarang.domain.user.entity.EmailVerification;
 import com.example.honjarang.domain.user.entity.User;
@@ -18,6 +27,8 @@ import com.example.honjarang.domain.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
@@ -29,10 +40,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -50,6 +59,12 @@ public class UserService {
     private final ObjectMapper objectMapper;
 
     private final PostService postService;
+
+    private final JointDeliveryRepository jointDeliveryRepository;
+
+    private final JointDeliveryCartRepository jointDeliveryCartRepository;
+
+    private final MenuRepository menuRepository;
 
     @Transactional(readOnly = true)
     public User login(LoginDto loginDto) {
@@ -107,7 +122,7 @@ public class UserService {
     }
 
     @Transactional
-    public void successPayment(PointDto pointDto, User user) {
+    public void successPayment(PointChargeDto pointDto, User user) {
         String url = "https://api.tosspayments.com/v1/payments/confirm";
 
         UUID uuid = UUID.randomUUID();
@@ -152,9 +167,37 @@ public class UserService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<JointDeliveryListDto> getMyWrittenJointDeliveries(int size, int page, User user){
+        Pageable pageable = Pageable.ofSize(size).withPage(page-1);
+        List<JointDelivery> myWrittenJointDeliveryList = jointDeliveryRepository.findAllByUserId(user.getId(), pageable).stream().toList();
+
+        List<JointDeliveryListDto> myWrittenJointDeliveryListDtoList = new ArrayList<>();
+        for(JointDelivery jointDelivery : myWrittenJointDeliveryList){
+             JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery);
+            myWrittenJointDeliveryListDtoList.add(jointDeliveryListDto);
+        }
+        return myWrittenJointDeliveryListDtoList;
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<JointDeliveryListDto> getMyJoinedJointDeliveries(Integer size, Integer page, User user){
+        Pageable pageable = Pageable.ofSize(size).withPage(page-1);
+        List<JointDeliveryListDto> myJointDeliveryListDtoList = new ArrayList<>();
+        List<JointDelivery> myJointDelivery = jointDeliveryCartRepository.findDistinctJointDeliveryById(user.getId(), pageable);
+        for(JointDelivery jointDelivery : myJointDelivery){ // 내가 참여한 jointdeliverycart 카트, 이 카트가 담긴 주문을 알아내야함
+            JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery);
+            myJointDeliveryListDtoList.add(jointDeliveryListDto);
+        }
+        return myJointDeliveryListDtoList;
+    }
+
     @Transactional
     public void withdrawPoint(Integer point, User user){
         User loginedUser = userRepository.findByEmail(user.getEmail()).orElseThrow(()->new UserNotFoundException("사용자를 찾을 수 없습니다."));
         loginedUser.subtractPoint(point);
     }
+
+
 }
