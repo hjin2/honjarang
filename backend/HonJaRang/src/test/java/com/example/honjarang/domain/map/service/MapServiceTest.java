@@ -1,7 +1,7 @@
 package com.example.honjarang.domain.map.service;
 
 import com.example.honjarang.domain.map.dto.CoordinateDto;
-import com.example.honjarang.domain.map.exception.LocationNotFoundException;
+import com.example.honjarang.domain.map.exception.PlaceNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -80,6 +80,6 @@ class MapServiceTest {
         given(objectMapper.readTree(eq(responseEntity.getBody()))).willReturn(jsonNode);
 
         // when & then
-        assertThrows(LocationNotFoundException.class, () -> mapService.getCoordinate("서울특별시 강남구"));
+        assertThrows(PlaceNotFoundException.class, () -> mapService.getCoordinate("서울특별시 강남구"));
     }
 }
