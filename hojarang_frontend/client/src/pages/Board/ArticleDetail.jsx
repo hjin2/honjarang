@@ -13,7 +13,7 @@ export const ArticleDetail = () => {
   // });
   
   const { id } = useParams();
-  console.log({id})
+  // console.log({id})
   const articles = useSelector((store) => store.articles);
   const article = articles.find((article, index) => index.toString() === id);
   // 게시글 정보가 없을 경우 예외 처리
@@ -25,6 +25,7 @@ export const ArticleDetail = () => {
   return (
     <div>
       <div>
+        [{article.category}] 
         {article.title}
         <button>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -34,6 +35,10 @@ export const ArticleDetail = () => {
       </div>
       <div>
         {article.content}
+      </div>
+      <div>
+        <button>수정</button>
+        <button>삭제</button>
       </div>
     </div>
   );
