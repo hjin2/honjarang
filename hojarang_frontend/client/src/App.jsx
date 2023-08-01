@@ -13,6 +13,7 @@ import FindPassword from './pages/FindPassword/FindPassword';
 import ChangePassword from './pages/FindPassword/ChangePassword';
 import ArticleCreate from './pages/Board/ArticleCreate';
 import { ArticleDetail } from './pages/Board/ArticleDetail';
+import ArticleUpdate from './pages/Board/ArticleUpdate';
 import Checkout from './pages/Checkout/Checkout';
 import Fail from './pages/Checkout/Fail';
 import Success from './pages/Checkout/Success';
@@ -48,6 +49,7 @@ function App() {
               element={<ArticleCreate />}
             ></Route>
             <Route path="/board/article/:id" element={<ArticleDetail />} />
+            <Route paht="/board/articleupdate/:id" element={<ArticleUpdate/>}></Route>
             <Route path="/*" element={<Notfound />} />
           </Route>
           <Route path="/checkout" element={<Checkout />} />

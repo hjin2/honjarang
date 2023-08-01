@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams, Link } from 'react-router-dom';
+import { deleteArticle }  from '../../redux/slice/articleSlice';
 
 export const ArticleDetail = () => {
   // const params = useParams();
@@ -11,9 +12,10 @@ export const ArticleDetail = () => {
   //   title,
   //   content
   // });
+  const dispatch = useDispatch();
   
   const { id } = useParams();
-  // console.log({id})
+  // console.log(id)
   const articles = useSelector((store) => store.articles);
   const article = articles.find((article, index) => index.toString() === id);
   // 게시글 정보가 없을 경우 예외 처리
@@ -21,6 +23,13 @@ export const ArticleDetail = () => {
     return <p>게시글을 찾을 수 없습니다.</p>;
   }
 
+  const handelArticleDelete = () => {
+    dispatch(deleteArticle({id : article.id}));
+    console.log(id)
+    // <Alert severity="info">
+    //   <AlertTitle>삭제되었습니다.</AlertTitle>
+    // </Alert>
+  }
 
   return (
     <div>
@@ -37,9 +46,14 @@ export const ArticleDetail = () => {
         {article.content}
       </div>
       <div>
-        <button>수정</button>
-        <button>삭제</button>
+        <Link to={`/board/articleupdate/${id}`}>
+          <button>수정</button>
+        </Link>
+        <Link to="/board">
+          <button onClick={handelArticleDelete}>삭제</button>
+        </Link>
       </div>
     </div>
   );
 };
+export default ArticleDetail;
