@@ -11,7 +11,7 @@ import lombok.Getter;
 public class CommentListDto {
     private Long id;
     private String content;
-    private String nickname;
     private Long userId;
+    private String nickname;
     private String createdAt;
 }
