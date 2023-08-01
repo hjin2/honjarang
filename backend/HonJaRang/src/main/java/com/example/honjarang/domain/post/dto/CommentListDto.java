@@ -1,10 +1,9 @@
 package com.example.honjarang.domain.post.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -12,7 +11,7 @@ import java.time.LocalDateTime;
 public class CommentListDto {
     private Long id;
     private String content;
-    private Long userId;
     private String nickname;
+    private Long userId;
     private String createdAt;
 }

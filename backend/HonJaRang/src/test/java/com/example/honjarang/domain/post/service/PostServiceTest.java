@@ -100,6 +100,7 @@ public class PostServiceTest {
 
     }
 
+
     @Test
     @WithMockUser
     @DisplayName("게시글 삭제 성공")
