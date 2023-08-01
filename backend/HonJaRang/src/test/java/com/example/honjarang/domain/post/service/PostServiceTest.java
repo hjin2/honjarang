@@ -2,10 +2,7 @@ package com.example.honjarang.domain.post.service;
 
 
 import com.example.honjarang.domain.DateTimeUtils;
-import com.example.honjarang.domain.post.dto.CommentCreateDto;
-import com.example.honjarang.domain.post.dto.PostCreateDto;
-import com.example.honjarang.domain.post.dto.PostListDto;
-import com.example.honjarang.domain.post.dto.PostUpdateDto;
+import com.example.honjarang.domain.post.dto.*;
 import com.example.honjarang.domain.post.entity.Category;
 import com.example.honjarang.domain.post.entity.Comment;
 import com.example.honjarang.domain.post.entity.Post;
@@ -60,6 +57,8 @@ public class PostServiceTest {
 
     private Comment comment;
 
+    private CommentListDto commentListDto;
+
     @BeforeEach
     void setUp() {
         user = User.builder()
@@ -71,6 +70,7 @@ public class PostServiceTest {
                 .longitude(127.123456)
                 .role(Role.ROLE_USER)
                 .build();
+        user.setIdForTest(1L);
         post = Post.builder()
                 .title("test")
                 .user(user)
@@ -84,6 +84,8 @@ public class PostServiceTest {
                 .content("test")
                 .user(user)
                 .build();
+        comment.setIdForTest(1L);
+        comment.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2030-01-01 00:00:00"));
     }
 
     @Test
@@ -279,6 +281,40 @@ public class PostServiceTest {
 
         // when & then
         assertThrows(InvalidUserException.class, () -> postService.deleteComment(1L, userForTest));
+    }
+
+    @Test
+    @DisplayName("댓글 목록 조회 성공")
+    void getCommentList_Success() {
+
+        // given
+        List<Comment> commentList= List.of(comment);
+        given(postRepository.findById(1L)).willReturn(Optional.of(post));
+        given(commentRepository.findAllByPostId(1L)).willReturn(commentList);
+
+        // when
+        List<CommentListDto> commentListDtoList = postService.getCommentList(1L);
+
+        // then
+        assertThat(commentListDtoList).isNotNull();
+        assertThat(commentListDtoList.size()).isEqualTo(1);
+        assertThat(commentListDtoList.get(0).getId()).isEqualTo(1L);
+        assertThat(commentListDtoList.get(0).getContent()).isEqualTo("test");
+        assertThat(commentListDtoList.get(0).getUserId()).isEqualTo(1L);
+        assertThat(commentListDtoList.get(0).getNickname()).isEqualTo("테스트");
+        assertThat(commentListDtoList.get(0).getCreatedAt()).isEqualTo("2030-01-01 00:00:00");
+    }
+
+    @Test
+    @DisplayName("댓글 목록 조회 실패 - 게시글이 존재하지 않을 경우")
+    void getPostList_PostNotFoundExceptoin() {
+
+        // given
+        given(postRepository.findById(1L)).willThrow(new PostNotFoundException("게시글이 존재하지 않습니다."));
+
+        // when & then
+        assertThrows(PostNotFoundException.class, () -> postService.getCommentList(1L));
+
     }
 
     @Test

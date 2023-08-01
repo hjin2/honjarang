@@ -3,6 +3,7 @@ package com.example.honjarang.domain.post.controller;
 
 import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.post.dto.CommentCreateDto;
+import com.example.honjarang.domain.post.dto.CommentListDto;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Category;
@@ -23,14 +24,16 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
+import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(PostController.class)
@@ -46,6 +49,8 @@ public class PostControllerTest {
     private User user;
 
     private Post post;
+
+    private CommentListDto commentListDto;
 
 
     @BeforeEach
@@ -69,7 +74,13 @@ public class PostControllerTest {
                 .user(user)
                 .build();
         post.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2023-07-29 04:23:23"));
-
+        commentListDto = CommentListDto.builder()
+                .id(1L)
+                .content("test")
+                .userId(1L)
+                .nickname("테스트닉네임")
+                .createdAt("2030-01-01 00:00:00")
+                .build();
     }
     @Test
     @WithMockUser
@@ -200,6 +211,37 @@ public class PostControllerTest {
                                 parameterWithName("postId").description("게시글 ID"),
                                 parameterWithName("id").description("댓글 ID")
                         )
+                ));
+    }
+
+    @Test
+    @DisplayName("댓글 목록 조회 성공")
+    void getCommentList_Success() throws Exception {
+
+        // given
+        List<CommentListDto> commentListDtoList = List.of(commentListDto);
+        given(postService.getCommentList(1L)).willReturn(commentListDtoList);
+
+        //when & then
+        mockMvc.perform(get("/api/v1/posts/{id}/comments", 1L))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].content").value("test"))
+                .andExpect(jsonPath("$[0].userId").value(1L))
+                .andExpect(jsonPath("$[0].nickname").value("테스트닉네임"))
+                .andExpect(jsonPath("$[0].createdAt").value("2030-01-01 00:00:00"))
+                .andDo(document("posts/comments",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+
+                responseFields(
+                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                        fieldWithPath("[].content").type(JsonFieldType.STRING).description("댓글 내용"),
+                        fieldWithPath("[].userId").type(JsonFieldType.NUMBER).description("사용자 ID"),
+                        fieldWithPath("[].nickname").type(JsonFieldType.STRING).description("사용자 닉네임"),
+                        fieldWithPath("[].createdAt").type(JsonFieldType.STRING).description("댓글 생성 날짜")
+                )
                 ));
     }
 
