@@ -1,23 +1,24 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { imageUpload } from '../../redux/slice/UploadSlice';
 import axios from 'axios';
-import AWS from 'aws-sdk';
+// import AWS from 'aws-sdk';
+
 
 const ImageInput = () => {
   const fileInput = useRef(null);
   const dispatch = useDispatch();
   const image = useSelector((state) => state.upload.image);
 
-  const REGION = import.meta.env.VITE_APP_REGION;
-  const ACCESS_KEY_ID = import.meta.env.VITE_APP_ACCESS_KEY_ID;
-  const SECRET_ACCESS_KEY = import.meta.env.VITE_APP_SECRET_ACCESS_KEY;
+  // const REGION = import.meta.env.VITE_APP_REGION;
+  // const ACCESS_KEY_ID = import.meta.env.VITE_APP_ACCESS_KEY_ID;
+  // const SECRET_ACCESS_KEY = import.meta.env.VITE_APP_SECRET_ACCESS_KEY;
 
-  AWS.config.update({
-    region: REGION,
-    accessKeyId: ACCESS_KEY_ID,
-    secretAccessKey: SECRET_ACCESS_KEY,
-  });
+  // AWS.config.update({
+  //   region: REGION,
+  //   accessKeyId: ACCESS_KEY_ID,
+  //   secretAccessKey: SECRET_ACCESS_KEY,
+  // });
   const onChange = (e) => {
     if (e.target.files[0]) {
       const selectedFile = e.target.files[0];
