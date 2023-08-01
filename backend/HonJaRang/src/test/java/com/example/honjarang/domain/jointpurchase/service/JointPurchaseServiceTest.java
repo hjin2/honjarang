@@ -250,6 +250,7 @@ class JointPurchaseServiceTest {
     @DisplayName("공동구매 신청 성공")
     void applyJointPurchase_Success() {
         // given
+        user.addPoint(10000);
         JointPurchaseApplyDto jointPurchaseApplyDto = new JointPurchaseApplyDto(1L, 1);
         given(jointPurchaseRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(jointPurchase));
         given(userRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(user));
@@ -364,5 +365,61 @@ class JointPurchaseServiceTest {
 
         // when & then
         assertThrows(JointPurchaseExpiredException.class, () -> jointPurchaseService.cancelJointPurchaseApplicant(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동구매 수령 확인 성공")
+    void confirmReceived_Success() {
+        // given
+        jointPurchase.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
+        given(jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(1L, 1L)).willReturn(java.util.Optional.ofNullable(jointPurchaseApplicant));
+
+        // when
+        jointPurchaseService.confirmReceived(1L, user);
+
+        // then
+    }
+
+    @Test
+    @DisplayName("공동구매 수령 확인 실패 - 신청자가 존재하지 않는 경우")
+    void confirmReceived_JointPurchaseApplicantNotFoundException() {
+        // given
+        given(jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(1L, 1L)).willReturn(java.util.Optional.empty());
+
+        // when & then
+        assertThrows(JointPurchaseApplicantNotFoundException.class, () -> jointPurchaseService.confirmReceived(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동구매 수령 확인 실패 - 공동구매가 취소된 경우")
+    void confirmReceived_JointPurchaseCanceledException() {
+        // given
+        jointPurchase.setCanceledForTest(true);
+        given(jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(1L, 1L)).willReturn(java.util.Optional.ofNullable(jointPurchaseApplicant));
+
+        // when & then
+        assertThrows(JointPurchaseCanceledException.class, () -> jointPurchaseService.confirmReceived(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동구매 수령 확인 실패 - 공동구매가 마감되지 않은 경우")
+    void confirmReceived_JointPurchaseExpiredException() {
+        // given
+        given(jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(1L, 1L)).willReturn(java.util.Optional.ofNullable(jointPurchaseApplicant));
+
+        // when & then
+        assertThrows(JointPurchaseNotClosedException.class, () -> jointPurchaseService.confirmReceived(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동구매 수령 확인 실패 - 이미 수령한 경우")
+    void confirmReceived_JointPurchaseAlreadyReceivedException() {
+        // given
+        jointPurchase.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
+        jointPurchaseApplicant.confirmReceived();
+        given(jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(1L, 1L)).willReturn(java.util.Optional.ofNullable(jointPurchaseApplicant));
+
+        // when & then
+        assertThrows(JointPurchaseAlreadyReceivedException.class, () -> jointPurchaseService.confirmReceived(1L, user));
     }
 }
