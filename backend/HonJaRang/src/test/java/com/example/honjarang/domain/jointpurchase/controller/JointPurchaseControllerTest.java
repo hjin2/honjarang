@@ -272,4 +272,21 @@ class JointPurchaseControllerTest {
                         )
                 ));
     }
+
+    @Test
+    @DisplayName("공동구매 수령 확인")
+    void confirmReceived() throws Exception{
+        // given
+
+        // when & then
+        mockMvc.perform(put("/api/v1/joint-purchases/{jointPurchaseId}/received", 1L))
+                .andExpect(status().isOk())
+                .andDo(document("joint-purchases/received",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("jointPurchaseId").description("공동구매 ID")
+                        )
+                ));
+    }
 }

@@ -181,10 +181,11 @@ public class JointPurchaseService {
             throw new JointPurchaseAlreadyAppliedException("이미 신청한 공동구매입니다.");
         }
         User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
-        if(user.getPoint() < jointPurchase.getPrice() * jointPurchaseApplyDto.getQuantity()) {
+        if(user.getPoint() < jointPurchase.getPrice() * jointPurchaseApplyDto.getQuantity() + jointPurchase.getDeliveryCharge() / jointPurchase.getTargetPersonCount()) {
             throw new InsufficientPointsException("포인트가 부족합니다.");
         }
         user.subtractPoint(jointPurchase.getPrice() * jointPurchaseApplyDto.getQuantity());
+        user.subtractPoint(jointPurchase.getDeliveryCharge() / jointPurchase.getTargetPersonCount());
 
         JointPurchaseApplicant jointPurchaseApplicant = JointPurchaseApplicant.builder()
                 .jointPurchase(jointPurchase)
@@ -209,5 +210,25 @@ public class JointPurchaseService {
         user.addPoint(jointPurchaseApplicant.getJointPurchase().getPrice() * jointPurchaseApplicant.getQuantity());
 
         jointPurchaseApplicantRepository.delete(jointPurchaseApplicant);
+    }
+
+    @Transactional
+    public void confirmReceived(Long jointPurchaseId, User loginUser) {
+        JointPurchaseApplicant jointPurchaseApplicant = jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(jointPurchaseId, loginUser.getId()).orElseThrow(() -> new JointPurchaseApplicantNotFoundException("공동구매 신청자를 찾을 수 없습니다."));
+
+        if (jointPurchaseApplicant.getJointPurchase().getIsCanceled()) {
+            throw new JointPurchaseCanceledException("이미 취소된 공동구매입니다.");
+        }
+        if (jointPurchaseApplicant.getJointPurchase().getDeadline().isAfter(LocalDateTime.now())) {
+            throw new JointPurchaseNotClosedException("공동구매가 마감되지 않았습니다.");
+        }
+        if(jointPurchaseApplicant.getIsReceived()) {
+            throw new JointPurchaseAlreadyReceivedException("이미 수령확인한 공동구매입니다.");
+        }
+
+        jointPurchaseApplicant.confirmReceived();
+
+        jointPurchaseApplicant.getJointPurchase().getUser().addPoint(jointPurchaseApplicant.getJointPurchase().getPrice() * jointPurchaseApplicant.getQuantity());
+        jointPurchaseApplicant.getJointPurchase().getUser().addPoint(jointPurchaseApplicant.getJointPurchase().getDeliveryCharge() / jointPurchaseApplicant.getJointPurchase().getTargetPersonCount());
     }
 }

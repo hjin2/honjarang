@@ -81,6 +81,16 @@ spec:
                 secretKeyRef:
                   name: honjarang-secret
                   key: aws_s3_bucket_name
+            - name: NAVER_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: naver_client_id
+            - name: NAVER_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: naver_client_secret
       imagePullSecrets:
         - name: honjarang-secret
 

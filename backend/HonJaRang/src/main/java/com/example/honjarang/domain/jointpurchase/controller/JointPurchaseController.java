@@ -57,4 +57,10 @@ public class JointPurchaseController {
         jointPurchaseService.cancelJointPurchaseApplicant(jointPurchaseId, user);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/{jointPurchaseId}/received")
+    public ResponseEntity<Void> confirmReceived(@PathVariable Long jointPurchaseId, @CurrentUser User user) {
+        jointPurchaseService.confirmReceived(jointPurchaseId, user);
+        return ResponseEntity.ok().build();
+    }
 }
