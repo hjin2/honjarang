@@ -8,15 +8,18 @@ export default function Article() {
 	// const offset = (page - 1) * limit
 
   const articles = useSelector((store) => store.articles);
+  // console.log(articles)
+
+
   const renderArticle = () =>
     articles
 			// .slice(offset, offset+limit)	
 			.map((article, index) => (
       <div key={index}>
         {/* 서버랑 db 아직 안해서 article.id 없어서 index로 함 */}
-        {index}
         <Link to={`/board/article/${index}`}>
-          {article.title}
+          {article.category} |
+          {article.title} |
           {article.content}
           <button>
             <svg
