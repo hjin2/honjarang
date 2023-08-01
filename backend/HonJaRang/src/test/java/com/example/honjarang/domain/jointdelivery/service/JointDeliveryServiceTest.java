@@ -638,6 +638,6 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
         given(jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(1L, 1L)).willReturn(Optional.of(jointDeliveryApplicant));
 
         // when & then
-        assertThrows(ReceiptAlreadyConfirmedException.class, () -> jointDeliveryService.confirmReceived(1L, user));
+        assertThrows(JointDeliveryAlreadyReceivedException.class, () -> jointDeliveryService.confirmReceived(1L, user));
     }
 }
