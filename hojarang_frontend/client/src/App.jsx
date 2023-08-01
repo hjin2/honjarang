@@ -47,7 +47,7 @@ function App() {
               path="/board/articlecreate"
               element={<ArticleCreate />}
             ></Route>
-            <Route path="/board/article/:index" element={<ArticleDetail />} />
+            <Route path="/board/article/:id" element={<ArticleDetail />} />
             <Route path="/*" element={<Notfound />} />
           </Route>
           <Route path="/checkout" element={<Checkout />} />
