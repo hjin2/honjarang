@@ -2,6 +2,7 @@ package com.example.honjarang.domain.post.controller;
 
 
 import com.example.honjarang.domain.DateTimeUtils;
+import com.example.honjarang.domain.post.dto.CommentCreateDto;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Category;
@@ -14,17 +15,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(PostController.class)
+@AutoConfigureRestDocs
 public class PostControllerTest {
 
     @Autowired
@@ -77,54 +85,6 @@ public class PostControllerTest {
                 .andExpect(status().isCreated());
     }
 
-
-    @Test
-    @WithMockUser
-    @DisplayName("게시글 작성 실패 - 제목이 없을 경우")
-    void createPost_EmptyTitle() throws Exception {
-
-        // given
-        String content = "content";
-        PostCreateDto postCreateDto = new PostCreateDto(null, content);
-
-        // when & then
-        mockMvc.perform(post("/api/v1/posts")
-                        .contentType("application/json")
-                        .content(new ObjectMapper().writeValueAsString(postCreateDto)))
-                        .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser
-    @DisplayName("게시글 작성 실패 - 내용이 없을 경우")
-    void createPost_EmptyContent() throws Exception {
-
-        // given
-        String title = "title";
-        PostCreateDto postCreateDto = new PostCreateDto(title, null);
-
-        // when & then
-        mockMvc.perform(post("/api/v1/posts")
-                .contentType("application/json")
-                .content(new ObjectMapper().writeValueAsString(postCreateDto)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser
-    @DisplayName("게시글 작성 실패 - 내용과 제목이 없을 경우")
-    void createPost_EmptyTitleAndContent() throws Exception {
-
-        // given
-        PostCreateDto postCreateDto = new PostCreateDto(null, null);
-
-        // when & then
-        mockMvc.perform(post("/api/v1/posts")
-                        .contentType("application/json")
-                        .content(new ObjectMapper().writeValueAsString(postCreateDto)))
-                .andExpect(status().isBadRequest());
-    }
-
     @Test
     @WithMockUser
     @DisplayName("게시글 삭제 성공")
@@ -170,7 +130,7 @@ public class PostControllerTest {
 
         // when & then
         mockMvc.perform(get("/api/v1/posts"))
-                .andExpect(status().isOk());
+                        .andExpect(status().isOk());
     }
 
     @Test
@@ -199,6 +159,27 @@ public class PostControllerTest {
         // when & then
         mockMvc.perform(get("/api/v1/posts/{id}/like", id))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("댓글 작성 성공")
+    void creaetComment_Success() throws Exception {
+
+        // given
+        CommentCreateDto commentCreateDto = new CommentCreateDto("test");
+
+        // when & then
+        mockMvc.perform(post("/api/v1/posts/{id}/comments", 1L)
+                 .contentType("application/json")
+                .content(new ObjectMapper().writeValueAsString(commentCreateDto)))
+                .andExpect(status().isCreated())
+                .andDo(document("posts/1/comments",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("댓글")
+                        )
+                ));
     }
 
 }

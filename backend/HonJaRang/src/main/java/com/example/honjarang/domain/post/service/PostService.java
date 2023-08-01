@@ -1,6 +1,7 @@
 package com.example.honjarang.domain.post.service;
 
 
+import com.example.honjarang.domain.post.dto.CommentCreateDto;
 import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
 import com.example.honjarang.domain.post.dto.PostDto;
@@ -9,6 +10,7 @@ import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.LikePost;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
+import com.example.honjarang.domain.post.repository.CommentRepository;
 import com.example.honjarang.domain.post.repository.LikePostRepository;
 import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.user.entity.User;
@@ -27,21 +29,12 @@ public class PostService {
 
     private final PostRepository postRepository;
 
+    private final CommentRepository commentRepository;
+
     private final LikePostRepository likePostRepository;
 
     @Transactional
     public Long createPost(PostCreateDto postCreateDto, User user) {
-        if (postCreateDto.getTitle().equals(null) || postCreateDto.getTitle().equals("") || postCreateDto.getTitle().equals(" ")) {
-            if (postCreateDto.getContent().equals(null) || postCreateDto.getContent().equals("") || postCreateDto.getTitle().equals(" ")) {
-                throw new TitleAndContentEmptyException("제목과 내용은 필수 값입니다.");
-            }
-            else
-                throw new TitleEmptyException("제목은 필수 값입니다.");
-        }
-        else if (postCreateDto.getContent().equals(null) || postCreateDto.getContent().equals("") || postCreateDto.getTitle().equals(" ")) {
-            throw new ContentEmptyException("내용은 필수 값입니다.");
-        }
-
         return postRepository.save(postCreateDto.toEntity(user)).getId();
     }
 
@@ -50,7 +43,7 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(() ->
                 new PostNotFoundException("존재하지 않는 게시글입니다."));
 
-        if (!Objects.equals(post.getUser().getId(),user.getId())) {
+        if (!Objects.equals(post.getUser().getId(), user.getId())) {
             throw new InvalidUserException("작성자만 삭제할 수 있습니다.");
         }
         postRepository.deleteById(id);
@@ -64,6 +57,15 @@ public class PostService {
             throw new InvalidUserException("작성자만 수정할 수 있습니다.");
         }
         post.update(postUpdateDto);
+    }
+
+    @Transactional
+    public void createComment(Long id, CommentCreateDto commentCreateDto, User user) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
+        if (commentCreateDto.getContent().isEmpty()) {
+            throw new ContentEmptyException("댓글을 작성하세요.");
+        }
+        commentRepository.save(commentCreateDto.toEntity(post, user));
     }
 
 

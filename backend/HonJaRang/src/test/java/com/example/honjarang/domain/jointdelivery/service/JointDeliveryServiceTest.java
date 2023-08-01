@@ -372,7 +372,6 @@ class JointDeliveryServiceTest {
         given(jointDeliveryRepository.findById(1L)).willReturn(Optional.of(jointDelivery));
         given(jointDeliveryCartRepository.findAllByJointDeliveryId(1L)).willReturn(List.of(jointDeliveryCart));
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
-        given(userRepository.findById(1L)).willReturn(Optional.of(user));
 
         // when
         jointDeliveryService.cancelJointDelivery(1L, user);
@@ -639,6 +638,6 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
         given(jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(1L, 1L)).willReturn(Optional.of(jointDeliveryApplicant));
 
         // when & then
-        assertThrows(ReceiptAlreadyConfirmedException.class, () -> jointDeliveryService.confirmReceived(1L, user));
+        assertThrows(JointDeliveryAlreadyReceivedException.class, () -> jointDeliveryService.confirmReceived(1L, user));
     }
 }

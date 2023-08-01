@@ -217,23 +217,21 @@ public class JointDeliveryService {
         JointDelivery jointDelivery = jointDeliveryRepository.findById(jointDeliveryId).orElseThrow(() -> new JointDeliveryNotFoundException("해당 공동배달이 존재하지 않습니다."));
 
         if (!jointDelivery.getUser().getId().equals(loginUser.getId())) {
-            throw new UnauthorizedJointDeliveryAccessException("작성자가 아닙니다.");
+            throw new UnauthorizedJointDeliveryAccessException("공동배달을 취소할 권한이 없습니다.");
         }
         if (jointDelivery.getIsCanceled()) {
-            throw new JointDeliveryCanceledException("공동배달이 취소되었습니다.");
+            throw new JointDeliveryCanceledException("공동배달이 이미 취소되었습니다.");
         }
 
         if (jointDelivery.getDeadline().isAfter(LocalDateTime.now())) {
-            User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
-            user.addPoint(1000);
+            jointDelivery.getUser().addPoint(1000);
         }
 
         List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDeliveryId);
         for (JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
-            User user = jointDeliveryCart.getUser();
             Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
                     .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
-            user.addPoint(menu.getPrice() * jointDeliveryCart.getQuantity());
+            jointDeliveryCart.getUser().addPoint(menu.getPrice() * jointDeliveryCart.getQuantity());
         }
         jointDelivery.cancel();
     }
@@ -325,7 +323,7 @@ public class JointDeliveryService {
             throw new JointDeliveryCanceledException("공동배달이 취소되었습니다.");
         }
         if (jointDeliveryApplicant.getIsReceived()) {
-            throw new ReceiptAlreadyConfirmedException("이미 수령확인을 하였습니다.");
+            throw new JointDeliveryAlreadyReceivedException("이미 수령확인을 하였습니다.");
         }
 
         jointDeliveryApplicant.confirmReceived();
