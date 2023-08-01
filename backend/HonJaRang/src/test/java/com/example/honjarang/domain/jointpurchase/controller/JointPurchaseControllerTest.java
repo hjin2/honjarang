@@ -1,10 +1,7 @@
 package com.example.honjarang.domain.jointpurchase.controller;
 
 import com.example.honjarang.domain.DateTimeUtils;
-import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseApplicantListDto;
-import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseCreateDto;
-import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseDto;
-import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseListDto;
+import com.example.honjarang.domain.jointpurchase.dto.*;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchase;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchaseApplicant;
 import com.example.honjarang.domain.jointpurchase.service.JointPurchaseService;
@@ -231,6 +228,47 @@ class JointPurchaseControllerTest {
                                 fieldWithPath("[].quantity").description("공동구매 신청 수량"),
                                 fieldWithPath("[].total_price").description("공동구매 신청 총 가격"),
                                 fieldWithPath("[].is_received").description("공동구매 신청 수령 여부")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("공동구매 신청")
+    void applyJointPurchase() throws Exception{
+        // given
+        JointPurchaseApplyDto jointPurchaseApplyDto = new JointPurchaseApplyDto(1L, 1);
+
+        // when & then
+        mockMvc.perform(post("/api/v1/joint-purchases/{jointPurchaseId}/applicants", 1L)
+                        .contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(jointPurchaseApplyDto)))
+                .andExpect(status().isOk())
+                .andDo(document("joint-purchases/apply",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("jointPurchaseId").description("공동구매 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("joint_purchase_id").description("공동구매 ID"),
+                                fieldWithPath("quantity").description("공동구매 신청 수량")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("공동구매 신청 취소")
+    void cancelJointPurchaseApplicant() throws Exception {
+        // given
+
+        // when & then
+        mockMvc.perform(delete("/api/v1/joint-purchases/{jointPurchaseId}/applicants", 1L))
+                .andExpect(status().isOk())
+                .andDo(document("joint-purchases/applicants/cancel",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("jointPurchaseId").description("공동구매 ID")
                         )
                 ));
     }

@@ -4,10 +4,7 @@ import com.example.honjarang.domain.jointdelivery.exception.JointDeliveryExpired
 import com.example.honjarang.domain.jointpurchase.dto.*;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchase;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchaseApplicant;
-import com.example.honjarang.domain.jointpurchase.exception.JointPurchaseCanceledException;
-import com.example.honjarang.domain.jointpurchase.exception.JointPurchaseNotFoundException;
-import com.example.honjarang.domain.jointpurchase.exception.ProductNotFoundException;
-import com.example.honjarang.domain.jointpurchase.exception.UnauthorizedJointPurchaseAccessException;
+import com.example.honjarang.domain.jointpurchase.exception.*;
 import com.example.honjarang.domain.jointpurchase.repository.JointPurchaseApplicantRepository;
 import com.example.honjarang.domain.jointpurchase.repository.JointPurchaseRepository;
 import com.example.honjarang.domain.map.exception.PlaceNotFoundException;
@@ -178,9 +175,11 @@ public class JointPurchaseService {
             throw new JointPurchaseCanceledException("이미 취소된 공동구매입니다.");
         }
         if (jointPurchase.getDeadline().isBefore(LocalDateTime.now())) {
-            throw new JointDeliveryExpiredException("공동구매가 마감되었습니다.");
+            throw new JointPurchaseExpiredException("공동구매가 마감되었습니다.");
         }
-
+        if (jointPurchaseApplicantRepository.existsByJointPurchaseIdAndUserId(jointPurchaseApplyDto.getJointPurchaseId(), loginUser.getId())) {
+            throw new JointPurchaseAlreadyAppliedException("이미 신청한 공동구매입니다.");
+        }
         User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
         if(user.getPoint() < jointPurchase.getPrice() * jointPurchaseApplyDto.getQuantity()) {
             throw new InsufficientPointsException("포인트가 부족합니다.");
@@ -197,14 +196,13 @@ public class JointPurchaseService {
 
     @Transactional
     public void cancelJointPurchaseApplicant(Long jointPurchaseId, User loginUser) {
-        JointPurchaseApplicant jointPurchaseApplicant = jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(jointPurchaseId, loginUser.getId()).orElseThrow(() -> new JointPurchaseNotFoundException("공동구매를 찾을 수 없습니다."));
+        JointPurchaseApplicant jointPurchaseApplicant = jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(jointPurchaseId, loginUser.getId()).orElseThrow(() -> new JointPurchaseApplicantNotFoundException("공동구매 신청자를 찾을 수 없습니다."));
 
         if (jointPurchaseApplicant.getJointPurchase().getIsCanceled()) {
             throw new JointPurchaseCanceledException("이미 취소된 공동구매입니다.");
         }
-
         if (jointPurchaseApplicant.getJointPurchase().getDeadline().isBefore(LocalDateTime.now())) {
-            throw new JointDeliveryExpiredException("공동구매가 마감되었습니다.");
+            throw new JointPurchaseExpiredException("공동구매가 마감되었습니다.");
         }
 
         User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));

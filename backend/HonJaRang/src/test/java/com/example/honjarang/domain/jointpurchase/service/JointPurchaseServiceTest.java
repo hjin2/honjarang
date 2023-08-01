@@ -1,18 +1,16 @@
 package com.example.honjarang.domain.jointpurchase.service;
 
 import com.example.honjarang.domain.DateTimeUtils;
-import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseApplicantListDto;
-import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseCreateDto;
-import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseDto;
-import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseListDto;
+import com.example.honjarang.domain.jointpurchase.dto.*;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchase;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchaseApplicant;
-import com.example.honjarang.domain.jointpurchase.exception.JointPurchaseCanceledException;
-import com.example.honjarang.domain.jointpurchase.exception.JointPurchaseNotFoundException;
+import com.example.honjarang.domain.jointpurchase.exception.*;
 import com.example.honjarang.domain.jointpurchase.repository.JointPurchaseApplicantRepository;
 import com.example.honjarang.domain.jointpurchase.repository.JointPurchaseRepository;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
+import com.example.honjarang.domain.user.exception.InsufficientPointsException;
+import com.example.honjarang.domain.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,7 +54,8 @@ class JointPurchaseServiceTest {
     private JointPurchaseRepository jointPurchaseRepository;
     @Mock
     private JointPurchaseApplicantRepository jointPurchaseApplicantRepository;
-
+    @Mock
+    private UserRepository userRepository;
     private User user;
     private JointPurchase jointPurchase;
     private JointPurchaseApplicant jointPurchaseApplicant;
@@ -245,5 +244,125 @@ class JointPurchaseServiceTest {
         assertThat(jointPurchaseApplicantList.get(0).getQuantity()).isEqualTo(1);
         assertThat(jointPurchaseApplicantList.get(0).getTotalPrice()).isEqualTo(10000);
         assertThat(jointPurchaseApplicantList.get(0).getIsReceived()).isEqualTo(false);
+    }
+
+    @Test
+    @DisplayName("공동구매 신청 성공")
+    void applyJointPurchase_Success() {
+        // given
+        JointPurchaseApplyDto jointPurchaseApplyDto = new JointPurchaseApplyDto(1L, 1);
+        given(jointPurchaseRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(jointPurchase));
+        given(userRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(user));
+
+        // when
+        jointPurchaseService.applyJointPurchase(jointPurchaseApplyDto, user);
+
+        // then
+    }
+
+    @Test
+    @DisplayName("공동구매 신청 실패 - 공동구매가 존재하지 않는 경우")
+    void applyJointPurchase_JointPurchaseNotFoundException() {
+        // given
+        JointPurchaseApplyDto jointPurchaseApplyDto = new JointPurchaseApplyDto(1L, 1);
+        given(jointPurchaseRepository.findById(1L)).willReturn(java.util.Optional.empty());
+
+        // when & then
+        assertThrows(JointPurchaseNotFoundException.class, () -> jointPurchaseService.applyJointPurchase(jointPurchaseApplyDto, user));
+    }
+
+    @Test
+    @DisplayName("공동구매 신청 실패 - 공동구매가 취소된 경우")
+    void applyJointPurchase_JointPurchaseCanceledException() {
+        // given
+        JointPurchaseApplyDto jointPurchaseApplyDto = new JointPurchaseApplyDto(1L, 1);
+        jointPurchase.setCanceledForTest(true);
+        given(jointPurchaseRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(jointPurchase));
+
+        // when & then
+        assertThrows(JointPurchaseCanceledException.class, () -> jointPurchaseService.applyJointPurchase(jointPurchaseApplyDto, user));
+    }
+
+    @Test
+    @DisplayName("공동구매 신청 실패 - 공동구매가 마감된 경우")
+    void applyJointPurchase_JointPurchaseExpiredException() {
+        // given
+        JointPurchaseApplyDto jointPurchaseApplyDto = new JointPurchaseApplyDto(1L, 1);
+        jointPurchase.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
+        given(jointPurchaseRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(jointPurchase));
+
+        // when & then
+        assertThrows(JointPurchaseExpiredException.class, () -> jointPurchaseService.applyJointPurchase(jointPurchaseApplyDto, user));
+    }
+
+    @Test
+    @DisplayName("공동구매 신청 실패 - 이미 신청한 경우")
+    void applyJointPurchase_JointPurchaseAlreadyAppliedException() {
+        // given
+        JointPurchaseApplyDto jointPurchaseApplyDto = new JointPurchaseApplyDto(1L, 1);
+        given(jointPurchaseRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(jointPurchase));
+        given(jointPurchaseApplicantRepository.existsByJointPurchaseIdAndUserId(1L, 1L)).willReturn(true);
+
+        // when & then
+        assertThrows(JointPurchaseAlreadyAppliedException.class, () -> jointPurchaseService.applyJointPurchase(jointPurchaseApplyDto, user));
+    }
+
+    @Test
+    @DisplayName("공동구매 신청 실패 - 포인트가 부족한 경우")
+    void applyJointPurchase_InsufficientPointException() {
+        // given
+        JointPurchaseApplyDto jointPurchaseApplyDto = new JointPurchaseApplyDto(1L, 1);
+        user.subtractPoint(10000);
+        given(jointPurchaseRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(jointPurchase));
+        given(userRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(user));
+
+        // when & then
+        assertThrows(InsufficientPointsException.class, () -> jointPurchaseService.applyJointPurchase(jointPurchaseApplyDto, user));
+
+    }
+
+    @Test
+    @DisplayName("공동구매 신청 취소 성공")
+    void cancelJointPurchaseApplicant_Success() {
+        // given
+        given(jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(1L, 1L)).willReturn(java.util.Optional.ofNullable(jointPurchaseApplicant));
+        given(userRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(user));
+
+        // when
+        jointPurchaseService.cancelJointPurchaseApplicant(1L, user);
+
+        // then
+    }
+
+    @Test
+    @DisplayName("공동구매 신청 취소 실패 - 신청자가 존재하지 않는 경우")
+    void cancelJointPurchaseApplicant_JointPurchaseApplicantNotFoundException() {
+        // given
+        given(jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(1L, 1L)).willReturn(java.util.Optional.empty());
+
+        // when & then
+        assertThrows(JointPurchaseApplicantNotFoundException.class, () -> jointPurchaseService.cancelJointPurchaseApplicant(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동구매 신청 취소 실패 - 공동구매가 존재하지 않는 경우")
+    void cancelJointPurchaseApplicant_JointPurchaseCanceledException() {
+        // given
+        jointPurchase.setCanceledForTest(true);
+        given(jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(1L, 1L)).willReturn(java.util.Optional.ofNullable(jointPurchaseApplicant));
+
+        // when & then
+        assertThrows(JointPurchaseCanceledException.class, () -> jointPurchaseService.cancelJointPurchaseApplicant(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동구매 신청 취소 실패 - 공동구매가 마감된 경우")
+    void cancelJointPurchaseApplicant_JointPurchaseExpiredException() {
+        // given
+        jointPurchase.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
+        given(jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(1L, 1L)).willReturn(java.util.Optional.ofNullable(jointPurchaseApplicant));
+
+        // when & then
+        assertThrows(JointPurchaseExpiredException.class, () -> jointPurchaseService.cancelJointPurchaseApplicant(1L, user));
     }
 }

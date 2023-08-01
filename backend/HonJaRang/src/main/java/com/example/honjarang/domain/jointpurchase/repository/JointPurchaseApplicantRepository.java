@@ -10,4 +10,5 @@ public interface JointPurchaseApplicantRepository extends JpaRepository<JointPur
     List<JointPurchaseApplicant> findAllByJointPurchaseId(Long jointPurchaseId);
     Optional<JointPurchaseApplicant> findByJointPurchaseIdAndUserId(Long jointPurchaseId, Long userId);
     Integer countByJointPurchaseId(Long jointPurchaseId);
+    boolean existsByJointPurchaseIdAndUserId(Long jointPurchaseId, Long userId);
 }
