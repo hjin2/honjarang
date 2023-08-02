@@ -7,6 +7,7 @@ import com.example.honjarang.domain.post.dto.PostCreateDto;
 import com.example.honjarang.domain.post.dto.PostDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
+import com.example.honjarang.domain.post.entity.Comment;
 import com.example.honjarang.domain.post.entity.LikePost;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
@@ -98,5 +99,13 @@ public class PostService {
     }
 
 
+    @Transactional
+    public void deleteComment(Long id, User user) {
+        Comment comment = commentRepository.findById(id).orElseThrow(() -> new CommentNotFoundException("존재하지 않는 댓글 입니다."));
+        if (!Objects.equals(comment.getUser().getId(), user.getId())) {
+            throw new InvalidUserException("작성자만 삭제할 수 있습니다.");
+        }
+        commentRepository.deleteById(id);
+    }
 
 }
