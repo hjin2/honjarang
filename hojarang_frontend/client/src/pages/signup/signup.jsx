@@ -4,7 +4,7 @@ import './signup.css'
 import Email_verify from '../../components/Signup/email_verify'
 import Nickname_check from '../../components/Signup/nickname_check'
 import Address_check from '../../components/Signup/address_check'
-import Password_check from '../../components/Signup/Password_Check'
+import Password_check from '../../components/Signup/Password_check'
 import { useNavigate } from 'react-router-dom'
 
 
