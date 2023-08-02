@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import Chatting from './pages/Chatting/Chatting';
-import Login from './pages/Login/Login';
-import Signup from './pages/Signup/Signup';
+import Login from './pages/Login/login';
+import Signup from './pages/Signup/signup';
 import Notfound from './pages/Notfound/Notfound';
 import Market from './pages/Market/Market';
 import WebRTC from './pages/WebRTC/WebRTC';
