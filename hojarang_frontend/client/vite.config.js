@@ -13,4 +13,8 @@ export default defineConfig({
       util: 'util/',
     },
   },
+  preview:{
+    host: true,
+    port: 8080,
+  }
 })
