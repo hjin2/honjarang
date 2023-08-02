@@ -19,6 +19,9 @@ import Fail from './pages/Checkout/Fail';
 import Success from './pages/Checkout/Success';
 import DefaultLayout from './components/DefaultLayout';
 import DeliveryDetail from './components/Market/DeliveryDetail';
+import PurchaseCreate from './pages/Market/PurchaseCreate';
+import DeliveryCreate from './pages/Market/DeliveryCreate';
+import TransactionCreate from './pages/Market/TransactionCreate';
 
 function App() {
   return (
@@ -36,6 +39,9 @@ function App() {
               path="/market/deliverydetail/:id"
               element={<DeliveryDetail />}
             ></Route>
+            <Route path="/market/purchase/create" element={<PurchaseCreate/>}></Route>
+            <Route path="/market/delivery/create" element={<DeliveryCreate/>}></Route>
+            <Route path="/market/transaction/create" element={<TransactionCreate/>}></Route>
             <Route path="/board" element={<Board />} />
             <Route path="/map" element={<Map />} />
             <Route path="/mypage/:nickname" element={<MyPage />} />
