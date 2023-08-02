@@ -25,7 +25,6 @@ export default function WebRTC() {
   return(
     <div className="flex space-x-14 mx-auto">
       <div className="basis-1/6 text-center">
-        <input type="text" />
         <SideTab 
           tabs = {tabs}
           activeTabIndex = {activeTabIndex}
