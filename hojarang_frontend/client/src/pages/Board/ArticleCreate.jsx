@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 // import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import TextField from '../../components/Board/TextFields';
+import TextArea from '../../components/Board/TextArea';
 import { createArticle } from '../../redux/slice/articleSlice';
 import { Link } from 'react-router-dom';
 import { combineReducers } from '@reduxjs/toolkit';
+
 
 const ArticleCreate = () => {
   const navigate = useNavigate();
@@ -44,33 +46,34 @@ const ArticleCreate = () => {
   // };
 
   return (
-    <div className="mt-10 max-w-xl mx-auto">
-      카테고리 선택
-      <form action="" value="말머리">
-        <select value={category} onChange={newCate}>
-          <option value="자유">자유</option>
-          <option value="Tip">꿀Tip</option>
-        </select>
-      </form>
-      <div>
+    <div className="border rounded-lg max-w-2xl mx-auto mt-10 pb-3 p-5">
+      <div className="py-3">
+        <p className="mb-2">카테고리 선택</p>
+        <form action="" value="카테고리">
+          <select value={category} onChange={newCate} className="border border-gray3 rounded-lg h-8 w-24">
+            <option value="자유">자유</option>
+            <option value="Tip">꿀Tip</option>
+          </select>
+        </form>
+      </div>
+      <div className="py-3">
         <TextField
           label="제목"
           value={title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
         />
       </div>
-      <br />
-      <div>
-        <TextField
+      <div className="py-3">
+        <TextArea
           label="내용"
           value={content}
           onChange={(e) => setFormData({ ...formData, content: e.target.value })}
         />
       </div>
       <br />
-      <div>
+      <div className="py-3">
         <Link to={`/board/`}>
-          <button onClick={saveArticle}>저장</button>
+          <button onClick={saveArticle} className="main1-button w-24">작성 완료</button>
         </Link>
       </div>
     </div>
