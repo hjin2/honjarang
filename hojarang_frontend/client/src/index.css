@@ -14,9 +14,12 @@
     @apply border-2 h-8 rounded-lg border-main5 text-main5 text-xs font-bold;
   }
   .main1-full-button {
-    @apply border-2 h-8 rounded-lg bg-main1 text-white text-xs font-bold;
+    @apply h-8 rounded-lg bg-main1 text-white text-xs font-bold;
   }
   .main5-full-button {
-    @apply border-2 h-8 rounded-lg bg-main5 text-white text-xs font-bold;
+    @apply h-8 rounded-lg bg-main5 text-white text-xs font-bold;
+  }
+  .main3-full-button {
+    @apply h-8 rounded-lg bg-main3 text-white text-xs font-bold;
   }
 }
