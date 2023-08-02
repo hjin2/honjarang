@@ -5,7 +5,11 @@ export default function AricleList() {
   return (
     <div>
       <Article />
-      <Link to="/board/articlecreate">작성하기</Link>
+      <div className="flex">
+        <Link to="/board/articlecreate">
+          <button className="main1-button w-24">작성하기</button>
+        </Link>
+      </div>
     </div>
   );
 }
