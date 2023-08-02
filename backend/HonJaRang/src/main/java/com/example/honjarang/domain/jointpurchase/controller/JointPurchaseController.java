@@ -58,7 +58,7 @@ public class JointPurchaseController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{jointPurchaseId}/received")
+    @PutMapping("/{jointPurchaseId}/receive")
     public ResponseEntity<Void> confirmReceived(@PathVariable Long jointPurchaseId, @CurrentUser User user) {
         jointPurchaseService.confirmReceived(jointPurchaseId, user);
         return ResponseEntity.ok().build();
