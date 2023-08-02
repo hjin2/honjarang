@@ -71,7 +71,7 @@ public class PostService {
         Pageable pageable = PageRequest.of(page -1, 15);
         return postRepository.findAllByTitleContainingIgnoreCaseOrderByIsNoticeDescIdDesc(keyword, pageable)
                 .stream()
-                .map(post -> toPostListDto(post))
+                .map(post -> new PostListDto(post))
                 .toList();
     }
 
@@ -80,7 +80,7 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
         postRepository.increaseViews(id);
         post.increaseViews();
-        return toPostDto(post);
+        return new PostDto(post);
 
     }
 
@@ -94,32 +94,6 @@ public class PostService {
         }
     }
 
-    public PostListDto toPostListDto(Post post) {
-        return new PostListDto(
-                post.getId(),
-                post.getUser().getId(),
-                post.getTitle(),
-                post.getCategory(),
-                post.getContent(),
-                post.getViews(),
-                post.getIsNotice(),
-                DateTimeUtils.formatLocalDateTime(post.getCreatedAt())
-        );
-    }
-
-    private PostDto toPostDto(Post post) {
-        return new PostDto(
-                post.getId(),
-                post.getUser().getId(),
-                post.getTitle(),
-                post.getCategory(),
-                post.getContent(),
-                post.getUser().getNickname(),
-                post.getViews(),
-                post.getIsNotice(),
-                DateTimeUtils.formatLocalDateTime(post.getCreatedAt())
-        );
-    }
 
     private CommentListDto toCommentListDto(Comment comment) {
         return new CommentListDto(
