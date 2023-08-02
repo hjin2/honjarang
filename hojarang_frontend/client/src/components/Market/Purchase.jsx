@@ -1,7 +1,11 @@
 import React from 'react'
+import Rooms from '../Room/Rooms'
 
-export const Purchase = () => {
+export default function Purchase() {
   return (
-    <div>Purchase</div>
+      <div>
+        Purchase
+        <Rooms />
+      </div>
   )
 }

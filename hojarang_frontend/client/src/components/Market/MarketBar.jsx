@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import { Purchase } from './Purchase'
+import Purchase from './Purchase'
 import Delivery from './Delivery'
-import { Transaction } from './Transaction'
+import Transaction from './Transaction'
 import Tab from '../MyPage/Tab'
 
-export const MarketBar = () => {
+export default function MarketBar() {
 
   const [activeTabIndex, setActiveTabIndex] = useState(0)
 
