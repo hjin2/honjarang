@@ -1,7 +1,7 @@
 import Delivery from '../../components/Market/Delivery';
 import SideTab from '../../components/Common/SideTab'
-import { Purchase } from '../../components/Market/Purchase';
-import { Transaction } from '../../components/Market/Transaction';
+import Purchase from '../../components/Market/Purchase';
+import Transaction from '../../components/Market/Transaction';
 
 export default function Market() {
   const tabs = [
