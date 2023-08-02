@@ -84,6 +84,7 @@ public class PostServiceTest {
                 .content("test")
                 .user(user)
                 .build();
+        post.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2023-08-02 12:00:00"));
     }
 
     @Test
@@ -193,8 +194,7 @@ public class PostServiceTest {
         // given
         Integer testPage = 1;
         String testKeyword = "kk";
-        PostListDto postListDto = new PostListDto(1L, 1L, "title",
-                Category.FREE, "content", 1, false, DateTimeUtils.formatLocalDateTime(LocalDateTime.now()));
+        PostListDto postListDto = new PostListDto(post);
         List<PostListDto> postList = new ArrayList<>();
         postList.add(postListDto);
 

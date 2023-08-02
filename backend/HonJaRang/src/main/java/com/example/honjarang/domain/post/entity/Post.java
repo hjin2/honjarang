@@ -52,6 +52,17 @@ public class Post extends BaseTimeEntity {
         this.views = views;
     }
 
+    @Builder
+    public Post(Long id, User user, String title, String content, Boolean isNotice, Integer views, Category category) {
+        this.id = id;
+        this.user = user;
+        this.title = title;
+        this.content = content;
+        this.isNotice = isNotice;
+        this.views = views;
+        this.category = category;
+    }
+
     public void increaseViews() {
         this.views++;
     }
@@ -61,5 +72,9 @@ public class Post extends BaseTimeEntity {
         this.content = postUpdateDto.getContent();
         this.isNotice = postUpdateDto.getIsNotice();
         this.category = postUpdateDto.getCategory();
+    }
+
+    public void setIdForTest(Long id){
+        this.id = id;
     }
 }

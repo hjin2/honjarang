@@ -84,4 +84,8 @@ public class JointPurchase extends BaseTimeEntity {
     public void setCanceledForTest(Boolean isCanceled) {
         this.isCanceled = isCanceled;
     }
+
+    public void setDeadlineForTest(LocalDateTime deadline) {
+        this.deadline = deadline;
+    }
 }
