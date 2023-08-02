@@ -3,7 +3,7 @@ function Pagination({ total, limit, page, setPage }) {
 
   return (
     <div>
-      <nav className="flex justify-center items-center gap-4 m-16">
+      <nav className="flex justify-center items-center gap-4">
         <button onClick={() => setPage(page - 1)} disabled={page === 1}>
           &lt;
         </button>

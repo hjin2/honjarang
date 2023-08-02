@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import EditModal from './EditModal';
+import Edit from './Edit';
+import Modal from '../Common/Modal';
 import { useSelector } from 'react-redux';
 
 export default function UserInfo(props) {
@@ -33,7 +34,9 @@ export default function UserInfo(props) {
         </div>
         <div className="text-xs">50,000P</div>
         {modalState && (
-          <EditModal modalState={modalState} setModalState={setModalState} />
+          <Modal modalState={modalState} setModalState={setModalState}>
+            <Edit modalState={modalState} setModalState={setModalState}/>
+          </Modal>
         )}
       </div>
     </div>
