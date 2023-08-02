@@ -26,7 +26,7 @@ public class JointDeliveryControllerAdvice {
     }
 
     // 409 Conflict
-    @ExceptionHandler({ReceiptAlreadyConfirmedException.class})
+    @ExceptionHandler({JointDeliveryAlreadyReceivedException.class})
     public ResponseEntity<Void> handleConflictException(RuntimeException e) {
         return ResponseEntity.status(409).build();
     }

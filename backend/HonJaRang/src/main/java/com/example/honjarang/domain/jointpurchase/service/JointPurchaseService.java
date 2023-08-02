@@ -1,16 +1,17 @@
 package com.example.honjarang.domain.jointpurchase.service;
 
+import com.example.honjarang.domain.jointdelivery.exception.JointDeliveryExpiredException;
 import com.example.honjarang.domain.jointpurchase.dto.*;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchase;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchaseApplicant;
-import com.example.honjarang.domain.jointpurchase.exception.JointPurchaseCanceledException;
-import com.example.honjarang.domain.jointpurchase.exception.JointPurchaseNotFoundException;
-import com.example.honjarang.domain.jointpurchase.exception.ProductNotFoundException;
-import com.example.honjarang.domain.jointpurchase.exception.UnauthorizedJointPurchaseAccessException;
+import com.example.honjarang.domain.jointpurchase.exception.*;
 import com.example.honjarang.domain.jointpurchase.repository.JointPurchaseApplicantRepository;
 import com.example.honjarang.domain.jointpurchase.repository.JointPurchaseRepository;
 import com.example.honjarang.domain.map.exception.PlaceNotFoundException;
 import com.example.honjarang.domain.user.entity.User;
+import com.example.honjarang.domain.user.exception.InsufficientPointsException;
+import com.example.honjarang.domain.user.exception.UserNotFoundException;
+import com.example.honjarang.domain.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,6 +39,7 @@ public class JointPurchaseService {
 
     private final JointPurchaseRepository jointPurchaseRepository;
     private final JointPurchaseApplicantRepository jointPurchaseApplicantRepository;
+    private final UserRepository userRepository;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
@@ -163,5 +165,70 @@ public class JointPurchaseService {
         return jointPurchaseApplicantRepository.findAllByJointPurchaseId(jointPurchaseId).stream()
                 .map(JointPurchaseApplicantListDto::new)
                 .toList();
+    }
+
+    @Transactional
+    public void applyJointPurchase(JointPurchaseApplyDto jointPurchaseApplyDto, User loginUser) {
+        JointPurchase jointPurchase = jointPurchaseRepository.findById(jointPurchaseApplyDto.getJointPurchaseId()).orElseThrow(() -> new JointPurchaseNotFoundException("공동구매를 찾을 수 없습니다."));
+
+        if (jointPurchase.getIsCanceled()) {
+            throw new JointPurchaseCanceledException("이미 취소된 공동구매입니다.");
+        }
+        if (jointPurchase.getDeadline().isBefore(LocalDateTime.now())) {
+            throw new JointPurchaseExpiredException("공동구매가 마감되었습니다.");
+        }
+        if (jointPurchaseApplicantRepository.existsByJointPurchaseIdAndUserId(jointPurchaseApplyDto.getJointPurchaseId(), loginUser.getId())) {
+            throw new JointPurchaseAlreadyAppliedException("이미 신청한 공동구매입니다.");
+        }
+        User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        if(user.getPoint() < jointPurchase.getPrice() * jointPurchaseApplyDto.getQuantity() + jointPurchase.getDeliveryCharge() / jointPurchase.getTargetPersonCount()) {
+            throw new InsufficientPointsException("포인트가 부족합니다.");
+        }
+        user.subtractPoint(jointPurchase.getPrice() * jointPurchaseApplyDto.getQuantity());
+        user.subtractPoint(jointPurchase.getDeliveryCharge() / jointPurchase.getTargetPersonCount());
+
+        JointPurchaseApplicant jointPurchaseApplicant = JointPurchaseApplicant.builder()
+                .jointPurchase(jointPurchase)
+                .user(user)
+                .quantity(jointPurchaseApplyDto.getQuantity())
+                .build();
+        jointPurchaseApplicantRepository.save(jointPurchaseApplicant);
+    }
+
+    @Transactional
+    public void cancelJointPurchaseApplicant(Long jointPurchaseId, User loginUser) {
+        JointPurchaseApplicant jointPurchaseApplicant = jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(jointPurchaseId, loginUser.getId()).orElseThrow(() -> new JointPurchaseApplicantNotFoundException("공동구매 신청자를 찾을 수 없습니다."));
+
+        if (jointPurchaseApplicant.getJointPurchase().getIsCanceled()) {
+            throw new JointPurchaseCanceledException("이미 취소된 공동구매입니다.");
+        }
+        if (jointPurchaseApplicant.getJointPurchase().getDeadline().isBefore(LocalDateTime.now())) {
+            throw new JointPurchaseExpiredException("공동구매가 마감되었습니다.");
+        }
+
+        User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        user.addPoint(jointPurchaseApplicant.getJointPurchase().getPrice() * jointPurchaseApplicant.getQuantity());
+
+        jointPurchaseApplicantRepository.delete(jointPurchaseApplicant);
+    }
+
+    @Transactional
+    public void confirmReceived(Long jointPurchaseId, User loginUser) {
+        JointPurchaseApplicant jointPurchaseApplicant = jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(jointPurchaseId, loginUser.getId()).orElseThrow(() -> new JointPurchaseApplicantNotFoundException("공동구매 신청자를 찾을 수 없습니다."));
+
+        if (jointPurchaseApplicant.getJointPurchase().getIsCanceled()) {
+            throw new JointPurchaseCanceledException("이미 취소된 공동구매입니다.");
+        }
+        if (jointPurchaseApplicant.getJointPurchase().getDeadline().isAfter(LocalDateTime.now())) {
+            throw new JointPurchaseNotClosedException("공동구매가 마감되지 않았습니다.");
+        }
+        if(jointPurchaseApplicant.getIsReceived()) {
+            throw new JointPurchaseAlreadyReceivedException("이미 수령확인한 공동구매입니다.");
+        }
+
+        jointPurchaseApplicant.confirmReceived();
+
+        jointPurchaseApplicant.getJointPurchase().getUser().addPoint(jointPurchaseApplicant.getJointPurchase().getPrice() * jointPurchaseApplicant.getQuantity());
+        jointPurchaseApplicant.getJointPurchase().getUser().addPoint(jointPurchaseApplicant.getJointPurchase().getDeliveryCharge() / jointPurchaseApplicant.getJointPurchase().getTargetPersonCount());
     }
 }
