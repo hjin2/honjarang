@@ -3,7 +3,9 @@ package com.example.honjarang.domain.jointdelivery.dto;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import jdk.jshell.Snippet;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -40,5 +42,15 @@ public class JointDeliveryListDto {
         this.storeImage = jointDelivery.getStore().getImage();
         this.userId = jointDelivery.getUser().getId();
         this.nickname = jointDelivery.getUser().getNickname();
+    }
+
+    public JointDeliveryListDto(Long id, Integer targetMinPrice, Long storeId, String storeName, String storeImage, Long userId, String nickname){
+        this.id = id;
+        this.targetMinPrice = targetMinPrice;
+        this.storeId = storeId;
+        this.storeName = storeName;
+        this.storeImage = storeImage;
+        this.userId = userId;
+        this.nickname = nickname;
     }
 }

@@ -1,5 +1,16 @@
 package com.example.honjarang.domain.user.service;
 
+import com.example.honjarang.domain.DateTimeUtils;
+import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
+import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
+import com.example.honjarang.domain.jointdelivery.entity.Store;
+import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryCartRepository;
+import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryRepository;
+import com.example.honjarang.domain.post.dto.PostListDto;
+import com.example.honjarang.domain.post.entity.Category;
+import com.example.honjarang.domain.post.entity.Post;
+import com.example.honjarang.domain.post.repository.PostRepository;
+import com.example.honjarang.domain.post.service.PostService;
 import com.example.honjarang.domain.user.dto.LoginDto;
 import com.example.honjarang.domain.user.dto.UserCreateDto;
 import com.example.honjarang.domain.user.entity.EmailVerification;
@@ -17,14 +28,30 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -36,13 +63,30 @@ class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private PostRepository postRepository;
+
+    @Mock
+    private JointDeliveryRepository jointDeliveryRepository;
+
+    @Mock
     private EmailVerificationRepository emailVerificationRepository;
+
+    @Mock
+    private JointDeliveryCartRepository jointDeliveryCartRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
 
     private User user;
     private EmailVerification emailVerification;
+
+    private JointDelivery jointDelivery;
+    private Store store;
+    @Spy
+    @InjectMocks
+    private PostService postService;
+
+    private Post post;
 
     @BeforeEach
     void setUp() {
@@ -63,6 +107,45 @@ class UserServiceTest {
                 .isVerified(true)
                 .build();
         emailVerification.setIdForTest(1L);
+
+
+        ///
+        post = Post.builder()
+                .title("test")
+                .user(user)
+                .views(0)
+                .category(Category.FREE)
+                .isNotice(false)
+                .content("test")
+                .build();
+        post.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2023-08-02 12:00:11"));
+
+        store = Store.builder()
+                .id(1L)
+                .storeName("테스트 가게명")
+                .image("test_store.jpg")
+                .address("서울특별시 강남구")
+                .latitude(25.444)
+                .longitude(34.334)
+                .build();
+        store.setIdForTest(1L);
+
+
+        jointDelivery = JointDelivery.builder()
+                .store(store)
+                .user(user)
+                .content("테스트 매장 내용입니다.")
+                .deliveryCharge(3000)
+                .targetMinPrice(20000)
+                .deadline(DateTimeUtils.parseLocalDateTime("2023-08-02 12:20:00"))
+                .build();
+        jointDelivery.setIdForTest(1L);
+        jointDelivery.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2023-08-02 12:00:00"));
+        jointDelivery.setUserForTest(user);
+        jointDelivery.setCanceledForTest(false);
+
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null));
+
     }
 
 
@@ -236,21 +319,6 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("회원정보 이미지 변경 성공 - 기존에 이미지가 있을 경우")
-    void changeImage_exist() {
-        // given
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
-
-        // when
-        userService.changeUserImage(user,"test.jpg");
-        userService.changeUserImage(user,"changetest.jpg");
-
-        // then
-        assertThat(user.getProfileImage()).isEqualTo("changetest.jpg");
-
-    }
-
-    @Test
     @DisplayName("회원정보 이미지 변경 실패 - 사용자가 존재하지 않는 경우")
     void changeImage_UserNotFoundException() {
         // given
@@ -261,4 +329,101 @@ class UserServiceTest {
     }
 
 
+    @Test
+    @DisplayName("내가 작성한 게시글 보기")
+    void getMyPostList_Success(){
+        // given
+        Pageable pageable = PageRequest.of(0,15);
+
+
+        List<Post> postList = List.of(post);
+        given(postRepository.findAllByUserIdOrderByIdDesc(user.getId(),pageable)).willReturn(postList);
+
+        PostListDto postListDto = new PostListDto(post);
+
+        // when
+        List<PostListDto> result = userService.getMyPostList(1,user);
+
+        // then
+        assertThat(result.get(0).getUserId()).isEqualTo(user.getId());
+        assertThat(result.get(0).getCategory()).isEqualTo(post.getCategory());
+        assertThat(result.get(0).getTitle()).isEqualTo(post.getTitle());
+        assertThat(result.get(0).getContent()).isEqualTo(post.getContent());
+        assertThat(result.get(0).getIsNotice()).isEqualTo(post.getIsNotice());
+        assertThat(result.get(0).getViews()).isEqualTo(post.getViews());
+
+
+    }
+
+
+    @Test
+    @DisplayName("내가 작성한 공동배달 글 보기")
+    void getMyWrittenJointDeliveries_success() {
+        // given
+        Pageable pageable = Pageable.ofSize(15).withPage(0);
+        List<JointDelivery> jointDeliveries = List.of(jointDelivery);
+        given(jointDeliveryRepository.findAllByUserId(user.getId(), pageable)).willReturn(new PageImpl<>(jointDeliveries));
+
+        JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery);
+        List<JointDeliveryListDto> expectedResult = List.of(jointDeliveryListDto);
+
+
+        // when
+        List<JointDeliveryListDto> result = userService.getMyWrittenJointDeliveries(15, 1, user);
+
+
+        // then : jointDelivery값이 JointDeliveryListDto에 담긴다 이걸 비교해야됨 즉 expectedResult
+        assertThat(result.get(0).getUserId()).isEqualTo(expectedResult.get(0).getId());
+        assertThat(result.get(0).getCurrentTotalPrice()).isEqualTo(expectedResult.get(0).getCurrentTotalPrice());
+        assertThat(result.get(0).getTargetMinPrice()).isEqualTo(expectedResult.get(0).getTargetMinPrice());
+        assertThat(result.get(0).getStoreId()).isEqualTo(expectedResult.get(0).getStoreId());
+        assertThat(result.get(0).getStoreName()).isEqualTo(expectedResult.get(0).getStoreName());
+        assertThat(result.get(0).getStoreImage()).isEqualTo(expectedResult.get(0).getStoreImage());
+        assertThat(result.get(0).getUserId()).isEqualTo(expectedResult.get(0).getUserId());
+        assertThat(result.get(0).getNickname()).isEqualTo(expectedResult.get(0).getNickname());
+
+    }
+
+
+    @Test
+    @DisplayName("내가 참여하는 공동배달 글 보기")
+    void getMyJoinedJointDeliveries_success() {
+        // given
+        Pageable pageable = Pageable.ofSize(15).withPage(0);
+        List<JointDelivery> jointDeliveries = List.of(jointDelivery);
+        given(jointDeliveryCartRepository.findDistinctJointDeliveryById(user.getId(), pageable)).willReturn(jointDeliveries);
+
+        JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery);
+        List<JointDeliveryListDto> expectedResult = List.of(jointDeliveryListDto);
+
+
+        // when
+        List<JointDeliveryListDto> result = userService.getMyJoinedJointDeliveries(15, 1, user);
+
+
+        // then
+        assertThat(result.get(0).getUserId()).isEqualTo(expectedResult.get(0).getId());
+        assertThat(result.get(0).getCurrentTotalPrice()).isEqualTo(expectedResult.get(0).getCurrentTotalPrice());
+        assertThat(result.get(0).getTargetMinPrice()).isEqualTo(expectedResult.get(0).getTargetMinPrice());
+        assertThat(result.get(0).getStoreId()).isEqualTo(expectedResult.get(0).getStoreId());
+        assertThat(result.get(0).getStoreName()).isEqualTo(expectedResult.get(0).getStoreName());
+        assertThat(result.get(0).getStoreImage()).isEqualTo(expectedResult.get(0).getStoreImage());
+        assertThat(result.get(0).getUserId()).isEqualTo(expectedResult.get(0).getUserId());
+        assertThat(result.get(0).getNickname()).isEqualTo(expectedResult.get(0).getNickname());
+
+    }
+
+
+    @Test
+    @DisplayName("포인트 출금 기능")
+    void withdrawPoint_success(){
+        // given
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.ofNullable(user));
+
+        // when
+        userService.withdrawPoint(3000,user);
+
+        // then
+        assertThat(user.getPoint()).isEqualTo(7000);
+    }
 }

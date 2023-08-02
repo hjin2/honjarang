@@ -66,6 +66,8 @@ public class UserService {
 
     private final MenuRepository menuRepository;
 
+    private final S3UploadService s3UploadService;
+
     @Transactional(readOnly = true)
     public User login(LoginDto loginDto) {
         User user = userRepository.findByEmail(loginDto.getEmail()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
@@ -117,6 +119,9 @@ public class UserService {
 
     @Transactional
     public void changeUserImage(User user, String profileImage) {
+        if (user.getProfileImage()!=null) {
+            s3UploadService.delete(user.getProfileImage());
+        }
         User loginedUser = userRepository.findByEmail(user.getEmail()).orElseThrow(() -> new UserNotFoundException("존재하지 않는 회원입니다."));
         loginedUser.changeProfileImage(profileImage);
     }
@@ -153,9 +158,6 @@ public class UserService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
-
-
     }
 
     @Transactional(readOnly = true)
@@ -163,14 +165,14 @@ public class UserService {
         Pageable pageable = PageRequest.of(page-1, 15);
         return postRepository.findAllByUserIdOrderByIdDesc(user.getId(), pageable)
                 .stream()
-                .map(post -> postService.toPostListDto(post))
+                .map(post -> new PostListDto(post))
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public List<JointDeliveryListDto> getMyWrittenJointDeliveries(int size, int page, User user){
         Pageable pageable = Pageable.ofSize(size).withPage(page-1);
-        List<JointDelivery> myWrittenJointDeliveryList = jointDeliveryRepository.findAllByUserId(user.getId(), pageable).stream().toList();
+        List<JointDelivery> myWrittenJointDeliveryList = jointDeliveryRepository.findAllByUserId(user.getId(), pageable).toList();
 
         List<JointDeliveryListDto> myWrittenJointDeliveryListDtoList = new ArrayList<>();
         for(JointDelivery jointDelivery : myWrittenJointDeliveryList){

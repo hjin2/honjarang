@@ -1,6 +1,5 @@
 package com.example.honjarang.domain.user.controller;
 
-import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryDto;
 import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.user.dto.*;
@@ -55,6 +54,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(@RequestBody UserCreateDto userCreateDto) {
         userService.signup(userCreateDto);
@@ -74,9 +74,6 @@ public class UserController {
 
     @PostMapping("/change-image")
     public ResponseEntity<Void> uploadUserImage(@RequestBody Map<String,String> profileImage, @CurrentUser User user){
-        if (user.getProfileImage()!=null) {
-                s3UploadService.delete(user.getProfileImage());
-            }
         userService.changeUserImage(user, profileImage.get("profile_image"));
         return ResponseEntity.ok().build();
     }
@@ -88,9 +85,11 @@ public class UserController {
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<List<PostListDto>> getMyPostList(@RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
-        return ResponseEntity.ok(userService.getMyPostList(page,user));
+    public ResponseEntity<List<PostListDto>> getMyPostList(@RequestParam(value = "page", defaultValue = "1") Integer page, @CurrentUser User user){
+        List<PostListDto> postList = userService.getMyPostList(page,user);
+        return ResponseEntity.ok(postList);
     }
+
 
     @GetMapping("/joint-deliveries-writer")
     public ResponseEntity<List<JointDeliveryListDto>> getMyWrittenJointDeliveries(@RequestParam(value = "size", defaultValue = "1") int size, @RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
@@ -105,12 +104,10 @@ public class UserController {
     }
 
 
-
-
-
     @PutMapping("/withdraw")
     public ResponseEntity<Void> withdrawPoint(@RequestBody PointWithdrawDto pointWithdrawDto, @CurrentUser User user){
         userService.withdrawPoint(pointWithdrawDto.getPoint(),user);
         return ResponseEntity.ok().build();
     }
+
 }
