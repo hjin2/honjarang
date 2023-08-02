@@ -1,6 +1,8 @@
 package com.example.honjarang.domain;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 public class DateTimeUtils {
@@ -12,5 +14,10 @@ public class DateTimeUtils {
 
     public static LocalDateTime parseLocalDateTime(String dateTimeString) {
         return LocalDateTime.parse(dateTimeString, FORMATTER);
+    }
+
+    public static String formatInstant(Instant instant) {
+        LocalDateTime localDateTime = instant.atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+        return localDateTime.format(FORMATTER);
     }
 }

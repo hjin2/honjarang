@@ -13,6 +13,8 @@
 <div>
     <label for="message">메시지:</label>
     <input type="text" id="message" />
+    <label for="sender">보낸 사람:</label>
+    <input type="text" id="sender" />
     <button onclick="sendMessage()">전송</button>
 </div>
 <div id="chatArea">
@@ -48,9 +50,11 @@
     function sendMessage() {
         const roomId = document.getElementById('roomId').value;
         const messageContent = document.getElementById('message').value;
+        const sender = document.getElementById('sender').value; // 입력한 보낸 사람
 
         const message = {
-            sender: "사용자ID", // 사용자 ID를 여기에 입력
+            user_id: sender,
+            room_id: roomId,
             content: messageContent
         };
 
