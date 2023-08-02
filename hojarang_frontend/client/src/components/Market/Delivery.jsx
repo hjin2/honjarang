@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Pagination from '../Board/Pagination';
 import { Link } from 'react-router-dom';
 
-function Delivery() {
+export default function Delivery() {
   const [DeliveryList, setList] = useState([
     { id: 16, title: 'test', user: 'ssafy', date: '2023.07.01' },
   ]);
@@ -48,4 +48,4 @@ function Delivery() {
   );
 }
 
-export default Delivery;
+

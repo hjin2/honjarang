@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const Transaction = () => {
+export default function Transaction() {
   return (
     <div>Transaction</div>
   )
