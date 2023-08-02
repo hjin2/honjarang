@@ -279,7 +279,7 @@ class JointPurchaseControllerTest {
         // given
 
         // when & then
-        mockMvc.perform(put("/api/v1/joint-purchases/{jointPurchaseId}/received", 1L))
+        mockMvc.perform(put("/api/v1/joint-purchases/{jointPurchaseId}/receive", 1L))
                 .andExpect(status().isOk())
                 .andDo(document("joint-purchases/received",
                         preprocessRequest(prettyPrint()),
