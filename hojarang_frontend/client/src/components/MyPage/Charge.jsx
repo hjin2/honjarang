@@ -1,7 +1,10 @@
 import {useState} from 'react'
 import { Link } from 'react-router-dom';
 
-export default function Charge() {
+export default function Charge({ modalState, setModalState }) {
+  const onClickCloseButton = () =>{
+    setModalState(!modalState)
+  }
   const [activeRadio, setActiveRadio] = useState('5000');
   const handleClickRadioButton = (e) => {
     console.log(e.target.value);
@@ -69,15 +72,22 @@ export default function Charge() {
           <div className='w-20 h-8 border-2 rounded-lg flex items-center text-xs'> 10,000P </div>
         </div>
       </div>
-      <Link
-        to="/checkout"
-        state={{
-          price: { activeRadio },
-          nickName: '김싸피',
-        }}
-      >
-        <button className="main1-button w-24 mt-20">결제하기</button>
-      </Link>
+      <div className="mt-20">
+        <button className="main1-button w-24">
+          <Link
+            to="/checkout"
+            state={{
+              price: { activeRadio },
+              nickName: '김싸피',
+            }}
+          >
+            결제하기
+          </Link>
+        </button>
+        <button 
+          className="main5-button w-24"
+          onClick={onClickCloseButton}>취소하기</button>
+      </div>
     </div>
   )
 }
