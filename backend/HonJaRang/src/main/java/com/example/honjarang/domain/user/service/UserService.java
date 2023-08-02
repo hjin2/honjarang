@@ -161,7 +161,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostListDto> getMyPostList(int page, User user){
+    public List<PostListDto> getMyPostList(Integer page, User user){
         Pageable pageable = PageRequest.of(page-1, 15);
         return postRepository.findAllByUserIdOrderByIdDesc(user.getId(), pageable)
                 .stream()
