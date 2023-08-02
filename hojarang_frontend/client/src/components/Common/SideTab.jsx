@@ -5,7 +5,7 @@ export default function SideTab({ tabs, activeTabIndex, setActiveTabIndex }){
 
   return (
     <div className='space-x-14 mx-auto'>
-      <ul className="space-y-5">
+      <ul className="space-y-10 my-10">
         {tabs.map((tab, index) => (
           <li
             key={index}
