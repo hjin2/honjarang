@@ -1,4 +1,7 @@
-export default function Refund() {
+export default function Refund({modalState, setModalState}) {
+  const onClickCloseButton = (()=>{
+    setModalState(!modalState)
+  })
   return (
     <div className='space-y-4'>
       <div>환급 가능한 포인트</div>
@@ -21,8 +24,8 @@ export default function Refund() {
       <input type="text" placeholder='계좌 번호를 입력해주세요' className='h-8 text-xs w-full'/>
       <div className='text-xs'>계좌 번호 오기입으로 인한 미환급은 책임지지 않습니다. 계좌번호를 반드시 확인해 주세요.</div>
       <div className='flex justify-between'>
-        <button type='button' className='main5-button w-24'>취소하기</button>
         <button type='button' className='main1-button w-24'>환급받기</button>
+        <button type='button' className='main5-button w-24' onClick={onClickCloseButton}>취소하기</button>
       </div>
     </div>
   )

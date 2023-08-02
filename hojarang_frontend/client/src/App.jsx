@@ -19,6 +19,8 @@ import Fail from './pages/Checkout/Fail';
 import Success from './pages/Checkout/Success';
 import DefaultLayout from './components/DefaultLayout';
 import DeliveryDetail from './components/Market/DeliveryDetail';
+import WebRTCCreate from './pages/WebRTC/WebRTCCreate';
+
 
 function App() {
   return (
@@ -30,6 +32,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/webrtc" element={<WebRTC />} />
+            <Route path="/webrtc/create" element={<WebRTCCreate/>}/>
             <Route path="/chatting" element={<Chatting />} />
             <Route path="/market" element={<Market />} />
             <Route

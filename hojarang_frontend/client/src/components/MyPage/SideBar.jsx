@@ -3,7 +3,8 @@ import ArticlesList from './ArticlesList';
 import MarKetList from './MarketList';
 import { Link } from 'react-router-dom';
 import Tab from './Tab';
-import ChargeModal from './ChargeModal';
+import Modal from '../Common/Modal';
+import ChargeTab from './ChargeTab';
 
 function SideBar() {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
@@ -41,7 +42,9 @@ function SideBar() {
         setActiveTabIndex={setActiveTabIndex}
       />
       {modalState && (
-        <ChargeModal modalState={modalState} setModalState={setModalState} />
+        <Modal modalState={modalState} setModalState={setModalState}>
+          <ChargeTab modalState={modalState} setModalState={setModalState}/>
+        </Modal>
       )}
     </div>
   );

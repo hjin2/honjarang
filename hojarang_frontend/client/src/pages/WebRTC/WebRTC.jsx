@@ -1,6 +1,7 @@
 import SideTab from "../../components/Common/SideTab";
 import Content from "../../components/Common/Content";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function WebRTC() {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
@@ -31,7 +32,11 @@ export default function WebRTC() {
           activeTabIndex = {activeTabIndex}
           setActiveTabIndex = {setActiveTabIndex}
           />
-        <button type = "button" className="main3-full-button w-28">화상 채팅 만들기</button>
+        <button type = "button" className="main3-full-button w-28">
+          <Link to="/webrtc/create">
+            화상 채팅 만들기
+          </Link>
+        </button>
       </div>
       <div className="basis-5/6">
         <Content

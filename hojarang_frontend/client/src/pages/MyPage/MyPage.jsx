@@ -8,7 +8,9 @@ export default function MyPage() {
   return (
     <div className="my-page space-y-5">
       <UserInfo nickname={nickname} />
-      <SideBar />
+      <div className='h-96'>
+       <SideBar />
+      </div>
     </div>
   );
 }
