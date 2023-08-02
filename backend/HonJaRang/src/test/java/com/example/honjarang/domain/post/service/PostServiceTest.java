@@ -275,8 +275,7 @@ public class PostServiceTest {
         // given
         User userForTest = User.builder().build();
         userForTest.setIdForTest(2L);
-        Comment comment = Comment.builder().build();
-        comment.setUserForTest(user);
+        Comment comment = Comment.builder().user(user).build();
 
         given(commentRepository.findById(1L)).willReturn(Optional.of(comment));
 

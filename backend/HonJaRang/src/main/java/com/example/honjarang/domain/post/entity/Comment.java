@@ -42,9 +42,5 @@ public class Comment extends BaseTimeEntity {
 
     }
 
-    public void setUserForTest(User user) {
-        this.user = user;
-    }
-
     public void setIdForTest(Long id) { this.id = id; }
 }
