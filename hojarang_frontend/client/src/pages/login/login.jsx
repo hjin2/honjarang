@@ -1,9 +1,25 @@
+import { useState } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import store from '../../redux/store';
 import { loginAccount } from '../../redux/slice/loginSlice';
 
 export default function Login() {
+  const [Email, setEmail] = useState('')
+  const [Pwd, setPwd] = useState('')
+
+  const Login = () => {
+    axios.post('honjarang.kro.kr:30000/api/v1/users/login', {
+      email: Email,
+      password: Pwd
+    })
+    .then((res)=>{
+      console.log(res.data)
+      dispatch(loginAccount(res.data))
+    })
+  }
+
   // dispatch에 action 전달하면 동작 실시됨
   const dispatch = useDispatch();
   const loginAccount = useSelector((state) => state.login.loginAccount);
@@ -16,9 +32,9 @@ export default function Login() {
             이메일
           </label>
           <input
-            type="email"
+            type="text"
             className="border-gray3 rounded-lg block focus:outline-main2 focus:outline-2"
-          />
+            onChange = {e => setEmail(e.target.value)}/>
         </div>
         <div>
           <label htmlFor="password" className="block mb-2">
@@ -27,13 +43,11 @@ export default function Login() {
           <input
             type="password"
             className="border-gray3 rounded-lg block focus:outline-main2 focus:outline-2"
-          />
+            onChange = {e => setPwd(e.target.value)}/>
         </div>
       </form>
       <button
-        onClick={() => {
-          dispatch(loginAccount);
-        }}
+        onClick={Login}
         className="w-32 main1-button my-5"
       >
         로그인
