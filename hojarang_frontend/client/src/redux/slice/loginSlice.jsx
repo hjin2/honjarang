@@ -3,8 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 // 리덕스에서 관리할 상태 정의
 const initialState = {
   isLogged: false,
-  user_email: null,
-  user_password: null,
+  access_token: null,
+  refresh_token: null,
 };
 
 const loginSlice = createSlice({
@@ -13,9 +13,15 @@ const loginSlice = createSlice({
   reducers: {
     loginAccount: (state, action) => {
       state.isLogged = true;
-      state.user_email = action.payload.user_email;
-      state.user_id = action.payload.user_password;
+      state.access_token = action.payload.access_token;
+      state.refresh_token = action.payload.refresh_token;
+
     },
+    logoutAccout: (state) => {
+      state.isLogged = false;
+      state.access_token = null;
+      state.refresh_token = null;
+    }
   },
 });
 
