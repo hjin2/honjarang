@@ -39,23 +39,20 @@ const ImageInput = () => {
       //     console.log(err)
       //   })
 
-      const formData = new FormData();
-      formData.append('image', selectedFile);
-      axios
-        .post('http://localhost:5000/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-        .then((res) => {
-          // console.log(FormData)
-          console.log(res);
-          alert('성공');
-        })
-        .catch((err) => {
-          console.log(err);
-          alert('실패');
-        });
+      // const formData = new FormData();
+      // formData.append('image', selectedFile);
+      // const lambdaEndpoint = "https://d73325gdt3.execute-api.ap-northeast-2.amazonaws.com/test/image"
+      // axios
+      //   .post(lambdaEndpoint, formData)
+      //   .then((res) => {
+      //     // console.log(FormData)
+      //     console.log(res);
+      //     alert('성공');
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //     alert('실패');
+      //   });
 
       const reader = new FileReader();
       reader.onload = () => {
@@ -72,6 +69,7 @@ const ImageInput = () => {
       );
     }
   };
+  
 
   return (
     <>
