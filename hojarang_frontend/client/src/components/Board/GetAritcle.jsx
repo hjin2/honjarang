@@ -39,14 +39,20 @@ function Posts() {
       </header> */}
 
       <div className="w-4/5">
+        <div className="flex justify-between font-bold">
+          <div className="w-1/6">글번호</div>
+          <div className="w-2/6 text-center">작성자</div>
+          <div className="w-3/6 text-center">제목</div>
+          <div className="w-2/6">작성일자</div>
+        </div>
         <main>
           {posts
             .slice(offset, offset + limit)
             .map(({ id, title, user, date }) => (
               <article key={id} className="flex justify-between py-2">
                 <p className="w-1/6">{id}</p>
-                <p className="w-2/6">{user}</p>
-                <p className="w-3/6">{title}</p>
+                <p className="w-2/6 text-center">{user}</p>
+                <p className="w-3/6 text-center">{title}</p>
                 <p className="w-2/6">{date}</p>
               </article>
             ))}
