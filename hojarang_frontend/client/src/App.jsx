@@ -7,7 +7,8 @@ import Notfound from './pages/Notfound/Notfound';
 import Market from './pages/Market/Market';
 import WebRTC from './pages/WebRTC/WebRTC';
 import Board from './pages/Board/Board';
-import Map from './pages/Map/Map';
+import Map1 from './pages/Map/Map';
+import Map2 from './pages/Map/Map2';
 import MyPage from './pages/MyPage/MyPage';
 import FindPassword from './pages/FindPassword/FindPassword';
 import ChangePassword from './pages/FindPassword/ChangePassword';
@@ -45,7 +46,7 @@ function App() {
             <Route path="/market/delivery/create" element={<DeliveryCreate/>}></Route>
             <Route path="/market/transaction/create" element={<TransactionCreate/>}></Route>
             <Route path="/board" element={<Board />} />
-            <Route path="/map" element={<Map />} />
+            <Route path="/map" element={<Map1 />} />
             <Route path="/mypage/:nickname" element={<MyPage />} />
             <Route path="/findpassword" element={<FindPassword />} />
             <Route
@@ -63,6 +64,8 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/checkout/fail" element={<Fail />} />
           <Route path="/checkout/success" element={<Success />} />
+          <Route path="/map2" element={<Map2 />} />
+
         </Routes>
       </BrowserRouter>
     </div>
