@@ -33,37 +33,37 @@ export default function ArticlesList() {
   // }, []);
 
   return (
-    <div className="flex flex-col p-6 h-fit">
+    <div className="p-6 h-full">
       {/* <header>
         <h1>게시글 목록</h1>
       </header> */}
       <div className="font-bold text-lg mb-5">최근 작성글 목록</div>
       <hr />
-      <div className="w-11/12 mx-auto">
+      <div className="w-11/12 mx-auto h-full">
         <div className="flex justify-between font-bold">
           <div className="w-4/6 text-center">제목</div>
           <div className="w-1/6">작성자</div>
           <div className="w-1/6">작성일</div>
         </div>
         <hr />
-        {posts
-          .slice(offset, offset + limit)
-          .map(({ id, title, user, date }) => (
-            <div key={id}>
-              <div  className="flex justify-between text-sm">
-                <div className="w-4/6 text-center">{title}</div>
-                <div className="w-1/6">{user}</div>
-                <div className="w-1/6">{date}</div>
+        <div>
+          {posts
+            .slice(offset, offset + limit)
+            .map(({ id, title, user, date }) => (
+              <div key={id}>
+                <div  className="flex justify-between text-sm">
+                  <div className="w-4/6 text-center">{title}</div>
+                  <div className="w-1/6">{user}</div>
+                  <div className="w-1/6">{date}</div>
+                </div>
+                <hr />
               </div>
-              <hr />
-            </div>
-          ))}
-        <div className="mb-auto">
-          <Pagination
-            total={posts.length}
-            limit={limit}
-            page={page}
-            setPage={setPage}
+            ))}
+            <Pagination
+              total={posts.length}
+              limit={limit}
+              page={page}
+              setPage={setPage}
             />
         </div>
       </div>
