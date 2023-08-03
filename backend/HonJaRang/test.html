@@ -36,6 +36,8 @@
                 console.log(message);
                 showMessage(JSON.parse(message.body));
             });
+            const sender = document.getElementById('sender').value;
+            stompClient.send(`/app/chat/connect.${roomId}`, {}, JSON.stringify({ userId: sender }));
         });
     }
 

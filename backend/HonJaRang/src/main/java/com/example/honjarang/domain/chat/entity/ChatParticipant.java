@@ -28,6 +28,10 @@ public class ChatParticipant {
     private User user;
 
     @Column
+    @ColumnDefault("000000000000000000000000")
+    private String lastReadMessageId;
+
+    @Column
     private LocalDateTime deletedAt;
 
     @Column
@@ -43,5 +47,11 @@ public class ChatParticipant {
     public void exit() {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public void updateLastReadMessageId(String lastReadMessageId) {
+        if(this.lastReadMessageId.compareTo(lastReadMessageId) < 0) {
+            this.lastReadMessageId = lastReadMessageId;
+        }
     }
 }

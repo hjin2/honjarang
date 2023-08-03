@@ -10,5 +10,5 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface JointDeliveryRepository extends JpaRepository<JointDelivery, Long> {
-    Page<JointDelivery> findAllByDeadlineAfterAndIsCanceledFalse(LocalDateTime now, Pageable pageable);
+    Page<JointDelivery> findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(LocalDateTime now, Pageable pageable);
 }

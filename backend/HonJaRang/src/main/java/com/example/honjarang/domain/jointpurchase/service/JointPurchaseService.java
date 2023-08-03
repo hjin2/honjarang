@@ -1,6 +1,5 @@
 package com.example.honjarang.domain.jointpurchase.service;
 
-import com.example.honjarang.domain.jointdelivery.exception.JointDeliveryExpiredException;
 import com.example.honjarang.domain.jointpurchase.dto.*;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchase;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchaseApplicant;
@@ -143,7 +142,7 @@ public class JointPurchaseService {
     @Transactional(readOnly = true)
     public List<JointPurchaseListDto> getJointPurchaseList(Integer page, Integer size) {
         Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
-        Page<JointPurchase> jointPurchases = jointPurchaseRepository.findAllByDeadlineAfterAndIsCanceledFalse(LocalDateTime.now(), pageable);
+        Page<JointPurchase> jointPurchases = jointPurchaseRepository.findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(LocalDateTime.now(), pageable);
         return jointPurchases.getContent().stream()
                 .filter(jointPurchase -> {
                     Integer currentPersonCount = jointPurchaseApplicantRepository.countByJointPurchaseId(jointPurchase.getId());
