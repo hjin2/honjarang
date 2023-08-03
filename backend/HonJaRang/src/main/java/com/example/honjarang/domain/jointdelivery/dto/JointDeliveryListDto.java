@@ -44,13 +44,4 @@ public class JointDeliveryListDto {
         this.nickname = jointDelivery.getUser().getNickname();
     }
 
-    public JointDeliveryListDto(Long id, Integer targetMinPrice, Long storeId, String storeName, String storeImage, Long userId, String nickname){
-        this.id = id;
-        this.targetMinPrice = targetMinPrice;
-        this.storeId = storeId;
-        this.storeName = storeName;
-        this.storeImage = storeImage;
-        this.userId = userId;
-        this.nickname = nickname;
-    }
 }

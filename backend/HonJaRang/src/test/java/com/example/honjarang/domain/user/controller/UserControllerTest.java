@@ -3,6 +3,7 @@ package com.example.honjarang.domain.user.controller;
 import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
+import com.example.honjarang.domain.jointdelivery.entity.Store;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.entity.Category;
 import com.example.honjarang.domain.post.entity.Post;
@@ -27,12 +28,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -57,7 +60,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(UserController.class)
@@ -83,6 +86,9 @@ class UserControllerTest {
     private PostListDto postListDto;
     private JointDeliveryListDto jointDeliveryListDto;
 
+    private JointDelivery jointDelivery;
+    private Store store;
+
     @BeforeEach
     void setup(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentation) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
@@ -102,7 +108,7 @@ class UserControllerTest {
                 .longitude(127.123456)
                 .role(Role.ROLE_USER)
                 .build();
-user.setIdForTest(1L);
+        user.setIdForTest(1L);
         post = Post.builder()
                 .user(user)
                 .views(1)
@@ -113,7 +119,23 @@ user.setIdForTest(1L);
                 .build();
         post.setIdForTest(1L);
         post.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2023-08-02 12:00:00"));
-        jointDeliveryListDto = new JointDeliveryListDto(1L,10000,20000,1L,"가게이름","store.jpg",10L,"닉네임");
+
+        store = Store.builder()
+                .id(1L)
+                .storeName("가게명")
+                .image("storeImage.jpg")
+                .address("경상북도 구미시")
+                .latitude(23.4567)
+                .longitude(34.5678).build();
+
+        jointDelivery = JointDelivery.builder()
+                .targetMinPrice(20000)
+                .deliveryCharge(3000)
+                .content("치킨")
+                .deadline(DateTimeUtils.parseLocalDateTime("2023-08-02 12:23:34"))
+                .store(store)
+                .user(user)
+                .build();
 
 
 
@@ -308,33 +330,35 @@ user.setIdForTest(1L);
         given(userService.getMyPostList(eq(1), any(User.class))).willReturn(postListDtoList);
 
         // when & then
-        mockMvc.perform(get("/api/v1/users/posts").param("page","1"))
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/users/posts").param("page", "1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$[0].id").value(1L))
-                    .andExpect(jsonPath("$[0].user_id").value(2L))
-                    .andExpect(jsonPath("$[0].title").value("kljk"))
-                    .andExpect(jsonPath("$[0].category").value(Category.FREE))
-                    .andExpect(jsonPath("$[0].content").value("jkljk"))
-                    .andExpect(jsonPath("$[0].views").value(2))
-                    .andExpect(jsonPath("$[0].is_notice").value(false))
-                    .andExpect(jsonPath("$[0].created_at").value("2023-08-01 15:43:00"))
-        .andDo(document("posts",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                pathParameters(
-                    parameterWithName("page").description("페이지")
-                ),
-                responseFields(
-                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("게시글 번호"),
-                        fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("사용자 번호"),
-                        fieldWithPath("[].title").type(JsonFieldType.STRING).description("게시글 제목"),
-                        fieldWithPath("[].category").type(JsonFieldType.STRING).description("게시판 카테고리"),
-                        fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용"),
-                        fieldWithPath("[].views").type(JsonFieldType.NUMBER).description("조회수"),
-                        fieldWithPath("[].is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
-                        fieldWithPath("[].created_at").type(JsonFieldType.NUMBER).description("작성 일자")
-                )));
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].user_id").value(1L))
+                .andExpect(jsonPath("$[0].title").value("타이틀"))
+                .andExpect(jsonPath("$[0].category").value(Category.FREE.name()))
+                .andExpect(jsonPath("$[0].content").value("내용"))
+                .andExpect(jsonPath("$[0].views").value(1))
+                .andExpect(jsonPath("$[0].is_notice").value(false))
+                .andExpect(jsonPath("$[0].created_at").value("2023-08-02 12:00:00"))
+                .andDo(document("posts",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("page").description("페이지")
+
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("게시글 번호"),
+                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("사용자 번호"),
+                                fieldWithPath("[].title").type(JsonFieldType.STRING).description("게시글 제목"),
+                                fieldWithPath("[].category").type(JsonFieldType.STRING).description("게시판 카테고리"),
+                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용"),
+                                fieldWithPath("[].views").type(JsonFieldType.NUMBER).description("조회수"),
+                                fieldWithPath("[].is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
+                                fieldWithPath("[].created_at").type(JsonFieldType.STRING).description("작성 일자")
+                        )
+                )).andReturn();
 
     }
 
@@ -342,6 +366,7 @@ user.setIdForTest(1L);
     @DisplayName("내가 작성한 공동배달 글 조회")
     void getMyWrittenJointDelivery() throws Exception {
         // given
+        jointDeliveryListDto = new JointDeliveryListDto(1L,10000,20000,1L,"가게이름","store.jpg",10L,"닉네임");
         List<JointDeliveryListDto> jointDeliveryListDtoList = List.of(jointDeliveryListDto);
 
         given(userService.getMyWrittenJointDeliveries(anyInt(),anyInt(),any(User.class))).willReturn(jointDeliveryListDtoList);
@@ -384,6 +409,7 @@ user.setIdForTest(1L);
     @DisplayName("내가 참여한 공동배달 글 조회")
     void getMyJoinedJointDeliveries() throws Exception {
         // given
+        jointDeliveryListDto = new JointDeliveryListDto(1L,10000,20000,1L,"가게이름","store.jpg",10L,"닉네임");
         List<JointDeliveryListDto> jointDeliveryListDtoList = List.of(jointDeliveryListDto);
 
         given(userService.getMyJoinedJointDeliveries(anyInt(),anyInt(),any(User.class))).willReturn(jointDeliveryListDtoList);

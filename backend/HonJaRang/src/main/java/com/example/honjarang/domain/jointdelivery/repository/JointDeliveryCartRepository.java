@@ -16,7 +16,7 @@ public interface JointDeliveryCartRepository extends JpaRepository<JointDelivery
     boolean existsByJointDeliveryIdAndUserId(Long jointDeliveryId, Long userId);
 
     @Query("SELECT distinct jointDelivery from JointDeliveryCart where user.id =:id")
-    List<JointDelivery> findDistinctJointDeliveryById(@Param("id")Long id, Pageable pageable);
+    List<JointDelivery> findDistinctJointDeliveryByUserId(@Param("id")Long id, Pageable pageable);
 
 
 }
