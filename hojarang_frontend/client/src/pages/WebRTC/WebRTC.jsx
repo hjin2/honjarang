@@ -2,13 +2,14 @@ import SideTab from "../../components/Common/SideTab";
 import Content from "../../components/Common/Content";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import RTC from "../../components/WebRTC/RTC"
 
 export default function WebRTC() {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const tabs = [
     {
       title : "도와주세요",
-      content : "g"
+      content : <RTC/>
     },
     {
       title : "혼밥/혼술",
