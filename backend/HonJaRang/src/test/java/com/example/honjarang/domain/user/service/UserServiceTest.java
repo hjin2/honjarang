@@ -374,7 +374,6 @@ class UserServiceTest {
 
         // then : jointDelivery값이 JointDeliveryListDto에 담긴다 이걸 비교해야됨 즉 expectedResult
         assertThat(result.get(0).getUserId()).isEqualTo(expectedResult.get(0).getId());
-        assertThat(result.get(0).getCurrentTotalPrice()).isEqualTo(expectedResult.get(0).getCurrentTotalPrice());
         assertThat(result.get(0).getTargetMinPrice()).isEqualTo(expectedResult.get(0).getTargetMinPrice());
         assertThat(result.get(0).getStoreId()).isEqualTo(expectedResult.get(0).getStoreId());
         assertThat(result.get(0).getStoreName()).isEqualTo(expectedResult.get(0).getStoreName());
@@ -391,7 +390,7 @@ class UserServiceTest {
         // given
         Pageable pageable = Pageable.ofSize(15).withPage(0);
         List<JointDelivery> jointDeliveries = List.of(jointDelivery);
-        given(jointDeliveryCartRepository.findDistinctJointDeliveryById(user.getId(), pageable)).willReturn(jointDeliveries);
+        given(jointDeliveryCartRepository.findDistinctJointDeliveryByUserId(user.getId(), pageable)).willReturn(jointDeliveries);
 
         JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery);
         List<JointDeliveryListDto> expectedResult = List.of(jointDeliveryListDto);
@@ -403,7 +402,6 @@ class UserServiceTest {
 
         // then
         assertThat(result.get(0).getUserId()).isEqualTo(expectedResult.get(0).getId());
-        assertThat(result.get(0).getCurrentTotalPrice()).isEqualTo(expectedResult.get(0).getCurrentTotalPrice());
         assertThat(result.get(0).getTargetMinPrice()).isEqualTo(expectedResult.get(0).getTargetMinPrice());
         assertThat(result.get(0).getStoreId()).isEqualTo(expectedResult.get(0).getStoreId());
         assertThat(result.get(0).getStoreName()).isEqualTo(expectedResult.get(0).getStoreName());

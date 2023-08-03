@@ -176,7 +176,7 @@ public class UserService {
 
         List<JointDeliveryListDto> myWrittenJointDeliveryListDtoList = new ArrayList<>();
         for(JointDelivery jointDelivery : myWrittenJointDeliveryList){
-             JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery);
+             JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery,-1);
             myWrittenJointDeliveryListDtoList.add(jointDeliveryListDto);
         }
         return myWrittenJointDeliveryListDtoList;
@@ -187,9 +187,9 @@ public class UserService {
     public List<JointDeliveryListDto> getMyJoinedJointDeliveries(Integer size, Integer page, User user){
         Pageable pageable = Pageable.ofSize(size).withPage(page-1);
         List<JointDeliveryListDto> myJointDeliveryListDtoList = new ArrayList<>();
-        List<JointDelivery> myJointDelivery = jointDeliveryCartRepository.findDistinctJointDeliveryById(user.getId(), pageable);
+        List<JointDelivery> myJointDelivery = jointDeliveryCartRepository.findDistinctJointDeliveryByUserId(user.getId(), pageable);
         for(JointDelivery jointDelivery : myJointDelivery){ // 내가 참여한 jointdeliverycart 카트, 이 카트가 담긴 주문을 알아내야함
-            JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery);
+            JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery,-1);
             myJointDeliveryListDtoList.add(jointDeliveryListDto);
         }
         return myJointDeliveryListDtoList;
