@@ -4,25 +4,37 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import store from '../../redux/store';
 import { loginAccount } from '../../redux/slice/loginSlice';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [Email, setEmail] = useState('')
   const [Pwd, setPwd] = useState('')
 
-  const Login = () => {
-    axios.post('honjarang.kro.kr:30000/api/v1/users/login', {
+  const navigate = useNavigate()
+  const goMypage = () => {
+    navigate('/mypage/:nickname')
+  }
+  // dispatch에 action 전달하면 동작 실시됨
+  const dispatch = useDispatch();
+  const loginAccount2 = useSelector((state) => state.login.loginAccount);
+  
+  const login = () => {
+    axios.post('http://honjarang.kro.kr:30000/api/v1/users/login', {
       email: Email,
       password: Pwd
-    })
+    },
+    )
     .then((res)=>{
       console.log(res.data)
-      dispatch(loginAccount(res.data))
+      goMypage()
+      localStorage.setItem('access_token', res.data.access_token)
+      localStorage.setItem('refresh_token', res.data.refresh_token)
+    })
+    .catch((err) => {
+      console.log(err)
     })
   }
 
-  // dispatch에 action 전달하면 동작 실시됨
-  const dispatch = useDispatch();
-  const loginAccount = useSelector((state) => state.login.loginAccount);
 
   return (
     <div className="container flex flex-col items-center justify-center mx-auto ">
@@ -47,7 +59,7 @@ export default function Login() {
         </div>
       </form>
       <button
-        onClick={Login}
+        onClick={login}
         className="w-32 main1-button my-5"
       >
         로그인
