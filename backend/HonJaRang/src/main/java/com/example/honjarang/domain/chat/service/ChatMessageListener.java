@@ -20,19 +20,14 @@ public class ChatMessageListener {
 
     private final ChatService chatService;
 
-//    @EventListener
-//    public void handleWebSocketConnectListener(SessionConnectedEvent event) {
-//       User user = (User) event.getUser();
-//        System.out.println("Connected user: " + user);
-//    }
+
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-        String sessionId = event.getSessionId();
-        log.info("Disconnected user: " + sessionId);
+       chatService.disconnectChatRoom(event.getSessionId());
     }
 
     @RabbitListener(queues = CHAT_QUEUE_NAME)
-    public void handleMessage(ChatMessageCreateDto chatMessage) {
-        chatService.createChatMessage(chatMessage);
+    public void handleMessage(ChatMessageCreateDto chatMessageCreateDto) {
+        chatService.createChatMessage(chatMessageCreateDto);
     }
 }

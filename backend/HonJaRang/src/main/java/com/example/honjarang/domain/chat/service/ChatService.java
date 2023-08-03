@@ -3,6 +3,7 @@ package com.example.honjarang.domain.chat.service;
 import com.example.honjarang.domain.chat.document.ChatMessage;
 import com.example.honjarang.domain.chat.dto.ChatMessageCreateDto;
 import com.example.honjarang.domain.chat.dto.ChatMessageListDto;
+import com.example.honjarang.domain.chat.dto.ChatMessageSendDto;
 import com.example.honjarang.domain.chat.dto.ChatRoomListDto;
 import com.example.honjarang.domain.chat.entity.ChatParticipant;
 import com.example.honjarang.domain.chat.entity.ChatRoom;
@@ -13,18 +14,21 @@ import com.example.honjarang.domain.chat.repository.ChatRoomRepository;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.UserNotFoundException;
 import com.example.honjarang.domain.user.repository.UserRepository;
+import com.example.honjarang.security.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -32,22 +36,50 @@ import java.util.stream.Collectors;
 @Service
 public class ChatService {
     private final RabbitTemplate rabbitTemplate;
+    private final RedisTemplate<String, Long> redisTemplate;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatParticipantRepository chatParticipantRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
+    private final TokenService tokenService;
 
-    private final static String CHAT_EXCHANGE_NAME = "amq.topic";
-    private final static String CHAT_QUEUE_NAME = "chat.queue";
+    private static final String SESSION_USER_PREFIX = "websocket::session::user::";
+    private static final String SESSION_CHAT_ROOM_PREFIX = "websocket::session::chatRoom::";
+    private static final String CHAT_ROOM_USER_PREFIX = "websocket::chatRoom::user::";
 
-    public void sendChatMessageToQueue(Long roomId, ChatMessageCreateDto chatMessageCreateDto) {
+    public void connectChatRoom(Long roomId, String sessionId, String token)
+    {
+        User user = tokenService.getUserByToken(token);
+        redisTemplate.opsForValue().set(SESSION_USER_PREFIX + sessionId, user.getId());
+        redisTemplate.opsForValue().set(SESSION_CHAT_ROOM_PREFIX + sessionId, roomId);
+        redisTemplate.opsForSet().add(CHAT_ROOM_USER_PREFIX + roomId, user.getId());
+    }
+
+    public void disconnectChatRoom(String sessionId) {
+        Long userId = redisTemplate.opsForValue().get(SESSION_USER_PREFIX + sessionId);
+        redisTemplate.delete(SESSION_USER_PREFIX + sessionId);
+        Long roomId = redisTemplate.opsForValue().get(SESSION_CHAT_ROOM_PREFIX + sessionId);
+        redisTemplate.delete(SESSION_CHAT_ROOM_PREFIX + sessionId);
+        redisTemplate.opsForSet().remove(CHAT_ROOM_USER_PREFIX + roomId, userId);
+    }
+
+    public void sendChatMessageToQueue(Long roomId, ChatMessageSendDto chatMessageSendDto, String sessionId) {
+        ChatMessageCreateDto chatMessageCreateDto = new ChatMessageCreateDto(chatMessageSendDto.getContent(), roomId, sessionId);
         rabbitTemplate.convertAndSend("amq.topic", "room." + roomId, chatMessageCreateDto);
     }
 
     @Transactional
     public void createChatMessage(ChatMessageCreateDto chatMessageCreateDto) {
-        ChatMessage chatMessage = chatMessageCreateDto.toEntity();
+        Long userId = redisTemplate.opsForValue().get(SESSION_USER_PREFIX + chatMessageCreateDto.getSessionId());
+        ChatMessage chatMessage = chatMessageCreateDto.toEntity(userId);
         chatMessageRepository.save(chatMessage);
+
+        Set<Long> connectedUserId = redisTemplate.opsForSet().members(CHAT_ROOM_USER_PREFIX + chatMessage.getChatRoomId());
+        Objects.requireNonNull(connectedUserId)
+                .forEach(id -> {
+                    Optional<ChatParticipant> chatParticipantOptional = chatParticipantRepository.findByChatRoomIdAndUserIdAndIsDeletedIsFalse(chatMessage.getChatRoomId(), id);
+                    chatParticipantOptional.ifPresent(chatParticipant -> chatParticipant.updateLastReadMessageId(chatMessage.getId().toString()));
+                });
     }
 
     @Transactional

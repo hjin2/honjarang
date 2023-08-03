@@ -7,4 +7,5 @@
 
 include::users.adoc[]
 include::joint-deliveries.adoc[]
+include::joint-purchases.adoc[]
 include::maps.adoc[]

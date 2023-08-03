@@ -13,8 +13,8 @@
 <div>
     <label for="message">메시지:</label>
     <input type="text" id="message" />
-    <label for="sender">보낸 사람:</label>
-    <input type="text" id="sender" />
+    <label for="token">Access Token:</label>
+    <input type="text" id="token" />
     <button onclick="sendMessage()">전송</button>
 </div>
 <div id="chatArea">
@@ -36,8 +36,8 @@
                 console.log(message);
                 showMessage(JSON.parse(message.body));
             });
-            const sender = document.getElementById('sender').value;
-            stompClient.send(`/app/chat/connect.${roomId}`, {}, JSON.stringify({ userId: sender }));
+            const token = document.getElementById('token').value;
+            stompClient.send(`/app/chat/connect.${roomId}`, {}, JSON.stringify({ token: token }));
         });
     }
 
@@ -52,15 +52,14 @@
     function sendMessage() {
         const roomId = document.getElementById('roomId').value;
         const messageContent = document.getElementById('message').value;
-        const sender = document.getElementById('sender').value; // 입력한 보낸 사람
 
+        // 연결 할 떄 토큰을 이미 보내주어 세션으로 사용자 식별이 가능하게 함 -> 사용자 정보를 보내줄 필요 X
         const message = {
-            user_id: sender,
             room_id: roomId,
             content: messageContent
         };
 
-        stompClient.send(`/app/chat.message.${roomId}`, {}, JSON.stringify(message));
+        stompClient.send(`/app/chat/message.${roomId}`, {}, JSON.stringify(message));
     }
 </script>
 </body>

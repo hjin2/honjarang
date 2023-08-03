@@ -3,6 +3,7 @@ package com.example.honjarang.domain.chat.controller;
 
 import com.example.honjarang.domain.chat.dto.ChatMessageCreateDto;
 import com.example.honjarang.domain.chat.dto.ChatMessageListDto;
+import com.example.honjarang.domain.chat.dto.ChatMessageSendDto;
 import com.example.honjarang.domain.chat.dto.ChatRoomListDto;
 import com.example.honjarang.domain.chat.service.ChatService;
 import com.example.honjarang.domain.user.entity.User;
@@ -27,16 +28,16 @@ import java.util.Map;
 public class ChatController {
     private final ChatService chatService;
 
-    @MessageMapping("chat.message.{roomId}")
-    public void sendMessage(@DestinationVariable Long roomId, @Payload ChatMessageCreateDto chatMessageCreateDto) {
-        chatService.sendChatMessageToQueue(roomId, chatMessageCreateDto);
+    @MessageMapping("chat/message.{roomId}")
+    public void sendMessage(@DestinationVariable Long roomId, @Payload ChatMessageSendDto chatMessageCreateDto, SimpMessageHeaderAccessor headerAccessor) {
+        chatService.sendChatMessageToQueue(roomId, chatMessageCreateDto, headerAccessor.getSessionId());
     }
 
     @MessageMapping("chat/connect.{roomId}")
     public void connectWebSocket(@DestinationVariable Long roomId, @Payload Map<String, Object> payload, SimpMessageHeaderAccessor headerAccessor) {
         String sessionId = headerAccessor.getSessionId();
-        Long userId = Long.parseLong((String) payload.get("userId"));
-        log.info("Connected user: " + sessionId + " with user id: " + userId);
+        String token = (String) payload.get("token");
+        chatService.connectChatRoom(roomId, sessionId, token);
     }
 
     @GetMapping("")
@@ -49,7 +50,6 @@ public class ChatController {
         return chatService.getChatMessageList(roomId, page, size, user);
     }
 
-    // 페이지수
     @GetMapping("/{roomId}/page")
     public Integer getChatMessagePage(@PathVariable Long roomId, @RequestParam Integer size) {
         return chatService.getChatMessagePage(roomId, size);
