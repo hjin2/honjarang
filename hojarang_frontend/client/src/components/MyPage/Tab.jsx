@@ -1,6 +1,6 @@
 const Tab = ({ tabs, activeTabIndex, setActiveTabIndex }) => {
   return (
-    <div className="flex space-x-14 mx-auto">
+    <div className="flex space-x-14 mx-auto h-96">
       <ul className="border-2 border-main1 rounded-lg basis-1/6 grid">
         {tabs.map((tab, index) => (
           <li
@@ -14,7 +14,7 @@ const Tab = ({ tabs, activeTabIndex, setActiveTabIndex }) => {
           </li>
         ))}
       </ul>
-      <div className="border border-main1 rounded-lg basis-5/6">
+      <div className="border border-main1 rounded-lg basis-5/6 h-full">
         {tabs[activeTabIndex].content}
       </div>
     </div>

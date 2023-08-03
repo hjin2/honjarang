@@ -17,6 +17,9 @@ export default {
         gray3: "#888888",
         gray4: "#676767",
         gray5: "#525252",
+      },
+      animation:{
+        'pulse' : 'pulse 5s cubic-bezier(0.25, 0.25, 0.75, 0.75)'
       }
     },
   },
