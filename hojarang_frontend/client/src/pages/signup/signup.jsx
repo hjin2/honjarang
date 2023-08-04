@@ -20,8 +20,8 @@ export default function Signup() {
   const [Nickname, setNickname] = useState('')
   const [Pwd, setPwd] = useState('')
   const [Address, setAddress] = useState('')
-  const [Latitude, setLatitude] = useState('')
-  const [Longitude, setLongitude] = useState('')
+  const [Latitude, setLatitude] = useState(0)
+  const [Longitude, setLongitude] = useState(0)
 
   // 유효성 검사 통과 함수
   const ChangeEmailValid = () => {
