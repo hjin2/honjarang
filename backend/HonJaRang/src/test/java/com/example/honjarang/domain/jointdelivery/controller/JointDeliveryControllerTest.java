@@ -401,7 +401,7 @@ class JointDeliveryControllerTest {
         // given
 
         // when & then
-        mockMvc.perform(put("/api/v1/joint-deliveries/{jointDeliveryId}/receive", 1L, 1L))
+        mockMvc.perform(put("/api/v1/joint-deliveries/{jointDeliveryId}/receive", 1L))
                 .andExpect(status().isOk())
                 .andDo(document("joint-deliveries/receive",
                         preprocessRequest(prettyPrint()),

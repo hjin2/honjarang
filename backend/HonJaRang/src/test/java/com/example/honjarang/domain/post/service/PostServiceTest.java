@@ -2,12 +2,12 @@ package com.example.honjarang.domain.post.service;
 
 
 import com.example.honjarang.domain.DateTimeUtils;
-import com.example.honjarang.domain.post.dto.PostCreateDto;
-import com.example.honjarang.domain.post.dto.PostListDto;
-import com.example.honjarang.domain.post.dto.PostUpdateDto;
+import com.example.honjarang.domain.post.dto.*;
 import com.example.honjarang.domain.post.entity.Category;
+import com.example.honjarang.domain.post.entity.Comment;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.*;
+import com.example.honjarang.domain.post.repository.CommentRepository;
 import com.example.honjarang.domain.post.repository.LikePostRepository;
 import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.user.entity.Role;
@@ -48,15 +48,16 @@ public class PostServiceTest {
     @Mock
     private LikePostRepository likePostRepository;
 
+    @Mock
+    private CommentRepository commentRepository;
+
     private Post post;
 
     private User user;
 
-    private static final String TEST_TITLE = "title";
-    private static final String TEST_CONTENT = "content";
-    private static final String TEST_EMAIL = "test@test.com";
-    private static final String TEST_PASSWORD = "test1234";
+    private Comment comment;
 
+    private CommentListDto commentListDto;
 
     @BeforeEach
     void setUp() {
@@ -71,14 +72,21 @@ public class PostServiceTest {
                 .build();
         user.setIdForTest(1L);
         post = Post.builder()
-                .title("테스트")
-                .content("콘텐츠")
+                .title("test")
+                .user(user)
                 .views(0)
-                .isNotice(false)
                 .category(Category.FREE)
+                .isNotice(false)
+                .content("test")
+                .build();
+        post.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2023-08-02 12:00:00"));
+        comment = Comment.builder()
+                .post(post)
+                .content("test")
                 .user(user)
                 .build();
-        post.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2023-07-29 04:23:23"));
+        comment.setIdForTest(1L);
+        comment.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2030-01-01 00:00:00"));
     }
 
     @Test
@@ -86,91 +94,13 @@ public class PostServiceTest {
     void createPost_success() {
         // given
 
-        PostCreateDto postCreateDto = new PostCreateDto(TEST_TITLE, TEST_CONTENT);
-
-        User user = User.builder()
-                .email(TEST_EMAIL)
-                .password(TEST_PASSWORD)
-                .build();
-
-        Post post = Post.builder()
-                .title(TEST_TITLE)
-                .content(TEST_CONTENT)
-                .user(user)
-                .build();
+        PostCreateDto postCreateDto = new PostCreateDto("test", "test");
 
         // when & then
         postRepository.save(postCreateDto.toEntity(user));
 
     }
 
-    @Test
-    @DisplayName("게시글 작성 실패 - 제목이 없을 경우")
-    void createPost_EmptyTitleException() {
-        // given
-
-        PostCreateDto postCreateDto = new PostCreateDto("", TEST_CONTENT);
-
-        User user = User.builder()
-                .email(TEST_EMAIL)
-                .password(TEST_PASSWORD)
-                .build();
-
-        Post post = Post.builder()
-                .title(null)
-                .content(TEST_CONTENT)
-                .user(user)
-                .build();
-
-        // when & then
-        assertThrows(TitleEmptyException.class, () -> postService.createPost(postCreateDto,user));
-
-    }
-
-    @Test
-    @DisplayName("게시글 작성 실패 - 내용이 없을 경우")
-    void createPost_EmptyContentException() {
-        // given
-
-        PostCreateDto postCreateDto = new PostCreateDto(TEST_TITLE, "");
-
-        User user = User.builder()
-                .email(TEST_EMAIL)
-                .password(TEST_PASSWORD)
-                .build();
-
-        Post post = Post.builder()
-                .title(null)
-                .content(TEST_CONTENT)
-                .user(user)
-                .build();
-
-        // when & then
-        assertThrows(ContentEmptyException.class, () -> postService.createPost(postCreateDto,user));
-    }
-
-
-    @Test
-    @DisplayName("게시글 작성 실패 - 제목과 내용이 없을 경우")
-    void createPost_EmptyTitleAndContentException() {
-        // given
-
-        PostCreateDto postCreateDto = new PostCreateDto("", "");
-
-        User user = User.builder()
-                .email(TEST_EMAIL)
-                .password(TEST_PASSWORD)
-                .build();
-
-        Post post = Post.builder()
-                .title(null)
-                .content(TEST_CONTENT)
-                .user(user)
-                .build();
-
-        // when & then
-        assertThrows(TitleAndContentEmptyException.class, () -> postService.createPost(postCreateDto,user));
-    }
 
     @Test
     @WithMockUser
@@ -179,10 +109,6 @@ public class PostServiceTest {
 
         // given
         Long postId = 1L;
-        User user = User.builder()
-                .email(TEST_EMAIL)
-                .password(TEST_PASSWORD)
-                .build();
 
         // when & then
         postRepository.deleteById(postId);
@@ -195,11 +121,7 @@ public class PostServiceTest {
 
         // given
         Long postId = 1L;
-        User user = User.builder()
-                .email(TEST_EMAIL)
-                .password(TEST_PASSWORD)
-                .build();
-
+        
         // when & then
         assertThrows(PostNotFoundException.class, () -> postService.deletePost(postId, user));
     }
@@ -209,40 +131,24 @@ public class PostServiceTest {
     void deletePost_DisMatchUserException() {
 
         // given
-        User user = User.builder()
-                .email(TEST_EMAIL)
-                .password(TEST_PASSWORD)
-                .build();
-        Long postId = 1L;
-        Post post = Post.builder()
-                .title(TEST_TITLE)
-                .content(TEST_CONTENT)
-                .user(user)
-                .build();
-
+        
         User invalidUser = User.builder()
                 .email("234234")
-                 .password(TEST_PASSWORD)
+                 .password("password")
                 .build();
 
-        doThrow(new InvalidUserException("사용자가 다릅니다.")).when(postService).deletePost(postId, invalidUser);
+        doThrow(new InvalidUserException("사용자가 다릅니다.")).when(postService).deletePost(1L, invalidUser);
         // when
-        assertThrows(InvalidUserException.class, () -> postService.deletePost(postId, invalidUser));
+        assertThrows(InvalidUserException.class, () -> postService.deletePost(1L, invalidUser));
     }
 
     @Test
     @DisplayName("게시글 수정 성공")
     void updatePost_Success() {
 
-        // given
-        User user = User.builder()
-                .email(TEST_EMAIL)
-                .password(TEST_PASSWORD)
-                .build();
-
         Post post = Post.builder()
-                .title(TEST_TITLE)
-                .content(TEST_CONTENT)
+                .title("test")
+                .content("test")
                 .build();
 
         String testTitle = "testtest";
@@ -265,19 +171,9 @@ public class PostServiceTest {
     void updatePost_DisMatchUserException() {
 
         // given
-        User user = User.builder()
-                .email(TEST_EMAIL)
-                .password(TEST_PASSWORD)
-                .build();
-
-        Post post = Post.builder()
-                .title(TEST_TITLE)
-                .content(TEST_CONTENT)
-                .build();
-
         User invalidUser = User.builder()
                 .email("invalid")
-                .password(TEST_PASSWORD)
+                .password("password")
                 .build();
 
         String testTitle = "testtest";
@@ -300,8 +196,7 @@ public class PostServiceTest {
         // given
         Integer testPage = 1;
         String testKeyword = "kk";
-        PostListDto postListDto = new PostListDto(1L, 1L, "title",
-                Category.FREE, "content", 1, false, DateTimeUtils.formatLocalDateTime(LocalDateTime.now()));
+        PostListDto postListDto = new PostListDto(post);
         List<PostListDto> postList = new ArrayList<>();
         postList.add(postListDto);
 
@@ -309,6 +204,117 @@ public class PostServiceTest {
 
         // when & then
         assertThat(postService.getPostList(testPage, testKeyword)).isEqualTo((postList));
+    }
+
+    @Test
+    @DisplayName("댓글 작성 성공")
+    void createComment_Success() {
+
+        // given
+        CommentCreateDto commentCreateDto = new CommentCreateDto("test");
+        Comment comment = commentCreateDto.toEntity(post, user);
+        given(postRepository.findById(1L)).willReturn(Optional.of(post));
+
+        // when
+        postService.createComment(1L, commentCreateDto, user);
+    }
+
+    @Test
+    @DisplayName("댓글 작성 실패 - 게시글이 존재하지 않을 경우")
+    void createComment_PostNotException() {
+
+        // given
+        CommentCreateDto commentCreateDto = new CommentCreateDto("test");
+        given(postRepository.findById(1L)).willThrow(new PostNotFoundException("게시글이 존재하지 않습니다."));
+
+        // when & then
+        assertThrows(PostNotFoundException.class, () -> postService.createComment(1L, commentCreateDto, user));
+    }
+
+    @Test
+    @DisplayName("댓글 작성 실패 - 댓글 내용이 없을 경우")
+    void createComment_ContentEmptyException() {
+
+        // given
+        CommentCreateDto commentCreateDto = new CommentCreateDto("");
+        given(postRepository.findById(1L)).willReturn(Optional.of(post));
+
+        // WHEN & THEN
+        assertThrows(ContentEmptyException.class, () -> postService.createComment(1L, commentCreateDto, user));
+
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 성공")
+    void deleteComment_Success() {
+
+        // given
+        given(commentRepository.findById(1L)).willReturn(Optional.of(comment));
+        // when
+        postService.deleteComment(1L, user);
+    }
+
+
+
+    @Test
+    @DisplayName("댓글 삭제 실패 - 존재하지 않는 댓글일 경우")
+    void deleteComment_CommentNotFoundException() {
+
+        // given
+        given(commentRepository.findById(1L)).willThrow(new CommentNotFoundException("댓글이 존재하지 않습니다."));
+
+        // when & then
+        assertThrows(CommentNotFoundException.class, (() -> postService.deleteComment(1L, user)));
+
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 실패 - 작성자가 아닐 경우")
+    void deleteComment_InvalidUserException() {
+
+        // given
+        User userForTest = User.builder().build();
+        userForTest.setIdForTest(2L);
+        Comment comment = Comment.builder().user(user).build();
+
+        given(commentRepository.findById(1L)).willReturn(Optional.of(comment));
+
+        // when & then
+        assertThrows(InvalidUserException.class, () -> postService.deleteComment(1L, userForTest));
+    }
+
+    @Test
+    @DisplayName("댓글 목록 조회 성공")
+    void getCommentList_Success() {
+
+        // given
+        List<Comment> commentList= List.of(comment);
+        given(postRepository.findById(1L)).willReturn(Optional.of(post));
+        given(commentRepository.findAllByPostId(1L)).willReturn(commentList);
+
+        // when
+        List<CommentListDto> commentListDtoList = postService.getCommentList(1L);
+
+        // then
+        assertThat(commentListDtoList).isNotNull();
+        assertThat(commentListDtoList.size()).isEqualTo(1);
+        assertThat(commentListDtoList.get(0).getId()).isEqualTo(1L);
+        assertThat(commentListDtoList.get(0).getContent()).isEqualTo("test");
+        assertThat(commentListDtoList.get(0).getUserId()).isEqualTo(1L);
+        assertThat(commentListDtoList.get(0).getNickname()).isEqualTo("테스트");
+        assertThat(commentListDtoList.get(0).getCreatedAt()).isEqualTo("2030-01-01 00:00:00");
+    }
+
+    @Test
+    @DisplayName("댓글 목록 조회 실패 - 게시글이 존재하지 않을 경우")
+    void getPostList_PostNotFoundExceptoin() {
+
+        // given
+        given(postRepository.findById(1L)).willThrow(new PostNotFoundException("게시글이 존재하지 않습니다."));
+
+        // when & then
+        assertThrows(PostNotFoundException.class, () -> postService.getCommentList(1L));
+
     }
 
     @Test
@@ -342,8 +348,8 @@ public class PostServiceTest {
         // given
         Long id = 1L;
         Post post = Post.builder()
-                .title(TEST_TITLE)
-                .content(TEST_CONTENT)
+                .title("test")
+                .content("test")
                 .build();
 
         given(postRepository.findById(id)).willReturn(Optional.of(post));
@@ -358,12 +364,9 @@ public class PostServiceTest {
 
         // given
         Long id = 1L;
-        User user = User.builder()
-                .email(TEST_EMAIL)
-                .password(TEST_PASSWORD)
-                .build();
 
         // when & then
         assertThrows(PostNotFoundException.class, () -> postService.getPost(id));
     }
+
 }

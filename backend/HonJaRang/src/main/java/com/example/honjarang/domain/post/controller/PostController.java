@@ -1,10 +1,7 @@
 package com.example.honjarang.domain.post.controller;
 
 
-import com.example.honjarang.domain.post.dto.PostCreateDto;
-import com.example.honjarang.domain.post.dto.PostDto;
-import com.example.honjarang.domain.post.dto.PostListDto;
-import com.example.honjarang.domain.post.dto.PostUpdateDto;
+import com.example.honjarang.domain.post.dto.*;
 import com.example.honjarang.domain.post.service.PostService;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.security.CurrentUser;
@@ -57,4 +54,24 @@ public class PostController {
     public void likePost(@PathVariable Long id, @CurrentUser User user) {
         postService.togglePostLike(id, user);
     }
+
+    @PostMapping(value = "/{id}/comments")
+    public ResponseEntity<Void> createComment(@PathVariable Long id, @RequestBody CommentCreateDto commentCreateDto, @CurrentUser User user) {
+        postService.createComment(id, commentCreateDto, user);
+        return ResponseEntity.status(201).build();
+    }
+
+    @DeleteMapping(value = "/{postId}/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long postId, @PathVariable Long commentId, @CurrentUser User user) {
+        postService.deleteComment(commentId, user);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/{id}/comments")
+    public List<CommentListDto> getComments(@PathVariable Long id) {
+        return postService.getCommentList(id);
+
+    }
+
+
 }

@@ -10,6 +10,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/chat") // WebSocket 연결 URL
                 .allowedOrigins("http://localhost:63342"); // 허용할 Origin
-
+        registry.addMapping("/api/v1/**") // API 요청 URL
+                .allowedOrigins("http://localhost:3000"); // 허용할 Origin
     }
 }

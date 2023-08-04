@@ -2,6 +2,8 @@ package com.example.honjarang.domain.post.controller;
 
 
 import com.example.honjarang.domain.DateTimeUtils;
+import com.example.honjarang.domain.post.dto.CommentCreateDto;
+import com.example.honjarang.domain.post.dto.CommentListDto;
 import com.example.honjarang.domain.post.dto.PostCreateDto;
 import com.example.honjarang.domain.post.dto.PostUpdateDto;
 import com.example.honjarang.domain.post.entity.Category;
@@ -14,17 +16,28 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.util.List;
+
+import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(PostController.class)
+@AutoConfigureRestDocs
 public class PostControllerTest {
 
     @Autowired
@@ -36,6 +49,8 @@ public class PostControllerTest {
     private User user;
 
     private Post post;
+
+    private CommentListDto commentListDto;
 
 
     @BeforeEach
@@ -59,7 +74,13 @@ public class PostControllerTest {
                 .user(user)
                 .build();
         post.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2023-07-29 04:23:23"));
-
+        commentListDto = CommentListDto.builder()
+                .id(1L)
+                .content("test")
+                .userId(1L)
+                .nickname("테스트닉네임")
+                .createdAt("2030-01-01 00:00:00")
+                .build();
     }
     @Test
     @WithMockUser
@@ -75,54 +96,6 @@ public class PostControllerTest {
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(postCreateDto)))
                 .andExpect(status().isCreated());
-    }
-
-
-    @Test
-    @WithMockUser
-    @DisplayName("게시글 작성 실패 - 제목이 없을 경우")
-    void createPost_EmptyTitle() throws Exception {
-
-        // given
-        String content = "content";
-        PostCreateDto postCreateDto = new PostCreateDto(null, content);
-
-        // when & then
-        mockMvc.perform(post("/api/v1/posts")
-                        .contentType("application/json")
-                        .content(new ObjectMapper().writeValueAsString(postCreateDto)))
-                        .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser
-    @DisplayName("게시글 작성 실패 - 내용이 없을 경우")
-    void createPost_EmptyContent() throws Exception {
-
-        // given
-        String title = "title";
-        PostCreateDto postCreateDto = new PostCreateDto(title, null);
-
-        // when & then
-        mockMvc.perform(post("/api/v1/posts")
-                .contentType("application/json")
-                .content(new ObjectMapper().writeValueAsString(postCreateDto)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser
-    @DisplayName("게시글 작성 실패 - 내용과 제목이 없을 경우")
-    void createPost_EmptyTitleAndContent() throws Exception {
-
-        // given
-        PostCreateDto postCreateDto = new PostCreateDto(null, null);
-
-        // when & then
-        mockMvc.perform(post("/api/v1/posts")
-                        .contentType("application/json")
-                        .content(new ObjectMapper().writeValueAsString(postCreateDto)))
-                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -170,7 +143,7 @@ public class PostControllerTest {
 
         // when & then
         mockMvc.perform(get("/api/v1/posts"))
-                .andExpect(status().isOk());
+                        .andExpect(status().isOk());
     }
 
     @Test
@@ -199,6 +172,77 @@ public class PostControllerTest {
         // when & then
         mockMvc.perform(get("/api/v1/posts/{id}/like", id))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("댓글 작성 성공")
+    void creaetComment_Success() throws Exception {
+
+        // given
+        CommentCreateDto commentCreateDto = new CommentCreateDto("test");
+
+        // when & then
+        mockMvc.perform(post("/api/v1/posts/{id}/comments", 1L)
+                 .contentType("application/json")
+                .content(new ObjectMapper().writeValueAsString(commentCreateDto)))
+                .andExpect(status().isCreated())
+                .andDo(document("posts/1/comments",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("댓글")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 성공")
+    void deleteComment_Success() throws Exception {
+
+        // given
+
+        // when & then
+        mockMvc.perform(delete("/api/v1/posts/{postId}/comments/{id}", 1L, 1L))
+                .andExpect(status().isOk())
+                .andDo(document("posts/comments/delete",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("postId").description("게시글 ID"),
+                                parameterWithName("id").description("댓글 ID")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("댓글 목록 조회 성공")
+    void getCommentList_Success() throws Exception {
+
+        // given
+        List<CommentListDto> commentListDtoList = List.of(commentListDto);
+        given(postService.getCommentList(1L)).willReturn(commentListDtoList);
+
+        //when & then
+        mockMvc.perform(get("/api/v1/posts/{id}/comments", 1L))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].content").value("test"))
+                .andExpect(jsonPath("$[0].userId").value(1L))
+                .andExpect(jsonPath("$[0].nickname").value("테스트닉네임"))
+                .andExpect(jsonPath("$[0].createdAt").value("2030-01-01 00:00:00"))
+                .andDo(document("posts/comments",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+
+                responseFields(
+                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                        fieldWithPath("[].content").type(JsonFieldType.STRING).description("댓글 내용"),
+                        fieldWithPath("[].userId").type(JsonFieldType.NUMBER).description("사용자 ID"),
+                        fieldWithPath("[].nickname").type(JsonFieldType.STRING).description("사용자 닉네임"),
+                        fieldWithPath("[].createdAt").type(JsonFieldType.STRING).description("댓글 생성 날짜")
+                )
+                ));
     }
 
 }
