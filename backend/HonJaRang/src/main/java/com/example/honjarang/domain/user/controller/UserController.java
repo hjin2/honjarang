@@ -110,4 +110,18 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/info")
+    public ResponseEntity<UserInfoDto> getUserInfo(@RequestParam Long id){
+        UserInfoDto userInfo = userService.getUserInfo(id);
+        return ResponseEntity.ok(userInfo);
+    }
+
+    @PutMapping("/delete-account")
+    public ResponseEntity<Void> deleteUser(@CurrentUser User user){
+        userService.deleteUser(user);
+        return ResponseEntity.ok().build();
+    }
+
+
+
 }

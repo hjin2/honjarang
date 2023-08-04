@@ -41,7 +41,7 @@ public class TransactionController {
 
     @Transactional(readOnly = true)
     @GetMapping("")
-    public ResponseEntity<List<TransactionListDto>> getSecondHandTransactions(@RequestParam(value="page", defaultValue="15") int page, @RequestParam(value="size", defaultValue="0") int size, @RequestParam(value="keyword", defaultValue="") String keyword){
+    public ResponseEntity<List<TransactionListDto>> getSecondHandTransactions(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="size", defaultValue="0") int size, @RequestParam(value="keyword", defaultValue="") String keyword){
             List<TransactionListDto> getTransactions = transactionService.getSecondHandTransactions(page, size, keyword);
             return ResponseEntity.ok(getTransactions);
     }
