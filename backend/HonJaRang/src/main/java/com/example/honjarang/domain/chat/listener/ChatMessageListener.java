@@ -1,7 +1,8 @@
-package com.example.honjarang.domain.chat.service;
+package com.example.honjarang.domain.chat.listener;
 
 
 import com.example.honjarang.domain.chat.dto.ChatMessageCreateDto;
+import com.example.honjarang.domain.chat.service.ChatService;
 import com.example.honjarang.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

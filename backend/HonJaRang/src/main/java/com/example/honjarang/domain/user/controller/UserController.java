@@ -1,5 +1,6 @@
 package com.example.honjarang.domain.user.controller;
 
+import com.example.honjarang.domain.chat.service.ChatService;
 import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.user.dto.*;
@@ -26,8 +27,21 @@ public class UserController {
     private final TokenService tokenService;
 
     private final EmailService emailService;
+    private final ChatService chatService;
 
     private final S3UploadService s3UploadService;
+
+    @PostMapping("/fcm")
+    public ResponseEntity<Void> saveFcmToken(@RequestBody Map<String, Object> map) {
+        String token = (String) map.get("token");
+        chatService.sendPushNotification(token, "제목", "제발 성공해라");
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/test")
+    public void sendTest(@RequestParam String token) {
+        chatService.sendPushNotification(token, "제목", "제발 성공해라");
+    }
 
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto) {

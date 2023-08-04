@@ -15,6 +15,10 @@ import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.UserNotFoundException;
 import com.example.honjarang.domain.user.repository.UserRepository;
 import com.example.honjarang.security.service.TokenService;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -42,13 +46,13 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
     private final TokenService tokenService;
+    private final FirebaseMessaging firebaseMessaging;
 
     private static final String SESSION_USER_PREFIX = "websocket::session::user::";
     private static final String SESSION_CHAT_ROOM_PREFIX = "websocket::session::chatRoom::";
     private static final String CHAT_ROOM_USER_PREFIX = "websocket::chatRoom::user::";
 
-    public void connectChatRoom(Long roomId, String sessionId, String token)
-    {
+    public void connectChatRoom(Long roomId, String sessionId, String token) {
         User user = tokenService.getUserByToken(token);
         redisTemplate.opsForValue().set(SESSION_USER_PREFIX + sessionId, user.getId());
         redisTemplate.opsForValue().set(SESSION_CHAT_ROOM_PREFIX + sessionId, roomId);
@@ -87,7 +91,7 @@ public class ChatService {
         Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
         ChatParticipant chatParticipant = chatParticipantRepository.findByChatRoomIdAndUserIdAndIsDeletedIsFalse(chatRoomId, loginUser.getId()).orElseThrow(() -> new ChatParticipantNotFoundException("채팅 참여자가 아닙니다."));
 
-       List<ChatMessageListDto> chatMessageListDtoList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAt(chatRoomId, pageable).stream()
+        List<ChatMessageListDto> chatMessageListDtoList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAt(chatRoomId, pageable).stream()
                 .map(chatMessage -> {
                     User user = userRepository.findById(chatMessage.getUserId())
                             .orElseThrow(() -> new UserNotFoundException("존재하지 않는 유저입니다."));
@@ -134,7 +138,23 @@ public class ChatService {
 
     @Transactional(readOnly = true)
     public Integer getChatMessagePage(Long roomId, Integer size) {
-         Integer count = chatMessageRepository.countAllByChatRoomId(roomId);
-          return (int) Math.ceil((double) count / size);
+        Integer count = chatMessageRepository.countAllByChatRoomId(roomId);
+        return (int) Math.ceil((double) count / size);
+    }
+
+    public void sendPushNotification(String token, String title, String body) {
+        Message message = Message.builder()
+                .setToken(token)
+                .setNotification(Notification.builder()
+                        .setTitle(title)
+                        .setBody(body)
+                        .build())
+                .build();
+        try {
+            String response = firebaseMessaging.send(message);
+            System.out.println("Successfully sent message: " + response);
+        } catch (FirebaseMessagingException e) {
+            e.printStackTrace();
+        }
     }
 }
