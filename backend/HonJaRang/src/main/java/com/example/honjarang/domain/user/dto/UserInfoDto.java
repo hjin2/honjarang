@@ -17,6 +17,9 @@ public class UserInfoDto {
     private String profileImage;
     private Integer point;
     private String address;
+    private Double latitude;
+    private Double longitude;
+
 
 
     public UserInfoDto(User user){
@@ -25,5 +28,7 @@ public class UserInfoDto {
        this.profileImage = user.getProfileImage();
        this.point = user.getPoint();
        this.address = user.getAddress();
+       this.latitude = user.getLatitude();
+       this.longitude = user.getLongitude();
     }
 }

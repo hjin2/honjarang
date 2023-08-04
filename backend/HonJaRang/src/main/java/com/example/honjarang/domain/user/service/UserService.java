@@ -205,14 +205,17 @@ public class UserService {
     @Transactional
     public UserInfoDto getUserInfo(Long id){
         User loginedUser = userRepository.findById(id).orElseThrow(()->new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        if(loginedUser.getIsDeleted()){
+            throw new UserNotFoundException("탈퇴한 사용자 입니다.");
+        }
         UserInfoDto userInfo = new UserInfoDto(loginedUser);
         System.out.println(userInfo.getEmail());
         return userInfo;
     }
 
     @Transactional
-    public ResponseEntity<Void> deleteUser(User user){
-        User loginedUser = userRepository.findById(user.getId()).orElseThrow(()->new UserNotFoundException("사용자를 찾을 수 없습니다."));
+    public ResponseEntity<Void> deleteUser(Long userId){
+        User loginedUser = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("사용자를 찾을 수 없습니다."));
         loginedUser.deleteUser();
         return ResponseEntity.ok().build();
     }

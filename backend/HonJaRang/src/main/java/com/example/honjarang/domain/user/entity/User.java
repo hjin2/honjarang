@@ -92,5 +92,12 @@ public class User extends BaseTimeEntity {
 
     public void changePoint(Integer point) {this.point = point;}
 
-    public void deleteUser(){this.isDeleted = true;}
+    public void deleteUser(){
+        this.isDeleted = true;
+        this.email = "";
+        this.address = "";
+        this.latitude = 0D;
+        this.longitude =0D;
+        this.profileImage="";
+    }
 }
