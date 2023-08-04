@@ -47,7 +47,7 @@ function App() {
             <Route path="/market/transaction/create" element={<TransactionCreate/>}></Route>
             <Route path="/board" element={<Board />} />
             <Route path="/map" element={<Map1 />} />
-            <Route path="/mypage/:nickname" element={<MyPage />} />
+            <Route path="/mypage/:id" element={<MyPage />} />
             <Route path="/findpassword" element={<FindPassword />} />
             <Route
               path="/findpassword/changepassword"

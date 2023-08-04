@@ -15,6 +15,7 @@ export default function RTC() {
   const [publisher, setPublisher] = useState(undefined);
   const [subscribers, setSubscribers] = useState([]);
   const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
+  const [numOfVideos, setNumOfVideos] = useState(0);
 
   const OV = useRef(new OpenVidu());
 
@@ -231,15 +232,15 @@ export default function RTC() {
       {session !== undefined ? (
         <div id="session">
             <h1 id="session-title">{mySessionId}</h1>
-            <div id="video-container" className="container grid gird-cols-4">
+            <div id="video-container" className="flex flex-wrap flex-row">
               {publisher !== undefined ? (
-                <div className="border" onClick={() => handleMainVideoStream(publisher)}>
+                <div className="basis-1/4" onClick={() => handleMainVideoStream(publisher)}>
                   <UserVideoComponent
                     streamManager={publisher} />
                 </div>
               ) : null}
               {subscribers.map((sub, i) => (
-                <div key={sub.id} className="" onClick={() => handleMainVideoStream(sub)}>
+                <div key={sub.id} className="basis-1/4" onClick={() => handleMainVideoStream(sub)}>
                   <span>{sub.id}</span>
                   <UserVideoComponent streamManager={sub} />
                 </div>

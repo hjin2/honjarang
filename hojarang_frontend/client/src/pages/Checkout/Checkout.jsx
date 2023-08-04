@@ -1,14 +1,20 @@
 import { useEffect, useRef } from 'react';
 import { loadPaymentWidget } from '@tosspayments/payment-widget-sdk';
 import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
+import { redirect, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 export default function Checkout() {
-  const clientKey = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
+  const clientKey = 'test_ck_Z0RnYX2w532vOD1DZgg3NeyqApQE';
   const customerKey = 'YbX2HuSlsC9uVJW6NMRMj';
   const paymentWidgetRef = useRef(null);
-  const price = 1000;
+  const location = useLocation()
+  const price = location.state.price.activeRadio
   const uuid = uuidv4();
-
+  const nickname = useSelector((state) => state.userinfo.nickname)
+  const navigate = useNavigate()
   useEffect(() => {
     (async () => {
       const paymentWidget = await loadPaymentWidget(clientKey, customerKey);
@@ -27,19 +33,47 @@ export default function Checkout() {
         onClick={async () => {
           const paymentWidget = paymentWidgetRef.current;
 
-          try {
-            await paymentWidget?.requestPayment({
+          await paymentWidget
+            .requestPayment({
               orderId: uuid,
-              orderName: '토스 티셔츠 외 2건',
-              customerName: '김토스',
-              customerEmail: 'customer123@gmail.com',
-              successUrl: `${window.location.origin}/checkout/success`,
-              failUrl: `${window.location.origin}/checkout/fail`,
-            });
-          } catch (err) {
-            console.log(err);
-          }
-        }}
+              orderName : `${price}원`,
+              customerName: nickname,
+              custoemrEmail : 'cust@naver.com'
+            })
+            .then(function(data){
+              const headers = {
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTExMzQzMjgsImV4cCI6MTY5MTEzNzkyOH0.0i3JMQhK-UcRuOnnUEuvULq38zcVdQpknNskd-9Lvwc'
+              };
+              console.log(data)
+              const paymentKey = data.paymentKey
+              const orderId = data.orderId
+              const amount = data.amount
+              const paymenttype = data.paymentType
+              
+              axios.post('http://honjarang.kro.kr:30000/api/v1/users/success',
+                data = {
+                  payment_key : paymentKey,
+                  order_id : orderId,
+                  amount : amount,
+                },
+                {headers}
+              )
+                .then(function(response){
+                  console.log(response)
+                })
+                .catch(function(err){
+                  console.log(err)
+                })
+              const successUrl = `/checkout/success?paymentKey=${paymentKey}&orderId=${orderId}&amount=${amount}&paymentType=${paymenttype}`
+              navigate(successUrl, {replace: true})
+            })
+            .catch(function(err){
+              console.log(err)
+              const failUrl = `/checkout/fail`
+              navigate(failUrl, {replace: true})
+            })
+        }
+      }
       >
         결제하기
       </button>

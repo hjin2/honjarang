@@ -1,27 +1,16 @@
 import { useDaumPostcodePopup } from 'react-daum-postcode';
-import { useState } from 'react';
 import axios from 'axios';
+import {setAddress} from '../../redux/slice/UserInfoSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
-export default function Address({setAddress, setLatitude, setLongitude, ChangeAddressValid, handleAddress}) {
-  const [address, setaddress] = useState('')
+export default function Address({setLatitude, setLongitude, setAddressValid, handleAddress}) {
   const open = useDaumPostcodePopup('https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js');
-
+  const address = useSelector((state) => state.userinfo.address)
+  const dispatch = useDispatch()
   const handleComplete = (data) => {
     let fullAddress = data.address;
-    let extraAddress = '';
-
-    if (data.addressType === 'R') {
-      if (data.bname !== '') {
-        extraAddress += data.bname;
-      }
-      if (data.buildingName !== '') {
-        extraAddress += extraAddress !== '' ? `, ${data.buildingName}` : data.buildingName;
-      }
-      fullAddress += extraAddress !== '' ? ` (${extraAddress})` : '';
-    }
-
     console.log(fullAddress);
-    setaddress(fullAddress)
+    dispatch(setAddress(fullAddress))
     axios.get('https://dapi.kakao.com/v2/local/search/address.json',
       {params: {
         analyze_type: 'exact',
@@ -33,7 +22,7 @@ export default function Address({setAddress, setLatitude, setLongitude, ChangeAd
         setAddress(fullAddress)
         setLatitude(res.data.documents[0].road_address.y)
         setLongitude(res.data.documents[0].road_address.x)
-        ChangeAddressValid()
+        setAddressValid()
       })
     
   };
@@ -44,7 +33,7 @@ export default function Address({setAddress, setLatitude, setLongitude, ChangeAd
   return (
     <div>
       <div>
-        <input type="text" value = {address} onClick={handleClick} />
+        <input type="text" value = {address} onClick={handleClick} readOnly/>
         <button 
           className=''
           onClick={handleAddress}
