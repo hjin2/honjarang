@@ -31,8 +31,8 @@ function Address_check(props) {
     )
     .then(function(res) {
       props.setAddress(fullAddress)
-      props.setLatitude(res.data.documents[0].road_address.y)
-      props.setLongitude(res.data.documents[0].road_address.x)
+      props.setLatitude(Number(res.data.documents[0].road_address.y))
+      props.setLongitude(Number(res.data.documents[0].road_address.x))
       props.ChangeAddressValid()
     })
     

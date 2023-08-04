@@ -14,8 +14,8 @@ export default function Nickname_check({Nickname, setNickname, ChangeNicknameVal
   let nicknameCheck = /^[A-Za-z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{2,15}$/
   const nickname_check = () => {
     if (nicknameCheck.test(nickname) && nickname !== '탈퇴한 사용자') {
-  axios.get('http://honjarang.kro.kr:30000/api/v1/check-nickname',
-  {params: {query: nickname}})
+  axios.get('http://honjarang.kro.kr:30000/api/v1/users/check-nickname',
+  {params: {nickname: nickname}})
   .then(function (response) {
     console.log(response)
     setnicknameMsg('')
