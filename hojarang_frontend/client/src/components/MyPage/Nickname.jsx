@@ -1,26 +1,35 @@
 import axios from "axios"
 import { useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { setNickname } from "../../redux/slice/UserInfoSlice"
 
-export default function Nickname({Nickname, setNickname, ChangeNicknameValid, handleNickname}) {
+export default function Nickname({setNicknameValid, handleNickname}) {
   // 닉네임, 닉네임 오류 메시지
-  const [nickname, setInput] = useState('')
+  const nickname = useSelector((state) => state.userinfo.nickname)
   const [nicknameMsg, setnicknameMsg] = useState('')
-
+  const [nicknameInput, setNicknameInput] = useState(nickname)
+  const dispatch = useDispatch()
   const onChange = (event) => {
-    setInput(event.target.value)
+    setNicknameInput(event.target.value)
   }
 		// 닉네임 유효성 검사(2자 ~ 15자, 한글,영어,숫자 포함 가능)
 		let nicknameCheck = /^[A-Za-z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{2,15}$/
 		const nickname_check = () => {
-			if(Nickname!==nickname){
+			console.log(nickname)
+			console.log(nicknameInput)
+			if(nickname!==nicknameInput){
 				if (nicknameCheck.test(nickname) && nickname !== '탈퇴한 사용자') {
-					axios.get('http://honjarang.kro.kr:30000/api/v1/check-nickname',
-						{params: {query: nickname}})
+					axios.get('http://honjarang.kro.kr:30000/api/v1/users/check-nickname',
+						{
+							params: {nickname : nicknameInput},
+							headers : {Authorization : 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTExMzQzMjgsImV4cCI6MTY5MTEzNzkyOH0.0i3JMQhK-UcRuOnnUEuvULq38zcVdQpknNskd-9Lvwc'}
+					
+					})
 						.then(function (response) {
 							console.log(response)
 							setnicknameMsg('')
-							setNickname(nickname)
-							ChangeNicknameValid()
+							dispatch(setNickname(nicknameInput))
+							setNicknameValid()
 							handleNickname()
 						})
 						.catch(function (error) {
@@ -39,9 +48,9 @@ export default function Nickname({Nickname, setNickname, ChangeNicknameValid, ha
 
 		
 	return (
-		<di>
+		<div>
 			<div className="flex">
-				<input type="text" name="nickname" onChange={onChange} value={nickname} maxLength="15"/>
+				<input type="text" name="nickname" onChange={onChange} placeholder={nickname} maxLength="15"/>
 				<button
 					onClick = { nickname_check }
 				>
@@ -51,6 +60,6 @@ export default function Nickname({Nickname, setNickname, ChangeNicknameValid, ha
 				</button>
 			</div>
 			<span className="text-main5 text-xs">{nicknameMsg}</span>
-		</di>
+		</div>
   )
 }

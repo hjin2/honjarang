@@ -2,17 +2,46 @@ import ImageInput from './ImageInput';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import Address from './Address';
-import Nickname from './NickName';
+import Nickname from './Nickname';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 export default function Edit({ modalState, setModalState }) {
-  const [NickName, setNickname] = useState('')
-  const [Adress, setAddress] = useState('')
+  const nickname = useSelector((state) => state.userinfo.nickname)
+  const email = useSelector((state) => state.userinfo.email)
+  const address = useSelector((state) => state.userinfo.address)
 
   const [isNicknameModifed, setisNicknameModified] = useState(false)
   const [isAddressModified, setisAddressModified] = useState(false)
 
   const [NicknameValid, setNicknameValid] = useState(false)
   const [AddressValid, setAddressValid] = useState(false)
+
+  const [latitude, setLatitude] = useState(0)
+  const [longitude, setLongitude] = useState(0)
+
+  const editUserInfo = () => {
+    console.log(latitude,longitude,nickname,address)
+    const headers = {
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTExMjgyOTcsImV4cCI6MTY5MTEzMTg5N30.2RRapg4bqmIyeblAMzVo3oLtLrcx8lfmcoObtxzJ2VA'
+    };
+  
+    const data = {
+      nickname: nickname,
+      address: address,
+      latitude: latitude,
+      longitude: longitude
+    };
+  
+    axios.put('http://honjarang.kro.kr:30000/api/v1/users/users', data, { headers })
+      .then(function(response) {
+        console.log(response);
+        setModalState(!modalState)
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  };
 
   const handleNickname = (() => {
     setisNicknameModified(!isNicknameModifed)
@@ -23,6 +52,9 @@ export default function Edit({ modalState, setModalState }) {
   const onClickCloseButton = (() => {
     setModalState(!modalState);
   });
+  const onClickWithdrawal = (() => {
+    axios.delete('http://honjarang.kro.kr:30000/api/v1/users')
+  })
 
   return (
     <div className="relative border bg-white m-auto rounded-lg w-4/12">
@@ -56,22 +88,19 @@ export default function Edit({ modalState, setModalState }) {
           <div className="flex justify-between">
             <div className="font-bold">이메일</div>
             <div className="flex space-x-2">
-              <div>samsung@ssafy.com</div>
-              <div className="w-24"></div>
+              <div>{email}</div>
             </div>
           </div>
           <div className="flex justify-between">
             <div className="font-bold">닉네임</div>
             <div className="flex space-x-2">
               {isNicknameModifed ? (
-                <Nickname 
-                  Nickname={NickName}
-                  setNickname={setNickname}
+                <Nickname
                   setNicknameValid={setNicknameValid}
                   handleNickname={handleNickname}  
                 />
               ) : 
-              (<div>SSAFY01</div>)
+              (<div>{nickname}</div>)
              }
               {isNicknameModifed ? (
                 null
@@ -89,9 +118,14 @@ export default function Edit({ modalState, setModalState }) {
             <div className="font-bold">주소</div>
             <div className="flex space-x-2">
               {isAddressModified ? (
-                <Address handleAddress={handleAddress}/>
+                <Address
+                  setLatitude = {setLatitude}
+                  setLongitude = {setLongitude}
+                  setAddressValid = {setAddressValid}
+                  handleAddress={handleAddress}
+                />
               ):(
-                <div>경북 구미시 3공단 3로 302</div>
+                <div>{address}</div>
               )}
               {isAddressModified ? (
                 null
@@ -106,7 +140,10 @@ export default function Edit({ modalState, setModalState }) {
           </div>
         </div>
         <div className="mt-10 space-y-2">
-          <div className="cursor-pointer text-xs text-main1">변경사항 저장</div>
+          <div 
+            className="cursor-pointer text-xs text-main1"
+            onClick={editUserInfo}
+          >변경사항 저장</div>
           <div className="cursor-pointer text-xs text-main3">
             <Link to="/findpassword/changepassword">
               비밀번호 변경
