@@ -16,7 +16,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/secondhand-transaction")
+@RequestMapping("/api/v1/secondhand-transactions")
 public class TransactionController {
     private final TransactionService transactionService;
 
@@ -30,7 +30,7 @@ public class TransactionController {
     @PutMapping("/{transactionId}")
     public ResponseEntity<Void> updateSecondHandTransaction(@PathVariable Long transactionId, @RequestBody TransactionUpdateDto transactionUpdateDto, @CurrentUser User user) {
         transactionService.updateSecondHandTransaction(transactionUpdateDto, user);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{transactionId}")
@@ -39,30 +39,30 @@ public class TransactionController {
         return ResponseEntity.ok().build();
     }
 
-    @Transactional(readOnly = true)
+
     @GetMapping("")
-    public ResponseEntity<List<TransactionListDto>> getSecondHandTransactions(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="size", defaultValue="0") int size, @RequestParam(value="keyword", defaultValue="") String keyword){
+    public ResponseEntity<List<TransactionListDto>> getSecondHandTransactions(@RequestParam(value="page", defaultValue="1") int page, @RequestParam(value="size", defaultValue="15") int size, @RequestParam(value="keyword", defaultValue="") String keyword){
             List<TransactionListDto> getTransactions = transactionService.getSecondHandTransactions(page, size, keyword);
             return ResponseEntity.ok(getTransactions);
     }
 
 
-    @Transactional(readOnly = true)
+
     @GetMapping("/{transactionId}")
     public ResponseEntity<TransactionDto> getSecondHandTransaction(@PathVariable Long transactionId){
         TransactionDto transactionDto = transactionService.getSecondHandTransaction(transactionId);
         return ResponseEntity.ok(transactionDto);
     }
 
-    @Transactional
-    @PutMapping("/buy/{transactionId}")
+
+    @PutMapping("/{transactionId}/buy")
     public ResponseEntity<Void> buySecondHandTransaction(@PathVariable Long transactionId, @CurrentUser User user){
         transactionService.buySecondHandTransaction(transactionId, user);
         return ResponseEntity.ok().build();
     }
 
-    @Transactional
-    @PutMapping("/check/{transactionId}")
+
+    @PutMapping("/{transactionId}/check")
     public ResponseEntity<Void> checkSecondHandTransaction(@PathVariable Long transactionId, @CurrentUser User user){
         transactionService.checkSecondHandTransaction(transactionId,user);
         return ResponseEntity.ok().build();
