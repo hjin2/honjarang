@@ -3,18 +3,20 @@ import Edit from './Edit';
 import Modal from '../Common/Modal';
 import { useSelector } from 'react-redux';
 
-export default function UserInfo(props) {
+export default function UserInfo() {
   const [modalState, setModalState] = useState(false);
   const onModalOpen = () => {
     setModalState(!modalState);
   };
   const image = useSelector((state) => state.upload.image);
+  const nickname = useSelector((state) => state.userinfo.nickname);
+  const point = useSelector((state) => state.userinfo.point)
   return (
     <div className="flex justify-center space-x-10">
       <img className="h-20 w-20 rounded-full" src={image} size={200}></img>
       <div className="space-y-2">
         <div className="flex">
-          <div className="font-bold text-lg mr-3">{props.nickname}</div>
+          <div className="font-bold text-lg mr-3">{nickname}</div>
           <button type="button" className="" onClick={onModalOpen}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -32,7 +34,7 @@ export default function UserInfo(props) {
             </svg>
           </button>
         </div>
-        <div className="text-xs">50,000P</div>
+        <div className="text-xs">{point}P</div>
         {modalState && (
           <Modal modalState={modalState} setModalState={setModalState}>
             <Edit modalState={modalState} setModalState={setModalState}/>
