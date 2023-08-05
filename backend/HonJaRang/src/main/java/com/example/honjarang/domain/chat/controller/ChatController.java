@@ -50,6 +50,7 @@ public class ChatController {
         return chatService.getChatMessageList(roomId, page, size, user);
     }
 
+
     @GetMapping("/{roomId}/page")
     public Integer getChatMessagePage(@PathVariable Long roomId, @RequestParam Integer size) {
         return chatService.getChatMessagePage(roomId, size);

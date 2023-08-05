@@ -9,16 +9,16 @@ import org.springframework.web.socket.config.annotation.*;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    @Value("${spring.rabbitmq.stomp.host}")
+    @Value("${spring.rabbitmq.host}")
     private String rabbitMqHost;
 
     @Value("${spring.rabbitmq.stomp.port}")
     private int rabbitMqPort;
 
-    @Value("${spring.rabbitmq.stomp.username}")
+    @Value("${spring.rabbitmq.username}")
     private String stompLogin;
 
-    @Value("${spring.rabbitmq.stomp.passcode}")
+    @Value("${spring.rabbitmq.password}")
     private String stompPasscode;
 
     @Override

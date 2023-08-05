@@ -27,4 +27,8 @@ public class ChatRoom {
     public ChatRoom(String name) {
         this.name = name;
     }
+
+    public void setIdForTest(Long id) {
+        this.id = id;
+    }
 }

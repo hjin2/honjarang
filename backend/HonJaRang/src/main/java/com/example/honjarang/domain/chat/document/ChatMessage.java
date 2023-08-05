@@ -29,4 +29,12 @@ public class ChatMessage {
         this.chatRoomId = chatRoomId;
         this.userId = userId;
     }
+
+    public void setIdForTest(ObjectId id) {
+        this.id = id;
+    }
+
+    public void setCreatedAtForTest(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
 }

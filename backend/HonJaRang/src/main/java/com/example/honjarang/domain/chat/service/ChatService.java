@@ -14,6 +14,7 @@ import com.example.honjarang.domain.chat.repository.ChatRoomRepository;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.UserNotFoundException;
 import com.example.honjarang.domain.user.repository.UserRepository;
+import com.example.honjarang.domain.user.service.UserService;
 import com.example.honjarang.security.service.TokenService;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
@@ -40,13 +41,14 @@ import java.util.stream.Collectors;
 @Service
 public class ChatService {
     private final RabbitTemplate rabbitTemplate;
-    private final RedisTemplate<String, Long> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatParticipantRepository chatParticipantRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final FirebaseMessaging firebaseMessaging;
+    private final UserService userService;
 
     private static final String SESSION_USER_PREFIX = "websocket::session::user::";
     private static final String SESSION_CHAT_ROOM_PREFIX = "websocket::session::chatRoom::";
@@ -60,9 +62,9 @@ public class ChatService {
     }
 
     public void disconnectChatRoom(String sessionId) {
-        Long userId = redisTemplate.opsForValue().get(SESSION_USER_PREFIX + sessionId);
+        Long userId = Long.parseLong((String) redisTemplate.opsForValue().get(SESSION_USER_PREFIX + sessionId));
         redisTemplate.delete(SESSION_USER_PREFIX + sessionId);
-        Long roomId = redisTemplate.opsForValue().get(SESSION_CHAT_ROOM_PREFIX + sessionId);
+        Long roomId = Long.parseLong((String) redisTemplate.opsForValue().get(SESSION_CHAT_ROOM_PREFIX + sessionId));
         redisTemplate.delete(SESSION_CHAT_ROOM_PREFIX + sessionId);
         redisTemplate.opsForSet().remove(CHAT_ROOM_USER_PREFIX + roomId, userId);
     }
@@ -74,16 +76,30 @@ public class ChatService {
 
     @Transactional
     public void createChatMessage(ChatMessageCreateDto chatMessageCreateDto) {
-        Long userId = redisTemplate.opsForValue().get(SESSION_USER_PREFIX + chatMessageCreateDto.getSessionId());
+        Long userId = Long.parseLong((String) Objects.requireNonNull(redisTemplate.opsForValue().get(SESSION_USER_PREFIX + chatMessageCreateDto.getSessionId())));
         ChatMessage chatMessage = chatMessageCreateDto.toEntity(userId);
         chatMessageRepository.save(chatMessage);
 
-        Set<Long> connectedUserId = redisTemplate.opsForSet().members(CHAT_ROOM_USER_PREFIX + chatMessage.getChatRoomId());
+        // 채팅방 실시간 참여자들의 마지막 읽은 메시지를 업데이트
+        Set<Object> connectedUserId = redisTemplate.opsForSet().members(CHAT_ROOM_USER_PREFIX + chatMessage.getChatRoomId());
         Objects.requireNonNull(connectedUserId)
                 .forEach(id -> {
-                    Optional<ChatParticipant> chatParticipantOptional = chatParticipantRepository.findByChatRoomIdAndUserIdAndIsDeletedIsFalse(chatMessage.getChatRoomId(), id);
+                    Optional<ChatParticipant> chatParticipantOptional = chatParticipantRepository.findByChatRoomIdAndUserIdAndIsDeletedIsFalse(chatMessage.getChatRoomId(), Long.parseLong((String) id));
                     chatParticipantOptional.ifPresent(chatParticipant -> chatParticipant.updateLastReadMessageId(chatMessage.getId().toString()));
                 });
+
+        // 채팅방 참여자들에게 푸쉬 알림 전송
+        List<ChatParticipant> chatParticipantList = chatParticipantRepository.findAllByChatRoomIdAndIsDeletedIsFalse(chatMessage.getChatRoomId());
+        for (ChatParticipant chatParticipant : chatParticipantList) {
+            Set<String> fcmTokenSet = userService.getFcmTokenList(chatParticipant.getUser());
+            if (!fcmTokenSet.isEmpty()) {
+                User user = userRepository.findById(chatMessage.getUserId())
+                        .orElseThrow(() -> new UserNotFoundException("존재하지 않는 유저입니다."));
+                String title = user.getNickname();
+                String body = chatMessage.getContent();
+                fcmTokenSet.forEach(token -> sendPushNotification(token, title, body));
+            }
+        }
     }
 
     @Transactional
@@ -99,6 +115,7 @@ public class ChatService {
                 })
                 .collect(Collectors.toList());
 
+        // 마지막 읽은 메시지를 업데이트
         if (!chatMessageListDtoList.isEmpty()) {
             chatParticipant.updateLastReadMessageId(chatMessageListDtoList.get(chatMessageListDtoList.size() - 1).getId());
         }
@@ -142,7 +159,7 @@ public class ChatService {
         return (int) Math.ceil((double) count / size);
     }
 
-    public void sendPushNotification(String token, String title, String body) {
+    private void sendPushNotification(String token, String title, String body) {
         Message message = Message.builder()
                 .setToken(token)
                 .setNotification(Notification.builder()

@@ -12,4 +12,6 @@ public interface ChatParticipantRepository extends JpaRepository<ChatParticipant
     Optional<ChatParticipant> findByChatRoomIdAndUserIdAndIsDeletedIsFalse(Long chatRoomId, Long userId);
 
     List<ChatParticipant> findAllByUserIdAndIsDeletedIsFalse(Long userId);
+
+    List<ChatParticipant> findAllByChatRoomIdAndIsDeletedIsFalse(Long chatRoomId);
 }

@@ -20,4 +20,9 @@ public class DateTimeUtils {
         LocalDateTime localDateTime = instant.atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime();
         return localDateTime.format(FORMATTER);
     }
+
+    public static Instant parseInstant(String instantString) {
+        LocalDateTime localDateTime = LocalDateTime.parse(instantString, FORMATTER);
+        return localDateTime.atZone(ZoneId.of("Asia/Seoul")).toInstant();
+    }
 }

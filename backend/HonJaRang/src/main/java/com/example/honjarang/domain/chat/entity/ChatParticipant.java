@@ -54,4 +54,8 @@ public class ChatParticipant {
             this.lastReadMessageId = lastReadMessageId;
         }
     }
+
+    public void setLastReadMessageIdForTest(String lastReadMessageId) {
+        this.lastReadMessageId = lastReadMessageId;
+    }
 }
