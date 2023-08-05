@@ -27,7 +27,6 @@ public class UserController {
     private final TokenService tokenService;
 
     private final EmailService emailService;
-    private final ChatService chatService;
 
     private final S3UploadService s3UploadService;
 

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -41,18 +42,18 @@ public class ChatController {
     }
 
     @GetMapping("")
-    public List<ChatRoomListDto> getChatRoomList(@CurrentUser User user) {
-        return chatService.getChatRoomList(user);
+    public ResponseEntity<List<ChatRoomListDto>> getChatRoomList(@CurrentUser User user) {
+        return ResponseEntity.ok(chatService.getChatRoomList(user));
     }
 
     @GetMapping("/{roomId}")
-    public List<ChatMessageListDto> getChatMessageList(@PathVariable Long roomId, @RequestParam Integer page, @RequestParam Integer size, @CurrentUser User user) {
-        return chatService.getChatMessageList(roomId, page, size, user);
+    public ResponseEntity<List<ChatMessageListDto>> getChatMessageList(@PathVariable Long roomId, @RequestParam Integer page, @RequestParam Integer size, @CurrentUser User user) {
+        return ResponseEntity.ok(chatService.getChatMessageList(roomId, page, size, user));
     }
 
 
     @GetMapping("/{roomId}/page")
-    public Integer getChatMessagePage(@PathVariable Long roomId, @RequestParam Integer size) {
-        return chatService.getChatMessagePage(roomId, size);
+    public ResponseEntity<Integer> getChatMessagePage(@PathVariable Long roomId, @RequestParam Integer size) {
+        return ResponseEntity.ok(chatService.getChatMessagePage(roomId, size));
     }
 }

@@ -2,11 +2,14 @@ package com.example.honjarang.domain.chat.dto;
 
 import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.chat.entity.ChatRoom;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 
 import java.time.Instant;
 
 @Getter
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ChatRoomListDto {
     private Long id;
     private String name;

@@ -78,14 +78,14 @@ public class ChatService {
     public void createChatMessage(ChatMessageCreateDto chatMessageCreateDto) {
         Long userId = Long.parseLong((String) Objects.requireNonNull(redisTemplate.opsForValue().get(SESSION_USER_PREFIX + chatMessageCreateDto.getSessionId())));
         ChatMessage chatMessage = chatMessageCreateDto.toEntity(userId);
-        chatMessageRepository.save(chatMessage);
+        ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
 
         // 채팅방 실시간 참여자들의 마지막 읽은 메시지를 업데이트
         Set<Object> connectedUserId = redisTemplate.opsForSet().members(CHAT_ROOM_USER_PREFIX + chatMessage.getChatRoomId());
         Objects.requireNonNull(connectedUserId)
                 .forEach(id -> {
                     Optional<ChatParticipant> chatParticipantOptional = chatParticipantRepository.findByChatRoomIdAndUserIdAndIsDeletedIsFalse(chatMessage.getChatRoomId(), Long.parseLong((String) id));
-                    chatParticipantOptional.ifPresent(chatParticipant -> chatParticipant.updateLastReadMessageId(chatMessage.getId().toString()));
+                    chatParticipantOptional.ifPresent(chatParticipant -> chatParticipant.updateLastReadMessageId(savedChatMessage.getId().toString()));
                 });
 
         // 채팅방 참여자들에게 푸쉬 알림 전송

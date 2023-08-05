@@ -6,6 +6,7 @@
 :seclinks:
 
 include::users.adoc[]
+include::chats.adoc[]
 include::joint-deliveries.adoc[]
 include::joint-purchases.adoc[]
 include::maps.adoc[]
