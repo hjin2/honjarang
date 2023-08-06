@@ -1,5 +1,6 @@
 package com.example.honjarang.domain.user.controller;
 
+import com.example.honjarang.domain.chat.service.ChatService;
 import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.user.dto.*;
@@ -34,6 +35,18 @@ public class UserController {
         User user = userService.login(loginDto);
         TokenDto tokenDto = tokenService.generateToken(user.getEmail(), user.getRole());
         return ResponseEntity.ok(tokenDto);
+    }
+
+    @PostMapping("/fcm-token")
+    public ResponseEntity<Void> updateFcmToken(@RequestBody Map<String, Object> map, @CurrentUser User user) {
+        userService.addFcmToken(user, (String) map.get("fcm_token"));
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestBody Map<String, Object> map, @CurrentUser User user) {
+        userService.deleteFcmToken(user, (String) map.get("fcm_token"));
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/send-verification-code")

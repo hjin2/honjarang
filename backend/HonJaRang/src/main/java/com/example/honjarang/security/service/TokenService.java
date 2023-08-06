@@ -12,6 +12,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -57,6 +58,7 @@ public class TokenService {
         }
     }
 
+    @Transactional(readOnly = true)
     public User getUserByToken(String token) {
         String email = Jwts.parser()
                 .setSigningKey(SECRET_KEY)
