@@ -2,6 +2,7 @@ import {useState} from 'react'
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
+
 export default function Charge({ modalState, setModalState }) {
   const onClickCloseButton = () =>{
     setModalState(!modalState)

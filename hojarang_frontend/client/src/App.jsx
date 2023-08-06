@@ -19,12 +19,14 @@ import Checkout from './pages/Checkout/Checkout';
 import Fail from './pages/Checkout/Fail';
 import Success from './pages/Checkout/Success';
 import DefaultLayout from './components/DefaultLayout';
+import PurchaseDetail from './components/Market/PurchaseDetail';
 import DeliveryDetail from './components/Market/DeliveryDetail';
 import WebRTCCreate from './pages/WebRTC/WebRTCCreate';
 import PurchaseCreate from './pages/Market/PurchaseCreate';
 import DeliveryCreate from './pages/Market/DeliveryCreate';
 import TransactionCreate from './pages/Market/TransactionCreate';
 import FreeChat from './components/WebRTC/FreeChat';
+
 
 function App() {
   return (
@@ -39,6 +41,7 @@ function App() {
             <Route path="/webrtc/create" element={<WebRTCCreate/>}/>
             <Route path="/chatting" element={<Chatting />} />
             <Route path="/market" element={<Market />} />
+            <Route path="/market/purchasedetail/:id" element={<PurchaseDetail />}></Route>
             <Route
               path="/market/deliverydetail/:id"
               element={<DeliveryDetail />}

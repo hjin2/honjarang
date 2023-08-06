@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function DeliveryRoom(roomData) {
 
@@ -21,10 +22,11 @@ export default function DeliveryRoom(roomData) {
           <div>{store_name}</div>
         </div>
         <div className="flex justify-end">
-        <button type="button" className="main1-full-button w-20">참여하기</button>
+          <Link to={{ pathname: `deliverydetail/${id}` }}>
+            <button type="button" className="main1-full-button w-20">참여하기</button>
+          </Link>
         </div>
       </div>
     </div>
   )
-  
 }
