@@ -14,19 +14,19 @@ import lombok.NoArgsConstructor;
 public class TransactionDto {
 
     private Long id;
-    private User seller;
-    private User buyer;
+    private Long sellerId;
     private String title;
     private String content;
     private Integer price;
     private Boolean isCompleted;
     private String createdAt;
-    private String updatedat;
+
 
 
 
     public TransactionDto(Transaction transaction){
-        this.seller = transaction.getSeller();
+        this.id = transaction.getId();
+        this.sellerId = transaction.getSeller().getId();
         this.title = transaction.getTitle();
         this.content = transaction.getContent();
         this.price = transaction.getPrice();

@@ -73,6 +73,7 @@ public class TransactionService {
         }
         User loginedUser = userRepository.findById(user.getId()).orElseThrow(()->new UserNotFoundException("존재하지 않는 사용자입니다."));
         loginedUser.subtractPoint(transaction.getPrice());
+        transaction.soldout(user);
         transaction.complete();
     }
 
