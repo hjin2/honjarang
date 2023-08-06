@@ -1,6 +1,7 @@
 import {useState} from 'react'
 import { Link } from 'react-router-dom';
 
+
 export default function Charge({ modalState, setModalState }) {
   const onClickCloseButton = () =>{
     setModalState(!modalState)

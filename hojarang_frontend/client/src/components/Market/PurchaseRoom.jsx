@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function PurchaseRoom(roomData) {
 
@@ -25,10 +25,12 @@ export default function PurchaseRoom(roomData) {
         </div>
         {/* 참여버튼 */}
         <div className="flex justify-end">
-        <button type="button" className="main1-full-button w-20">참여하기</button>
+          <Link to={{ pathname: `/market/purchasedetail/${id}`}}>
+            <button type="button" className="main1-full-button w-20">참여하기</button>
+          </Link>
         </div>
       </div>
     </div>
   )
-  
+
 }
