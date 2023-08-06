@@ -33,7 +33,6 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalMatchers.not;
@@ -170,7 +169,7 @@ class JointPurchaseServiceTest {
     void getJointPurchaseList_Success() {
         // given
         Page<JointPurchase> jointPurchasePage = new PageImpl<>(List.of(jointPurchase));
-        given(jointPurchaseRepository.findAllByDeadlineAfterAndIsCanceledFalse(any(LocalDateTime.class), any(Pageable.class))).willReturn(jointPurchasePage);
+        given(jointPurchaseRepository.findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(any(LocalDateTime.class), any(Pageable.class))).willReturn(jointPurchasePage);
         given(jointPurchaseApplicantRepository.countByJointPurchaseId(1L)).willReturn(1);
 
         // when
