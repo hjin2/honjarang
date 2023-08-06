@@ -13,13 +13,11 @@ import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.post.service.PostService;
 import com.example.honjarang.domain.user.dto.LoginDto;
 import com.example.honjarang.domain.user.dto.UserCreateDto;
+import com.example.honjarang.domain.user.dto.UserInfoDto;
 import com.example.honjarang.domain.user.entity.EmailVerification;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
-import com.example.honjarang.domain.user.exception.DuplicateNicknameException;
-import com.example.honjarang.domain.user.exception.EmailNotVerifiedException;
-import com.example.honjarang.domain.user.exception.PasswordMismatchException;
-import com.example.honjarang.domain.user.exception.UserNotFoundException;
+import com.example.honjarang.domain.user.exception.*;
 import com.example.honjarang.domain.user.repository.EmailVerificationRepository;
 import com.example.honjarang.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +36,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,6 +47,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.useRepresentation;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -77,6 +78,9 @@ class UserServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    //추가
+    @Mock
+    private S3UploadService s3UploadService;
     private User user;
     private EmailVerification emailVerification;
 
@@ -99,6 +103,8 @@ class UserServiceTest {
                 .latitude(37.123456)
                 .longitude(127.123456)
                 .role(Role.ROLE_USER)
+                .profileImage("test.jpg")
+                .isDeleted(false)
                 .build();
         user.setIdForTest(1L);
         emailVerification = EmailVerification.builder()
@@ -308,7 +314,8 @@ class UserServiceTest {
     @DisplayName("회원정보 이미지 변경 성공 - 기존에 이미지가 없을 경우")
     void changeImage_Success() {
         // given
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.ofNullable(user));
+
 
         // when
         userService.changeUserImage(user,"test.jpg");
@@ -330,16 +337,17 @@ class UserServiceTest {
 
 
     @Test
-    @DisplayName("내가 작성한 게시글 보기")
+    @DisplayName("내가 작성한 게시글 리스트 보기 성공")
     void getMyPostList_Success(){
         // given
         Pageable pageable = PageRequest.of(0,15);
 
+        List<Post> posts = List.of(post);
 
-        List<Post> postList = List.of(post);
-        given(postRepository.findAllByUserIdOrderByIdDesc(user.getId(),pageable)).willReturn(postList);
+        Page<Post> postPage = new PageImpl<>(posts, pageable, posts.size());
+        given(postRepository.findAllByUserIdOrderByIdDesc(user.getId(),pageable)).willReturn(postPage);
 
-        PostListDto postListDto = new PostListDto(post);
+//        PostListDto postListDto = new PostListDto(post);
 
         // when
         List<PostListDto> result = userService.getMyPostList(1,user);
@@ -352,8 +360,8 @@ class UserServiceTest {
         assertThat(result.get(0).getIsNotice()).isEqualTo(post.getIsNotice());
         assertThat(result.get(0).getViews()).isEqualTo(post.getViews());
 
-
     }
+
 
 
     @Test
@@ -424,4 +432,92 @@ class UserServiceTest {
         // then
         assertThat(user.getPoint()).isEqualTo(7000);
     }
+
+    @Test
+    @DisplayName("포인트 출금 실패 - 사용자가 존재하지 않을 때")
+    void withdrawPoint_UserNotFoundException(){
+        //given
+        given(userRepository.findByEmail("test@test.com")).willReturn(Optional.empty());
+
+        // then
+        assertThrows(UserNotFoundException.class, ()-> userService.withdrawPoint(30000,user));
+    }
+
+    @Test
+    @DisplayName("포인트 출금 실패 - 사용자가 가지고있는 포인트보다 더 많은 포인트를 출금하려할 때")
+    void withdrawPoint_InsufficientPointsException(){
+        // given
+        given(userRepository.findByEmail("test@test.com")).willReturn(Optional.of(user));
+
+        // 10000보다 더 커야함
+        assertThrows(InsufficientPointsException.class, ()-> userService.withdrawPoint(15000,user));
+
+    }
+
+    @Test
+    @DisplayName("탈퇴 성공")
+    void deleteuser(){
+        // given
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+
+        // when
+        userService.deleteUser(1L);
+
+        //then
+    }
+
+    @Test
+    @DisplayName("탈퇴 실패 - 사용자가 없는 경우")
+    void deleteuser_UserNotFoundException(){
+        // given
+        given(userRepository.findById(1L)).willReturn(Optional.empty());
+
+
+        // when & then
+        assertThrows(UserNotFoundException.class, ()-> userService.deleteUser(1L));
+    }
+
+    @Test
+    @DisplayName("회원정보 불러오기")
+    void getUserInfo_success(){
+        // given
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+
+        // when
+        UserInfoDto userInfoDto = userService.getUserInfo(1L);
+
+        // then
+        assertThat(userInfoDto.getNickname()).isEqualTo("테스트");
+        assertThat(userInfoDto.getEmail()).isEqualTo("test@test.com");
+        assertThat(userInfoDto.getProfileImage()).isEqualTo("test.jpg");
+        assertThat(userInfoDto.getPoint()).isEqualTo(10000);
+        assertThat(userInfoDto.getAddress()).isEqualTo("서울특별시 강남구");
+        assertThat(userInfoDto.getLatitude()).isEqualTo(37.123456);
+        assertThat(userInfoDto.getLongitude()).isEqualTo(127.123456);
+    }
+
+
+    @Test
+    @DisplayName("회원정보 불러오기 실패 - 사용자가 없는 경우")
+    void getUserInfo_UserNotFoundException(){
+        // given
+        given(userRepository.findById(1L)).willReturn(Optional.empty());
+
+        // when & then
+        assertThrows(UserNotFoundException.class, ()->userService.getUserInfo(user.getId()));
+    }
+
+    @Test
+    @DisplayName("회원정보 불러오기 실패 - 사용자가 탈퇴한 경우")
+    void getUserInfo_UserNotFoundException_quit(){
+        // given
+        user.setIsDeletedForTest(true);
+        given(userRepository.findById(1L)).willReturn(Optional.ofNullable(user));
+
+        // when & then
+        assertThrows(UserNotFoundException.class, ()->userService.getUserInfo(user.getId()));
+
+    }
+
+
 }
