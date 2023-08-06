@@ -24,6 +24,7 @@ import WebRTCCreate from './pages/WebRTC/WebRTCCreate';
 import PurchaseCreate from './pages/Market/PurchaseCreate';
 import DeliveryCreate from './pages/Market/DeliveryCreate';
 import TransactionCreate from './pages/Market/TransactionCreate';
+import FreeChat from './components/WebRTC/FreeChat';
 
 function App() {
   return (
@@ -59,13 +60,13 @@ function App() {
             ></Route>
             <Route path="/board/article/:id" element={<ArticleDetail />} />
             <Route paht="/board/articleupdate/:id" element={<ArticleUpdate/>}></Route>
+            <Route path="/webrtc/:sessionid" element={<FreeChat/>}/>
             <Route path="/*" element={<Notfound />} />
           </Route>
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/checkout/fail" element={<Fail />} />
           <Route path="/checkout/success" element={<Success />} />
           <Route path="/map2" element={<Map2 />} />
-
         </Routes>
       </BrowserRouter>
     </div>

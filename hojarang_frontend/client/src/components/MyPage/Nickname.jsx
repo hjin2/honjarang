@@ -22,13 +22,12 @@ export default function Nickname({setNicknameValid, handleNickname}) {
 					axios.get('http://honjarang.kro.kr:30000/api/v1/users/check-nickname',
 						{
 							params: {nickname : nicknameInput},
-							headers : {Authorization : 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTExMzQzMjgsImV4cCI6MTY5MTEzNzkyOH0.0i3JMQhK-UcRuOnnUEuvULq38zcVdQpknNskd-9Lvwc'}
+							headers : {Authorization : 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTExMzg3MjIsImV4cCI6MTY5MTE0MjMyMn0.N8nkWtk1FpLRfDjNGz6IZ30_m61lhFqhfm-YHMxQvho'}
 					
 					})
 						.then(function (response) {
 							console.log(response)
 							setnicknameMsg('')
-							dispatch(setNickname(nicknameInput))
 							setNicknameValid()
 							handleNickname()
 						})
@@ -50,7 +49,7 @@ export default function Nickname({setNicknameValid, handleNickname}) {
 	return (
 		<div>
 			<div className="flex">
-				<input type="text" name="nickname" onChange={onChange} placeholder={nickname} maxLength="15"/>
+				<input type="text" name="nickname" onChange={onChange} placeholder={nicknameInput} maxLength="15"/>
 				<button
 					onClick = { nickname_check }
 				>

@@ -6,15 +6,17 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { Userinfo } from '../../redux/slice/UserInfoSlice';
+import { useSelector } from 'react-redux';
 
 export default function MyPage() {
+  const nickname = useSelector((state) => state.userinfo.nickname)
   const { id } = useParams();
   const dispatch = useDispatch()
   useEffect(() => {
     axios.get('http://honjarang.kro.kr:30000/api/v1/users/info',
       {
         params : {id : 2},
-        headers : {'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTExMzQzMjgsImV4cCI6MTY5MTEzNzkyOH0.0i3JMQhK-UcRuOnnUEuvULq38zcVdQpknNskd-9Lvwc'}
+        headers : {'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTEyMDgxMDIsImV4cCI6MTY5MTIxMTcwMn0.ED3JPB37xcIjuJ59kf4Gz88BGtiY-B0vumcMhhtMZPg'}
       },
       )
       .then(function(response){
