@@ -21,3 +21,8 @@ operation::users/change-password[snippets='http-request,request-fields']
 === 회원 정보 수정
 operation::users/change-user-info[snippets='http-request,request-fields']
 
+=== 프로필 사진 변경
+operation::users/change-image[snippets='http-request,request-fields']
+
+=== 포인트 환급
+operation::users/withdraw[snippets='http-request,request-fields']
