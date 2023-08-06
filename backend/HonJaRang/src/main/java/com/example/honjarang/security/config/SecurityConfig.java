@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/docs/**").permitAll()
                         .requestMatchers("/chat/**").permitAll()
                         .requestMatchers("/api/v1/users/fcm").permitAll()
@@ -48,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/users/login").permitAll()
                         .requestMatchers("/api/v1/users/signup").permitAll()
                         .requestMatchers("/api/v1/users/refresh").permitAll()
+                        .requestMatchers("/api/v1/users/check-nickname").permitAll()
                         .requestMatchers("/api/v1/users/send-verification-code").permitAll()
                         .requestMatchers("/api/v1/users/verify-code").permitAll()
                         .requestMatchers("/api/v1/maps/coordinates").permitAll()
