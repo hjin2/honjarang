@@ -8,6 +8,8 @@ import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryCart;
 import com.example.honjarang.domain.jointdelivery.entity.Store;
 import com.example.honjarang.domain.jointdelivery.exception.*;
 import com.example.honjarang.domain.jointdelivery.repository.*;
+import com.example.honjarang.domain.map.dto.CoordinateDto;
+import com.example.honjarang.domain.map.service.MapService;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.InsufficientPointsException;
 import com.example.honjarang.domain.user.exception.UserNotFoundException;
@@ -20,6 +22,7 @@ import org.bson.types.ObjectId;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -48,6 +51,7 @@ public class JointDeliveryService {
     private final JointDeliveryRepository jointDeliveryRepository;
     private final JointDeliveryCartRepository jointDeliveryCartRepository;
     private final JointDeliveryApplicantRepository jointDeliveryApplicantRepository;
+    private final MapService mapService;
 
     public List<StoreListDto> getStoreListByApi(String keyword) {
         String url = "https://map.naver.com/v5/api/search";
@@ -67,8 +71,7 @@ public class JointDeliveryService {
             }
             JsonNode storeList = jsonNode.get("result").get("place").get("list");
             List<StoreListDto> storeListDtoList = new ArrayList<>();
-            for (int i = 0; i < storeList.size(); i++) {
-                JsonNode store = storeList.get(i);
+            for (JsonNode store : storeList) {
                 StoreListDto storeListDto = new StoreListDto();
                 storeListDto.setId(store.get("id").asLong());
                 storeListDto.setName(store.get("name").asText());
@@ -183,30 +186,39 @@ public class JointDeliveryService {
     @Transactional(readOnly = true)
     public JointDeliveryDto getJointDelivery(Long jointDeliveryId) {
         JointDelivery jointDelivery = jointDeliveryRepository.findById(jointDeliveryId).orElseThrow(() -> new JointDeliveryNotFoundException("해당 공동배달이 존재하지 않습니다."));
-        Integer currentTotalPrice = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDeliveryId).stream()
-                .map(jointDeliveryCart -> {
-                    Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
-                            .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
-                    return menu.getPrice() * jointDeliveryCart.getQuantity();
-                })
-                .reduce(0, Integer::sum);
+        int currentTotalPrice = 0;
+        List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDeliveryId);
+        for(JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
+            Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
+                    .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
+            currentTotalPrice += menu.getPrice() * jointDeliveryCart.getQuantity();
+        }
         return new JointDeliveryDto(jointDelivery, currentTotalPrice);
     }
 
     @Transactional(readOnly = true)
-    public List<JointDeliveryListDto> getJointDeliveryList(Integer page, Integer size) {
+    public List<JointDeliveryListDto> getJointDeliveryList(Integer page, Integer size, User loginUser) {
         Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
-        // 작성 날짜로 내림차순 조회
         List<JointDelivery> jointDeliveryList = jointDeliveryRepository.findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(LocalDateTime.now(), pageable).toList();
         List<JointDeliveryListDto> jointDeliveryListDtoList = new ArrayList<>();
+
         for (JointDelivery jointDelivery : jointDeliveryList) {
-            Integer currentTotalPrice = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDelivery.getId()).stream()
-                    .map(jointDeliveryCart -> {
-                        Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
-                                .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
-                        return menu.getPrice() * jointDeliveryCart.getQuantity();
-                    })
-                    .reduce(0, Integer::sum);
+            // 사용자와 가게 사이의 거리가 필터링 거리보다 큰 경우
+            CoordinateDto userCoordinate = new CoordinateDto(loginUser.getLatitude(), loginUser.getLongitude());
+            CoordinateDto storeCoordinate = new CoordinateDto(jointDelivery.getStore().getLatitude(), jointDelivery.getStore().getLongitude());
+            if (mapService.getDistance(userCoordinate, storeCoordinate) > 5000) {
+                continue;
+            }
+
+            // 총 가격 계산
+            int currentTotalPrice = 0;
+            List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDelivery.getId());
+            for(JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
+                Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
+                        .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
+                currentTotalPrice += menu.getPrice() * jointDeliveryCart.getQuantity();
+            }
+
             JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery, currentTotalPrice);
             jointDeliveryListDtoList.add(jointDeliveryListDto);
         }
@@ -245,14 +257,15 @@ public class JointDeliveryService {
             throw new JointDeliveryCartAccessException("장바구니에 접근할 수 없습니다.");
         }
 
-        return jointDeliveryCartRepository
-                .findAllByJointDeliveryId(jointDeliveryId)
-                .stream()
-                .map(jointDeliveryCart -> {
-                    Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
-                            .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
-                    return new JointDeliveryCartListDto(jointDeliveryCart, menu);
-                }).toList();
+        List<JointDeliveryCartListDto> jointDeliveryCartListDtoList = new ArrayList<>();
+        List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDeliveryId);
+        for(JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
+            Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
+                    .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
+            JointDeliveryCartListDto jointDeliveryCartListDto = new JointDeliveryCartListDto(jointDeliveryCart, menu);
+            jointDeliveryCartListDtoList.add(jointDeliveryCartListDto);
+        }
+        return jointDeliveryCartListDtoList;
     }
 
     @Transactional
@@ -330,13 +343,12 @@ public class JointDeliveryService {
         jointDeliveryApplicant.confirmReceived();
 
         List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryIdAndUserId(jointDeliveryId, loginUser.getId());
-        Integer totalPrice = jointDeliveryCartList.stream()
-                .map(jointDeliveryCart -> {
-                    Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
-                            .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
-                    return menu.getPrice() * jointDeliveryCart.getQuantity();
-                })
-                .reduce(0, Integer::sum);
+        Integer totalPrice = 0;
+        for (JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
+            Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
+                    .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
+            totalPrice += menu.getPrice() * jointDeliveryCart.getQuantity();
+        }
         jointDeliveryApplicant.getJointDelivery().getUser().addPoint(totalPrice);
     }
 }

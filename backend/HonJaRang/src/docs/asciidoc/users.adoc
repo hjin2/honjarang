@@ -18,6 +18,9 @@ operation::users/check-nickname[snippets='http-request,query-parameters']
 === 로그아웃
 operation::users/logout[snippets='http-request,request-fields']
 
+=== 토큰 갱신
+operation::users/refresh[snippets='http-request,request-fields,response-fields']
+
 === FCM 토큰 등록
 operation::users/fcm-token[snippets='http-request,request-fields']
 

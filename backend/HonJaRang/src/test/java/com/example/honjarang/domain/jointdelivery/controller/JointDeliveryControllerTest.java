@@ -33,6 +33,8 @@ import org.springframework.web.context.WebApplicationContext;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
@@ -214,7 +216,7 @@ class JointDeliveryControllerTest {
         // given
         List<JointDeliveryListDto> jointDeliveryListDtoList = List.of(new JointDeliveryListDto(jointDelivery, 10000));
 
-        given(jointDeliveryService.getJointDeliveryList(1, 10)).willReturn(jointDeliveryListDtoList);
+        given(jointDeliveryService.getJointDeliveryList(eq(1), eq(10), any(User.class))).willReturn(jointDeliveryListDtoList);
 
         // when & then
         mockMvc.perform(get("/api/v1/joint-deliveries")

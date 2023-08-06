@@ -49,6 +49,13 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenDto> refresh(@RequestBody Map<String, Object> map, @CurrentUser User user) {
+        tokenService.verifyToken((String) map.get("refresh_token"));
+        TokenDto tokenDto = tokenService.generateToken(user.getEmail(), user.getRole());
+        return ResponseEntity.ok(tokenDto);
+    }
+
     @PostMapping("/send-verification-code")
     public ResponseEntity<Void> sendVerificationCode(@RequestBody Map<String, String> body) {
         emailService.sendVerificationCode(body.get("email"));
