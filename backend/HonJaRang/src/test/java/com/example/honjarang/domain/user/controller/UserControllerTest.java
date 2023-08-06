@@ -68,16 +68,12 @@ class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private UserService userService;
-
     @MockBean
     private TokenService tokenService;
-
     @MockBean
     private EmailService emailService;
-
     @MockBean
     private S3UploadService s3UploadService;
 
@@ -119,7 +115,6 @@ class UserControllerTest {
                 .build();
         post.setIdForTest(1L);
         post.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2023-08-02 12:00:00"));
-
         store = Store.builder()
                 .id(1L)
                 .storeName("가게명")
@@ -127,7 +122,6 @@ class UserControllerTest {
                 .address("경상북도 구미시")
                 .latitude(23.4567)
                 .longitude(34.5678).build();
-
         jointDelivery = JointDelivery.builder()
                 .targetMinPrice(20000)
                 .deliveryCharge(3000)
@@ -136,9 +130,6 @@ class UserControllerTest {
                 .store(store)
                 .user(user)
                 .build();
-
-
-
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null));
     }
 
@@ -470,4 +461,44 @@ class UserControllerTest {
                         )
                 ));
         }
+
+    @Test
+    @DisplayName("FCM 토큰 등록")
+    void updateFcmToken() throws Exception{
+        // given
+        Map<String, String> body = Map.of("fcm_token", "fcm_token");
+
+        // when & then
+        mockMvc.perform(post("/api/v1/users/fcm-token")
+                        .contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(body)))
+                .andExpect(status().isOk())
+                .andDo(document("users/fcm-token",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("fcm_token").type(JsonFieldType.STRING).description("FCM 토큰")
+                        )
+                ));
     }
+
+    @Test
+    @DisplayName("로그아웃")
+    void logout() throws Exception {
+        // given
+        Map<String, String> body = Map.of("fcm_token", "fcm_token");
+
+        // when & then
+        mockMvc.perform(post("/api/v1/users/logout")
+                        .contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(body)))
+                .andExpect(status().isOk())
+                .andDo(document("users/logout",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("fcm_token").type(JsonFieldType.STRING).description("FCM 토큰")
+                        )
+                ));
+    }
+}

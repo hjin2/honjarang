@@ -7,10 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Repository
 public interface JointPurchaseRepository extends JpaRepository<JointPurchase, Long> {
 
-    Page<JointPurchase> findAllByDeadlineAfterAndIsCanceledFalse(LocalDateTime now, Pageable pageable);
+    Page<JointPurchase> findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(LocalDateTime now, Pageable pageable);
 }

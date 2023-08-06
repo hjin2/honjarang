@@ -44,6 +44,8 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/docs/**").permitAll()
                         .requestMatchers("/chat/**").permitAll()
+                        .requestMatchers("/api/v1/users/fcm").permitAll()
+                        .requestMatchers("/api/v1/users/test").permitAll()
                         .requestMatchers("/api/v1/users/login").permitAll()
                         .requestMatchers("/api/v1/users/signup").permitAll()
                         .requestMatchers("/api/v1/users/refresh").permitAll()

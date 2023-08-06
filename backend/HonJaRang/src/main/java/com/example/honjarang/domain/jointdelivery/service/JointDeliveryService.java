@@ -196,7 +196,8 @@ public class JointDeliveryService {
     @Transactional(readOnly = true)
     public List<JointDeliveryListDto> getJointDeliveryList(Integer page, Integer size) {
         Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
-        List<JointDelivery> jointDeliveryList = jointDeliveryRepository.findAllByDeadlineAfterAndIsCanceledFalse(LocalDateTime.now(), pageable).toList();
+        // 작성 날짜로 내림차순 조회
+        List<JointDelivery> jointDeliveryList = jointDeliveryRepository.findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(LocalDateTime.now(), pageable).toList();
         List<JointDeliveryListDto> jointDeliveryListDtoList = new ArrayList<>();
         for (JointDelivery jointDelivery : jointDeliveryList) {
             Integer currentTotalPrice = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDelivery.getId()).stream()
