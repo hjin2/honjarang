@@ -49,6 +49,7 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -108,6 +109,7 @@ class UserControllerTest {
                 .longitude(127.123456)
                 .role(Role.ROLE_USER)
                 .build();
+        user.changeProfileImage("test.jpg");
         user.setIdForTest(1L);
         post = Post.builder()
                 .user(user)
@@ -321,6 +323,34 @@ class UserControllerTest {
                         )));
     }
 
+
+    @Test
+    @DisplayName("포인트 충전")
+    void successPayment_success() throws Exception {
+        PointChargeDto pointChargeDto = new PointChargeDto("temppaymentkey","temporderid",10000);
+
+        mockMvc.perform(post("/api/v1/users/success")
+                .contentType("application/json")
+                .content(new ObjectMapper().writeValueAsString(pointChargeDto)))
+                .andExpect(status().isOk())
+                .andDo(document("users/payment",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("payment_key").type(JsonFieldType.STRING).description("페이먼트 키"),
+                                fieldWithPath("order_id").type(JsonFieldType.STRING).description("주문 ID"),
+                                fieldWithPath("amount").type(JsonFieldType.NUMBER).description("금액")
+                        )
+                ));
+
+
+    }
+
+
+
+
+
+
     @Test
     @DisplayName("내가 작성한 글 불러오기")
     void getMyPost() throws Exception {
@@ -341,7 +371,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].views").value(1))
                 .andExpect(jsonPath("$[0].is_notice").value(false))
                 .andExpect(jsonPath("$[0].created_at").value("2023-08-02 12:00:00"))
-                .andDo(document("posts",
+                .andDo(document("users/posts",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -449,7 +479,7 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("공동배달 조회 기능")
+    @DisplayName("포인트 환급")
     void getJointDelivery() throws Exception {
         // given
         PointWithdrawDto pointWithdrawDto = new PointWithdrawDto(10000,"테스트사용자","75220121039","sc제일은행");
@@ -470,4 +500,60 @@ class UserControllerTest {
                         )
                 ));
         }
+
+    @Test
+    @DisplayName("회원정보 조회")
+    void getUserInfo_success() throws Exception {
+        // given
+        UserInfoDto userInfoDto = new UserInfoDto(user);
+        given(userService.getUserInfo(1L)).willReturn(userInfoDto);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/users/info")
+                .param("id","1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.nickname").value("테스트"))
+                .andExpect(jsonPath("$.email").value("test@test.com"))
+                .andExpect(jsonPath("$.profile_image").value("test.jpg"))
+                .andExpect(jsonPath("$.point").value(10000))
+                .andExpect(jsonPath("$.address").value("서울특별시 강남구"))
+                .andExpect(jsonPath("$.latitude").value(37.123456))
+                .andExpect(jsonPath("$.longitude").value(127.123456))
+                .andDo(document("/users/info",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("id").description("사용자 ID")
+                        ),
+                            responseFields(
+                                fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
+                                fieldWithPath("profile_image").type(JsonFieldType.STRING).description("프로필 이미지"),
+                                fieldWithPath("point").type(JsonFieldType.NUMBER).description("포인트"),
+                                fieldWithPath("address").type(JsonFieldType.STRING).description("주소"),
+                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
+                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도")
+                        )
+                ));
     }
+
+    @Test
+    @DisplayName("회원 탈퇴")
+    void deleteUser_suceess() throws Exception {
+        Long userId = 1L;
+
+        mockMvc.perform(delete("/api/v1/users/{userId}",1L))
+                .andExpect(status().isOk())
+                .andDo(document("/users/deleteUser",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("userId").description("사용자 ID")
+                        ))
+                );
+    }
+
+
+
+}
