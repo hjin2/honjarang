@@ -23,7 +23,7 @@ export default function Edit({ modalState, setModalState }) {
   const editUserInfo = () => {
     console.log(latitude,longitude,nickname,address)
     const headers = {
-      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTExMjgyOTcsImV4cCI6MTY5MTEzMTg5N30.2RRapg4bqmIyeblAMzVo3oLtLrcx8lfmcoObtxzJ2VA'
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTExMzg3MjIsImV4cCI6MTY5MTE0MjMyMn0.N8nkWtk1FpLRfDjNGz6IZ30_m61lhFqhfm-YHMxQvho'
     };
   
     const data = {
@@ -32,6 +32,7 @@ export default function Edit({ modalState, setModalState }) {
       latitude: latitude,
       longitude: longitude
     };
+    console.log(data)
   
     axios.put('http://honjarang.kro.kr:30000/api/v1/users/users', data, { headers })
       .then(function(response) {

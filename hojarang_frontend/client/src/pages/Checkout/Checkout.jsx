@@ -10,13 +10,14 @@ export default function Checkout() {
   const clientKey = 'test_ck_Z0RnYX2w532vOD1DZgg3NeyqApQE';
   const customerKey = 'YbX2HuSlsC9uVJW6NMRMj';
   const paymentWidgetRef = useRef(null);
-  const location = useLocation()
-  const price = location.state.price.activeRadio
+  // const location = useLocation()
+  // const price = location.state.price.activeRadio
   const uuid = uuidv4();
   const nickname = useSelector((state) => state.userinfo.nickname)
   const navigate = useNavigate()
   useEffect(() => {
     (async () => {
+      const price = window.dataFromOpener
       const paymentWidget = await loadPaymentWidget(clientKey, customerKey);
 
       paymentWidget.renderPaymentMethods('#payment-widget', price);
@@ -42,7 +43,7 @@ export default function Checkout() {
             })
             .then(function(data){
               const headers = {
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTExMzQzMjgsImV4cCI6MTY5MTEzNzkyOH0.0i3JMQhK-UcRuOnnUEuvULq38zcVdQpknNskd-9Lvwc'
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTExMzg3MjIsImV4cCI6MTY5MTE0MjMyMn0.N8nkWtk1FpLRfDjNGz6IZ30_m61lhFqhfm-YHMxQvho'
               };
               console.log(data)
               const paymentKey = data.paymentKey

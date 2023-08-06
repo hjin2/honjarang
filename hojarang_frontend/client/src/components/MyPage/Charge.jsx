@@ -7,12 +7,18 @@ export default function Charge({ modalState, setModalState }) {
     setModalState(!modalState)
   }
   const point = useSelector((state) => state.userinfo.point)
-  const nickname = useSelector((state) => state.userinfo.nickname)
   const [activeRadio, setActiveRadio] = useState('5000');
   const handleClickRadioButton = (e) => {
     console.log(e.target.value);
     setActiveRadio(e.target.value);
   };
+
+  const popUp = () =>{
+    const newWindow = window.open('/checkout', '_blank', "noopener, noreferrer");
+    newWindow.dataFromOpener = {price : activeRadio };
+    newWindow.location.href = '/checkout';
+  }
+
   const tabs = [
     {
       title: '5,000P',
@@ -35,13 +41,13 @@ export default function Charge({ modalState, setModalState }) {
     <div className='space-y-4'>
       {tabs.map((tab, index) => {
         return (
-          <div className="flex items-center m" key={index}>
+          <div className="flex items-center" key={index} onChange={handleClickRadioButton}>
             <input
               type="radio"
               className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
               value={tab.price}
               checked={activeRadio === `${tab.price}`}
-              onChange={handleClickRadioButton}
+              id={`radio-${index}`}
             />
             <label
               htmlFor={`radio-${index}`}
@@ -75,7 +81,7 @@ export default function Charge({ modalState, setModalState }) {
           <div className='w-20 h-8 border-2 rounded-lg flex items-center text-xs'> {Number(point) + Number(activeRadio)}P</div>
         </div>
       </div>
-      <div className="mt-20">
+      <div className="mt-20 flex justify-between">
         <button className="main1-button w-24">
           <Link
             to="/checkout"
@@ -86,6 +92,9 @@ export default function Charge({ modalState, setModalState }) {
             결제하기
           </Link>
         </button>
+        {/* <button className='main1-button w-24' onClick={popUp}>
+          결제하기
+        </button> */}
         <button 
           className="main5-button w-24"
           onClick={onClickCloseButton}>취소하기</button>
