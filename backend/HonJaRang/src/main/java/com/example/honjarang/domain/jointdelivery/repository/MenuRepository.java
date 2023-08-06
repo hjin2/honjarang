@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface MenuRepository extends MongoRepository<Menu, Long> {
+public interface MenuRepository extends MongoRepository<Menu, ObjectId> {
     List<Menu> findAllByStoreId(Long storeId);
-    Optional<Menu> findById(ObjectId id);
 }

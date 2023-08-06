@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface JointDeliveryRepository extends JpaRepository<JointDelivery, Long> {
-    Page<JointDelivery> findAllByDeadlineAfterAndIsCanceledFalse(LocalDateTime now, Pageable pageable);
+    Page<JointDelivery> findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(LocalDateTime now, Pageable pageable);
 
     Page<JointDelivery> findAllByUserId(Long userId, Pageable pageable);
 

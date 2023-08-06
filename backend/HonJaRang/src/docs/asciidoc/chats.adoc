@@ -1,0 +1,10 @@
+== 채팅
+
+=== 채팅 메시지 목록 조회
+operation::chat/getChatMessageList[snippets='http-request,path-parameters,query-parameters,response-fields']
+
+=== 채팅 페이지 조회
+operation::chat/getChatMessagePage[snippets='http-request,path-parameters,query-parameters,response-body']
+
+=== 채팅방 목록 조회
+operation::chat/getChatRoomList[snippets='http-request,response-fields']
