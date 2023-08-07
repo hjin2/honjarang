@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import store from '../../redux/store';
-import { loginAccount } from '../../redux/slice/loginSlice';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
@@ -12,12 +9,8 @@ export default function Login() {
 
   const navigate = useNavigate()
   const goMypage = () => {
-    const id = localStorage.getItem('user_id')
-    navigate(`/mypage/${id}`)
-  }
-  // dispatch에 action 전달하면 동작 실시됨
-  const dispatch = useDispatch();
-  const loginAccount2 = useSelector((state) => state.login.loginAccount);
+    navigate('/mypage/:nickname')
+  };
   
   const login = () => {
     axios.post('http://honjarang.kro.kr:30000/api/v1/users/login', {
@@ -27,10 +20,10 @@ export default function Login() {
     )
     .then((res)=>{
       console.log(res.data)
+      goMypage()
       localStorage.setItem('access_token', res.data.access_token)
       localStorage.setItem('refresh_token', res.data.refresh_token)
       localStorage.setItem('user_id', res.data.user_id)
-      goMypage()
     })
     .catch((err) => {
       console.log(err)
