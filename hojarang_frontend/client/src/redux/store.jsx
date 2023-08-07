@@ -1,7 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import loginSlice from './slice/loginSlice';
 import articleSlice from './slice/articleSlice';
-import UploadSlice from './slice/UploadSlice';
 import UserinfoSlice from './slice/UserInfoSlice';
 
 // 스토어 생성
@@ -9,7 +8,6 @@ const store = configureStore({
   reducer: {
     login: loginSlice.reducer,
     articles: articleSlice.reducer,
-    upload: UploadSlice.reducer,
     userinfo : UserinfoSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>

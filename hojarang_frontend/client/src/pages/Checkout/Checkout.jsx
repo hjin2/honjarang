@@ -18,7 +18,6 @@ export default function Checkout() {
   const navigate = useNavigate()
   useEffect(() => {
     (async () => {
-      const price = window.dataFromOpener
       const paymentWidget = await loadPaymentWidget(clientKey, customerKey);
 
       paymentWidget.renderPaymentMethods('#payment-widget', price);

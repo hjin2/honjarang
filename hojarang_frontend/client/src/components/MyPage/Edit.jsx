@@ -5,45 +5,76 @@ import Address from './Address';
 import Nickname from './Nickname';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { setUserInfo, imageUpload } from '../../redux/slice/UserInfoSlice';
+import { useDispatch } from 'react-redux';
+import image from '../../assets/DefaultImage.png'
 
 export default function Edit({ modalState, setModalState }) {
   const nickname = useSelector((state) => state.userinfo.nickname)
   const email = useSelector((state) => state.userinfo.email)
   const address = useSelector((state) => state.userinfo.address)
-
+  const profile_image = useSelector((state) => state.userinfo.profile_image)
+  const [addressInput, setAddressInput] = useState(address)
   const [isNicknameModifed, setisNicknameModified] = useState(false)
   const [isAddressModified, setisAddressModified] = useState(false)
-
+  const [imageURL, setImageURL] = useState(profile_image)
   const [NicknameValid, setNicknameValid] = useState(false)
   const [AddressValid, setAddressValid] = useState(false)
-
-  const [latitude, setLatitude] = useState(0)
-  const [longitude, setLongitude] = useState(0)
+  const [nicknameInput, setNicknameInput] = useState(nickname)
+  const [latitude, setLatitude] = useState(useSelector((state) => state.userinfo.longitude))
+  const [longitude, setLongitude] = useState(useSelector((state) => state.userinfo.latitude))
+  const [imageInput, setImageInput] = useState(profile_image)
+  
   const token = localStorage.getItem("access_token")
 
-  const editUserInfo = () => {
+  const dispatch = useDispatch()
+  const URL = import.meta.env.VITE_APP_API
+
+
+  const editUserInfo = async() => {
     console.log(latitude,longitude,nickname,address)
-    const headers = {
-      'Authorization': `Bearer ${token}`
-    };
-  
     const data = {
-      nickname: nickname,
-      address: address,
+      nickname: nicknameInput,
+      address: addressInput,
       latitude: latitude,
       longitude: longitude
     };
+    console.log(imageInput)
+    const formData = new FormData()
+    if(imageInput !=="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"){
+      formData.append('profile_image', imageInput)
+    }else{
+      const extension = image.split('.').pop();
+      const imageFile = await fetch(image).then(response => response.blob());
+      // Blob 객체와 확장자를 함께 formData에 추가
+      formData.append('profile_image', imageFile, `DefaultImage.${extension}`);
+    }
+    console.log(formData)
     console.log(data)
-  
-    axios.put('http://honjarang.kro.kr:30000/api/v1/users/users', data, { headers })
-      .then(function(response) {
-        console.log(response);
-        setModalState(!modalState)
-      })
+    axios.put(`${URL}/api/v1/users/users`, data, { headers:{'Authorization': `Bearer ${token}`, "Content-Type":"Application/json"} })
+      .then((res)=>{
+          console.log(res)
+          dispatch(setUserInfo({
+            nickname : nicknameInput,
+            address : addressInput,
+            latitude : latitude,
+            longitude : longitude,
+          }))
+          setModalState(!modalState)
+        })
       .catch(function(error) {
         console.log(error);
       });
-  };
+    axios.post(`${URL}/api/v1/users/profile-image`,formData,{headers:{"Authorization":`Bearer ${token}`, "Content-Type":"multipart/formed-data"}})
+      .then((res)=>{
+        console.log(res)
+        dispatch(imageUpload(imageURL))
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+    }
+
 
   const handleNickname = (() => {
     setisNicknameModified(!isNicknameModifed)
@@ -55,7 +86,7 @@ export default function Edit({ modalState, setModalState }) {
     setModalState(!modalState);
   });
   const onClickWithdrawal = (() => {
-    axios.delete('http://honjarang.kro.kr:30000/api/v1/users')
+    axios.delete(`${URL}/api/v1/users`)
   })
 
   return (
@@ -81,12 +112,12 @@ export default function Edit({ modalState, setModalState }) {
               </svg>
             </button>
           </div>
-          <ImageInput />
-          <div className="flex justify-center">
-            <button type="button" className="main1-button w-48">
-              프로필 사진 변경하기
-            </button>
-          </div>
+          <ImageInput 
+            imageURL={imageURL}
+            setImageURL={setImageURL}
+            imageInput = {imageInput}
+            setImageInput = {setImageInput}
+          />
           <div className="flex justify-between">
             <div className="font-bold">이메일</div>
             <div className="flex space-x-2">
@@ -99,10 +130,12 @@ export default function Edit({ modalState, setModalState }) {
               {isNicknameModifed ? (
                 <Nickname
                   setNicknameValid={setNicknameValid}
-                  handleNickname={handleNickname}  
+                  handleNickname={handleNickname}
+                  nicknameInput={nicknameInput}
+                  setNicknameInput={setNicknameInput}
                 />
               ) : 
-              (<div>{nickname}</div>)
+              (<div>{nicknameInput}</div>)
              }
               {isNicknameModifed ? (
                 null
@@ -121,13 +154,15 @@ export default function Edit({ modalState, setModalState }) {
             <div className="flex space-x-2">
               {isAddressModified ? (
                 <Address
+                  addressInput = {addressInput}
                   setLatitude = {setLatitude}
                   setLongitude = {setLongitude}
+                  setAddressInput = {setAddressInput}
                   setAddressValid = {setAddressValid}
                   handleAddress={handleAddress}
                 />
               ):(
-                <div>{address}</div>
+                <div>{addressInput}</div>
               )}
               {isAddressModified ? (
                 null
