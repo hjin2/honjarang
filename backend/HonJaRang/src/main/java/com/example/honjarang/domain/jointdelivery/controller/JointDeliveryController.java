@@ -47,8 +47,8 @@ public class JointDeliveryController {
     }
 
     @GetMapping("/{jointDeliveryId}")
-    public ResponseEntity<JointDeliveryDto> getJointDelivery(@PathVariable Long jointDeliveryId) {
-        JointDeliveryDto jointDelivery = jointDeliveryService.getJointDelivery(jointDeliveryId);
+    public ResponseEntity<JointDeliveryDto> getJointDelivery(@PathVariable Long jointDeliveryId, @CurrentUser User user) {
+        JointDeliveryDto jointDelivery = jointDeliveryService.getJointDelivery(jointDeliveryId, user);
         return ResponseEntity.ok(jointDelivery);
     }
 
