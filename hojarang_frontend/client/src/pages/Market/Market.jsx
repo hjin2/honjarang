@@ -3,13 +3,18 @@ import Content from '../../components/Common/Content';
 import DeliveryRoom from '../../components/Market/DeliveryRoom';
 import PurchaseRoom from '../../components/Market/PurchaseRoom';
 import TransactionRoom from '../../components/Market/TransactionRoom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Rooms from '../../components/Market/Rooms';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 export default function Market() {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
+  // const [purchaseData, setPurchaseData] = useState([]);
+  // const [deliveryData, setDeliveryData] = useState([]);
+  // const [transactionData, setTransactionData] = useState([]);
+
   const purchaseData =[
     {id:'1', product_name: '젤리젤리1', image: "/src/assets/panda-bear.png", deadline:'2023-08-05', current_person_count:'3', target_person_count:'5', price:'12345000'},
     {id:'2', product_name: 'ㅁㅁ', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'4000'},
@@ -27,6 +32,7 @@ export default function Market() {
     {id:'14', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'}, 
     {id:'15', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'}, 
   ]
+  
 
   const deliveryData = [
     {id:'1', current_total_price:'현재금액', target_min_price:'최소주문금액', store_id:'1', store_name:'배달가게명', store_image:"/src/assets/panda-bear.png", user_id:'1', nickname:'ischar'},
@@ -47,6 +53,34 @@ export default function Market() {
     {id:'6', file_url: "/src/assets/panda-bear.png", is_complete:'True', title:'게시글 제목', price:'15000', user_id:'1', buyer_id:'2', created_at:'2023-08-06'},
     {id:'7', file_url: "/src/assets/panda-bear.png", is_complete:'True', title:'게시글 제목', price:'15000', user_id:'1', buyer_id:'2', created_at:'2023-08-06'},
   ]
+
+  // useEffect(() => {
+  //   axios.get('http://honjarang.kro.kr:30000/api/v1/joint-purchases')
+  //   .then((res) => {
+  //     setPurchaseData(res.data)
+  //   })
+  //   .catch((err) => {
+  //     console.log(err)
+  //   })
+
+  //   axios.get('http://honjarang.kro.kr:30000/api/v1/joint-deliveries')
+  //   .then((res) => {
+  //     setDeliveryData(res.data)
+  //   })
+  //   .catch((err) => {
+  //     console.log(err)
+  //   })    
+    
+  //   // 중고거래 url 고치기
+  //   axios.get('http://honjarang.kro.kr:30000/api/v1/transactions')
+  //   .then((res) => {
+  //     setTransactionData(res.data)
+  //   })
+  //   .catch((err) => {
+  //     console.log(err)
+  //   })
+    
+  // }, []);
 
   const tabs = [
     {
