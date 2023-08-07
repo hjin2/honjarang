@@ -11,6 +11,7 @@ import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryCartRe
 import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryRepository;
 import com.example.honjarang.domain.jointdelivery.repository.MenuRepository;
 import com.example.honjarang.domain.post.dto.PostListDto;
+import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.PaymentException;
 import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.post.service.PostService;
@@ -20,10 +21,7 @@ import com.example.honjarang.domain.user.dto.UserCreateDto;
 import com.example.honjarang.domain.user.dto.UserInfoDto;
 import com.example.honjarang.domain.user.entity.EmailVerification;
 import com.example.honjarang.domain.user.entity.User;
-import com.example.honjarang.domain.user.exception.DuplicateNicknameException;
-import com.example.honjarang.domain.user.exception.EmailNotVerifiedException;
-import com.example.honjarang.domain.user.exception.PasswordMismatchException;
-import com.example.honjarang.domain.user.exception.UserNotFoundException;
+import com.example.honjarang.domain.user.exception.*;
 import com.example.honjarang.domain.user.repository.EmailVerificationRepository;
 import com.example.honjarang.domain.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -205,10 +203,14 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<PostListDto> getMyPostList(Integer page, User user){
         Pageable pageable = PageRequest.of(page-1, 15);
-        return postRepository.findAllByUserIdOrderByIdDesc(user.getId(), pageable)
-                .stream()
-                .map(post -> new PostListDto(post))
-                .toList();
+
+        List<Post> posts = postRepository.findAllByUserIdOrderByIdDesc(user.getId(), pageable).toList();
+        List<PostListDto> postListDtos = new ArrayList<>();
+        for(Post post : posts){
+            postListDtos.add(new PostListDto(post));
+        }
+
+        return postListDtos;
     }
 
     @Transactional(readOnly = true)
@@ -240,6 +242,9 @@ public class UserService {
     @Transactional
     public void withdrawPoint(Integer point, User user){
         User loginedUser = userRepository.findByEmail(user.getEmail()).orElseThrow(()->new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        if(user.getPoint() < point){
+            throw new InsufficientPointsException("포인트가 부족합니다.");
+        }
         loginedUser.subtractPoint(point);
     }
 
@@ -250,7 +255,6 @@ public class UserService {
             throw new UserNotFoundException("탈퇴한 사용자 입니다.");
         }
         UserInfoDto userInfo = new UserInfoDto(loginedUser);
-        System.out.println(userInfo.getEmail());
         return userInfo;
     }
 

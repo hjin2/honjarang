@@ -48,12 +48,14 @@ public class Transaction extends BaseTimeEntity {
     private Boolean isReceived;
 
     @Builder
-    public Transaction(String title, String content, Integer price, User seller, User buyer) {
+    public Transaction(String title, String content, Integer price, User seller, User buyer, Boolean isCompleted, Boolean isReceived) {
         this.seller = seller;
         this.buyer = buyer;
         this.title = title;
         this.content = content;
         this.price = price;
+        this.isCompleted = isCompleted;
+        this.isReceived = isReceived;
     }
 
     public void complete() {
@@ -62,13 +64,17 @@ public class Transaction extends BaseTimeEntity {
 
     public void receive(){this.isReceived = true;}
 
+    public void soldout(User user){this.buyer = user;}
+
     public void update(TransactionUpdateDto dto){
         this.title = dto.getTitle();
         this.content = dto.getContent();
         this.price = dto.getPrice();
     }
 
+    public void setIdForTest(Long id) {this.Id = id;}
 
+    public void setPriceForTest(Integer price){this.price = price;}
 
 
 }
