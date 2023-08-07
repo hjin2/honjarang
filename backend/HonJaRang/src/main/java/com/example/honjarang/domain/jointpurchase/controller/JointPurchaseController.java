@@ -35,8 +35,8 @@ public class JointPurchaseController {
     }
 
     @GetMapping("/{jointPurchaseId}")
-    public ResponseEntity<JointPurchaseDto> getJointPurchase(@PathVariable Long jointPurchaseId) {
-        JointPurchaseDto jointPurchaseDto = jointPurchaseService.getJointPurchase(jointPurchaseId);
+    public ResponseEntity<JointPurchaseDto> getJointPurchase(@PathVariable Long jointPurchaseId, @CurrentUser User user) {
+        JointPurchaseDto jointPurchaseDto = jointPurchaseService.getJointPurchase(jointPurchaseId, user);
         return ResponseEntity.ok(jointPurchaseDto);
     }
 

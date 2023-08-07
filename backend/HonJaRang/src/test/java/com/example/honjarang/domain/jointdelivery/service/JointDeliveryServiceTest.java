@@ -291,7 +291,7 @@ class JointDeliveryServiceTest {
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
 
         // when
-        JointDeliveryDto jointDeliveryDto = jointDeliveryService.getJointDelivery(1L);
+        JointDeliveryDto jointDeliveryDto = jointDeliveryService.getJointDelivery(1L, user);
 
         // then
         assertThat(jointDeliveryDto).isNotNull();
@@ -316,7 +316,7 @@ class JointDeliveryServiceTest {
         given(jointDeliveryRepository.findById(1L)).willReturn(Optional.empty());
 
         // when & then
-        assertThrows(JointDeliveryNotFoundException.class, () -> jointDeliveryService.getJointDelivery(1L));
+        assertThrows(JointDeliveryNotFoundException.class, () -> jointDeliveryService.getJointDelivery(1L, user));
     }
 
     @Test
@@ -328,7 +328,7 @@ class JointDeliveryServiceTest {
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.empty());
 
         // when & then
-        assertThrows(MenuNotFoundException.class, () -> jointDeliveryService.getJointDelivery(1L));
+        assertThrows(MenuNotFoundException.class, () -> jointDeliveryService.getJointDelivery(1L, user));
     }
 
     @Test
@@ -599,6 +599,8 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
         given(jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(1L, 1L)).willReturn(Optional.of(jointDeliveryApplicant));
         given(jointDeliveryCartRepository.findAllByJointDeliveryIdAndUserId(1L, 1L)).willReturn(List.of(jointDeliveryCart));
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(jointDeliveryApplicantRepository.countByJointDeliveryId(1L)).willReturn(1);
 
         // when
         jointDeliveryService.confirmReceived(1L, user);
@@ -621,6 +623,7 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
     void confirmReceived_JointDeliveryNotClosedException() {
         // given
         given(jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(1L, 1L)).willReturn(Optional.of(jointDeliveryApplicant));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
 
         // when & then
         assertThrows(JointDeliveryNotClosedException.class, () -> jointDeliveryService.confirmReceived(1L, user));
@@ -633,6 +636,7 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
         jointDelivery.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
         jointDelivery.cancel();
 
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
         given(jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(1L, 1L)).willReturn(Optional.of(jointDeliveryApplicant));
 
         // when & then
@@ -647,6 +651,7 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
         jointDeliveryApplicant.confirmReceived();
 
         given(jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(1L, 1L)).willReturn(Optional.of(jointDeliveryApplicant));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
 
         // when & then
         assertThrows(JointDeliveryAlreadyReceivedException.class, () -> jointDeliveryService.confirmReceived(1L, user));

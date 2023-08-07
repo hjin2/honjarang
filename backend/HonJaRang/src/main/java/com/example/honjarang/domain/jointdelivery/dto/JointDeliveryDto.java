@@ -23,8 +23,9 @@ public class JointDeliveryDto {
 
     private Long userId;
     private String nickname;
+    private Integer myPoint;
 
-    public JointDeliveryDto(JointDelivery jointDelivery, Integer currentTotalPrice) {
+    public JointDeliveryDto(JointDelivery jointDelivery, Integer currentTotalPrice, Integer myPoint) {
         this.id = jointDelivery.getId();
         this.content = jointDelivery.getContent();
         this.deliveryCharge = jointDelivery.getDeliveryCharge();
@@ -37,5 +38,6 @@ public class JointDeliveryDto {
         this.storeImage = jointDelivery.getStore().getImage();
         this.userId = jointDelivery.getUser().getId();
         this.nickname = jointDelivery.getUser().getNickname();
+        this.myPoint = myPoint;
     }
 }

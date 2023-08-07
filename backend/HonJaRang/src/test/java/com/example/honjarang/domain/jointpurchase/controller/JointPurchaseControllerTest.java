@@ -185,8 +185,8 @@ class JointPurchaseControllerTest {
     @DisplayName("공동구매 상세 조회")
     void getJointPurchase() throws Exception {
         // given
-        JointPurchaseDto jointPurchaseDto = new JointPurchaseDto(jointPurchase, 1);
-        given(jointPurchaseService.getJointPurchase(1L)).willReturn(jointPurchaseDto);
+        JointPurchaseDto jointPurchaseDto = new JointPurchaseDto(jointPurchase, 1, 10000);
+        given(jointPurchaseService.getJointPurchase(1L, user)).willReturn(jointPurchaseDto);
 
         // when & then
         mockMvc.perform(get("/api/v1/joint-purchases/{jointPurchaseId}", 1L))
@@ -205,6 +205,7 @@ class JointPurchaseControllerTest {
                 .andExpect(jsonPath("$.created_at").value("2000-01-01 00:00:00"))
                 .andExpect(jsonPath("$.user_id").value(1L))
                 .andExpect(jsonPath("$.nickname").value("테스트"))
+                .andExpect(jsonPath("$.my_point").value(10000))
                 .andExpect(jsonPath("$.current_person_count").value(1))
                 .andDo(document("joint-purchases/detail",
                         preprocessRequest(prettyPrint()),
@@ -227,6 +228,7 @@ class JointPurchaseControllerTest {
                                 fieldWithPath("created_at").description("공동구매 생성일"),
                                 fieldWithPath("user_id").description("공동구매 생성자 ID"),
                                 fieldWithPath("nickname").description("공동구매 생성자 닉네임"),
+                                fieldWithPath("my_point").description("내 포인트"),
                                 fieldWithPath("current_person_count").description("공동구매 현재 인원")
                         )
                 ));

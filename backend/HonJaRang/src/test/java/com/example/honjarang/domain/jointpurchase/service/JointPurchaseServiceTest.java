@@ -197,7 +197,7 @@ class JointPurchaseServiceTest {
         given(jointPurchaseApplicantRepository.countByJointPurchaseId(1L)).willReturn(1);
 
         // when
-        JointPurchaseDto jointPurchaseDto = jointPurchaseService.getJointPurchase(1L);
+        JointPurchaseDto jointPurchaseDto = jointPurchaseService.getJointPurchase(1L, user);
 
         // then
         assertThat(jointPurchaseDto).isNotNull();
@@ -225,7 +225,7 @@ class JointPurchaseServiceTest {
         given(jointPurchaseRepository.findById(1L)).willReturn(java.util.Optional.empty());
 
         // when & then
-        assertThrows(JointPurchaseNotFoundException.class, () -> jointPurchaseService.getJointPurchase(1L));
+        assertThrows(JointPurchaseNotFoundException.class, () -> jointPurchaseService.getJointPurchase(1L, user));
     }
 
     @Test
