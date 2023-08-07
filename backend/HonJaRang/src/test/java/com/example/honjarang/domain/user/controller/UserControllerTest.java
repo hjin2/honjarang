@@ -11,11 +11,9 @@ import com.example.honjarang.domain.user.dto.*;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.service.EmailService;
-import com.example.honjarang.domain.user.service.S3UploadService;
 import com.example.honjarang.domain.user.service.UserService;
 import com.example.honjarang.security.dto.TokenDto;
 import com.example.honjarang.security.service.TokenService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,18 +30,11 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(UserController.class)
@@ -74,9 +65,6 @@ class UserControllerTest {
     private TokenService tokenService;
     @MockBean
     private EmailService emailService;
-    @MockBean
-    private S3UploadService s3UploadService;
-
     private User user;
     private Post post;
     private PostListDto postListDto;
