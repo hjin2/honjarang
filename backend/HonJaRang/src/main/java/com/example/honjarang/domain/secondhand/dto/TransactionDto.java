@@ -15,6 +15,7 @@ public class TransactionDto {
 
     private Long id;
     private Long sellerId;
+    private String sellerNickname;
     private String title;
     private String content;
     private Integer price;
@@ -27,6 +28,7 @@ public class TransactionDto {
     public TransactionDto(Transaction transaction){
         this.id = transaction.getId();
         this.sellerId = transaction.getSeller().getId();
+        this.sellerNickname = transaction.getSeller().getNickname();
         this.title = transaction.getTitle();
         this.content = transaction.getContent();
         this.price = transaction.getPrice();

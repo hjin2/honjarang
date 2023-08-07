@@ -205,6 +205,7 @@ public class TransactionControllerTest {
                         responseFields(
                                 fieldWithPath("id").type(JsonFieldType.NUMBER).description("거래 ID"),
                                 fieldWithPath("seller_id").type(JsonFieldType.NUMBER).description("판매자"),
+                                fieldWithPath("seller_nickname").type(JsonFieldType.STRING).description("판매자 닉네임"),
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("타이틀"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("내용"),
                                 fieldWithPath("price").type(JsonFieldType.NUMBER).description("가격"),
