@@ -52,11 +52,6 @@ function Address_check(props) {
               주소 검색
             </button>
           </div>
-          <div>
-            상세주소
-            <br />
-            <input type="text" id="address2"/>
-          </div>
     </div>
   )
 }
