@@ -24,6 +24,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -33,6 +34,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.List;
@@ -69,7 +71,6 @@ class UserControllerTest {
     private Post post;
     private PostListDto postListDto;
     private JointDeliveryListDto jointDeliveryListDto;
-
     private JointDelivery jointDelivery;
     private Store store;
 
@@ -322,14 +323,7 @@ class UserControllerTest {
                                 fieldWithPath("amount").type(JsonFieldType.NUMBER).description("금액")
                         )
                 ));
-
-
     }
-
-
-
-
-
 
     @Test
     @DisplayName("내가 작성한 글 불러오기")
@@ -554,10 +548,6 @@ class UserControllerTest {
                 );
     }
 
-
-
-
-
     @Test
     @DisplayName("로그아웃")
     void logout() throws Exception {
@@ -579,6 +569,24 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("프로필 이미지 업로드")
+    void uploadProfileImage() throws Exception {
+        // given
+        MockMultipartFile file = new MockMultipartFile("profile_image", "test.jpg", "image/jpeg", "test".getBytes());
+
+        // when & then
+        mockMvc.perform(multipart("/api/v1/users/profile-image")
+                        .file(file))
+                .andExpect(status().isOk())
+                .andDo(document("users/profile-image",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestParts(
+                                partWithName("profile_image").description("프로필 이미지")
+                        )
+                ));
+    }
+
     @DisplayName("토큰 갱신")
     void refresh() throws Exception{
         // given
