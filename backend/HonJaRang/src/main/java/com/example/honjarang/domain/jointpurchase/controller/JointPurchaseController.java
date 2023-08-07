@@ -29,8 +29,8 @@ public class JointPurchaseController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<JointPurchaseListDto>> getJointPurchases(@RequestParam Integer page, @RequestParam Integer size) {
-        List<JointPurchaseListDto> jointPurchaseListDtos = jointPurchaseService.getJointPurchaseList(page, size);
+    public ResponseEntity<List<JointPurchaseListDto>> getJointPurchases(@RequestParam Integer page, @RequestParam Integer size, @CurrentUser User user) {
+        List<JointPurchaseListDto> jointPurchaseListDtos = jointPurchaseService.getJointPurchaseList(page, size, user);
         return ResponseEntity.ok(jointPurchaseListDtos);
     }
 

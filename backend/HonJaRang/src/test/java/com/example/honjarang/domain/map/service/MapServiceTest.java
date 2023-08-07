@@ -5,6 +5,7 @@ import com.example.honjarang.domain.map.exception.PlaceNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.json.Json;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,5 +82,34 @@ class MapServiceTest {
 
         // when & then
         assertThrows(PlaceNotFoundException.class, () -> mapService.getCoordinate("서울특별시 강남구"));
+    }
+
+    @Test
+    @DisplayName("출발지와 도착지의 거리 조회 성공")
+    void getDistance() throws JsonProcessingException {
+        // given
+        CoordinateDto startCoordinateDto = new CoordinateDto(37.123456, 127.123456);
+        CoordinateDto endCoordinateDto = new CoordinateDto(37.123456, 127.123456);
+        String responseBody = """
+                {
+                   "routes": [
+                      {
+                         "summary": {
+                            "distance": 0
+                         }
+                      }
+                   ]
+                }""";
+        ResponseEntity<String> responseEntity = ResponseEntity.ok(responseBody);
+        JsonNode jsonNode = new ObjectMapper().readTree(responseEntity.getBody());
+
+        given(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class))).willReturn(responseEntity);
+        given(objectMapper.readTree(eq(responseEntity.getBody()))).willReturn(jsonNode);
+
+        // when
+        Integer distance = mapService.getDistance(startCoordinateDto, endCoordinateDto);
+
+        // then
+        assertThat(distance).isEqualTo(0);
     }
 }

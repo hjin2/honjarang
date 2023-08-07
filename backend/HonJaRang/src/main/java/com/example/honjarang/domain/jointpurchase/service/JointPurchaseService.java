@@ -6,7 +6,9 @@ import com.example.honjarang.domain.jointpurchase.entity.JointPurchaseApplicant;
 import com.example.honjarang.domain.jointpurchase.exception.*;
 import com.example.honjarang.domain.jointpurchase.repository.JointPurchaseApplicantRepository;
 import com.example.honjarang.domain.jointpurchase.repository.JointPurchaseRepository;
+import com.example.honjarang.domain.map.dto.CoordinateDto;
 import com.example.honjarang.domain.map.exception.PlaceNotFoundException;
+import com.example.honjarang.domain.map.service.MapService;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.InsufficientPointsException;
 import com.example.honjarang.domain.user.exception.UserNotFoundException;
@@ -30,6 +32,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -39,6 +42,7 @@ public class JointPurchaseService {
     private final JointPurchaseRepository jointPurchaseRepository;
     private final JointPurchaseApplicantRepository jointPurchaseApplicantRepository;
     private final UserRepository userRepository;
+    private final MapService mapService;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
@@ -123,11 +127,9 @@ public class JointPurchaseService {
         if (!jointPurchase.getUser().getId().equals(loginUser.getId())) {
             throw new UnauthorizedJointPurchaseAccessException("공동구매를 취소할 권한이 없습니다.");
         }
-
         if (jointPurchase.getIsCanceled()) {
             throw new JointPurchaseCanceledException("이미 취소된 공동구매입니다.");
         }
-
         if (jointPurchase.getDeadline().isAfter(LocalDateTime.now())) {
             jointPurchase.getUser().addPoint(1000);
         }
@@ -140,16 +142,27 @@ public class JointPurchaseService {
     }
 
     @Transactional(readOnly = true)
-    public List<JointPurchaseListDto> getJointPurchaseList(Integer page, Integer size) {
+    public List<JointPurchaseListDto> getJointPurchaseList(Integer page, Integer size, User loginUser) {
         Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
-        Page<JointPurchase> jointPurchases = jointPurchaseRepository.findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(LocalDateTime.now(), pageable);
-        return jointPurchases.getContent().stream()
-                .filter(jointPurchase -> {
-                    Integer currentPersonCount = jointPurchaseApplicantRepository.countByJointPurchaseId(jointPurchase.getId());
-                    return currentPersonCount < jointPurchase.getTargetPersonCount();
-                })
-                .map(jointPurchase -> new JointPurchaseListDto(jointPurchase, jointPurchaseApplicantRepository.countByJointPurchaseId(jointPurchase.getId())))
-                .toList();
+        List<JointPurchase> jointPurchases = jointPurchaseRepository.findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(LocalDateTime.now(), pageable).toList();
+        List<JointPurchaseListDto> jointPurchaseListDtoList = new ArrayList<>();
+        for(JointPurchase jointPurchase : jointPurchases) {
+            // 사용자와 공동구매의 거리가 필터링 거리보다 멀 경우
+            CoordinateDto userCoordinateDto = new CoordinateDto(loginUser.getLatitude(), loginUser.getLongitude());
+            CoordinateDto jointPurchaseCoordinateDto = new CoordinateDto(jointPurchase.getLatitude(), jointPurchase.getLongitude());
+            if(mapService.getDistance(userCoordinateDto, jointPurchaseCoordinateDto) > 5000) {
+                continue;
+            }
+
+            // 현재 인원이 묙표 인원만큼 찼을 경우
+            Integer currentPersonCount = jointPurchaseApplicantRepository.countByJointPurchaseId(jointPurchase.getId());
+            if(currentPersonCount >= jointPurchase.getTargetPersonCount()) {
+                continue;
+            }
+
+            jointPurchaseListDtoList.add(new JointPurchaseListDto(jointPurchase, currentPersonCount));
+        }
+        return jointPurchaseListDtoList;
     }
 
     @Transactional(readOnly = true)
@@ -161,9 +174,12 @@ public class JointPurchaseService {
 
     @Transactional(readOnly = true)
     public List<JointPurchaseApplicantListDto> getJointPurchaseApplicantList(Long jointPurchaseId) {
-        return jointPurchaseApplicantRepository.findAllByJointPurchaseId(jointPurchaseId).stream()
-                .map(JointPurchaseApplicantListDto::new)
-                .toList();
+        List<JointPurchaseApplicant> jointPurchaseApplicants = jointPurchaseApplicantRepository.findAllByJointPurchaseId(jointPurchaseId);
+        List<JointPurchaseApplicantListDto> jointPurchaseApplicantListDtoList = new ArrayList<>();
+        for(JointPurchaseApplicant jointPurchaseApplicant : jointPurchaseApplicants) {
+            jointPurchaseApplicantListDtoList.add(new JointPurchaseApplicantListDto(jointPurchaseApplicant));
+        }
+        return jointPurchaseApplicantListDtoList;
     }
 
     @Transactional

@@ -30,10 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -44,7 +41,6 @@ public class ChatService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatParticipantRepository chatParticipantRepository;
-    private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final FirebaseMessaging firebaseMessaging;
@@ -106,14 +102,13 @@ public class ChatService {
     public List<ChatMessageListDto> getChatMessageList(Long chatRoomId, Integer page, Integer size, User loginUser) {
         Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
         ChatParticipant chatParticipant = chatParticipantRepository.findByChatRoomIdAndUserIdAndIsDeletedIsFalse(chatRoomId, loginUser.getId()).orElseThrow(() -> new ChatParticipantNotFoundException("채팅 참여자가 아닙니다."));
-
-        List<ChatMessageListDto> chatMessageListDtoList = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAt(chatRoomId, pageable).stream()
-                .map(chatMessage -> {
-                    User user = userRepository.findById(chatMessage.getUserId())
-                            .orElseThrow(() -> new UserNotFoundException("존재하지 않는 유저입니다."));
-                    return new ChatMessageListDto(chatMessage, user.getNickname());
-                })
-                .collect(Collectors.toList());
+        List<ChatMessageListDto> chatMessageListDtoList = new ArrayList<>();
+        List<ChatMessage> chatMessages = chatMessageRepository.findAllByChatRoomIdOrderByCreatedAt(chatRoomId, pageable).toList();
+        for(ChatMessage chatMessage : chatMessages) {
+            User user = userRepository.findById(chatMessage.getUserId())
+                    .orElseThrow(() -> new UserNotFoundException("존재하지 않는 유저입니다."));
+            chatMessageListDtoList.add(new ChatMessageListDto(chatMessage, user.getNickname()));
+        }
 
         // 마지막 읽은 메시지를 업데이트
         if (!chatMessageListDtoList.isEmpty()) {
@@ -125,26 +120,29 @@ public class ChatService {
     @Transactional(readOnly = true)
     public List<ChatRoomListDto> getChatRoomList(User loginUser) {
         List<ChatParticipant> chatParticipantList = chatParticipantRepository.findAllByUserIdAndIsDeletedIsFalse(loginUser.getId());
-        return chatParticipantList.stream()
-                .map(chatParticipant -> {
-                    ChatRoom chatRoom = chatParticipant.getChatRoom();
-                    Optional<ChatMessage> lastMessageOptional = chatMessageRepository.findFirstByChatRoomIdOrderByCreatedAtDesc(chatRoom.getId());
-                    String lastMessageContent = lastMessageOptional.map(ChatMessage::getContent).orElse("메시지 없음");
-                    Instant lastMessageCreatedAt = lastMessageOptional.map(ChatMessage::getCreatedAt).orElse(null);
-                    Integer unreadMessageCount = chatParticipant.getLastReadMessageId() != null ? chatMessageRepository.countAllByChatRoomIdAndIdGreaterThan(chatRoom.getId(), new ObjectId(chatParticipant.getLastReadMessageId())) : 0;
-                    return new ChatRoomListDto(chatRoom, lastMessageContent, lastMessageCreatedAt, unreadMessageCount);
-                }).
-                sorted((dto1, dto2) -> {
-                    if (dto1.getLastMessageCreatedAt() == null && dto2.getLastMessageCreatedAt() == null) {
-                        return 0;
-                    } else if (dto1.getLastMessageCreatedAt() == null) {
-                        return -1;
-                    } else if (dto2.getLastMessageCreatedAt() == null) {
-                        return 1;
-                    }
-                    return dto2.getLastMessageCreatedAt().compareTo(dto1.getLastMessageCreatedAt());
-                })
-                .toList();
+        List<ChatRoomListDto> chatRoomListDtoList = new ArrayList<>();
+
+        for(ChatParticipant chatParticipant : chatParticipantList) {
+            ChatRoom chatRoom = chatParticipant.getChatRoom();
+            Optional<ChatMessage> lastMessageOptional = chatMessageRepository.findFirstByChatRoomIdOrderByCreatedAtDesc(chatRoom.getId());
+            String lastMessageContent = lastMessageOptional.map(ChatMessage::getContent).orElse("메시지 없음");
+            Instant lastMessageCreatedAt = lastMessageOptional.map(ChatMessage::getCreatedAt).orElse(null);
+            Integer unreadMessageCount = chatParticipant.getLastReadMessageId() != null ? chatMessageRepository.countAllByChatRoomIdAndIdGreaterThan(chatRoom.getId(), new ObjectId(chatParticipant.getLastReadMessageId())) : 0;
+            chatRoomListDtoList.add(new ChatRoomListDto(chatRoom, lastMessageContent, lastMessageCreatedAt, unreadMessageCount));
+        }
+
+        // 채팅방 정렬
+        chatRoomListDtoList.sort((dto1, dto2) -> {
+            if (dto1.getLastMessageCreatedAt() == null && dto2.getLastMessageCreatedAt() == null) {
+                return 0;
+            } else if (dto1.getLastMessageCreatedAt() == null) {
+                return -1;
+            } else if (dto2.getLastMessageCreatedAt() == null) {
+                return 1;
+            }
+            return dto2.getLastMessageCreatedAt().compareTo(dto1.getLastMessageCreatedAt());
+        });
+        return chatRoomListDtoList;
     }
 
     @Transactional
@@ -168,8 +166,7 @@ public class ChatService {
                         .build())
                 .build();
         try {
-            String response = firebaseMessaging.send(message);
-            System.out.println("Successfully sent message: " + response);
+            firebaseMessaging.send(message);
         } catch (FirebaseMessagingException e) {
             e.printStackTrace();
         }
