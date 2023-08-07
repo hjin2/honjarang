@@ -37,7 +37,6 @@ public class TransactionService {
     public void updateSecondHandTransaction(TransactionUpdateDto dto, User user){
         Transaction transaction = transactionRepository.findById(dto.getId()).orElseThrow(()->new TransactionException("게시글이 없습니다."));
         transaction.update(dto);
-        transactionRepository.save(transaction);
     }
 
     @Transactional
