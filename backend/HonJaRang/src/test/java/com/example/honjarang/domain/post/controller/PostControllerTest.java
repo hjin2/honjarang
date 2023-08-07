@@ -2,10 +2,7 @@ package com.example.honjarang.domain.post.controller;
 
 
 import com.example.honjarang.domain.DateTimeUtils;
-import com.example.honjarang.domain.post.dto.CommentCreateDto;
-import com.example.honjarang.domain.post.dto.CommentListDto;
-import com.example.honjarang.domain.post.dto.PostCreateDto;
-import com.example.honjarang.domain.post.dto.PostUpdateDto;
+import com.example.honjarang.domain.post.dto.*;
 import com.example.honjarang.domain.post.entity.Category;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.service.PostService;
@@ -15,26 +12,34 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+@ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(PostController.class)
 @AutoConfigureRestDocs
@@ -54,7 +59,14 @@ public class PostControllerTest {
 
 
     @BeforeEach
-    void setUp() {
+    void setUp(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentation) {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                .apply(documentationConfiguration(restDocumentation)
+                        .uris()
+                        .withScheme("http")
+                        .withHost("honjarang.kro.kr")
+                        .withPort(80))
+                .build();
         user = User.builder()
                 .email("test@test.com")
                 .password("test1234")
@@ -74,6 +86,7 @@ public class PostControllerTest {
                 .user(user)
                 .build();
         post.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2023-07-29 04:23:23"));
+        post.setIdForTest(1L);
         commentListDto = CommentListDto.builder()
                 .id(1L)
                 .content("test")
@@ -84,7 +97,7 @@ public class PostControllerTest {
     }
     @Test
     @WithMockUser
-    @DisplayName("create Post")
+    @DisplayName("게시글 작성")
     void createPost_Success() throws Exception {
 
         String title = "제목";
@@ -95,7 +108,15 @@ public class PostControllerTest {
         mockMvc.perform(post("/api/v1/posts")
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(postCreateDto)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andDo(document("/posts/write",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("title").description("게시글 제목"),
+                                fieldWithPath("content").description("게시글 내용")
+                        )
+                ));
     }
 
     @Test
@@ -107,10 +128,15 @@ public class PostControllerTest {
         Long postId = 1L;
 
         // when & then
-        mockMvc.perform(delete("/api/v1/posts/"+postId).
-                        contentType("application/json")
-                        .content(new ObjectMapper().writeValueAsString(postId)))
-                .andExpect(status().isOk());
+        mockMvc.perform(delete("/api/v1/posts/{id}",postId).
+                        contentType("application/json"))
+                .andExpect(status().isOk())
+                .andDo(document("/posts/delete",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("id").description("게시글 ID")
+                        )));
     }
 
 
@@ -129,10 +155,24 @@ public class PostControllerTest {
         PostUpdateDto postUpdateDto = new PostUpdateDto(postId, title, content, isNotice, category);
 
         // when & then
-        mockMvc.perform(patch("/api/v1/posts/"+postId)
+        mockMvc.perform(patch("/api/v1/posts/{id}",postId)
                 .contentType("application/json")
                 .content(new ObjectMapper().writeValueAsString(postUpdateDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("/posts/update",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("id").description("게시글 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("게시글 ID"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("게시글 제목"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("게시글 내용"),
+                                fieldWithPath("is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
+                                fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리")
+                        )
+                ));
     }
 
     @Test
@@ -140,10 +180,42 @@ public class PostControllerTest {
     void getPostList_Success() throws Exception {
 
         // given
+        List<PostListDto> postListdto = List.of(new PostListDto(post));
+
+        given(postService.getPostList(1,"테스트")).willReturn(postListdto);
 
         // when & then
-        mockMvc.perform(get("/api/v1/posts"))
-                        .andExpect(status().isOk());
+        mockMvc.perform(get("/api/v1/posts")
+                .param("page","1")
+                .param("keyword","테스트"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].title").value("테스트"))
+                .andExpect(jsonPath("$[0].content").value("콘텐츠"))
+                .andExpect(jsonPath("$[0].views").value(0))
+                .andExpect(jsonPath("$[0].is_notice").value(false))
+                .andExpect(jsonPath("$[0].category").value("FREE"))
+                .andExpect(jsonPath("$[0].user_id").value(1L))
+                .andExpect(jsonPath("$[0].created_at").value("2023-07-29 04:23:23"))
+                .andDo(document("/posts/list",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("page").description("페이지"),
+                                parameterWithName("keyword").description("키워드")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("게시글 ID"),
+                                fieldWithPath("[].title").type(JsonFieldType.STRING).description("게시글 제목"),
+                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용"),
+                                fieldWithPath("[].views").type(JsonFieldType.NUMBER).description("조회수"),
+                                fieldWithPath("[].is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
+                                fieldWithPath("[].category").type(JsonFieldType.STRING).description("카테고리"),
+                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("작성자 ID"),
+                                fieldWithPath("[].created_at").type(JsonFieldType.STRING).description("작성일")
+                        )
+                        ));
     }
 
     @Test
@@ -151,14 +223,40 @@ public class PostControllerTest {
     void getPost_Success() throws Exception {
 
         //given
-        Long postId = 1L;
+        PostDto postdto = new PostDto(post);
+
+        given(postService.getPost(1L)).willReturn(postdto);
 
         // when & then
-        mockMvc.perform(get("/api/v1/posts")
-                .contentType("application/json")
-                .content(new ObjectMapper().writeValueAsString(postId)))
-                .andExpect(status().isOk());
-
+        mockMvc.perform(get("/api/v1/posts/{id}",1L))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.title").value("테스트"))
+                .andExpect(jsonPath("$.content").value("콘텐츠"))
+                .andExpect(jsonPath("$.views").value(0))
+                .andExpect(jsonPath("$.is_notice").value(false))
+                .andExpect(jsonPath("$.category").value("FREE"))
+                .andExpect(jsonPath("$.user_id").value(1L))
+                .andExpect(jsonPath("$.nickname").value("테스트"))
+                .andExpect(jsonPath("$.created_at").value("2023-07-29 04:23:23"))
+                .andDo(document("/posts/detail",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("id").description("게시글 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("게시글 ID"),
+                                fieldWithPath("user_id").type(JsonFieldType.NUMBER).description("사용자 ID"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("게시글 제목"),
+                                fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
+                                fieldWithPath("nickname").type(JsonFieldType.STRING).description("사용자 닉네임"),
+                                fieldWithPath("views").type(JsonFieldType.NUMBER).description("조회수"),
+                                fieldWithPath("is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
+                                fieldWithPath("created_at").type(JsonFieldType.STRING).description("작성일")
+                        )));
     }
 
     @Test
@@ -171,7 +269,13 @@ public class PostControllerTest {
 
         // when & then
         mockMvc.perform(get("/api/v1/posts/{id}/like", id))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+        .andDo(document("posts/like",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                pathParameters(
+                        parameterWithName("id").description("게시글 ID")
+                )));
     }
 
     @Test
@@ -186,11 +290,14 @@ public class PostControllerTest {
                  .contentType("application/json")
                 .content(new ObjectMapper().writeValueAsString(commentCreateDto)))
                 .andExpect(status().isCreated())
-                .andDo(document("posts/1/comments",
+                .andDo(document("posts/comments",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("id").description("게시글 ID")
+                        ),
                         requestFields(
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("댓글")
+                          fieldWithPath("content").type(JsonFieldType.STRING).description("댓글 내용")
                         )
                 ));
     }
@@ -202,14 +309,14 @@ public class PostControllerTest {
         // given
 
         // when & then
-        mockMvc.perform(delete("/api/v1/posts/{postId}/comments/{id}", 1L, 1L))
+        mockMvc.perform(delete("/api/v1/posts/{postId}/comments/{commentId}", 1L, 1L))
                 .andExpect(status().isOk())
-                .andDo(document("posts/comments/delete",
+                .andDo(document("posts/comment/delete",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         pathParameters(
                                 parameterWithName("postId").description("게시글 ID"),
-                                parameterWithName("id").description("댓글 ID")
+                                parameterWithName("commentId").description("댓글 ID")
                         )
                 ));
     }
@@ -231,10 +338,9 @@ public class PostControllerTest {
                 .andExpect(jsonPath("$[0].userId").value(1L))
                 .andExpect(jsonPath("$[0].nickname").value("테스트닉네임"))
                 .andExpect(jsonPath("$[0].createdAt").value("2030-01-01 00:00:00"))
-                .andDo(document("posts/comments",
+                .andDo(document("posts/comments/list",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
-
                 responseFields(
                         fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                         fieldWithPath("[].content").type(JsonFieldType.STRING).description("댓글 내용"),

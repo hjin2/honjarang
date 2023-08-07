@@ -29,3 +29,24 @@ operation::users/change-user-info[snippets='http-request,request-fields']
 
 === 프로필 이미지 변경
 operation::users/profile-image[snippets='http-request,request-parts']
+
+=== 포인트 환급
+operation::users/withdraw[snippets='http-request,request-fields']
+
+=== 탈퇴하기
+operation::users/deleteUser[snippets='http-request,path-parameters']
+
+=== 회원 정보 조회
+operation::users/info[snippets='http-request,query-parameters,response-fields']
+
+=== 내가 작성한 공동배달 글 조회
+operation::joint-deliveries-writer[snippets='http-request,query-parameters,response-fields']
+
+=== 내가 참여한 공동배달 글 조회
+operation::joint-deliveries-participating[snippets='http-request,query-parameters,response-fields']
+
+=== 게시판에 작성한 글 조회
+operation::users/posts[snippets='http-request,query-parameters,response-fields']
+
+=== 결제 정보
+operation::users/payment[snippets='http-request,request-fields']
