@@ -19,11 +19,12 @@ export default function Edit({ modalState, setModalState }) {
 
   const [latitude, setLatitude] = useState(0)
   const [longitude, setLongitude] = useState(0)
+  const token = localStorage.getItem("access_token")
 
   const editUserInfo = () => {
     console.log(latitude,longitude,nickname,address)
     const headers = {
-      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTExMzg3MjIsImV4cCI6MTY5MTE0MjMyMn0.N8nkWtk1FpLRfDjNGz6IZ30_m61lhFqhfm-YHMxQvho'
+      'Authorization': `Bearer ${token}`
     };
   
     const data = {
