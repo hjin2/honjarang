@@ -1,5 +1,6 @@
 package com.example.honjarang.domain.user.service;
 
+import com.example.honjarang.domain.S3UploadException;
 import com.example.honjarang.domain.jointdelivery.document.Menu;
 import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryDto;
 import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
@@ -41,7 +42,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.time.LocalDateTime;
@@ -50,6 +59,8 @@ import java.util.*;
 @RequiredArgsConstructor
 @Service
 public class UserService {
+    private final S3Client s3Client;
+
     private final UserRepository userRepository;
     private final EmailVerificationRepository emailVerificationRepository;
     private final PostRepository postRepository;
@@ -66,8 +77,6 @@ public class UserService {
     private final JointDeliveryCartRepository jointDeliveryCartRepository;
 
     private final MenuRepository menuRepository;
-
-    private final S3UploadService s3UploadService;
 
     @Transactional(readOnly = true)
     public User login(LoginDto loginDto) {
@@ -136,12 +145,27 @@ public class UserService {
     }
 
     @Transactional
-    public void changeUserImage(User user, String profileImage) {
-        if (user.getProfileImage()!=null) {
-            s3UploadService.delete(user.getProfileImage());
+    public void updateProfileImage(MultipartFile profileImage, User loginUser) {
+        // 기존 프로필 이미지 삭제
+        if (loginUser.getProfileImage()!=null) {
+            s3Client.deleteObject(DeleteObjectRequest.builder()
+                    .bucket("honjarang-bucket")
+                    .key("profileImage/" + loginUser.getProfileImage())
+                    .build());
         }
-        User loginedUser = userRepository.findByEmail(user.getEmail()).orElseThrow(() -> new UserNotFoundException("존재하지 않는 회원입니다."));
-        loginedUser.changeProfileImage(profileImage);
+
+        try {
+           s3Client.putObject(PutObjectRequest.builder()
+                    .bucket("honjarang-bucket")
+                    .key("profileImage/" + profileImage.getOriginalFilename())
+                    .acl(ObjectCannedACL.PUBLIC_READ)
+                    .contentType(profileImage.getContentType())
+                    .build(), RequestBody.fromInputStream(profileImage.getInputStream(), profileImage.getSize()));
+            User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다."));
+            user.changeProfileImage(profileImage.getOriginalFilename());
+        } catch (IOException e) {
+            throw new S3UploadException("S3 업로드에 실패했습니다.");
+        }
     }
 
     @Transactional

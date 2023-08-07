@@ -1,12 +1,10 @@
 package com.example.honjarang.domain.user.controller;
 
-import com.example.honjarang.domain.chat.service.ChatService;
 import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.user.dto.*;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.service.EmailService;
-import com.example.honjarang.domain.user.service.S3UploadService;
 import com.example.honjarang.domain.user.service.UserService;
 import com.example.honjarang.security.CurrentUser;
 import com.example.honjarang.security.dto.TokenDto;
@@ -14,6 +12,7 @@ import com.example.honjarang.security.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ public class UserController {
 
     private final EmailService emailService;
 
-    private final S3UploadService s3UploadService;
 
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto) {
@@ -85,12 +83,6 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/change-image")
-    public ResponseEntity<Void> uploadUserImage(@RequestBody Map<String,String> profileImage, @CurrentUser User user){
-        userService.changeUserImage(user, profileImage.get("profile_image"));
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping("/success")
     public ResponseEntity<Void> successPayment(@RequestBody PointChargeDto pointDto, @CurrentUser User user){
         userService.successPayment(pointDto, user);
@@ -135,6 +127,10 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-
+    @PostMapping("/profile-image")
+    public ResponseEntity<Void> uploadProfileImage(@RequestParam("profile_image") MultipartFile profileImage, @CurrentUser User user){
+        userService.updateProfileImage(profileImage, user);
+        return ResponseEntity.ok().build();
+    }
 
 }
