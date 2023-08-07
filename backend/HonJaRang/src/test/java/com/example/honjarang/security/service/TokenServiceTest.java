@@ -56,7 +56,7 @@ class TokenServiceTest {
         // given
 
         // when
-        TokenDto tokenDto = tokenService.generateToken("test@test.com", Role.ROLE_USER);
+        TokenDto tokenDto = tokenService.generateToken(1L, "test@test.com", Role.ROLE_USER);
 
         // then
         assertThat(tokenDto).isNotNull();

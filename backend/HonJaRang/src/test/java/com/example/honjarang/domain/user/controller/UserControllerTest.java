@@ -138,16 +138,17 @@ class UserControllerTest {
     void login() throws Exception {
         // given
         LoginDto loginDto = new LoginDto("test@test.com", "test1234");
-        TokenDto tokenDto = new TokenDto("access_token", "refresh_token");
+        TokenDto tokenDto = new TokenDto(1L, "access_token", "refresh_token");
 
         given(userService.login(any(LoginDto.class))).willReturn(user);
-        given(tokenService.generateToken("test@test.com", Role.ROLE_USER)).willReturn(tokenDto);
+        given(tokenService.generateToken(1L, "test@test.com", Role.ROLE_USER)).willReturn(tokenDto);
 
         // when & then
         mockMvc.perform(post("/api/v1/users/login")
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(loginDto)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user_id").value(1L))
                 .andExpect(jsonPath("$.access_token").value("access_token"))
                 .andExpect(jsonPath("$.refresh_token").value("refresh_token"))
                 .andDo(document("users/login",
@@ -158,6 +159,7 @@ class UserControllerTest {
                                 fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
                         ),
                         responseFields(
+                                fieldWithPath("user_id").type(JsonFieldType.NUMBER).description("유저 아이디"),
                                 fieldWithPath("access_token").type(JsonFieldType.STRING).description("액세스 토큰"),
                                 fieldWithPath("refresh_token").type(JsonFieldType.STRING).description("리프레시 토큰")
                         )
