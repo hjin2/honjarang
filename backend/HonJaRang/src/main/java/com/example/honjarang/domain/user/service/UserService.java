@@ -1,12 +1,7 @@
 package com.example.honjarang.domain.user.service;
 
-import com.example.honjarang.domain.S3UploadException;
-import com.example.honjarang.domain.jointdelivery.document.Menu;
-import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryDto;
 import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
-import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryCart;
-import com.example.honjarang.domain.jointdelivery.exception.MenuNotFoundException;
 import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryCartRepository;
 import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryRepository;
 import com.example.honjarang.domain.jointdelivery.repository.MenuRepository;
@@ -29,8 +24,6 @@ import com.example.honjarang.domain.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -48,13 +41,10 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.time.LocalDateTime;
-import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -164,7 +154,7 @@ public class UserService {
             User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다."));
             user.changeProfileImage(profileImage.getOriginalFilename());
         } catch (IOException e) {
-            throw new S3UploadException("S3 업로드에 실패했습니다.");
+            throw new RuntimeException("프로필 이미지 업로드에 실패했습니다.");
         }
     }
 

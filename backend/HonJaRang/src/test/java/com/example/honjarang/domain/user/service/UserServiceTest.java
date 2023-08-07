@@ -30,28 +30,25 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
 
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -74,6 +71,8 @@ class UserServiceTest {
     private RedisTemplate<String, Object> redisTemplate;
     @Mock
     private SetOperations<String, Object> setOperations;
+    @Mock
+    private S3Client s3Client;
 
     private User user;
     private EmailVerification emailVerification;
@@ -305,31 +304,6 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("회원정보 이미지 변경 성공 - 기존에 이미지가 없을 경우")
-    void changeImage_Success() {
-        // given
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
-
-        // when
-        userService.changeUserImage(user,"test.jpg");
-
-        // then
-        assertThat(user.getProfileImage()).isEqualTo("test.jpg");
-
-    }
-
-    @Test
-    @DisplayName("회원정보 이미지 변경 실패 - 사용자가 존재하지 않는 경우")
-    void changeImage_UserNotFoundException() {
-        // given
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.empty());
-
-        // when & then
-        assertThrows(UserNotFoundException.class, () -> userService.changeUserImage(user,"test.jpg"));
-    }
-
-
-    @Test
     @DisplayName("내가 작성한 게시글 보기")
     void getMyPostList_Success(){
         // given
@@ -461,5 +435,29 @@ class UserServiceTest {
         userService.deleteFcmToken(user, "test_token");
 
         // then
+    }
+
+    @Test
+    @DisplayName("프로필 이미지 변경 성공")
+    void updateProfileImage_Success() {
+        // given
+        MultipartFile multipartFile = new MockMultipartFile("test_image", "test_image".getBytes());
+        given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
+
+        // when
+        userService.updateProfileImage(multipartFile, user);
+
+        // then
+    }
+
+    @Test
+    @DisplayName("프로필 이미지 변경 실패 - 사용자가 존재하지 않는 경우")
+    void updateProfileImage_UserNotFoundException() {
+        // given
+        MultipartFile multipartFile = new MockMultipartFile("test_image", "test_image".getBytes());
+        given(userRepository.findById(user.getId())).willReturn(Optional.empty());
+
+        // when
+        assertThrows(UserNotFoundException.class, () -> userService.updateProfileImage(multipartFile, user));
     }
 }
