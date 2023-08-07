@@ -11,12 +11,9 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 public class S3UploadService {
     private final S3Client s3Client;
 
-    @Value("${aws.s3.bucket-name}")
-    private String bucketName;
-
     public void delete(String key) {
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                .bucket(bucketName)
+                .bucket("honjarang")
                 .key(key)
                 .build();
         s3Client.deleteObject(deleteObjectRequest);

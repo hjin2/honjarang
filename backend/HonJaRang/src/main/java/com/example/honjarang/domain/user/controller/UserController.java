@@ -33,7 +33,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto) {
         User user = userService.login(loginDto);
-        TokenDto tokenDto = tokenService.generateToken(user.getEmail(), user.getRole());
+        TokenDto tokenDto = tokenService.generateToken(user.getId(), user.getEmail(), user.getRole());
         return ResponseEntity.ok(tokenDto);
     }
 
@@ -136,9 +136,9 @@ public class UserController {
         return ResponseEntity.ok(userInfo);
     }
 
-    @PutMapping("/delete-account")
-    public ResponseEntity<Void> deleteUser(@CurrentUser User user){
-        userService.deleteUser(user);
+    @DeleteMapping("{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId){
+        userService.deleteUser(userId);
         return ResponseEntity.ok().build();
     }
 

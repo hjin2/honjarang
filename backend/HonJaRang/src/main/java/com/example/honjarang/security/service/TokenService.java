@@ -25,7 +25,7 @@ public class TokenService {
 
     private final UserRepository userRepository;
 
-    public TokenDto generateToken(String email, Role role) {
+    public TokenDto generateToken(Long id, String email, Role role) {
         // access token 생성
         String accessToken = Jwts.builder()
                 .setSubject(email)
@@ -44,7 +44,7 @@ public class TokenService {
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
 
-        return new TokenDto(accessToken, refreshToken);
+        return new TokenDto(id, accessToken, refreshToken);
     }
 
     public Boolean verifyToken(String token) {
