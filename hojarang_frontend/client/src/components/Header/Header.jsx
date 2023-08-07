@@ -20,6 +20,7 @@ export default function Header() {
     localStorage.clear()
     alert('로그아웃 되었습니다.')
   }
+  const id = localStorage.getItem("user_id")
 
   return (
     <div className="Header">
@@ -82,7 +83,7 @@ export default function Header() {
           </div>
           <div className="flex space-x-4">
             <button type="button" className="">
-              <Link to="/mypage/:nickname">
+              <Link to={`/mypage/${id}`}>
                 <svg
                   className="h-8 w-8"
                   fill="none"
