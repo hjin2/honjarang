@@ -12,11 +12,12 @@ export default function MyPage() {
   const nickname = useSelector((state) => state.userinfo.nickname)
   const { id } = useParams();
   const dispatch = useDispatch()
+  const token = localStorage.getItem("access_token")
   useEffect(() => {
     axios.get('http://honjarang.kro.kr:30000/api/v1/users/info',
       {
-        params : {id : 2},
-        headers : {'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTEyMDgxMDIsImV4cCI6MTY5MTIxMTcwMn0.ED3JPB37xcIjuJ59kf4Gz88BGtiY-B0vumcMhhtMZPg'}
+        params : {id : id},
+        headers : {'Authorization' : `Bearer ${token}`}
       },
       )
       .then(function(response){

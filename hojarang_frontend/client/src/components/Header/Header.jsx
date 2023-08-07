@@ -1,6 +1,7 @@
 import { NavLink, Link } from 'react-router-dom';
 
 export default function Header() {
+  const id = localStorage.getItem("user_id")
   return (
     <div className="Header">
       <nav className="py-6">
@@ -62,7 +63,7 @@ export default function Header() {
           </div>
           <div className="flex space-x-4">
             <button type="button" className="">
-              <Link to="/mypage/:nickname">
+              <Link to={`/mypage/${id}`}>
                 <svg
                   className="h-8 w-8"
                   fill="none"

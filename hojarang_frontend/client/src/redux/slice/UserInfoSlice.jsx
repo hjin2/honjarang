@@ -1,11 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  nickname : '김현지',
-  email : '김현지@김현지.com',
-  profile_image : '',
+  nickname : "",
+  email : "'김현지@김현지.com'",
+  profile_image : "",
   point : 0,
-  address : '김현지 집',
+  address : "",
 };
 
 const UserinfoSlice = createSlice({
