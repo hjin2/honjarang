@@ -378,7 +378,7 @@ class JointDeliveryControllerTest {
     }
 
     @Test
-    @DisplayName("공봉배달 취소")
+    @DisplayName("공동배달 취소")
     void cancelJointDelivery() throws Exception {
         //  given
 

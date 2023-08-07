@@ -12,11 +12,13 @@ import com.example.honjarang.domain.post.repository.LikePostRepository;
 import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -69,10 +71,13 @@ public class PostService {
     @Transactional(readOnly = true)
     public List<PostListDto> getPostList(int page, String keyword) {
         Pageable pageable = PageRequest.of(page -1, 15);
-        return postRepository.findAllByTitleContainingIgnoreCaseOrderByIsNoticeDescIdDesc(keyword, pageable)
-                .stream()
-                .map(post -> new PostListDto(post))
-                .toList();
+
+        List<Post> posts = postRepository.findAllByTitleContainingIgnoreCaseOrderByIsNoticeDescIdDesc(keyword, pageable).toList();
+        List<PostListDto> postListDtos = new ArrayList<>();
+        for(Post post : posts){
+            postListDtos.add(new PostListDto(post));
+        }
+        return  postListDtos;
     }
 
     @Transactional

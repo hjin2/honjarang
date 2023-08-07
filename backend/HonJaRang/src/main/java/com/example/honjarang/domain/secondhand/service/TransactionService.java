@@ -37,7 +37,6 @@ public class TransactionService {
     public void updateSecondHandTransaction(TransactionUpdateDto dto, User user){
         Transaction transaction = transactionRepository.findById(dto.getId()).orElseThrow(()->new TransactionException("게시글이 없습니다."));
         transaction.update(dto);
-        transactionRepository.save(transaction);
     }
 
     @Transactional
@@ -73,6 +72,7 @@ public class TransactionService {
         }
         User loginedUser = userRepository.findById(user.getId()).orElseThrow(()->new UserNotFoundException("존재하지 않는 사용자입니다."));
         loginedUser.subtractPoint(transaction.getPrice());
+        transaction.soldout(user);
         transaction.complete();
     }
 

@@ -20,6 +20,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import java.time.LocalDateTime;
@@ -194,16 +198,23 @@ public class PostServiceTest {
     @DisplayName("게시글 목록 조회 성공")
     void getPostList_Success() {
         // given
-        Integer testPage = 1;
-        String testKeyword = "kk";
-        PostListDto postListDto = new PostListDto(post);
-        List<PostListDto> postList = new ArrayList<>();
-        postList.add(postListDto);
+        Pageable pageable = PageRequest.of(0, 15);
 
-        when(postService.getPostList(testPage, testKeyword)).thenReturn(postList);
+        List<Post> posts=  List.of(post);
 
-        // when & then
-        assertThat(postService.getPostList(testPage, testKeyword)).isEqualTo((postList));
+        Page<Post> postPage = new PageImpl<>(posts, pageable, posts.size());
+        given(postRepository.findAllByTitleContainingIgnoreCaseOrderByIsNoticeDescIdDesc("test", pageable)).willReturn(postPage);
+
+        List<PostListDto> result = postService.getPostList(1,"test");
+
+        assertThat(result.get(0).getTitle()).isEqualTo(post.getTitle());
+        assertThat(result.get(0).getUserId()).isEqualTo(user.getId());
+        assertThat(result.get(0).getViews()).isEqualTo(post.getViews());
+        assertThat(result.get(0).getCategory()).isEqualTo(post.getCategory());
+        assertThat(result.get(0).getIsNotice()).isEqualTo(post.getIsNotice());
+        assertThat(result.get(0).getContent()).isEqualTo(post.getContent());
+
+
     }
 
     @Test
