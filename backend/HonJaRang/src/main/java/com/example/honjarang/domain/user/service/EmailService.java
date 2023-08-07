@@ -33,7 +33,6 @@ public class EmailService {
 
     private final UserRepository userRepository;
 
-    @Async
     public void sendVerificationCode(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new DuplicateEmailException("이미 가입된 이메일입니다.");
