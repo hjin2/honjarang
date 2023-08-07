@@ -33,7 +33,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto) {
         User user = userService.login(loginDto);
-        TokenDto tokenDto = tokenService.generateToken(user.getEmail(), user.getRole());
+        TokenDto tokenDto = tokenService.generateToken(user.getId(), user.getEmail(), user.getRole());
         return ResponseEntity.ok(tokenDto);
     }
 
