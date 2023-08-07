@@ -108,4 +108,6 @@ public class User extends BaseTimeEntity {
         this.longitude =0D;
         this.profileImage="";
     }
+
+    public void setPointForTest(Integer point){this.point = point;}
 }

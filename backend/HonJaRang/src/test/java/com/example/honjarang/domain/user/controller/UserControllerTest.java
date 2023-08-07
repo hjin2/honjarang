@@ -502,7 +502,7 @@ class UserControllerTest {
 
         // when & then
         mockMvc.perform(get("/api/v1/users/info")
-                .param("id","1"))
+                        .param("id", "1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.nickname").value("테스트"))
@@ -518,7 +518,7 @@ class UserControllerTest {
                         queryParameters(
                                 parameterWithName("id").description("사용자 ID")
                         ),
-                            responseFields(
+                        responseFields(
                                 fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
                                 fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
                                 fieldWithPath("profile_image").type(JsonFieldType.STRING).description("프로필 이미지"),
@@ -528,6 +528,7 @@ class UserControllerTest {
                                 fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도")
                         )
                 ));
+    }
 
     @Test
     @DisplayName("FCM 토큰 등록")
@@ -567,7 +568,7 @@ class UserControllerTest {
 
 
 
-}
+
 
     @Test
     @DisplayName("로그아웃")

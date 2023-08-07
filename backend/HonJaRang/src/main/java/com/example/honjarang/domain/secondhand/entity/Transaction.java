@@ -74,6 +74,7 @@ public class Transaction extends BaseTimeEntity {
 
     public void setIdForTest(Long id) {this.Id = id;}
 
+    public void setPriceForTest(Integer price){this.price = price;}
 
 
 }
