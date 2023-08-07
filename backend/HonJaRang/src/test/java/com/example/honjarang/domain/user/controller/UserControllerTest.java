@@ -323,14 +323,7 @@ class UserControllerTest {
                                 fieldWithPath("amount").type(JsonFieldType.NUMBER).description("금액")
                         )
                 ));
-
-
     }
-
-
-
-
-
 
     @Test
     @DisplayName("내가 작성한 글 불러오기")
@@ -555,10 +548,6 @@ class UserControllerTest {
                 );
     }
 
-
-
-
-
     @Test
     @DisplayName("로그아웃")
     void logout() throws Exception {
@@ -594,6 +583,32 @@ class UserControllerTest {
                         preprocessResponse(prettyPrint()),
                         requestParts(
                                 partWithName("profile_image").description("프로필 이미지")
+                        )
+                ));
+    }
+
+    @DisplayName("토큰 갱신")
+    void refresh() throws Exception{
+        // given
+        Map<String, String> body = Map.of("refresh_token", "refresh_token");
+        TokenDto tokenDto = new TokenDto("access_token", "refresh_token");
+
+        given(tokenService.generateToken("test@test.com", Role.ROLE_USER)).willReturn(tokenDto);
+
+        // when & then
+        mockMvc.perform(post("/api/v1/users/refresh")
+                        .contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(body)))
+                .andExpect(status().isOk())
+                .andDo(document("users/refresh",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("refresh_token").type(JsonFieldType.STRING).description("리프레시 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("access_token").type(JsonFieldType.STRING).description("액세스 토큰"),
+                                fieldWithPath("refresh_token").type(JsonFieldType.STRING).description("리프레시 토큰")
                         )
                 ));
     }

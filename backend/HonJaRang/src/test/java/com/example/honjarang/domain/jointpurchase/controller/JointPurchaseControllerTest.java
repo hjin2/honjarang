@@ -19,6 +19,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -26,6 +28,8 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
@@ -33,6 +37,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(RestDocumentationExtension.class)
@@ -93,6 +98,7 @@ class JointPurchaseControllerTest {
                 .isReceived(false)
                 .build();
         jointPurchaseApplicant.setIdForTest(1L);
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null));
     }
 
     @Test
@@ -144,13 +150,19 @@ class JointPurchaseControllerTest {
         // given
         List<JointPurchaseListDto> jointPurchaseListDtos = List.of(new JointPurchaseListDto(jointPurchase, 1));
 
-        given(jointPurchaseService.getJointPurchaseList(1, 10)).willReturn(jointPurchaseListDtos);
+        given(jointPurchaseService.getJointPurchaseList(eq(1), eq(10), any(User.class))).willReturn(jointPurchaseListDtos);
 
         // when & then
         mockMvc.perform(get("/api/v1/joint-purchases")
                         .param("page", "1")
                         .param("size", "10"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].product_name").value("테스트 상품"))
+                .andExpect(jsonPath("$[0].image").value("https://test.com/test.jpg"))
+                .andExpect(jsonPath("$[0].price").value(10000))
+                .andExpect(jsonPath("$[0].current_person_count").value(1))
+                .andExpect(jsonPath("$[0].target_person_count").value(10))
                 .andDo(document("joint-purchases/list",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
@@ -179,6 +191,21 @@ class JointPurchaseControllerTest {
         // when & then
         mockMvc.perform(get("/api/v1/joint-purchases/{jointPurchaseId}", 1L))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.content").value("테스트 내용"))
+                .andExpect(jsonPath("$.deadline").value("2030-01-01 00:00:00"))
+                .andExpect(jsonPath("$.target_person_count").value(10))
+                .andExpect(jsonPath("$.product_name").value("테스트 상품"))
+                .andExpect(jsonPath("$.image").value("https://test.com/test.jpg"))
+                .andExpect(jsonPath("$.price").value(10000))
+                .andExpect(jsonPath("$.delivery_charge").value(2500))
+                .andExpect(jsonPath("$.place_name").value("테스트 장소"))
+                .andExpect(jsonPath("$.place_latitude").value(37.123456))
+                .andExpect(jsonPath("$.place_longitude").value(127.123456))
+                .andExpect(jsonPath("$.created_at").value("2000-01-01 00:00:00"))
+                .andExpect(jsonPath("$.user_id").value(1L))
+                .andExpect(jsonPath("$.nickname").value("테스트"))
+                .andExpect(jsonPath("$.current_person_count").value(1))
                 .andDo(document("joint-purchases/detail",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
@@ -215,6 +242,12 @@ class JointPurchaseControllerTest {
         // when & then
         mockMvc.perform(get("/api/v1/joint-purchases/{jointPurchaseId}/applicants", 1L))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].user_id").value(1L))
+                .andExpect(jsonPath("$[0].nickname").value("테스트"))
+                .andExpect(jsonPath("$[0].quantity").value(1))
+                .andExpect(jsonPath("$[0].total_price").value(10000))
+                .andExpect(jsonPath("$[0].is_received").value(false))
                 .andDo(document("joint-purchases/applicants",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),

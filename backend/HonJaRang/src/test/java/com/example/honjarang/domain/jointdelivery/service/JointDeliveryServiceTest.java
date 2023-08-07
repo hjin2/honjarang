@@ -9,6 +9,8 @@ import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryCart;
 import com.example.honjarang.domain.jointdelivery.entity.Store;
 import com.example.honjarang.domain.jointdelivery.exception.*;
 import com.example.honjarang.domain.jointdelivery.repository.*;
+import com.example.honjarang.domain.map.dto.CoordinateDto;
+import com.example.honjarang.domain.map.service.MapService;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.InsufficientPointsException;
@@ -24,10 +26,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -41,6 +46,7 @@ import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+
 
 @ExtendWith(MockitoExtension.class)
 class JointDeliveryServiceTest {
@@ -58,7 +64,9 @@ class JointDeliveryServiceTest {
     @Mock
     private StoreRepository storeRepository;
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
+    @Mock
+    private MapService mapService;
     @Mock
     private RestTemplate restTemplate;
     @Mock
@@ -333,9 +341,10 @@ class JointDeliveryServiceTest {
         given(jointDeliveryRepository.findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(any(LocalDateTime.class), any(Pageable.class))).willReturn(jointDeliveryPage);
         given(jointDeliveryCartRepository.findAllByJointDeliveryId(1L)).willReturn(jointDeliveryCartList);
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
+        given(mapService.getDistance(any(CoordinateDto.class), any(CoordinateDto.class))).willReturn(1000);
 
         // when
-        List<JointDeliveryListDto> jointDeliveryListDtoList = jointDeliveryService.getJointDeliveryList(1, 10);
+        List<JointDeliveryListDto> jointDeliveryListDtoList = jointDeliveryService.getJointDeliveryList(1, 10, user);
 
         // then
         assertThat(jointDeliveryListDtoList).isNotNull();
@@ -362,7 +371,7 @@ class JointDeliveryServiceTest {
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.empty());
 
         // when & then
-        assertThrows(MenuNotFoundException.class, () -> jointDeliveryService.getJointDeliveryList(1, 10));
+        assertThrows(MenuNotFoundException.class, () -> jointDeliveryService.getJointDeliveryList(1, 10, user));
     }
 
     @Test
@@ -588,6 +597,8 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
         // given
         jointDelivery.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
         given(jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(1L, 1L)).willReturn(Optional.of(jointDeliveryApplicant));
+        given(jointDeliveryCartRepository.findAllByJointDeliveryIdAndUserId(1L, 1L)).willReturn(List.of(jointDeliveryCart));
+        given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
 
         // when
         jointDeliveryService.confirmReceived(1L, user);

@@ -43,8 +43,6 @@ public class MapService {
                 .toUri();
         ResponseEntity<String> responseEntity = restTemplate.exchange(targetUrl, HttpMethod.GET, entity, String.class);
 
-
-
         try {
             JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
             if(jsonNode.get("documents").size() == 0) {
@@ -53,6 +51,30 @@ public class MapService {
             Double latitude = jsonNode.get("documents").get(0).get("y").asDouble();
             Double longitude = jsonNode.get("documents").get(0).get("x").asDouble();
             return new CoordinateDto(latitude, longitude);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Integer getDistance(CoordinateDto startCoordinateDto, CoordinateDto endCoordinateDto) {
+        String url = "https://apis-navi.kakaomobility.com/v1/directions";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "KakaoAK " + kakaoRestApiKey);
+
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        URI targetUrl = UriComponentsBuilder
+                .fromUriString(url)
+                .queryParam("origin", startCoordinateDto.getLongitude() + "," + startCoordinateDto.getLatitude())
+                .queryParam("destination", endCoordinateDto.getLongitude() + "," + endCoordinateDto.getLatitude())
+                .build()
+                .encode(StandardCharsets.UTF_8)
+                .toUri();
+        ResponseEntity<String> responseEntity = restTemplate.exchange(targetUrl, HttpMethod.GET, entity, String.class);
+
+        try {
+            JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
+            return jsonNode.get("routes").get(0).get("summary").get("distance").asInt();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
