@@ -256,8 +256,8 @@ class JointDeliveryControllerTest {
     @DisplayName("공동배달 조회")
     void getJointDelivery() throws Exception {
         // given
-        JointDeliveryDto jointDeliveryDto = new JointDeliveryDto(jointDelivery, 10000);
-        given(jointDeliveryService.getJointDelivery(1L)).willReturn(jointDeliveryDto);
+        JointDeliveryDto jointDeliveryDto = new JointDeliveryDto(jointDelivery, 10000, 10000);
+        given(jointDeliveryService.getJointDelivery(eq(1L), any(User.class))).willReturn(jointDeliveryDto);
 
         // when & then
         mockMvc.perform(get("/api/v1/joint-deliveries/{jointDeliveryId}", 1L))
@@ -274,6 +274,7 @@ class JointDeliveryControllerTest {
                 .andExpect(jsonPath("$.store_image").value("test.jpg"))
                 .andExpect(jsonPath("$.user_id").value(1L))
                 .andExpect(jsonPath("$.nickname").value("테스트"))
+                .andExpect(jsonPath("$.my_point").value(10000))
                 .andExpect(jsonPath("$.created_at").exists())
                 .andDo(document("joint-deliveries/detail",
                         preprocessRequest(prettyPrint()),
@@ -293,6 +294,7 @@ class JointDeliveryControllerTest {
                                 fieldWithPath("store_image").type(JsonFieldType.STRING).description("가게 이미지"),
                                 fieldWithPath("user_id").type(JsonFieldType.NUMBER).description("유저 ID"),
                                 fieldWithPath("nickname").type(JsonFieldType.STRING).description("유저 닉네임"),
+                                fieldWithPath("my_point").type(JsonFieldType.NUMBER).description("내 포인트"),
                                 fieldWithPath("created_at").type(JsonFieldType.STRING).description("생성 시간")
                         )
                 ));

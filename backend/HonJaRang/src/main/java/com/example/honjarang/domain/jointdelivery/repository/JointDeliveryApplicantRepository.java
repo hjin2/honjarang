@@ -10,9 +10,8 @@ import java.util.Optional;
 @Repository
 public interface JointDeliveryApplicantRepository extends JpaRepository<JointDeliveryApplicant, Long>{
     boolean existsByJointDeliveryIdAndUserId(Long jointDeliveryId, Long userId);
-
     @Modifying
     void deleteByJointDeliveryIdAndUserId(Long jointDeliveryId, Long userId);
-
     Optional<JointDeliveryApplicant> findByJointDeliveryIdAndUserId(Long jointDeliveryId, Long userId);
+    Integer countByJointDeliveryId(Long jointDeliveryId);
 }

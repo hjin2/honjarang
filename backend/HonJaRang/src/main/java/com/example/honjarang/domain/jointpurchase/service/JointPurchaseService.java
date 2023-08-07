@@ -166,10 +166,10 @@ public class JointPurchaseService {
     }
 
     @Transactional(readOnly = true)
-    public JointPurchaseDto getJointPurchase(Long jointPurchaseId) {
+    public JointPurchaseDto getJointPurchase(Long jointPurchaseId, User loginUser) {
         JointPurchase jointPurchase = jointPurchaseRepository.findById(jointPurchaseId).orElseThrow(() -> new JointPurchaseNotFoundException("공동구매를 찾을 수 없습니다."));
         Integer currentPersonCount = jointPurchaseApplicantRepository.countByJointPurchaseId(jointPurchaseId);
-        return new JointPurchaseDto(jointPurchase, currentPersonCount);
+        return new JointPurchaseDto(jointPurchase, currentPersonCount, loginUser.getPoint());
     }
 
     @Transactional(readOnly = true)
