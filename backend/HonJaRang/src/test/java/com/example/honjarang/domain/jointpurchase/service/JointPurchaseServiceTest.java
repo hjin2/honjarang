@@ -7,6 +7,7 @@ import com.example.honjarang.domain.jointpurchase.entity.JointPurchaseApplicant;
 import com.example.honjarang.domain.jointpurchase.exception.*;
 import com.example.honjarang.domain.jointpurchase.repository.JointPurchaseApplicantRepository;
 import com.example.honjarang.domain.jointpurchase.repository.JointPurchaseRepository;
+import com.example.honjarang.domain.map.service.MapService;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.InsufficientPointsException;
@@ -53,6 +54,8 @@ class JointPurchaseServiceTest {
     private JointPurchaseRepository jointPurchaseRepository;
     @Mock
     private JointPurchaseApplicantRepository jointPurchaseApplicantRepository;
+    @Mock
+    private MapService mapService;
     @Mock
     private UserRepository userRepository;
     private User user;
@@ -173,7 +176,7 @@ class JointPurchaseServiceTest {
         given(jointPurchaseApplicantRepository.countByJointPurchaseId(1L)).willReturn(1);
 
         // when
-        List<JointPurchaseListDto> jointPurchaseList = jointPurchaseService.getJointPurchaseList(1, 10);
+        List<JointPurchaseListDto> jointPurchaseList = jointPurchaseService.getJointPurchaseList(1, 10, user);
 
         // then
         assertThat(jointPurchaseList).isNotNull();
