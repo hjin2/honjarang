@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import axios from 'axios';
 import Modal from '../../components/Common/Modal';
-import Store from '../../components/Market/Store';
+import Stores from '../../components/Market/Stores';
+
 import { useNavigate } from 'react-router-dom';
 
 
@@ -45,7 +46,7 @@ export default function DeliveryCreate() {
   const createDelivery = () => {
  
     const headers = {
-      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTEyMDU5ODcsImV4cCI6MTY5MTIwOTU4N30.Q0pILeqA0jJXwAmGBX1xIisgsE_ya5_uxVBbMZX2HkM'
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTEzOTE1MDAsImV4cCI6MTY5MTM5NTEwMH0.MKsMKUfqGED3VQZ7_acMqQoiMAJSyRvATLQch6DTPEw'
     };
     const data = {
       content: content,
@@ -83,7 +84,7 @@ export default function DeliveryCreate() {
         <input type="number" value={storeId} onChange={(e) => setStoreId(e.target.value)} onClick={onModalOpen}/>
           {modalState && (
             <Modal modalState={modalState} setModalState={setModalState}>
-              <Store modalState={modalState} setModalState={setModalState}/>
+              <Stores modalState={modalState} setModalState={setModalState}/>
             </Modal>
           )}
       </div>
@@ -106,9 +107,11 @@ export default function DeliveryCreate() {
         onChange={(e) => setDeliveryCharge(e.target.value)}/>
       </div>
       <div>
-        <div>마감시간 (최대 30분까지 가능)</div>
-        <input type="number" min="1" max="30" value={deadline} 
-        onChange={handleChange}/>
+        <div> 마감시간(초까지 입력) </div>
+        {/* <input type="datetime" value={deadline} 
+        onChange={handleChange}/> */}
+        <input type="datetime-local" value={deadline} 
+        onChange={(e) => setDeadline(e.target.value)}/>
       </div>
       {/* <div>
         <div>메뉴선택</div>

@@ -8,7 +8,7 @@ import PurchaseApply from './PurchaseApply';
 export default function PurchaseDetail() {
 
   const params = useParams();
-  // const[detail, setDetail] = useState('')
+  // const[detail, setDetail] = useState([])
   const [detail, setDetail] = useState({
     id: 1, 
     product_name: '젤리젤리1', 
@@ -75,7 +75,6 @@ export default function PurchaseDetail() {
   return (
     <div>
       <div className="border rounded-lg max-w-2xl mx-auto mt-10 pb-3 p-5 space-y-5 ">
-        haapppy
         <div className="flex justify-between">
           <div className="flex flex-row">
             <div className="font-bold text-3xl flex items-end">{detail.product_name}</div>
