@@ -8,7 +8,7 @@ export default function UserInfo() {
   const onModalOpen = () => {
     setModalState(!modalState);
   };
-  const image = useSelector((state) => state.upload.image);
+  const image = useSelector((state) => state.userinfo.profile_image);
   const nickname = useSelector((state) => state.userinfo.nickname);
   const point = useSelector((state) => state.userinfo.point)
   return (

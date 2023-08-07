@@ -1,14 +1,11 @@
 import axios from "axios"
 import { useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { setNickname } from "../../redux/slice/UserInfoSlice"
+import { useSelector } from "react-redux"
 
-export default function Nickname({setNicknameValid, handleNickname}) {
+export default function Nickname({setNicknameValid, handleNickname, nicknameInput, setNicknameInput}) {
   // 닉네임, 닉네임 오류 메시지
   const nickname = useSelector((state) => state.userinfo.nickname)
   const [nicknameMsg, setnicknameMsg] = useState('')
-  const [nicknameInput, setNicknameInput] = useState(nickname)
-  const dispatch = useDispatch()
   const onChange = (event) => {
     setNicknameInput(event.target.value)
   }
@@ -19,7 +16,7 @@ export default function Nickname({setNicknameValid, handleNickname}) {
 			console.log(nicknameInput)
 			if(nickname!==nicknameInput){
 				if (nicknameCheck.test(nickname) && nickname !== '탈퇴한 사용자') {
-					axios.get('http://honjarang.kro.kr:30000/api/v1/users/check-nickname',
+					axios.get(`${import.meta.env.VITE_APP_API}/api/v1/users/check-nickname`,
 						{
 							params: {nickname : nicknameInput},				
 					})
