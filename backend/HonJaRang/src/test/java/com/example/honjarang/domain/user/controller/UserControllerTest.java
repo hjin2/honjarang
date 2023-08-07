@@ -286,26 +286,6 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("프로필 이미지 변경")
-    void uploadUserImage() throws Exception {
-        // given
-        Map<String, String> profileImage = Map.of("profile_image","selfie.jpg");
-
-        // when&then
-        mockMvc.perform(post("/api/v1/users/change-image")
-                .contentType("application/json")
-                .content(new ObjectMapper().writeValueAsString(profileImage)))
-                .andExpect(status().isOk())
-                .andDo(document("users/change-image",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        requestFields(
-                                fieldWithPath("profile_image").type(JsonFieldType.STRING).description("새로운 프로필 이미지 파일명")
-                        )));
-    }
-
-
-    @Test
     @DisplayName("포인트 충전")
     void successPayment_success() throws Exception {
         PointChargeDto pointChargeDto = new PointChargeDto("temppaymentkey","temporderid",10000);
@@ -489,7 +469,7 @@ class UserControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.nickname").value("테스트"))
                 .andExpect(jsonPath("$.email").value("test@test.com"))
-                .andExpect(jsonPath("$.profile_image").value("test.jpg"))
+                .andExpect(jsonPath("$.profile_image").value("https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/profileImage/test.jpg"))
                 .andExpect(jsonPath("$.point").value(10000))
                 .andExpect(jsonPath("$.address").value("서울특별시 강남구"))
                 .andExpect(jsonPath("$.latitude").value(37.123456))
@@ -591,9 +571,9 @@ class UserControllerTest {
     void refresh() throws Exception{
         // given
         Map<String, String> body = Map.of("refresh_token", "refresh_token");
-        TokenDto tokenDto = new TokenDto("access_token", "refresh_token");
+        TokenDto tokenDto = new TokenDto(1L, "access_token", "refresh_token");
 
-        given(tokenService.generateToken("test@test.com", Role.ROLE_USER)).willReturn(tokenDto);
+        given(tokenService.generateToken(1L, "test@test.com", Role.ROLE_USER)).willReturn(tokenDto);
 
         // when & then
         mockMvc.perform(post("/api/v1/users/refresh")

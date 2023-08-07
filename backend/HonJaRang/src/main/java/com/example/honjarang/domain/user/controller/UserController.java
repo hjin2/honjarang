@@ -50,7 +50,7 @@ public class UserController {
     @PostMapping("/refresh")
     public ResponseEntity<TokenDto> refresh(@RequestBody Map<String, Object> map, @CurrentUser User user) {
         tokenService.verifyToken((String) map.get("refresh_token"));
-        TokenDto tokenDto = tokenService.generateToken(user.getEmail(), user.getRole());
+        TokenDto tokenDto = tokenService.generateToken(user.getId(), user.getEmail(), user.getRole());
         return ResponseEntity.ok(tokenDto);
     }
 
