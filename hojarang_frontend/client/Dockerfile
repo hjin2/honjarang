@@ -23,7 +23,7 @@ RUN pnpm run build
 # (여기서는 serve 패키지를 사용하여 정적 파일을 제공합니다)
 
 # 포트 80에서 웹 서버를 실행합니다.
-EXPOSE 8080
+EXPOSE 3000
 
 # 웹 서버를 실행합니다.
 CMD ["pnpm", "preview"]
