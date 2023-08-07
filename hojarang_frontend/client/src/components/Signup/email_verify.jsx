@@ -10,6 +10,7 @@ function Email_verify({Email, setEmail, ChangeEmailValid}) {
   const [address, setAddress] = useState('')
   const [emailMsg, setemailMsg] = useState('')
   const [emailCheck, setemailCheck] = useState(false)
+  const [EmailDisalbed, setEmailDisalbed] = useState(false)
 
   const onSelect = (event) => {
     setAddress(event.target.value)
@@ -36,8 +37,8 @@ function Email_verify({Email, setEmail, ChangeEmailValid}) {
         setemailMsg('')
         setemailCheck(true)
         setEmail(email)
+        setEmailDisalbed(true)
       alert('인증번호를 전송했습니다!')
-      console.log(emailCheck)
     })
 
       .catch(function (error) {
@@ -52,9 +53,9 @@ return (
       <div>
             이메일
             <br />
-            <input type="text" name="id" onChange={onChange} value={id}/>
+            <input type="text" name="id" onChange={onChange} value={id} disabled={EmailDisalbed}/>
             @
-            <select name="email" id="email" className="border-solid border border-black rounded" value={address} onChange={onSelect}>
+            <select name="email" id="email" className="border-solid border border-black rounded" value={address} onChange={onSelect} disabled={EmailDisalbed}>
               <option value="default">--이메일 선택--</option>
               <option value="naver.com">naver.com</option>
               <option value="google.com">google.com</option>
@@ -62,7 +63,7 @@ return (
               <option value="hanmail.net">hanmail.net</option>
             </select>
             <button className='border-solid border border-black rounded bg-gray2 ml-2'
-            onClick = {email_code}
+            onClick = {email_code} disabled={EmailDisalbed}
             >인증번호 전송</button>
             <br />
             <span>{emailMsg}</span>

@@ -1,6 +1,6 @@
 import { useState,useEffect } from "react"
 
-export default function Password_check({Pwd, setPwd, ChangePwdValid}) {
+export default function Password_check({Pwd, setPwd, setPwdValid}) {
   // 비밀번호, 비밀번호 확인, 오류메시지
   const [password, setPassword] = useState('')
   const [password_cfm, setPassword_cfm] = useState('')
@@ -20,16 +20,18 @@ export default function Password_check({Pwd, setPwd, ChangePwdValid}) {
 const PwdValidCheck = () => {
   if (password !== '' && password_cfm !== '') {
     setPwd(password)
-    ChangePwdValid()
+    setPwdValid(true)
   }
 }
 
   const pwd_cfm_check = (pwd_cfm) => {
     if (pwd_cfm === '') {
       setpwdcfmMsg('')
+      setPwdValid(false)
     }
     else if (pwd_cfm !== password) {
       setpwdcfmMsg('비밀번호가 일치하지 않습니다.')
+      setPwdValid(false)
     }
     else if(pwd_cfm.length >= 8 && pwd_cfm === password){
       PwdValidCheck()
@@ -60,7 +62,7 @@ const PwdValidCheck = () => {
         <br />
         <span>{pwdMsg}</span>
       </div>
-      <div>
+      <div className="mt-4">
         비밀번호 확인
         <br />
         <input type="password" onChange = {onChange_password_cfm} maxLength="15"/>

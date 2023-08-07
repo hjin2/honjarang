@@ -1,7 +1,26 @@
 import { NavLink, Link } from 'react-router-dom';
+import { useState,useEffect } from 'react';
 
 export default function Header() {
-  const id = localStorage.getItem("user_id")
+  const [IsLogged, setIsLogged] = useState('')
+  
+  
+  useEffect(() => {
+    if (localStorage.length >= 3) {
+      setIsLogged(true)
+    } 
+    else {
+      setIsLogged(false)
+    }
+  })
+  
+
+
+  const Clear = () => {
+    localStorage.clear()
+    alert('로그아웃 되었습니다.')
+  }
+
   return (
     <div className="Header">
       <nav className="py-6">
@@ -63,7 +82,7 @@ export default function Header() {
           </div>
           <div className="flex space-x-4">
             <button type="button" className="">
-              <Link to={`/mypage/${id}`}>
+              <Link to="/mypage/:nickname">
                 <svg
                   className="h-8 w-8"
                   fill="none"
@@ -79,14 +98,22 @@ export default function Header() {
                 </svg>
               </Link>
             </button>
-            <button type="button">
+            {IsLogged ?  (<button type="button" onClick = {Clear}>
+              <Link
+                to="/login"
+                className="text-sm px-4 py-2 border rounded text-white bg-black"
+              >
+                LogOut
+              </Link>
+            </button>) : (<button type="button">
               <Link
                 to="/login"
                 className="text-sm px-4 py-2 border rounded text-white bg-black"
               >
                 Login
               </Link>
-            </button>
+            </button>)}
+            
           </div>
         </div>
       </nav>
