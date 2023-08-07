@@ -1,74 +1,45 @@
-import { useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { imageUpload } from '../../redux/slice/UploadSlice';
-import axios from 'axios';
+import { useRef, useState } from 'react';
+import imageCompression from 'browser-image-compression'
+import { v4 as uuidv4 } from 'uuid';
 // import AWS from 'aws-sdk';
 
 
-const ImageInput = () => {
+const ImageInput = ({imageURL, setImageURL,imageInput, setImageInput}) => {
   const fileInput = useRef(null);
-  const dispatch = useDispatch();
-  const image = useSelector((state) => state.upload.image);
-
-  // const REGION = import.meta.env.VITE_APP_REGION;
-  // const ACCESS_KEY_ID = import.meta.env.VITE_APP_ACCESS_KEY_ID;
-  // const SECRET_ACCESS_KEY = import.meta.env.VITE_APP_SECRET_ACCESS_KEY;
-
-  // AWS.config.update({
-  //   region: REGION,
-  //   accessKeyId: ACCESS_KEY_ID,
-  //   secretAccessKey: SECRET_ACCESS_KEY,
-  // });
-  const onChange = (e) => {
+  // const image = useSelector((state) => state.upload.image);
+  const [image, setImage] = useState(imageInput)
+  const uuid = uuidv4()
+  const onChange = async (e) => {
     if (e.target.files[0]) {
-      const selectedFile = e.target.files[0];
-      dispatch(imageUpload(selectedFile));
-      // const upload = new AWS.S3.ManagedUpload({
-      //   params: {
-      //     ACL: 'public-read',
-      //     Bucket: 'honjarang-bucket',
-      //     Key: `upload/${selectedFile.name}`,
-      //     Body: selectedFile,
-      //   }
-      // })
-      // upload.promise()
-      //   .then(() =>{
-      //     console.log('업로드 완료')
-      //   })
-      //   .catch((err) =>{
-      //     console.log(err)
-      //   })
-
-      // const formData = new FormData();
-      // formData.append('image', selectedFile);
-      // const lambdaEndpoint = "https://d73325gdt3.execute-api.ap-northeast-2.amazonaws.com/test/image"
-      // axios
-      //   .post(lambdaEndpoint, formData)
-      //   .then((res) => {
-      //     // console.log(FormData)
-      //     console.log(res);
-      //     alert('성공');
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //     alert('실패');
-      //   });
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          dispatch(imageUpload(reader.result));
-        }
-      };
-      reader.readAsDataURL(selectedFile);
-    } else {
-      dispatch(
-        imageUpload(
-          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-        ),
-      );
+      let file = e.target.files[0];
+      console.log(file)
+      const options = {
+        maxSizeMB: 2,
+        maxWidthOrHeight : 100,
+        fileType : "image/jpeg"
+      }
+      try {
+        const compressedBlob = await imageCompression(file, options)
+        const promise = imageCompression.getDataUrlFromFile(compressedBlob);
+        promise.then(result => {
+          const originalExtension = file.name.split('.').pop();
+          const compressedFile = new File([compressedBlob], `${uuid}.${originalExtension}`, {
+            type: compressedBlob.type,
+          })
+          setImageInput(compressedFile)
+          setImage(result)
+          setImageURL(result)
+        })
+      } catch(error){
+        console.log(error)
+      }
     }
   };
+  const removeImage = () =>{
+    setImage("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
+    setImageInput("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
+    setImageURL("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
+  }
   
 
   return (
@@ -89,6 +60,11 @@ const ImageInput = () => {
         onChange={onChange}
         ref={fileInput}
       />
+      <div className="flex justify-center">
+        <button type="button" className="main5-button w-48" onClick={removeImage}>
+          프로필 사진 삭제하기
+        </button>
+      </div>
     </>
   );
 };
