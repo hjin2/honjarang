@@ -2,16 +2,17 @@ import { useEffect, useRef } from 'react';
 import { loadPaymentWidget } from '@tosspayments/payment-widget-sdk';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
-import { redirect, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 export default function Checkout() {
   const clientKey = 'test_ck_Z0RnYX2w532vOD1DZgg3NeyqApQE';
   const customerKey = 'YbX2HuSlsC9uVJW6NMRMj';
+  const token = localStorage.getItem("access_token")
   const paymentWidgetRef = useRef(null);
-  // const location = useLocation()
-  // const price = location.state.price.activeRadio
+  const location = useLocation()
+  const price = location.state.price.activeRadio
   const uuid = uuidv4();
   const nickname = useSelector((state) => state.userinfo.nickname)
   const navigate = useNavigate()
@@ -43,7 +44,7 @@ export default function Checkout() {
             })
             .then(function(data){
               const headers = {
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTExMzg3MjIsImV4cCI6MTY5MTE0MjMyMn0.N8nkWtk1FpLRfDjNGz6IZ30_m61lhFqhfm-YHMxQvho'
+                'Authorization': `Bearer ${token}`
               };
               console.log(data)
               const paymentKey = data.paymentKey

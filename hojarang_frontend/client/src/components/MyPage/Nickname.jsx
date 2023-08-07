@@ -21,9 +21,7 @@ export default function Nickname({setNicknameValid, handleNickname}) {
 				if (nicknameCheck.test(nickname) && nickname !== '탈퇴한 사용자') {
 					axios.get('http://honjarang.kro.kr:30000/api/v1/users/check-nickname',
 						{
-							params: {nickname : nicknameInput},
-							headers : {Authorization : 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTExMzg3MjIsImV4cCI6MTY5MTE0MjMyMn0.N8nkWtk1FpLRfDjNGz6IZ30_m61lhFqhfm-YHMxQvho'}
-					
+							params: {nickname : nicknameInput},				
 					})
 						.then(function (response) {
 							console.log(response)
