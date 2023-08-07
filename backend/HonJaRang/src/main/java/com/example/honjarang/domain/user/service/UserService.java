@@ -30,6 +30,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -46,18 +49,15 @@ import java.util.*;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-
     private final EmailVerificationRepository emailVerificationRepository;
-
     private final PostRepository postRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final RestTemplate restTemplate;
-
     private final ObjectMapper objectMapper;
-
     private final PostService postService;
+    private final RedisTemplate<String, String> redisTemplate;
+
+    private static final String USER_FCM_PREFIX = "fcm-token::";
 
     private final JointDeliveryRepository jointDeliveryRepository;
 
@@ -74,6 +74,23 @@ public class UserService {
             throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
         return user;
+    }
+
+    public void addFcmToken(User loginUser, String fcmToken) {
+        if (redisTemplate.opsForSet().size(USER_FCM_PREFIX + loginUser.getId()) == 0) {
+            redisTemplate.opsForSet().add(USER_FCM_PREFIX + loginUser.getId(), fcmToken);
+            redisTemplate.expire(USER_FCM_PREFIX + loginUser.getId(), 7, TimeUnit.DAYS);
+        } else {
+            redisTemplate.opsForSet().add(USER_FCM_PREFIX + loginUser.getId(), fcmToken);
+        }
+    }
+
+    public Set<String> getFcmTokenList(User user) {
+        return redisTemplate.opsForSet().members(USER_FCM_PREFIX + user.getId());
+    }
+
+    public void deleteFcmToken(User user, String fcmToken) {
+        redisTemplate.opsForSet().remove(USER_FCM_PREFIX + user.getId(), fcmToken);
     }
 
     @Transactional

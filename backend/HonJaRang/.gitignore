@@ -40,3 +40,5 @@ application-secret.properties
 application-dev.properties
 secret.yml
 .idea
+honjarang-firebase-adminsdk.json
+*/static/docs/*

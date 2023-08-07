@@ -12,6 +12,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -24,7 +25,7 @@ public class TokenService {
 
     private final UserRepository userRepository;
 
-    public TokenDto generateToken(String email, Role role) {
+    public TokenDto generateToken(Long id, String email, Role role) {
         // access token 생성
         String accessToken = Jwts.builder()
                 .setSubject(email)
@@ -43,7 +44,7 @@ public class TokenService {
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
 
-        return new TokenDto(accessToken, refreshToken);
+        return new TokenDto(id, accessToken, refreshToken);
     }
 
     public Boolean verifyToken(String token) {
@@ -57,6 +58,7 @@ public class TokenService {
         }
     }
 
+    @Transactional(readOnly = true)
     public User getUserByToken(String token) {
         String email = Jwts.parser()
                 .setSigningKey(SECRET_KEY)

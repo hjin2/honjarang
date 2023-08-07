@@ -15,6 +15,12 @@ operation::users/verify-code[snippets='http-request,request-fields']
 === 닉네임 중복 확인
 operation::users/check-nickname[snippets='http-request,query-parameters']
 
+=== 로그아웃
+operation::users/logout[snippets='http-request,request-fields']
+
+=== FCM 토큰 등록
+operation::users/fcm-token[snippets='http-request,request-fields']
+
 === 비밀번호 변경
 operation::users/change-password[snippets='http-request,request-fields']
 

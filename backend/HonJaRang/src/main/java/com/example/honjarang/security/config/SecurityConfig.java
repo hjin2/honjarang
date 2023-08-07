@@ -41,11 +41,15 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/docs/**").permitAll()
                         .requestMatchers("/chat/**").permitAll()
+                        .requestMatchers("/api/v1/users/fcm").permitAll()
+                        .requestMatchers("/api/v1/users/test").permitAll()
                         .requestMatchers("/api/v1/users/login").permitAll()
                         .requestMatchers("/api/v1/users/signup").permitAll()
                         .requestMatchers("/api/v1/users/refresh").permitAll()
+                        .requestMatchers("/api/v1/users/check-nickname").permitAll()
                         .requestMatchers("/api/v1/users/send-verification-code").permitAll()
                         .requestMatchers("/api/v1/users/verify-code").permitAll()
                         .requestMatchers("/api/v1/maps/coordinates").permitAll()
@@ -61,7 +65,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:63342", "http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("http://localhost:63342", "http://localhost:3000", "https://honjarang.kro.kr", "http://honjarang.kro.kr:3000"));
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowedHeaders(Collections.singletonList("*"));
         configuration.setAllowCredentials(true);

@@ -32,6 +32,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
@@ -40,10 +43,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 
 import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,24 +59,22 @@ class UserServiceTest {
 
     @InjectMocks
     private UserService userService;
-
     @Mock
     private UserRepository userRepository;
-
     @Mock
     private PostRepository postRepository;
-
     @Mock
     private JointDeliveryRepository jointDeliveryRepository;
-
     @Mock
     private EmailVerificationRepository emailVerificationRepository;
-
     @Mock
     private JointDeliveryCartRepository jointDeliveryCartRepository;
-
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private RedisTemplate<String, Object> redisTemplate;
+    @Mock
+    private SetOperations<String, Object> setOperations;
 
     //추가
     @Mock
@@ -91,6 +89,8 @@ class UserServiceTest {
     private PostService postService;
 
     private Post post;
+
+    private static final String USER_FCM_PREFIX = "fcm-token::";
 
     @BeforeEach
     void setUp() {
@@ -520,4 +520,42 @@ class UserServiceTest {
     }
 
 
+
+    @Test
+    @DisplayName("FCM 토큰 등록 성공")
+    void addFcmToken_Success() {
+        // given
+        given(redisTemplate.opsForSet()).willReturn(setOperations);
+
+        // when
+        userService.addFcmToken(user, "test_token");
+
+        // then
+    }
+
+    @Test
+    @DisplayName("FCM 토큰 목록 조회 성공")
+    void getFcmTokenList_Success() {
+        // given
+        given(redisTemplate.opsForSet()).willReturn(setOperations);
+        given(setOperations.members(USER_FCM_PREFIX + user.getId())).willReturn(Collections.singleton("test_token"));
+
+        // when
+        Set<String> result = userService.getFcmTokenList(user);
+
+        // then
+        assertThat(result).containsExactly("test_token");
+    }
+
+    @Test
+    @DisplayName("FCM 토큰 삭제 성공")
+    void deleteFcmToken_Success() {
+        // given
+        given(redisTemplate.opsForSet()).willReturn(setOperations);
+
+        // when
+        userService.deleteFcmToken(user, "test_token");
+
+        // then
+    }
 }

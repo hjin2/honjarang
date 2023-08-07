@@ -49,7 +49,6 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -69,16 +68,12 @@ class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private UserService userService;
-
     @MockBean
     private TokenService tokenService;
-
     @MockBean
     private EmailService emailService;
-
     @MockBean
     private S3UploadService s3UploadService;
 
@@ -121,7 +116,6 @@ class UserControllerTest {
                 .build();
         post.setIdForTest(1L);
         post.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2023-08-02 12:00:00"));
-
         store = Store.builder()
                 .id(1L)
                 .storeName("가게명")
@@ -129,7 +123,6 @@ class UserControllerTest {
                 .address("경상북도 구미시")
                 .latitude(23.4567)
                 .longitude(34.5678).build();
-
         jointDelivery = JointDelivery.builder()
                 .targetMinPrice(20000)
                 .deliveryCharge(3000)
@@ -138,9 +131,6 @@ class UserControllerTest {
                 .store(store)
                 .user(user)
                 .build();
-
-
-
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null));
     }
 
@@ -149,16 +139,17 @@ class UserControllerTest {
     void login() throws Exception {
         // given
         LoginDto loginDto = new LoginDto("test@test.com", "test1234");
-        TokenDto tokenDto = new TokenDto("access_token", "refresh_token");
+        TokenDto tokenDto = new TokenDto(1L, "access_token", "refresh_token");
 
         given(userService.login(any(LoginDto.class))).willReturn(user);
-        given(tokenService.generateToken("test@test.com", Role.ROLE_USER)).willReturn(tokenDto);
+        given(tokenService.generateToken(1L, "test@test.com", Role.ROLE_USER)).willReturn(tokenDto);
 
         // when & then
         mockMvc.perform(post("/api/v1/users/login")
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(loginDto)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user_id").value(1L))
                 .andExpect(jsonPath("$.access_token").value("access_token"))
                 .andExpect(jsonPath("$.refresh_token").value("refresh_token"))
                 .andDo(document("users/login",
@@ -169,6 +160,7 @@ class UserControllerTest {
                                 fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
                         ),
                         responseFields(
+                                fieldWithPath("user_id").type(JsonFieldType.NUMBER).description("유저 아이디"),
                                 fieldWithPath("access_token").type(JsonFieldType.STRING).description("액세스 토큰"),
                                 fieldWithPath("refresh_token").type(JsonFieldType.STRING).description("리프레시 토큰")
                         )
@@ -536,6 +528,25 @@ class UserControllerTest {
                                 fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도")
                         )
                 ));
+
+    @Test
+    @DisplayName("FCM 토큰 등록")
+    void updateFcmToken() throws Exception{
+        // given
+        Map<String, String> body = Map.of("fcm_token", "fcm_token");
+
+        // when & then
+        mockMvc.perform(post("/api/v1/users/fcm-token")
+                        .contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(body)))
+                .andExpect(status().isOk())
+                .andDo(document("users/fcm-token",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("fcm_token").type(JsonFieldType.STRING).description("FCM 토큰")
+                        )
+                ));
     }
 
     @Test
@@ -556,4 +567,25 @@ class UserControllerTest {
 
 
 
+}
+
+    @Test
+    @DisplayName("로그아웃")
+    void logout() throws Exception {
+        // given
+        Map<String, String> body = Map.of("fcm_token", "fcm_token");
+
+        // when & then
+        mockMvc.perform(post("/api/v1/users/logout")
+                        .contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(body)))
+                .andExpect(status().isOk())
+                .andDo(document("users/logout",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("fcm_token").type(JsonFieldType.STRING).description("FCM 토큰")
+                        )
+                ));
+    }
 }

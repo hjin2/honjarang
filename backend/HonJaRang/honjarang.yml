@@ -76,11 +76,6 @@ spec:
                 secretKeyRef:
                   name: honjarang-secret
                   key: aws_s3_secret_key
-            - name: AWS_S3_BUCKET_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: honjarang-secret
-                  key: aws_s3_bucket_name
             - name: NAVER_CLIENT_ID
               valueFrom:
                 secretKeyRef:
@@ -91,6 +86,46 @@ spec:
                 secretKeyRef:
                   name: honjarang-secret
                   key: naver_client_secret
+            - name: RABBITMQ_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: rabbitmq_host
+            - name: RABBITMQ_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: rabbitmq_port
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: rabbitmq_username
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: rabbitmq_password
+            - name: RABBITMQ_STOMP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: rabbitmq_stomp_port
+            - name: REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: redis_host
+            - name: REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: redis_port
+            - name: FIRE_BASE_ADMIN_JSON
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: fire_base_admin_json
       imagePullSecrets:
         - name: honjarang-secret
 
