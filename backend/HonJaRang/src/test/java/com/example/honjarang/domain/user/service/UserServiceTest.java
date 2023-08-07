@@ -28,6 +28,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -75,9 +76,7 @@ class UserServiceTest {
     @Mock
     private S3Client s3Client;
 
-    //추가
-    @Mock
-    private S3UploadService s3UploadService;
+
     private User user;
     private EmailVerification emailVerification;
 
@@ -460,7 +459,7 @@ class UserServiceTest {
         // then
         assertThat(userInfoDto.getNickname()).isEqualTo("테스트");
         assertThat(userInfoDto.getEmail()).isEqualTo("test@test.com");
-        assertThat(userInfoDto.getProfileImage()).isEqualTo("test.jpg");
+        assertThat(userInfoDto.getProfileImage()).isEqualTo("https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/profileImage/test.jpg");
         assertThat(userInfoDto.getPoint()).isEqualTo(10000);
         assertThat(userInfoDto.getAddress()).isEqualTo("서울특별시 강남구");
         assertThat(userInfoDto.getLatitude()).isEqualTo(37.123456);
