@@ -29,9 +29,8 @@ public class JointDeliveryController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Void> createJointDelivery(@RequestBody JointDeliveryCreateDto dto, @CurrentUser User user) {
-        jointDeliveryService.createJointDelivery(dto, user);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Long> createJointDelivery(@RequestBody JointDeliveryCreateDto dto, @CurrentUser User user) {
+        return ResponseEntity.ok(jointDeliveryService.createJointDelivery(dto, user));
     }
 
     @DeleteMapping("/{jointDeliveryId}")
@@ -74,5 +73,10 @@ public class JointDeliveryController {
     public ResponseEntity<Void> confirmReceipt(@PathVariable Long jointDeliveryId, @CurrentUser User user) {
         jointDeliveryService.confirmReceived(jointDeliveryId, user);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Integer> getJointDeliveryPage(@RequestParam Integer size) {
+        return ResponseEntity.ok(jointDeliveryService.getJointDeliveryPageCount(size));
     }
 }

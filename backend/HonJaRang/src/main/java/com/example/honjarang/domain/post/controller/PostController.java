@@ -22,7 +22,7 @@ public class PostController {
 
     @PostMapping("")
     public ResponseEntity<Long> createPost(@Valid @RequestBody PostCreateDto postCreateDto, @CurrentUser User user) {
-        return ResponseEntity.created(null).body(postService.createPost(postCreateDto, user));
+        return ResponseEntity.status(201).body(postService.createPost(postCreateDto, user));
     }
 
     @DeleteMapping("/{id}")

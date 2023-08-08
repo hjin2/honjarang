@@ -29,28 +29,28 @@ public class TransactionService {
 
 
     @Transactional
-    public void createSecondHandTransaction(TransactionCreateDto dto, User user) {
-        transactionRepository.save(dto.toEntity(dto,user));
+    public Long createSecondHandTransaction(TransactionCreateDto dto, User user) {
+        return transactionRepository.save(dto.toEntity(dto, user)).getId();
     }
 
     @Transactional
-    public void updateSecondHandTransaction(TransactionUpdateDto dto, User user){
-        Transaction transaction = transactionRepository.findById(dto.getId()).orElseThrow(()->new TransactionException("게시글이 없습니다."));
+    public void updateSecondHandTransaction(TransactionUpdateDto dto, User user) {
+        Transaction transaction = transactionRepository.findById(dto.getId()).orElseThrow(() -> new TransactionException("게시글이 없습니다."));
         transaction.update(dto);
     }
 
     @Transactional
-    public void deleteSecondHandTransaction(Long transactionId){
-        Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(()-> new TransactionException("해당 게시글이 없습니다."));
+    public void deleteSecondHandTransaction(Long transactionId) {
+        Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new TransactionException("해당 게시글이 없습니다."));
         transactionRepository.delete(transaction);
     }
 
     @Transactional(readOnly = true)
-    public List<TransactionListDto> getSecondHandTransactions(Integer page, Integer size, String keyword){
-        Pageable pageable = Pageable.ofSize(size).withPage(page-1);
+    public List<TransactionListDto> getSecondHandTransactions(Integer page, Integer size, String keyword) {
+        Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
         List<Transaction> transactionList = transactionRepository.findAllByTitleContainingIgnoreCaseOrderByIdDesc(keyword, pageable);
         List<TransactionListDto> transactionListDtos = new ArrayList<>();
-        for(Transaction tmp : transactionList){
+        for (Transaction tmp : transactionList) {
             TransactionListDto transactionListDto = new TransactionListDto(tmp);
             transactionListDtos.add(transactionListDto);
         }
@@ -58,33 +58,30 @@ public class TransactionService {
     }
 
     @Transactional(readOnly = true)
-    public TransactionDto getSecondHandTransaction(Long transactionId){
-        Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(()->new TransactionException("존재하지 않는 거래입니다."));
+    public TransactionDto getSecondHandTransaction(Long transactionId) {
+        Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new TransactionException("존재하지 않는 거래입니다."));
         TransactionDto transactionDto = new TransactionDto(transaction);
         return transactionDto;
     }
 
     @Transactional
-    public void buySecondHandTransaction(Long transactionId, User user){
-        Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(()->new TransactionException("존재하지 않는 거래입니다."));
-        if(user.getPoint()<transaction.getPrice()){
+    public void buySecondHandTransaction(Long transactionId, User user) {
+        Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new TransactionException("존재하지 않는 거래입니다."));
+        if (user.getPoint() < transaction.getPrice()) {
             throw new InsufficientPointsException("포인트가 부족합니다.");
         }
-        User loginedUser = userRepository.findById(user.getId()).orElseThrow(()->new UserNotFoundException("존재하지 않는 사용자입니다."));
+        User loginedUser = userRepository.findById(user.getId()).orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다."));
         loginedUser.subtractPoint(transaction.getPrice());
         transaction.soldout(user);
         transaction.complete();
     }
 
     @Transactional
-    public void checkSecondHandTransaction(Long transactionId, User user){
-        Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(()->new TransactionException("존재하지 않는 거래입니다."));
+    public void checkSecondHandTransaction(Long transactionId, User user) {
+        Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new TransactionException("존재하지 않는 거래입니다."));
         transaction.receive();
-        User seller = userRepository.findById(transaction.getSeller().getId()).orElseThrow(()->new UserNotFoundException("존재하지 않는 사용자입니다."));
+        User seller = userRepository.findById(transaction.getSeller().getId()).orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다."));
         seller.addPoint(transaction.getPrice());
 
     }
-
-
-
 }

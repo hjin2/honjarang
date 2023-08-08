@@ -24,6 +24,8 @@ import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -31,6 +33,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
@@ -94,6 +97,7 @@ public class PostControllerTest {
                 .nickname("테스트닉네임")
                 .createdAt("2030-01-01 00:00:00")
                 .build();
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null));
     }
     @Test
     @WithMockUser
@@ -104,18 +108,22 @@ public class PostControllerTest {
         String content = "content";
 
         PostCreateDto postCreateDto = new PostCreateDto(title, content);
+        given(postService.createPost(any(PostCreateDto.class), any(User.class))).willReturn(1L);
+
         // when & then
         mockMvc.perform(post("/api/v1/posts")
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(postCreateDto)))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$").value(1L))
                 .andDo(document("/posts/write",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
                                 fieldWithPath("title").description("게시글 제목"),
                                 fieldWithPath("content").description("게시글 내용")
-                        )
+                        ),
+                        responseBody()
                 ));
     }
 

@@ -24,6 +24,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,13 +59,23 @@ public class JointDeliveryService {
     public List<StoreListDto> getStoreListByApi(String keyword) {
         String url = "https://map.naver.com/v5/api/search";
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("referer", "https://map.naver.com/v5/search");
+
         URI targetUrl = UriComponentsBuilder
                 .fromUriString(url)
                 .queryParam("query", keyword)
+                .queryParam("caller", "pcweb")
+                .queryParam("type", "all")
+                .queryParam("searchCoord", "126.97838878631592;37.56661019999999")
+                .queryParam("page", "1")
+                .queryParam("displayCount", "20")
+                .queryParam("isPlaceRecommendationReplace", "true")
+                .queryParam("lang", "ko")
                 .build()
                 .encode(StandardCharsets.UTF_8)
                 .toUri();
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(targetUrl, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(targetUrl, HttpMethod.GET, new HttpEntity<>(headers), String.class);
 
         try {
             JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
@@ -120,7 +133,7 @@ public class JointDeliveryService {
         Element script = document.select("script").get(2);
         String scriptData = script.data();
         String[] splitData = scriptData.split("window.__APOLLO_STATE__ = ");
-        String[] splitData2 = splitData[1].split(";");
+        String[] splitData2 = splitData[1].split("window.__PLACE_STATE__");
         try {
             JsonNode jsonNode = objectMapper.readTree(splitData2[0]);
             Iterator<String> iterator = jsonNode.fieldNames();
@@ -132,7 +145,7 @@ public class JointDeliveryService {
                             .storeId(storeId)
                             .name(menuNode.get("name").asText())
                             .price(menuNode.get("price").asInt())
-                            .image(menuNode.get("images").get(0).asText())
+                            .image(menuNode.get("images").get(0) != null ? menuNode.get("images").get(0).asText() : null)
                             .build();
                     menuList.add(menu);
                 }
@@ -144,7 +157,7 @@ public class JointDeliveryService {
     }
 
     @Transactional
-    public void createJointDelivery(JointDeliveryCreateDto jointDeliveryCreateDto, User loginUser) {
+    public Long createJointDelivery(JointDeliveryCreateDto jointDeliveryCreateDto, User loginUser) {
         User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
         if (user.getPoint() < 1000) {
             throw new InsufficientPointsException("포인트가 부족합니다.");
@@ -171,6 +184,7 @@ public class JointDeliveryService {
                 .user(user)
                 .isReceived(true)
                 .build());
+        return jointDelivery.getId();
     }
 
     private String fetchHtmlByStoreId(Long storeId) {
@@ -368,5 +382,10 @@ public class JointDeliveryService {
         if(refundPoint > 0) {
             user.addPoint(refundPoint);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getJointDeliveryPageCount(Integer size) {
+        return (int) Math.ceil((double) jointDeliveryRepository.countByIsCanceledFalseAndDeadlineAfter(LocalDateTime.now()) / size);
     }
 }
