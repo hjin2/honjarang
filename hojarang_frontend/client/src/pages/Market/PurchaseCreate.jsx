@@ -79,7 +79,7 @@ export default function PurchaseCreate() {
         <input type="text" 
         value={placeKeyword}
         onChange={(e) => setPlaceKeyword(e.target.value)}/>
-        <button type="button" className="main2-button w-20  ml-2">주소검색</button>
+        <button type="button" className="main2-button w-20 ml-2">주소검색</button>
       </div>
       <div>
         <div>상품소개</div>
