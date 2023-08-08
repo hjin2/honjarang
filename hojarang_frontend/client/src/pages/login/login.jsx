@@ -13,9 +13,9 @@ export default function Login() {
 
   const navigate = useNavigate()
   const goMypage = () => {
-    navigate('/mypage/:nickname')
+    const id = localStorage.getItem("user_id")
+    navigate(`/mypage/${id}`)
   };
-  
   const login = () => {
     axios.post('http://honjarang.kro.kr:30000/api/v1/users/login', {
       email: Email,

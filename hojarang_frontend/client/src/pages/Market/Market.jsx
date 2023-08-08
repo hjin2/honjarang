@@ -3,6 +3,7 @@ import Content from '../../components/Common/Content';
 import DeliveryRoom from '../../components/Market/DeliveryRoom';
 import PurchaseRoom from '../../components/Market/PurchaseRoom';
 import TransactionRoom from '../../components/Market/TransactionRoom';
+import PurchaseList from '../../components/Market/PurchaseList';
 import { useEffect, useState } from 'react';
 
 import Rooms from '../../components/Market/Rooms';
@@ -11,27 +12,29 @@ import axios from 'axios';
 
 export default function Market() {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
-  // const [purchaseData, setPurchaseData] = useState([]);
+  const [purchaseData, setPurchaseData] = useState([]);
+  const URL = import.meta.env.VITE_APP_API
+  const token = localStorage.getItem("access_token")
   // const [deliveryData, setDeliveryData] = useState([]);
   // const [transactionData, setTransactionData] = useState([]);
 
-  const purchaseData =[
-    {id:'1', product_name: '젤리젤리1', image: "/src/assets/panda-bear.png", deadline:'2023-08-05', current_person_count:'3', target_person_count:'5', price:'12345000'},
-    {id:'2', product_name: 'ㅁㅁ', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'4000'},
-    {id:'3', product_name: '상ㅇㄹ', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'12333'},
-    {id:'4', product_name: '상ㅇㄹㄴㅁ', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'1222'},
-    {id:'5', product_name: 'ㄷㄷ', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'},
-    {id:'6', product_name: '빈츠', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'},
-    {id:'7', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'},
-    {id:'8', product_name: '김재욱바보', image: "/src/assets/panda-bear.png", deadline:'2088-07-18', current_person_count:'1', target_person_count:'2', price:'718000'},
-    {id:'9', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'},
-    {id:'10', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'},
-    {id:'11', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'}, 
-    {id:'12', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'}, 
-    {id:'13', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'}, 
-    {id:'14', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'}, 
-    {id:'15', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'}, 
-  ]
+  // const purchaseData =[
+  //   {id:'1', product_name: '젤리젤리1', image: "/src/assets/panda-bear.png", deadline:'2023-08-05', current_person_count:'3', target_person_count:'5', price:'12345000'},
+  //   {id:'2', product_name: 'ㅁㅁ', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'4000'},
+  //   {id:'3', product_name: '상ㅇㄹ', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'12333'},
+  //   {id:'4', product_name: '상ㅇㄹㄴㅁ', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'1222'},
+  //   {id:'5', product_name: 'ㄷㄷ', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'},
+  //   {id:'6', product_name: '빈츠', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'},
+  //   {id:'7', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'},
+  //   {id:'8', product_name: '김재욱바보', image: "/src/assets/panda-bear.png", deadline:'2088-07-18', current_person_count:'1', target_person_count:'2', price:'718000'},
+  //   {id:'9', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'},
+  //   {id:'10', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'},
+  //   {id:'11', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'}, 
+  //   {id:'12', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'}, 
+  //   {id:'13', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'}, 
+  //   {id:'14', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'}, 
+  //   {id:'15', product_name: '상품이름', image: "/src/assets/panda-bear.png", deadline:'마감기한', current_person_count:'현재 인원', target_person_count:'목표인원', price:'상품가격'}, 
+  // ]
   
 
   const deliveryData = [
@@ -55,13 +58,14 @@ export default function Market() {
   ]
 
   // useEffect(() => {
-  //   axios.get('http://honjarang.kro.kr:30000/api/v1/joint-purchases')
+  //   axios.get(`${URL}/api/v1/joint-purchases`,{params : {page : page, size : size},headers:{"Authorization" : `Bearer ${token}`}})
   //   .then((res) => {
   //     setPurchaseData(res.data)
   //   })
   //   .catch((err) => {
   //     console.log(err)
   //   })
+  // })
 
   //   axios.get('http://honjarang.kro.kr:30000/api/v1/joint-deliveries')
   //   .then((res) => {
@@ -85,7 +89,7 @@ export default function Market() {
   const tabs = [
     {
       title: '공동구매',
-      content: <Rooms roomsData={purchaseData} component={PurchaseRoom}/>,
+      content: <PurchaseList/>,
       recruit: <Link to="/market/purchase/create">모집하기</Link>
     },
     {

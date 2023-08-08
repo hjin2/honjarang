@@ -1,13 +1,26 @@
 import React, {useEffect, useState} from 'react'
 import { useParams } from 'react-router';
-import PurchaseDetailProduct from './PurchaseDetailProduct';
-import PurchaseDetailPlace from './PurchaseDetailPlace';
+import PurchaseDetailProduct from '../../components/Market/PurchaseDetailProduct';
+import PurchaseDetailPlace from '../../components/Market/PurchaseDetailPlace';
 import axios from 'axios';
-import PurchaseApply from './PurchaseApply';
+import PurchaseApply from '../../components/Market/PurchaseApply';
 
 export default function PurchaseDetail() {
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const URL = import.meta.env.VITE_APP_API
+  const token = localStorage.getItem('access_token')
 
-  const params = useParams();
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000); // 1초마다 업데이트
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  const id = useParams().id;
   // const[detail, setDetail] = useState([])
   const [detail, setDetail] = useState({
     id: 1, 
@@ -28,15 +41,16 @@ export default function PurchaseDetail() {
   });
 
   
-  // useEffect(() => {
-  //   axios.get('http://honjarang.kro.kr:30000/api/v1/joint-purchases/${id}')
-  //   .then((res) => {
-  //     setDetail(res.data)
-  //   })
-  //   .catch((err) => {
-  //     console.log(err)
-  //   })
-  // }, [id]);
+  useEffect(() => {
+    axios.get(`${URL}/api/v1/joint-purchases/${id}`, {headers: {"Authorization" : `Bearer ${token}`}})
+    .then((res) => {
+      console.log(res.data)
+      setDetail(res.data)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }, [id]);
 
   // if (!detail) {
   //   return <div>Loading</div>
@@ -70,7 +84,15 @@ export default function PurchaseDetail() {
     setQuantity(isNaN(inputQuantity) ? 0 : Math.max(0, inputQuantity));
     // setQuantity(inputQuantity === '' ? '' : Math.max(0, parseInt(inputQuantity)));
   };
- 
+  const handleCheck = () =>{
+
+  }
+  const deadline = new Date(detail.deadline)
+  const timeDiff = deadline - currentTime;
+  const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
   return (
     <div>
@@ -88,12 +110,12 @@ export default function PurchaseDetail() {
           </div>
         </div>
         <hr />
-        <div>
-          <div className="">
+        <div className="space-y-2">
+          <div className="space-x-2">
             <button onClick={() => handleTabClick('purchase_detail_product')} 
-            className={`mr-2 ${activeTab === 'purchase_detail_product' ? 'font-semibold underline' : 'font-normal'}`} >상품 설명</button>
+            className={`mr-2 ${activeTab === 'purchase_detail_product' ? 'font-semibold' : 'font-normal'}`} >상품 설명</button>
             <button onClick={() => handleTabClick('purchase_detail_place')}
-            className={`${activeTab === 'purchase_detail_place' ? 'font-semibold underline' : 'font-normal'}`}>만남 장소</button>
+            className={`${activeTab === 'purchase_detail_place' ? 'font-semibold' : 'font-normal'}`}>만남 장소</button>
           </div>
           <div>
           {activeTab === 'purchase_detail_product' && (
@@ -101,18 +123,28 @@ export default function PurchaseDetail() {
             )}
           {activeTab === 'purchase_detail_place' && (
             <PurchaseDetailPlace
-            place_name={detail.place_name}
-            place_latitude={detail.place_latitude}
-            place_longitude={detail.place_longitude}
+              latitude={detail.place_latitude}
+              longitude={detail.place_longitude}
             />
             )}
           </div>
         </div>
       </div>
         <div className="border rounded-lg max-w-2xl mx-auto mt-5 mb-10 pb-3 p-5 space-y-5 flex flex-col items-center">
-          <p>마감일자 {detail.deadline}</p>
-          <p>{detail.current_person_count}/{detail.target_person_count}</p>
-          <button onClick={handleToggleAside}>공동구매 신청</button>
+          {timeDiff > 0 ? (
+            <div>
+              <div>{detail.latitude}</div>
+              <div className="text-main5">마감까지 남은 시간: {days}일 {hours}시간 {minutes}분 {seconds}초</div>
+              <div className="text-main2">{detail.current_person_count}/{detail.target_person_count}(현재인원 / 목표인원)</div>
+            </div>
+          ):(
+            <div className="text-main5">모집 마감</div>
+          )}
+          {timeDiff > 0 ? (
+            <button onClick={handleToggleAside} className="main1-full-button w-40">공동구매 신청</button>
+          ):(
+            <button onClick={handleCheck} className='main1-full-button w-40'>수령확인</button>
+          )}
           <PurchaseApply 
             isAsideOpen={isAsideOpen}
             handleToggleAside={handleToggleAside}
@@ -121,39 +153,11 @@ export default function PurchaseDetail() {
             handleDecrement={handleDecrement}
             handleChange={handleChange}
             detail={detail}
+            user_id={detail.user_id}
+            price = {detail.price}
+            delivery_charge={detail.delivery_charge}
           />
-
-          {/* {isAsideOpen && (
-            <aside 
-              className={`${
-                isAsideOpen ? 'fixed bottom-0 left-1/2 transform -translate-x-1/2 h-48 w-4/5 bg-white border p-4 rounded-t-lg' : 'hidden'
-              }`}
-            >
-              <div className="flex flex-col items-center">
-                <button onClick={handleToggleAside}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                  </svg>
-                </button>
-                <div>
-                  <button onClick={handleDecrement} data-quantity="minus">
-                    -
-                  </button>
-                  <input type="number" name="quantity" value={quantity} onChange={handleChange} />
-                  <button onClick={handleIncrement} data-quantity="plus">
-                    +
-                  </button>
-                </div>
-                <h2 className="">개수</h2>
-                <p className="">현재 포인트</p>
-                <p className="">차감 포인트</p>
-                <p className="">차감 후 포인트</p>
-                <button type="button" className="main1-full-button w-20">구매하기</button>
-              </div>
-            </aside>
-          )} */}
         </div>
-      
     </div>
   )
 }

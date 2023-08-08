@@ -1,19 +1,6 @@
-// import React from 'react'
-
-// export default function PurchaseApply() {
-//   c
-//   return (
-//     <div>
-
-
-//     </div>
-//   )
-// }
-
-import React from 'react';
-
-
-const PurchaseApply = ({
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+export default function  PurchaseApply({
   isAsideOpen,
   handleToggleAside,
   quantity,
@@ -21,7 +8,26 @@ const PurchaseApply = ({
   handleDecrement,
   handleChange,
   detail,
-}) => {
+  user_id,
+  price,
+  delivery_charge
+}){
+  const token = localStorage.getItem("access_token")
+  const URL = import.meta.env.VITE_APP_API
+  const [point, setPoint] = useState(0)
+  // useEffect(()=>{
+  //   axios.get(`${URL}/api/v1/users/info`,{
+  //     params:{id:user_id},
+  //     headers:{"Authorization" : `Bearer ${token}`}
+  //   })
+  //   .then((res) => {
+  //     console.log(res.data)
+  //     setPoint(res)
+  //   })
+  //   .catch((err)=>{
+  //     console.log(err)
+  //   })
+  // },[])
   return (
     <>
       {isAsideOpen && (
@@ -63,7 +69,7 @@ const PurchaseApply = ({
                 +
               </button>
             </div>
-            <h2 className="">개수</h2>
+            <h2 className="">개수 {quantity}개</h2>
             <p className="">현재 포인트</p>
             <p className="">차감 포인트</p>
             <p className="">차감 후 포인트</p>
@@ -75,7 +81,4 @@ const PurchaseApply = ({
       )}
     </>
   );
-};
-
-export default PurchaseApply;
-
+}

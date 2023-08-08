@@ -1,10 +1,11 @@
-import UserVideoComponent from "./UserVideoComponent"
+import UserVideoComponent from "../../components/WebRTC/UserVideoComponent"
 import { useState, useRef, useCallback, useEffect } from "react"
 import { OpenVidu } from "openvidu-browser";
-import { createSession, createToken } from "./Util";
+import { createSession, createToken } from "../../components/WebRTC/Util";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import { handleSession } from "../../redux/slice/sessionSlice";
 
 export default function FreeChat() {
   const [session, setSession] = useState(undefined)
@@ -15,6 +16,7 @@ export default function FreeChat() {
   const nickname = useSelector((state) => state.userinfo.nickname)
   const navigate = useNavigate()
   const OV = useRef(new OpenVidu)
+  const asession = useSelector((state) => state.session.session)
   const [publishVideo, setPublishVideo] = useState(true)
   const [publishAudio, setPublishAudio] = useState(true)
   const leaveSession = useCallback(() => {
@@ -30,6 +32,7 @@ export default function FreeChat() {
     setPublisher(undefined);
     navigate('/webrtc')
   }, [session]);
+
 
   const getToken = useCallback(async () => {
     return createSession(mySessionId).then(sessionId =>
@@ -66,9 +69,45 @@ export default function FreeChat() {
 
     setSession(mySession);
   }, []);
+//   useEffect(() => {
+//     const listenBackEvent = () => {
+//       console.log(1)
+//       console.log(session)
+//     };
+
+//     const unlistenHistoryEvent = history.listen(({ action }) => {
+//       if (action === "POP") {
+//         listenBackEvent();
+//       }
+//     });
+
+//     return unlistenHistoryEvent;
+//   }, [
+//   // effect에서 사용하는 state를 추가
+// ]);
+  // useEffect(() => {
+  //   const handleBackButton = (event) => {
+  //     console.log('뒤로가기 버튼이 눌렸습니다.');
+  //     leaveSession()
+  //     // 추가적인 동작을 여기에 작성하세요.
+  //   };
+
+  //   window.onpopstate = handleBackButton()
+
+  //   return () => {
+  //     // 컴포넌트가 언마운트될 때 이벤트 리스너 해제
+  //     // window.removeEventListener('popstate', handleBackButton);
+  //   };
+  // }, [leaveSession]);
+
   useEffect(() => {
     joinSession()
   },[])
+  useEffect(()=>{
+    handleSession(session)
+
+  },[session])
+
   useEffect(() => {
     if (session) {
         // Get a token from the OpenVidu deployment
