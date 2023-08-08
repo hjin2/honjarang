@@ -22,9 +22,8 @@ public class TransactionController {
 
 
     @PostMapping("")
-    public ResponseEntity<Void> createSecondHandTransaction(@RequestBody TransactionCreateDto dto, @CurrentUser User user) {
-        transactionService.createSecondHandTransaction(dto, user);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Long> createSecondHandTransaction(@RequestBody TransactionCreateDto dto, @CurrentUser User user) {
+        return ResponseEntity.ok(transactionService.createSecondHandTransaction(dto, user));
     }
 
     @PutMapping("/{transactionId}")

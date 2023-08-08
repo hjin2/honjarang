@@ -12,4 +12,5 @@ import java.time.LocalDateTime;
 public interface JointPurchaseRepository extends JpaRepository<JointPurchase, Long> {
 
     Page<JointPurchase> findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(LocalDateTime now, Pageable pageable);
+    Integer countByIsCanceledFalseAndDeadlineAfter(LocalDateTime now);
 }

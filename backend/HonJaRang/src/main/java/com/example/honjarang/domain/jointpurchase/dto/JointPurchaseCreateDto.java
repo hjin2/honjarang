@@ -19,8 +19,10 @@ public class JointPurchaseCreateDto {
     private Integer price;
     private Integer deliveryCharge;
     private String placeKeyword;
+    private Double latitude;
+    private Double longitude;
 
-    public JointPurchase toEntity(JointPurchaseCreateDto jointPurchaseCreateDto, User user, String image, PlaceDto placeDto) {
+    public JointPurchase toEntity(JointPurchaseCreateDto jointPurchaseCreateDto, User user, String image) {
         return JointPurchase.builder()
                 .content(jointPurchaseCreateDto.getContent())
                 .deadline(DateTimeUtils.parseLocalDateTime(jointPurchaseCreateDto.getDeadline()))
@@ -29,9 +31,9 @@ public class JointPurchaseCreateDto {
                 .image(image)
                 .price(jointPurchaseCreateDto.getPrice())
                 .deliveryCharge(jointPurchaseCreateDto.getDeliveryCharge())
-                .placeName(placeDto.getPlaceName())
-                .latitude(placeDto.getLatitude())
-                .longitude(placeDto.getLongitude())
+                .placeName(jointPurchaseCreateDto.getPlaceKeyword())
+                .latitude(jointPurchaseCreateDto.getLatitude())
+                .longitude(jointPurchaseCreateDto.getLongitude())
                 .user(user)
                 .build();
     }

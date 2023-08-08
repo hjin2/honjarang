@@ -86,25 +86,10 @@ class MapServiceTest {
 
     @Test
     @DisplayName("출발지와 도착지의 거리 조회 성공")
-    void getDistance() throws JsonProcessingException {
+    void getDistance() {
         // given
         CoordinateDto startCoordinateDto = new CoordinateDto(37.123456, 127.123456);
         CoordinateDto endCoordinateDto = new CoordinateDto(37.123456, 127.123456);
-        String responseBody = """
-                {
-                   "routes": [
-                      {
-                         "summary": {
-                            "distance": 0
-                         }
-                      }
-                   ]
-                }""";
-        ResponseEntity<String> responseEntity = ResponseEntity.ok(responseBody);
-        JsonNode jsonNode = new ObjectMapper().readTree(responseEntity.getBody());
-
-        given(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class))).willReturn(responseEntity);
-        given(objectMapper.readTree(eq(responseEntity.getBody()))).willReturn(jsonNode);
 
         // when
         Integer distance = mapService.getDistance(startCoordinateDto, endCoordinateDto);

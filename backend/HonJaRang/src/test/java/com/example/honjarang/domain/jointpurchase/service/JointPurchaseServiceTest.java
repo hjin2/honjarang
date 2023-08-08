@@ -105,7 +105,7 @@ class JointPurchaseServiceTest {
     @DisplayName("공동구매 생성 성공")
     void createJointPurchase_Success() throws JsonProcessingException {
         // given
-        JointPurchaseCreateDto jointPurchaseCreateDto = new JointPurchaseCreateDto("테스트 내용", "2030-01-01 00:00:00", 10, "테스트 상품", 10000, 2500,  "테스트 장소");
+        JointPurchaseCreateDto jointPurchaseCreateDto = new JointPurchaseCreateDto("테스트 내용", "2030-01-01 00:00:00", 10, "테스트 상품", 10000, 2500,  "테스트 장소", 37.123456, 127.123456);
         String responseBody = """
                 {
                     "items": [
@@ -126,12 +126,13 @@ class JointPurchaseServiceTest {
         JsonNode jsonNode = new ObjectMapper().readTree(responseBody);
         given(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class))).willReturn(responseEntity);
         given(objectMapper.readTree(responseEntity.getBody())).willReturn(jsonNode);
+        given(jointPurchaseRepository.save(any(JointPurchase.class))).willReturn(jointPurchase);
 
         // when
-        jointPurchaseService.createJointPurchase(jointPurchaseCreateDto, user);
+        Long jointPurchaseId = jointPurchaseService.createJointPurchase(jointPurchaseCreateDto, user);
 
         // then
-
+        assertThat(jointPurchaseId).isEqualTo(1L);
     }
 
     @Test
@@ -423,5 +424,18 @@ class JointPurchaseServiceTest {
 
         // when & then
         assertThrows(JointPurchaseAlreadyReceivedException.class, () -> jointPurchaseService.confirmReceived(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동구매 페이지 수 조회 성공")
+    void getJointPurchasePageCount_Success() {
+        // given
+        given(jointPurchaseRepository.countByIsCanceledFalseAndDeadlineAfter(any(LocalDateTime.class))).willReturn(1);
+
+        // when
+        Integer jointPurchasePageCount = jointPurchaseService.getJointPurchasePageCount(10);
+
+        // then
+        assertThat(jointPurchasePageCount).isEqualTo(1);
     }
 }
