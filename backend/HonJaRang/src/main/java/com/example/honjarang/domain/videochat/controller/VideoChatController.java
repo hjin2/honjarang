@@ -20,19 +20,21 @@ public class VideoChatController {
 
     private final VideoChatService videoChatService;
 
-    // 화상 채팅 방을 만드는 메소드
+    // 화상 채팅 방 생성
     @PostMapping("/sessions")
-    public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
+    public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params, @RequestBody String option)
             throws OpenViduJavaClientException, OpenViduHttpException {
-        return new ResponseEntity<>(videoChatService.initializeSession(params), HttpStatus.OK);
+        return new ResponseEntity<>(videoChatService.initializeSession(params, option), HttpStatus.OK);
     }
 
-    // 화상 채팅 방에 접속하는 메소드
+    // 화상 채팅 방 접속
     @PostMapping("/sessions/{sessionId}/connections")
     public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
                                                    @RequestBody(required = false) Map<String, Object> params)
             throws OpenViduJavaClientException, OpenViduHttpException {
         return new ResponseEntity<>(videoChatService.createConnection(sessionId, params),HttpStatus.OK);
     }
+
+    // 화상 채팅 방 목록 조회
 
 }
