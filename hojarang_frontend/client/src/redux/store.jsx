@@ -7,7 +7,7 @@ import sessionSlice from './slice/sessionSlice';
 // 스토어 생성
 const store = configureStore({
   reducer: {
-    login: loginSlice.reducer,
+    login: loginSlice,
     articles: articleSlice.reducer,
     userinfo : UserinfoSlice.reducer,
     session : sessionSlice.reducer,

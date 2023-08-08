@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Cart({ cartItems }) {
+export default function Cart({ modalState, setModalState, cartItems }) {
   return (
     <div className="border rounded-lg max-w-2xl mx-auto mt-10 p-5 space-y-5">
       <h2 className="text-2xl font-semibold mb-3">장바구니</h2>

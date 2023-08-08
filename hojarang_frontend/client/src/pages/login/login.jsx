@@ -2,10 +2,14 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { setLoginStatus } from '../../redux/slice/loginSlice';
 
 export default function Login() {
   const [Email, setEmail] = useState('')
   const [Pwd, setPwd] = useState('')
+  const isLogged = useSelector((state) => {state.login.isLogged})
+  const dispatch = useDispatch()
 
   const navigate = useNavigate()
   const goMypage = () => {
@@ -23,6 +27,7 @@ export default function Login() {
       localStorage.setItem('access_token', res.data.access_token)
       localStorage.setItem('refresh_token', res.data.refresh_token)
       localStorage.setItem('user_id', res.data.user_id)
+      dispatch(setLoginStatus(true))
       goMypage()
     })
     .catch((err) => {

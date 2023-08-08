@@ -1,23 +1,15 @@
 import { NavLink, Link } from 'react-router-dom';
-import { useState,useEffect } from 'react';
+// import { useState,useEffect } from 'react';
+import { useSelector,useDispatch } from 'react-redux'
+import { setLoginStatus } from '../../redux/slice/loginSlice';
 
 export default function Header() {
-  const [IsLogged, setIsLogged] = useState('')
-  
-  
-  useEffect(() => {
-    if (localStorage.length >= 3) {
-      setIsLogged(true)
-    } 
-    else {
-      setIsLogged(false)
-    }
-  })
-  
-
+  const IsLogged = useSelector((state) => state.login.isLogged)
+  const dispatch = useDispatch()
 
   const Clear = () => {
     localStorage.clear()
+    dispatch(setLoginStatus(false))
     alert('로그아웃 되었습니다.')
   }
   const id = localStorage.getItem("user_id")
