@@ -35,6 +35,9 @@ dependencies:
   dotenv:
     specifier: ^16.3.1
     version: 16.3.1
+  history:
+    specifier: ^5.3.0
+    version: 5.3.0
   nanoid:
     specifier: ^4.0.2
     version: 4.0.2
@@ -56,6 +59,9 @@ dependencies:
   react-dropdown:
     specifier: ^1.11.0
     version: 1.11.0(react-dom@18.2.0)(react@18.2.0)
+  react-js-pagination:
+    specifier: ^3.0.3
+    version: 3.0.3
   react-kakao-maps-sdk:
     specifier: ^1.1.11
     version: 1.1.11(react-dom@18.2.0)(react@18.2.0)
@@ -3745,6 +3751,13 @@ packages:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
     engines: {node: '>=8'}
 
+  /block-stream@0.0.9:
+    resolution: {integrity: sha512-OorbnJVPII4DuUKbjARAe8u8EfqOmkEEaSFIyoQ7OjTHn6kafxWl0wLgoZ2rXaYd7MyLcDaU4TmhfxtwgcccMQ==}
+    engines: {node: 0.4 || >=0.5.8}
+    dependencies:
+      inherits: 2.0.4
+    dev: false
+
   /bluebird@3.7.2:
     resolution: {integrity: sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==}
     dev: false
@@ -5523,6 +5536,16 @@ packages:
     requiresBuild: true
     optional: true
 
+  /fstream@1.0.12:
+    resolution: {integrity: sha512-WvJ193OHa0GHPEL+AycEJgxvBEwyfRkN1vhjca23OaPVMCaLCXTd5qAu82AjTcgP1UJmytkOKb63Ypde7raDIg==}
+    engines: {node: '>=0.6'}
+    dependencies:
+      graceful-fs: 4.2.11
+      inherits: 2.0.4
+      mkdirp: 0.5.6
+      rimraf: 2.7.1
+    dev: false
+
   /function-bind@1.1.1:
     resolution: {integrity: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==}
 
@@ -5728,6 +5751,12 @@ packages:
   /he@1.2.0:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
+    dev: false
+
+  /history@5.3.0:
+    resolution: {integrity: sha512-ZqaKwjjrAYUYfLG+htGaIIZ4nioX2L70ZUMIFysS3xvBsSG4x/n1V6TXV3N8ZYNuFGlDirFg32T7B6WOUPDYcQ==}
+    dependencies:
+      '@babel/runtime': 7.22.6
     dev: false
 
   /hoist-non-react-statics@3.3.2:
@@ -7466,6 +7495,10 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
+  /paginator@1.0.0:
+    resolution: {integrity: sha512-j2Y5AtF/NrXOEU9VVOQBGHnj81NveRQ/cDzySywqsWrAj+cxivMpMCkYJOds3ulQiDU4rQBWc0WoyyXMXOmuMA==}
+    dev: false
+
   /param-case@3.0.4:
     resolution: {integrity: sha512-RXlj7zCYokReqWpOPH9oYivUzLYZ5vAPIfEmCTNViosC78F8F0H9y7T7gG2M39ymgutxF5gcFEsyZQSph9Bp3A==}
     dependencies:
@@ -8575,6 +8608,17 @@ packages:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
     dev: false
 
+  /react-js-pagination@3.0.3:
+    resolution: {integrity: sha512-podyA6Rd0uxc8uQakXWXxnonoOPI6NnFOROXfc6qPKNYm44s+Bgpn0JkyflcfbHf/GFKahnL8JN8rxBHZiBskg==}
+    dependencies:
+      classnames: 2.3.2
+      fstream: 1.0.12
+      paginator: 1.0.0
+      prop-types: 15.8.1
+      react: 16.14.0
+      tar: 2.2.2
+    dev: false
+
   /react-kakao-maps-sdk@1.1.11(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-L3hHa7tvVCxEvU3R4DODctLQMNMEqUUkWweSgVrD/9qndeB3+Fk5FUUFRW5muVghwr4PQ2fzR1jhk6vO35TDaA==}
     peerDependencies:
@@ -8748,6 +8792,15 @@ packages:
       - webpack-cli
       - webpack-hot-middleware
       - webpack-plugin-serve
+    dev: false
+
+  /react@16.14.0:
+    resolution: {integrity: sha512-0X2CImDkJGApiAlcf0ODKIneSwBPhqJawOa5wCtKbu7ZECrmS26NvtSILynQ66cgkT/RJ4LidJOc3bUESwmU8g==}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      loose-envify: 1.4.0
+      object-assign: 4.1.1
+      prop-types: 15.8.1
     dev: false
 
   /react@18.2.0:
@@ -8968,6 +9021,13 @@ packages:
   /reusify@1.0.4:
     resolution: {integrity: sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==}
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
+
+  /rimraf@2.7.1:
+    resolution: {integrity: sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==}
+    hasBin: true
+    dependencies:
+      glob: 7.2.3
+    dev: false
 
   /rimraf@3.0.2:
     resolution: {integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==}
@@ -9651,6 +9711,15 @@ packages:
   /tapable@2.2.1:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
+    dev: false
+
+  /tar@2.2.2:
+    resolution: {integrity: sha512-FCEhQ/4rE1zYv9rYXJw/msRqsnmlje5jHP6huWeBZ704jUTy02c5AZyWujpMR1ax6mVw9NyJMfuK2CMDWVIfgA==}
+    deprecated: This version of tar is no longer supported, and will not receive security updates. Please upgrade asap.
+    dependencies:
+      block-stream: 0.0.9
+      fstream: 1.0.12
+      inherits: 2.0.4
     dev: false
 
   /temp-dir@2.0.0:

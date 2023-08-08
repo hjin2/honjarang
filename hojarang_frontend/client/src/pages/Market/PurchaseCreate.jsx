@@ -1,6 +1,7 @@
 import axios from 'axios'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import PurchaseMap from '../../components/Market/PurchaseMap'
 
 export default function PurchaseCreate() {
 
@@ -10,31 +11,32 @@ export default function PurchaseCreate() {
   const [productName, setProductName] = useState('')
   const [price, setPrice] = useState('')
   const [deliveryCharge, setDeliveryCharge] = useState('')
-  const [placeKeyword, setPlaceKeyword] = useState('')
-  
-  const navigate = useNavigate()
-  const goPurchaseDetail = () => {
-    navigate('/market/purchasedetail/:id')
-  }
+  const [position, setPosition] = useState()
+  const [placeName, setPlaceName] = useState()
 
+  const navigate = useNavigate()
+  const token = localStorage.getItem("access_token")
+  const URL = import.meta.env.VITE_APP_API
   const createPurchase = () => {
     const headers = {
-      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpc2NoYXJAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfQURNSU4iLCJpYXQiOjE2OTEyMDU5ODcsImV4cCI6MTY5MTIwOTU4N30.Q0pILeqA0jJXwAmGBX1xIisgsE_ya5_uxVBbMZX2HkM'
+      'Authorization': `Bearer ${token}`
     };
     const data = {
       content: content,
-      deadline: deadline,
-      target_person_count: targetPersonCount,
+      deadline: deadline.slice(0,10)+" "+deadline.slice(11,16)+":00",
+      target_person_count: Number(targetPersonCount),
       product_name: productName,
-      price: price,
-      delivery_charge: deliveryCharge,
-      place_keyword: placeKeyword
+      price: Number(price),
+      delivery_charge: Number(deliveryCharge),
+      place_keyword : placeName,
+      latitude : Number(position.lat),
+      longitude : Number(position.lng),
     };
-
-    axios.post('http://honjarang.kro.kr:30000/api/v1/joint-purchases', data, {headers})
+    console.log(data)
+    axios.post(`${URL}/api/v1/joint-purchases`, data, {headers})
     .then((res) => {
-      goPurchaseDetail()
       console.log(res.data)
+      navigate(`/market/purchasedetail/${res.data}`)
     })
     .catch((err) => {
       console.log(err)
@@ -52,15 +54,15 @@ export default function PurchaseCreate() {
       </div>
       <div>
         <div>상품 가격</div>
-        <input type="text"
+        <input type="number"
         value={price}
         onChange={(e) => setPrice(e.target.value)} />
       </div>
       <div>
         <div>배송비</div>
-        <input type="text"
-        value={deliveryCharge}
-        onChange={(e) => setDeliveryCharge(e.target.value)} />
+        <input type="number"
+          value={deliveryCharge}
+          onChange={(e) => setDeliveryCharge(e.target.value)} />
       </div>
       <div>
         <div>목표 인원 (최대 00명까지 입력 가능)</div>
@@ -70,15 +72,23 @@ export default function PurchaseCreate() {
       </div>
       <div>
         <div>마감기한 (최대 30일까지 가능)</div>
-        <input type="date"
+        <input type="datetime-local"
         value={deadline}
         onChange={(e) => setDeadline(e.target.value)} />
       </div>
       <div>
         <div>만남의 장소 (상품 수령지)</div>
-        <input type="text" 
+        <PurchaseMap
+          placeName={placeName}
+          setPlaceName = {setPlaceName}
+          position={position}
+          setPosition={setPosition}
+        />
+        {/* <input type="text" 
         value={placeKeyword}
         onChange={(e) => setPlaceKeyword(e.target.value)}/>
+        <button type="button" className="main2-button w-20  ml-2">주소검색</button> */}
+
         <button type="button" className="main2-button w-20 ml-2">주소검색</button>
       </div>
       <div>
@@ -88,10 +98,10 @@ export default function PurchaseCreate() {
         onChange={(e) => setContent(e.target.value)}
         ></textarea>
       </div>
-      <div>
+      {/* <div>
         <div>상품사진 첨부</div>
         <input type="file" />
-      </div>
+      </div> */}
       <div>
         <button type="button" className="main1-full-button w-20" 
         onClick={createPurchase}>작성완료</button>
