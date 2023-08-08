@@ -33,6 +33,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/chat").setAllowedOrigins("http://localhost:63342").withSockJS(); // WebSocket 연결을 위한 엔드포인트
+        registry.addEndpoint("/chat").setAllowedOrigins("http://localhost:63342", "http://localhost:3000", "http://honjarang.kro.kr:3000").withSockJS(); // WebSocket 연결을 위한 엔드포인트
     }
 }
