@@ -6,7 +6,7 @@ import UserinfoSlice from './slice/UserInfoSlice';
 // 스토어 생성
 const store = configureStore({
   reducer: {
-    login: loginSlice.reducer,
+    login: loginSlice,
     articles: articleSlice.reducer,
     userinfo : UserinfoSlice.reducer,
   },
