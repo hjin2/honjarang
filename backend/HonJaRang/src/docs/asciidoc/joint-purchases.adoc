@@ -13,7 +13,7 @@ operation::joint-purchases/apply[snippets='http-request,path-parameters,request-
 operation::joint-purchases/cancel[snippets='http-request,path-parameters']
 
 === 모집 생성
-operation::joint-purchases/create[snippets='http-request,request-fields']
+operation::joint-purchases/create[snippets='http-request,request-fields,response-body']
 
 === 상세 조회
 operation::joint-purchases/detail[snippets='http-request,path-parameters,response-fields']
@@ -23,3 +23,6 @@ operation::joint-purchases/list[snippets='http-request,response-fields']
 
 === 수령 확인
 operation::joint-purchases/received[snippets='http-request,path-parameters']
+
+=== 페이지 수 조회
+operation::joint-purchases/page[snippets='http-request,query-parameters,response-body']

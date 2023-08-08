@@ -3,7 +3,6 @@ package com.example.honjarang.domain.chat.controller;
 import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.chat.document.ChatMessage;
 import com.example.honjarang.domain.chat.dto.ChatMessageListDto;
-import com.example.honjarang.domain.chat.dto.ChatMessageSendDto;
 import com.example.honjarang.domain.chat.dto.ChatRoomListDto;
 import com.example.honjarang.domain.chat.entity.ChatRoom;
 import com.example.honjarang.domain.chat.service.ChatService;
@@ -30,7 +29,6 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -162,7 +160,7 @@ class ChatControllerTest {
     @DisplayName("채팅방 메시지 페이지 수 조회")
     void getChatMessagePage() throws Exception {
         // given
-        given(chatService.getChatMessagePage(1L, 10)).willReturn(1 );
+        given(chatService.getChatMessagePageCount(1L, 10)).willReturn(1 );
 
         // when & then
         mockMvc.perform(get("/api/v1/chats/{roomId}/page", 1L)

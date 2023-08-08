@@ -22,12 +22,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -37,8 +40,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -50,8 +52,6 @@ public class TransactionControllerTest {
 
     @MockBean
     private TransactionService transactionService;
-
-
 
     private User user;
     private Transaction transaction;
@@ -90,6 +90,7 @@ public class TransactionControllerTest {
                 .build();
         transaction.setIdForTest(1L);
         transaction.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2023-08-06 12:00:00"));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null));
     }
 
 
@@ -98,13 +99,14 @@ public class TransactionControllerTest {
     void createSecondHandTransaction() throws Exception {
         // given
         TransactionCreateDto transactionCreateDto = new TransactionCreateDto("타이틀", "내용", 30000);
-
+        given(transactionService.createSecondHandTransaction(any(TransactionCreateDto.class), any(User.class))).willReturn(1L);
 
         // when & then
         mockMvc.perform(post("/api/v1/secondhand-transactions")
-                .contentType("application/json")
-                .content(new ObjectMapper().writeValueAsString(transactionCreateDto)))
+                        .contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(transactionCreateDto)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(1L))
                 .andDo(document("transaction/create",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
@@ -112,20 +114,19 @@ public class TransactionControllerTest {
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("타이틀"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("내용"),
                                 fieldWithPath("price").type(JsonFieldType.NUMBER).description("가격")
-                        )
+                        ),
+                        responseBody()
                 ));
-
     }
-
 
     @Test
     @DisplayName("중고거래 게시글 수정")
     void updateSecondHandTransaction() throws Exception {
-        TransactionUpdateDto transactionUpdateDto = new TransactionUpdateDto(1L,"타이틀","내용",30000);
+        TransactionUpdateDto transactionUpdateDto = new TransactionUpdateDto(1L, "타이틀", "내용", 30000);
 
-        mockMvc.perform(put("/api/v1/secondhand-transactions/{transactionId}",1L)
-                .contentType("application/json")
-                .content(new ObjectMapper().writeValueAsString(transactionUpdateDto)))
+        mockMvc.perform(put("/api/v1/secondhand-transactions/{transactionId}", 1L)
+                        .contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(transactionUpdateDto)))
                 .andExpect(status().isOk())
                 .andDo(document("transaction/update",
                         preprocessRequest(prettyPrint()),
@@ -139,14 +140,14 @@ public class TransactionControllerTest {
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("거래 내용"),
                                 fieldWithPath("price").type(JsonFieldType.NUMBER).description("가격")
                         )
-                        ));
+                ));
     }
 
     @Test
     @DisplayName("중고거래 게시글 삭제")
     void deleteSecondHandTransaction() throws Exception {
 
-        mockMvc.perform(delete("/api/v1/secondhand-transactions/{transactionId}",1L))
+        mockMvc.perform(delete("/api/v1/secondhand-transactions/{transactionId}", 1L))
                 .andExpect(status().isOk())
                 .andDo(document("transaction/delete",
                         preprocessRequest(prettyPrint()),
@@ -154,7 +155,7 @@ public class TransactionControllerTest {
                         pathParameters(
                                 parameterWithName("transactionId").description("거래 ID")
                         )
-        ));
+                ));
     }
 
     @Test
@@ -163,13 +164,13 @@ public class TransactionControllerTest {
 
         // given
         List<TransactionListDto> transactionListDtos = List.of(new TransactionListDto(transaction));
-        given(transactionService.getSecondHandTransactions(1,15,"")).willReturn(transactionListDtos);
+        given(transactionService.getSecondHandTransactions(1, 15, "")).willReturn(transactionListDtos);
 
         mockMvc.perform(get("/api/v1/secondhand-transactions")
-                .contentType("application/json")
-                .param("page","1")
-                .param("size","15")
-                .param("keyword",""))
+                        .contentType("application/json")
+                        .param("page", "1")
+                        .param("size", "15")
+                        .param("keyword", ""))
                 .andExpect(status().isOk())
                 .andDo(document("transaction/list",
                         preprocessRequest(prettyPrint()),
@@ -194,7 +195,7 @@ public class TransactionControllerTest {
         TransactionDto transactionDto = new TransactionDto(transaction);
         given(transactionService.getSecondHandTransaction(1L)).willReturn(transactionDto);
 
-        mockMvc.perform(get("/api/v1/secondhand-transactions/{transactionId}",1L))
+        mockMvc.perform(get("/api/v1/secondhand-transactions/{transactionId}", 1L))
                 .andExpect(status().isOk())
                 .andDo(document("transaction/detail",
                         preprocessRequest(prettyPrint()),
@@ -212,7 +213,7 @@ public class TransactionControllerTest {
                                 fieldWithPath("is_completed").type(JsonFieldType.BOOLEAN).description("판매 유무"),
                                 fieldWithPath("created_at").type(JsonFieldType.STRING).description("작성 날짜")
                         )
-                        ));
+                ));
     }
 
 
@@ -232,7 +233,7 @@ public class TransactionControllerTest {
     @Test
     @DisplayName("중고거래 상품 수령확인")
     void checkSecondHandTransaction() throws Exception {
-        mockMvc.perform(put("/api/v1/secondhand-transactions/{transactionId}/check",1L))
+        mockMvc.perform(put("/api/v1/secondhand-transactions/{transactionId}/check", 1L))
                 .andDo(document("transaction/receipt",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
@@ -241,7 +242,6 @@ public class TransactionControllerTest {
                         ))
                 );
     }
-
 
 
 }

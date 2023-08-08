@@ -1,7 +1,6 @@
 package com.example.honjarang.domain.chat.controller;
 
 
-import com.example.honjarang.domain.chat.dto.ChatMessageCreateDto;
 import com.example.honjarang.domain.chat.dto.ChatMessageListDto;
 import com.example.honjarang.domain.chat.dto.ChatMessageSendDto;
 import com.example.honjarang.domain.chat.dto.ChatRoomListDto;
@@ -10,8 +9,6 @@ import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.security.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -54,6 +51,6 @@ public class ChatController {
 
     @GetMapping("/{roomId}/page")
     public ResponseEntity<Integer> getChatMessagePage(@PathVariable Long roomId, @RequestParam Integer size) {
-        return ResponseEntity.ok(chatService.getChatMessagePage(roomId, size));
+        return ResponseEntity.ok(chatService.getChatMessagePageCount(roomId, size));
     }
 }
