@@ -9,9 +9,9 @@ export default function Login() {
 
   const navigate = useNavigate()
   const goMypage = () => {
-    navigate('/mypage/:nickname')
+    const id = localStorage.getItem("user_id")
+    navigate(`/mypage/${id}`)
   };
-  
   const login = () => {
     axios.post('http://honjarang.kro.kr:30000/api/v1/users/login', {
       email: Email,
@@ -20,10 +20,10 @@ export default function Login() {
     )
     .then((res)=>{
       console.log(res.data)
-      goMypage()
       localStorage.setItem('access_token', res.data.access_token)
       localStorage.setItem('refresh_token', res.data.refresh_token)
       localStorage.setItem('user_id', res.data.user_id)
+      goMypage()
     })
     .catch((err) => {
       console.log(err)
