@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/users/test").permitAll()
                         .requestMatchers("/api/v1/users/login").permitAll()
                         .requestMatchers("/api/v1/users/signup").permitAll()
+                        .requestMatchers("/api/v1/video-room/**").permitAll()
                         .requestMatchers("/api/v1/users/refresh").permitAll()
                         .requestMatchers("/api/v1/users/check-nickname").permitAll()
                         .requestMatchers("/api/v1/users/send-verification-code").permitAll()
