@@ -248,6 +248,17 @@ class UserServiceTest {
         assertThrows(DuplicateNicknameException.class, () -> userService.checkNickname("테스트"));
     }
 
+    @Test
+    @DisplayName("이메일 중복 체크 성공")
+    void checkEmail_Success() {
+        // given
+        given(userRepository.existsByEmail("test@test.com")).willReturn(false);
+
+        // when
+        userService.checkEmail("test@test.com");
+
+        // then
+    }
 
     @Test
     @DisplayName("비밀번호 변경 성공")
@@ -488,8 +499,6 @@ class UserServiceTest {
         assertThrows(UserNotFoundException.class, ()->userService.getUserInfo(user.getId()));
 
     }
-
-
 
     @Test
     @DisplayName("FCM 토큰 등록 성공")

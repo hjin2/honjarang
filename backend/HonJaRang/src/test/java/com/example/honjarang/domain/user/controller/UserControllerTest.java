@@ -216,6 +216,24 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("이메일 중복 검사")
+    void checkEmail() throws Exception{
+        // given
+
+        // when & then
+        mockMvc.perform(get("/api/v1/users/check-email")
+                        .param("email", "test@test.com"))
+                .andExpect(status().isOk())
+                .andDo(document("users/check-email",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("email").description("이메일")
+                        )
+                ));
+    }
+
+    @Test
     @DisplayName("회원가입")
     void signup() throws Exception {
         // given

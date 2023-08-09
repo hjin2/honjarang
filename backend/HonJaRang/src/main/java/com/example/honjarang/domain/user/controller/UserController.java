@@ -54,6 +54,12 @@ public class UserController {
         return ResponseEntity.ok(tokenDto);
     }
 
+    @GetMapping("/check-email")
+    public ResponseEntity<Void> checkEmail(@RequestParam String email) {
+        userService.checkEmail(email);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/send-verification-code")
     public ResponseEntity<Void> sendVerificationCode(@RequestBody Map<String, String> body) {
         emailService.sendVerificationCode(body.get("email"));
