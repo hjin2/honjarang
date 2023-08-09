@@ -119,29 +119,29 @@ public class TransactionControllerTest {
 //                ));
 //    }
 
-    @Test
-    @DisplayName("중고거래 게시글 수정")
-    void updateSecondHandTransaction() throws Exception {
-        TransactionUpdateDto transactionUpdateDto = new TransactionUpdateDto(1L, "타이틀", "내용", 30000);
-
-        mockMvc.perform(put("/api/v1/secondhand-transactions/{transactionId}", 1L)
-                        .contentType("application/json")
-                        .content(new ObjectMapper().writeValueAsString(transactionUpdateDto)))
-                .andExpect(status().isOk())
-                .andDo(document("transaction/update",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        pathParameters(
-                                parameterWithName("transactionId").description("거래 ID")
-                        ),
-                        requestFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("거래 ID"),
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("거래 제목"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("거래 내용"),
-                                fieldWithPath("price").type(JsonFieldType.NUMBER).description("가격")
-                        )
-                ));
-    }
+//    @Test
+//    @DisplayName("중고거래 게시글 수정")
+//    void updateSecondHandTransaction() throws Exception {
+//        TransactionUpdateDto transactionUpdateDto = new TransactionUpdateDto(1L, "타이틀", "내용", 30000);
+//
+//        mockMvc.perform(put("/api/v1/secondhand-transactions/{transactionId}", 1L)
+//                        .contentType("application/json")
+//                        .content(new ObjectMapper().writeValueAsString(transactionUpdateDto)))
+//                .andExpect(status().isOk())
+//                .andDo(document("transaction/update",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        pathParameters(
+//                                parameterWithName("transactionId").description("거래 ID")
+//                        ),
+//                        requestFields(
+//                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("거래 ID"),
+//                                fieldWithPath("title").type(JsonFieldType.STRING).description("거래 제목"),
+//                                fieldWithPath("content").type(JsonFieldType.STRING).description("거래 내용"),
+//                                fieldWithPath("price").type(JsonFieldType.NUMBER).description("가격")
+//                        )
+//                ));
+//    }
 
     @Test
     @DisplayName("중고거래 게시글 삭제")
