@@ -22,18 +22,18 @@ public class JointPurchaseCreateDto {
     private Double latitude;
     private Double longitude;
 
-    public JointPurchase toEntity(JointPurchaseCreateDto jointPurchaseCreateDto, User user, String image) {
+    public JointPurchase toEntity(User user, String image) {
         return JointPurchase.builder()
-                .content(jointPurchaseCreateDto.getContent())
-                .deadline(DateTimeUtils.parseLocalDateTime(jointPurchaseCreateDto.getDeadline()))
-                .targetPersonCount(jointPurchaseCreateDto.getTargetPersonCount())
-                .productName(jointPurchaseCreateDto.getProductName())
+                .content(content)
+                .deadline(DateTimeUtils.parseLocalDateTime(deadline))
+                .targetPersonCount(targetPersonCount)
+                .productName(productName)
                 .image(image)
-                .price(jointPurchaseCreateDto.getPrice())
-                .deliveryCharge(jointPurchaseCreateDto.getDeliveryCharge())
-                .placeName(jointPurchaseCreateDto.getPlaceKeyword())
-                .latitude(jointPurchaseCreateDto.getLatitude())
-                .longitude(jointPurchaseCreateDto.getLongitude())
+                .price(price)
+                .deliveryCharge(deliveryCharge)
+                .placeName(placeKeyword)
+                .latitude(latitude)
+                .longitude(longitude)
                 .user(user)
                 .build();
     }

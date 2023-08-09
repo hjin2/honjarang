@@ -57,7 +57,7 @@ public class JointPurchaseService {
     @Transactional
     public Long createJointPurchase(JointPurchaseCreateDto jointPurchaseCreateDto, User loginUser) {
         String productImage = getProductImage(jointPurchaseCreateDto.getProductName());
-        JointPurchase jointPurchase = jointPurchaseCreateDto.toEntity(jointPurchaseCreateDto, loginUser, productImage);
+        JointPurchase jointPurchase = jointPurchaseCreateDto.toEntity(loginUser, productImage);
         return jointPurchaseRepository.save(jointPurchase).getId();
     }
 
@@ -110,9 +110,9 @@ public class JointPurchaseService {
     }
 
     @Transactional(readOnly = true)
-    public List<JointPurchaseListDto> getJointPurchaseList(Integer page, Integer size, User loginUser) {
+    public List<JointPurchaseListDto> getJointPurchaseList(Integer page, Integer size, String keyword, User loginUser) {
         Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
-        List<JointPurchase> jointPurchases = jointPurchaseRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanAndTargetPersonCountGreaterThanOrderByCreatedAtDesc(LocalDateTime.now(), loginUser.getLatitude(), loginUser.getLongitude(), pageable).toList();
+        List<JointPurchase> jointPurchases = jointPurchaseRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanAndTargetPersonCountGreaterThanOrderByCreatedAtDesc(LocalDateTime.now(), loginUser.getLatitude(), loginUser.getLongitude(), keyword, pageable).toList();
         List<JointPurchaseListDto> jointPurchaseListDtoList = new ArrayList<>();
         for(JointPurchase jointPurchase : jointPurchases) {
             Integer currentPersonCount = jointPurchaseApplicantRepository.countByJointPurchaseId(jointPurchase.getId());

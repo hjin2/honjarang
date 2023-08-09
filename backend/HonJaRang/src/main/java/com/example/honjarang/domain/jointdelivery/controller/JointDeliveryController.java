@@ -40,8 +40,8 @@ public class JointDeliveryController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<JointDeliveryListDto>> getJointDeliveryList(@RequestParam Integer page, @RequestParam Integer size, @CurrentUser User user) {
-        List<JointDeliveryListDto> jointDeliveryList = jointDeliveryService.getJointDeliveryList(page, size, user);
+    public ResponseEntity<List<JointDeliveryListDto>> getJointDeliveryList(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "15") Integer size, @RequestParam(defaultValue = "") String keyword, @CurrentUser User user) {
+        List<JointDeliveryListDto> jointDeliveryList = jointDeliveryService.getJointDeliveryList(page, size, keyword, user);
         return ResponseEntity.ok(jointDeliveryList);
     }
 

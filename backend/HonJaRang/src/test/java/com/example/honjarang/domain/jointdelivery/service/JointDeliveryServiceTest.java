@@ -343,12 +343,12 @@ class JointDeliveryServiceTest {
         Page<JointDelivery> jointDeliveryPage = new PageImpl<>(List.of(jointDelivery));
         List<JointDeliveryCart> jointDeliveryCartList = List.of(jointDeliveryCart);
 
-        given(jointDeliveryRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanOrderByCreatedAtDesc(any(LocalDateTime.class), eq(37.123456), eq(127.123456), any(Pageable.class))).willReturn(jointDeliveryPage);
+        given(jointDeliveryRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanOrderByCreatedAtDesc(any(LocalDateTime.class), eq(37.123456), eq(127.123456), eq("테스트"), any(Pageable.class))).willReturn(jointDeliveryPage);
         given(jointDeliveryCartRepository.findAllByJointDeliveryId(1L)).willReturn(jointDeliveryCartList);
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
 
         // when
-        List<JointDeliveryListDto> jointDeliveryListDtoList = jointDeliveryService.getJointDeliveryList(1, 10, user);
+        List<JointDeliveryListDto> jointDeliveryListDtoList = jointDeliveryService.getJointDeliveryList(1, 10, "테스트", user);
 
         // then
         assertThat(jointDeliveryListDtoList).isNotNull();
@@ -370,12 +370,12 @@ class JointDeliveryServiceTest {
         Page<JointDelivery> jointDeliveryPage = new PageImpl<>(List.of(jointDelivery));
         List<JointDeliveryCart> jointDeliveryCartList = List.of(jointDeliveryCart);
 
-        given(jointDeliveryRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanOrderByCreatedAtDesc(any(LocalDateTime.class), eq(37.123456), eq(127.123456), any(Pageable.class))).willReturn(jointDeliveryPage);
+        given(jointDeliveryRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanOrderByCreatedAtDesc(any(LocalDateTime.class), eq(37.123456), eq(127.123456), eq("테스트"), any(Pageable.class))).willReturn(jointDeliveryPage);
         given(jointDeliveryCartRepository.findAllByJointDeliveryId(1L)).willReturn(jointDeliveryCartList);
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.empty());
 
         // when & then
-        assertThrows(MenuNotFoundException.class, () -> jointDeliveryService.getJointDeliveryList(1, 10, user));
+        assertThrows(MenuNotFoundException.class, () -> jointDeliveryService.getJointDeliveryList(1, 10, "테스트", user));
     }
 
     @Test
