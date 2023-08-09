@@ -16,4 +16,6 @@ public interface JointDeliveryRepository extends JpaRepository<JointDelivery, Lo
     Page<JointDelivery> findAllByUserId(Long userId, Pageable pageable);
 
     Integer countByIsCanceledFalseAndDeadlineAfter(LocalDateTime now);
+
+    Integer countAllByUserId(Long userId);
 }

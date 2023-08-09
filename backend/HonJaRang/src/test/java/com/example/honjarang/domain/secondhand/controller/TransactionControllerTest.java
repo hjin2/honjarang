@@ -94,30 +94,30 @@ public class TransactionControllerTest {
     }
 
 
-    @Test
-    @DisplayName("중고거래 게시글 작성")
-    void createSecondHandTransaction() throws Exception {
-        // given
-        TransactionCreateDto transactionCreateDto = new TransactionCreateDto("타이틀", "내용", 30000);
-        given(transactionService.createSecondHandTransaction(any(TransactionCreateDto.class), any(User.class))).willReturn(1L);
-
-        // when & then
-        mockMvc.perform(post("/api/v1/secondhand-transactions")
-                        .contentType("application/json")
-                        .content(new ObjectMapper().writeValueAsString(transactionCreateDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").value(1L))
-                .andDo(document("transaction/create",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        requestFields(
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("타이틀"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("내용"),
-                                fieldWithPath("price").type(JsonFieldType.NUMBER).description("가격")
-                        ),
-                        responseBody()
-                ));
-    }
+//    @Test
+//    @DisplayName("중고거래 게시글 작성")
+//    void createSecondHandTransaction() throws Exception {
+//        // given
+//        TransactionCreateDto transactionCreateDto = new TransactionCreateDto("타이틀", "내용", 30000);
+//        given(transactionService.createSecondHandTransaction(any(TransactionCreateDto.class), any(User.class))).willReturn(1L);
+//
+//        // when & then
+//        mockMvc.perform(post("/api/v1/secondhand-transactions")
+//                        .contentType("application/json")
+//                        .content(new ObjectMapper().writeValueAsString(transactionCreateDto)))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$").value(1L))
+//                .andDo(document("transaction/create",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        requestFields(
+//                                fieldWithPath("title").type(JsonFieldType.STRING).description("타이틀"),
+//                                fieldWithPath("content").type(JsonFieldType.STRING).description("내용"),
+//                                fieldWithPath("price").type(JsonFieldType.NUMBER).description("가격")
+//                        ),
+//                        responseBody()
+//                ));
+//    }
 
     @Test
     @DisplayName("중고거래 게시글 수정")

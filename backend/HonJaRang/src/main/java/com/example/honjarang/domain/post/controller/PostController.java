@@ -7,9 +7,12 @@ import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.security.CurrentUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -21,8 +24,9 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("")
-    public ResponseEntity<Long> createPost(@Valid @RequestBody PostCreateDto postCreateDto, @CurrentUser User user) {
-        return ResponseEntity.status(201).body(postService.createPost(postCreateDto, user));
+    public ResponseEntity<Long> createPost(@RequestPart("post_image") MultipartFile postImage, @ModelAttribute(name = "postCreateDto") PostCreateDto postCreateDto,  @CurrentUser User user) throws IOException {
+        Long result = postService.createPost(postCreateDto, postImage, user);
+        return ResponseEntity.status(201).body(result);
     }
 
     @DeleteMapping("/{id}")
@@ -31,10 +35,10 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<Long> updatePost(@PathVariable Long id,
-                                           @RequestBody PostUpdateDto postUpdateDto, @CurrentUser User user) {
-        postService.updatePost(id, postUpdateDto, user);
+    @PutMapping("/{id}")
+    public ResponseEntity<Long> updatePost(@RequestPart("post_image") MultipartFile postImage,
+                                           @ModelAttribute PostUpdateDto postUpdateDto, @PathVariable Long id, @CurrentUser User user) throws IOException {
+        postService.updatePost(postImage, postUpdateDto, user);
         return ResponseEntity.ok().build();
     }
 
@@ -70,8 +74,5 @@ public class PostController {
     @GetMapping(value = "/{id}/comments")
     public List<CommentListDto> getComments(@PathVariable Long id) {
         return postService.getCommentList(id);
-
     }
-
-
 }
