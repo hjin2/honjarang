@@ -6,6 +6,12 @@ export default function DeliveryRoom(roomData) {
 
   const { id, current_total_price, target_min_price, store_id, store_name, store_image, user_id, nickname } = roomData;
  
+  // 가게명이 길면 ... 으로 보이게
+  const MAX_STORE_NAME_LENGTH = 11; 
+  let adjustedStoreName = store_name;
+  if (store_name.length > MAX_STORE_NAME_LENGTH) {
+    adjustedStoreName = store_name.substring(0, MAX_STORE_NAME_LENGTH) + '...';
+  }
 
   return (
     <div >
@@ -19,7 +25,7 @@ export default function DeliveryRoom(roomData) {
           </div>
         </div>
         <div className="flex justify-between my-1">
-          <div>{store_name}</div>
+          <div>{adjustedStoreName}</div>
         </div>
         <div className="flex justify-end">
           <Link to={{ pathname: `deliverydetail/${id}` }}>

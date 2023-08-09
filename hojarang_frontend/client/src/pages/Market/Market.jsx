@@ -4,6 +4,7 @@ import DeliveryRoom from '../../components/Market/DeliveryRoom';
 import PurchaseRoom from '../../components/Market/PurchaseRoom';
 import TransactionRoom from '../../components/Market/TransactionRoom';
 import PurchaseList from '../../components/Market/PurchaseList';
+import DeliveryList from '../../components/Market/DeliveryList';
 import { useEffect, useState } from 'react';
 
 import Rooms from '../../components/Market/Rooms';
@@ -12,9 +13,9 @@ import axios from 'axios';
 
 export default function Market() {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
-  const [purchaseData, setPurchaseData] = useState([]);
-  const URL = import.meta.env.VITE_APP_API
-  const token = localStorage.getItem("access_token")
+  // const [purchaseData, setPurchaseData] = useState([]);
+  // const URL = import.meta.env.VITE_APP_API
+  // const token = localStorage.getItem("access_token")
   // const [deliveryData, setDeliveryData] = useState([]);
   // const [transactionData, setTransactionData] = useState([]);
 
@@ -37,15 +38,15 @@ export default function Market() {
   // ]
   
 
-  const deliveryData = [
-    {id:'1', current_total_price:'현재금액', target_min_price:'최소주문금액', store_id:'1', store_name:'배달가게명', store_image:"/src/assets/panda-bear.png", user_id:'1', nickname:'ischar'},
-    {id:'2', current_total_price:'1500', target_min_price:'30000', store_id:'3', store_name:'도미노피자', store_image:"/src/assets/panda-bear.png", user_id:'3', nickname:'ischar'},
-    {id:'3', current_total_price:'330000', target_min_price:'330001', store_id:'1', store_name:'가게명', store_image:"/src/assets/panda-bear.png", user_id:'12', nickname:'ischar'},
-    {id:'4', current_total_price:'현재금액', target_min_price:'최소주문금액', store_id:'1', store_name:'가게명', store_image:"/src/assets/panda-bear.png", user_id:'3', nickname:'dong'},
-    {id:'5', current_total_price:'530000', target_min_price:'53000000', store_id:'1', store_name:'동혁카페', store_image:"/src/assets/panda-bear.png", user_id:'1', nickname:'ischar'},
-    {id:'6', current_total_price:'현재금액', target_min_price:'최소주문금액', store_id:'1', store_name:'가게명', store_image:"/src/assets/panda-bear.png", user_id:'1', nickname:'ischar'},
-    {id:'7', current_total_price:'현재금액', target_min_price:'최소주문금액', store_id:'1', store_name:'가게명', store_image:"/src/assets/panda-bear.png", user_id:'1', nickname:'ischar'},
-  ]
+  // const deliveryData = [
+  //   {id:'1', current_total_price:'현재금액', target_min_price:'최소주문금액', store_id:'1', store_name:'배달가게명', store_image:"/src/assets/panda-bear.png", user_id:'1', nickname:'ischar'},
+  //   {id:'2', current_total_price:'1500', target_min_price:'30000', store_id:'3', store_name:'도미노피자', store_image:"/src/assets/panda-bear.png", user_id:'3', nickname:'ischar'},
+  //   {id:'3', current_total_price:'330000', target_min_price:'330001', store_id:'1', store_name:'가게명', store_image:"/src/assets/panda-bear.png", user_id:'12', nickname:'ischar'},
+  //   {id:'4', current_total_price:'현재금액', target_min_price:'최소주문금액', store_id:'1', store_name:'가게명', store_image:"/src/assets/panda-bear.png", user_id:'3', nickname:'dong'},
+  //   {id:'5', current_total_price:'530000', target_min_price:'53000000', store_id:'1', store_name:'동혁카페', store_image:"/src/assets/panda-bear.png", user_id:'1', nickname:'ischar'},
+  //   {id:'6', current_total_price:'현재금액', target_min_price:'최소주문금액', store_id:'1', store_name:'가게명', store_image:"/src/assets/panda-bear.png", user_id:'1', nickname:'ischar'},
+  //   {id:'7', current_total_price:'현재금액', target_min_price:'최소주문금액', store_id:'1', store_name:'가게명', store_image:"/src/assets/panda-bear.png", user_id:'1', nickname:'ischar'},
+  // ]
 
   const transactionData = [
     {id:'1', file_url: "/src/assets/panda-bear.png", is_complete:'True', title:'게시글 제목', price:'15000', user_id:'1', buyer_id:'2', created_at:'2023-08-06'},
@@ -94,7 +95,7 @@ export default function Market() {
     },
     {
       title: '공동배달',
-      content: <Rooms roomsData={deliveryData} component={DeliveryRoom}/>,
+      content: <DeliveryList/>,
       recruit: <Link to="/market/delivery/create">모집하기</Link>
     },
     {
