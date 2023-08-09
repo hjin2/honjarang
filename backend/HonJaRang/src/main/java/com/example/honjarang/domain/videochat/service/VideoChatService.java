@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -91,13 +92,17 @@ public class VideoChatService {
     @Transactional(readOnly = true)
     public List<VideoChatListDto> getSessionList() {
 
-        return videoChatRoomRepository.findAll().stream()
-                .map(this::toVideoChatListDto)
-                .toList();
+        List<VideoChatRoom> videoChatRooms = videoChatRoomRepository.findAll();
+        List<VideoChatListDto> videoChatRoomList = new ArrayList<>();
+        for(VideoChatRoom videoChatRoom  : videoChatRooms) {
+            Integer count = videoChatParticipantRepository.countByRoomId(videoChatRoom.getId());
+            if (count >= 8) {
+                continue;
+            }
+            videoChatRoomList.add(new VideoChatListDto(videoChatRoom, count));
+        }
+        return videoChatRoomList;
     }
 
-    @Transactional(readOnly = true)
-    public VideoChatListDto toVideoChatListDto(VideoChatRoom videoChatRoom) {
-        return new VideoChatListDto(videoChatRoom);
-    }
+
 }

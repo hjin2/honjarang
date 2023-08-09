@@ -21,20 +21,20 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/video-room")
+@RequestMapping("/api/v1/video-room/sessions")
 public class VideoChatController {
 
     private final VideoChatService videoChatService;
 
     // 화상 채팅 방 생성
-    @PostMapping("/sessions")
+    @PostMapping("")
     public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
             throws OpenViduJavaClientException, OpenViduHttpException {
         return new ResponseEntity<>(videoChatService.initializeSession(params), HttpStatus.OK);
     }
 
     // 화상 채팅 방 접속
-    @PostMapping("/sessions/{sessionId}/connections")
+    @PostMapping("/{sessionId}/connections")
     public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
                                                    @RequestBody(required = false) Map<String, Object> params, @CurrentUser User user)
             throws OpenViduJavaClientException, OpenViduHttpException {
@@ -42,7 +42,7 @@ public class VideoChatController {
     }
 
     // 화상 채팅 방 퇴장
-    @DeleteMapping("/sessions/{sessionId}/connections")
+    @DeleteMapping("/{sessionId}/connections")
     public ResponseEntity<Long> closeConnection(@PathVariable("sessionId") String sessionId,
                                                 @RequestBody Map<String, Long> user) throws OpenViduJavaClientException, OpenViduHttpException {
         videoChatService.closeConnection(sessionId, user.get("user_id"));
@@ -50,7 +50,7 @@ public class VideoChatController {
     }
 
     // 화상 채팅 방 목록 조회
-    @GetMapping("/sessions")
+    @GetMapping("")
     public List<VideoChatListDto> getSessionList() {
         return videoChatService.getSessionList();
     }

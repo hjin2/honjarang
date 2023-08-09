@@ -37,7 +37,5 @@ public class VideoChatParticipant extends BaseTimeEntity {
         this.user = user;
         this.isDeleted = isDeleted;
     }
-
-
-
+    
 }

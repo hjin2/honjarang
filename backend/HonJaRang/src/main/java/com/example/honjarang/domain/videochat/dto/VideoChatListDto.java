@@ -12,13 +12,15 @@ public class VideoChatListDto {
     private Category category;
     private Boolean isScreen;
     private String createdAt;
+    private Integer count;
 
-    public VideoChatListDto(VideoChatRoom videoChatRoom) {
+    public VideoChatListDto(VideoChatRoom videoChatRoom, Integer count) {
         this.id = videoChatRoom.getId();
         this.sessionId = videoChatRoom.getSessionId();
         this.category = videoChatRoom.getCategory();
         this.isScreen = videoChatRoom.getIsScreen();
         this.createdAt = DateTimeUtils.formatLocalDateTime(videoChatRoom.getCreatedAt());
+        this.count = count;
 
     }
 
