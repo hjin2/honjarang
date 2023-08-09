@@ -1,11 +1,20 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router';
+
+
+
 function ChatList({list}) {
+  const navigate = useNavigate()
+  const onClick = () => {
+    navigate(`./${list.id}`)
+  }
+  
   return (
-    <div>
+    <div  className="border border-solid border-black " onClick={onClick}>
       <img src="" alt="" />
-      <span>상대 유저 네임</span>
+      <span>{list.name}</span>
       <br />
-      <span>마지막 메세지</span>
-      
+      <span>{list.last_message}</span>
     </div>
   )
 }
