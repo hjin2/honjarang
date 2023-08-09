@@ -11,4 +11,5 @@ import java.util.Optional;
 @Repository
 public interface MenuRepository extends MongoRepository<Menu, ObjectId> {
     List<Menu> findAllByStoreId(Long storeId);
+    void deleteAllByStoreId(Long id);
 }
