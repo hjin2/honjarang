@@ -2,10 +2,20 @@ import { NavLink, Link } from 'react-router-dom';
 // import { useState,useEffect } from 'react';
 import { useSelector,useDispatch } from 'react-redux'
 import { setLoginStatus } from '../../redux/slice/loginSlice';
+import { useEffect } from 'react';
 
 export default function Header() {
   const IsLogged = useSelector((state) => state.login.isLogged)
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (localStorage.length >= 3) {
+      dispatch(setLoginStatus(true))
+    }
+    else {
+      dispatch(setLoginStatus(false))
+    }
+  })
 
   const Clear = () => {
     localStorage.clear()
