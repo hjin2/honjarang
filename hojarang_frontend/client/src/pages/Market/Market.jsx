@@ -1,13 +1,9 @@
 import SideTab from '../../components/Common/SideTab'
 import Content from '../../components/Common/Content';
-import DeliveryRoom from '../../components/Market/DeliveryRoom';
-import PurchaseRoom from '../../components/Market/PurchaseRoom';
-import TransactionRoom from '../../components/Market/TransactionRoom';
-import PurchaseList from '../../components/Market/PurchaseList';
+import PurchaseList from '../../components/Market/Purchase/PurchaseList';
 import DeliveryList from '../../components/Market/DeliveryList';
+import TransactionList from '../../components/Market/Transaction/TransactionList';
 import { useEffect, useState } from 'react';
-
-import Rooms from '../../components/Market/Rooms';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -100,7 +96,7 @@ export default function Market() {
     },
     {
       title: '중고거래',
-      content:  <Rooms roomsData={transactionData} component={TransactionRoom}/>,
+      content: <TransactionList/>,
       recruit: <Link to="/market/transaction/create">모집하기</Link>
     },
   ]

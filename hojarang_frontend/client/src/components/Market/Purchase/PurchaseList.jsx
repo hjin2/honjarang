@@ -1,9 +1,9 @@
-import Rooms from "./Rooms"
+import Rooms from "../Rooms"
 import PurchaseRoom from "./PurchaseRoom"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import Pagination from 'react-js-pagination'
-import "./pagination.css"
+import "../pagination.css"
 
 export default function PurchaseList() {
   const URL = import.meta.env.VITE_APP_API
