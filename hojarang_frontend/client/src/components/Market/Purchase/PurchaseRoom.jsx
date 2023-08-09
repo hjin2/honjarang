@@ -12,7 +12,7 @@ export default function PurchaseRoom(roomData) {
 
   return (
     <div >
-      <div className="border-2 border-gray1 w-52 p-2 rounded-lg">
+      <div className="border-2 border-gray1 w-52 h-60 p-2 rounded-lg">
         {/* 이미지와 그 위 텍스트 */}
         <div className="flex justify-center relative">
           <div className="w-32 h-32">
@@ -22,7 +22,7 @@ export default function PurchaseRoom(roomData) {
         {/* 상품 제목 */}
         <div className="flex justify-between my-1">
           <div className='font-bold text-lg'>{adjustedProducteName}</div>
-          <div className="text-sm">{price}원</div>
+          <div className="text-sm">{price.toLocaleString()}원</div>
         </div>
         <div className="text-sm text-main5">목표까지 {target_person_count-current_person_count}명</div>
         {/* 참여버튼 */}

@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react'
 import { useParams } from 'react-router';
-import PurchaseDetailProduct from '../../components/Market/PurchaseDetailProduct';
-import PurchaseDetailPlace from '../../components/Market/PurchaseDetailPlace';
+import PurchaseDetailProduct from '../../components/Market/Purchase/PurchaseDetailProduct';
+import PurchaseDetailPlace from '../../components/Market/Purchase/PurchaseDetailPlace';
 import axios from 'axios';
-import PurchaseApply from '../../components/Market/PurchaseApply';
+import PurchaseApply from '../../components/Market/Purchase/PurchaseApply';
 import { useNavigate } from 'react-router-dom'
 import Modal from '../../components/Common/Modal';
-import PurchaserList from '../../components/Market/PurchaserList';
+import PurchaserList from '../../components/Market/Purchase/PurchaserList';
 
 export default function PurchaseDetail() {
   const navigate = useNavigate()
@@ -120,6 +120,7 @@ export default function PurchaseDetail() {
   }
 
   const handleCheck = () =>{
+    console.log(id)
     axios.put(`${URL}/api/v1/joint-purchases/${id}/receive`,{headers})
       .then((res) =>{
         console.log(res)
@@ -139,15 +140,13 @@ export default function PurchaseDetail() {
     <div className="w-6/12 mx-auto mt-5">
       <div className="border rounded-lg p-8 space-y-5 ">
         <div className="flex justify-between">
-          <div className="flex flex-row">
-            <div className="font-bold text-3xl flex items-end">{detail.product_name}</div>
-            <div className="flex items-end">
-              {detail.price}
-            </div>
+          <div className="flex flex-row space-x-4">
+            <div className="font-bold text-3xl items-end">{detail.product_name}</div>
+            <div className="text-main5 mt-3">{detail.price?.toLocaleString()}원</div>
           </div>
           <div>
             <div className="font-semibold text-right">{detail.nickname}</div>
-            <div className="text-right ">{detail.created_at}</div>
+            <div className="text-right ">{detail.created_at?.slice(0,10)}</div>
           </div>
         </div>
         <hr />
@@ -179,6 +178,7 @@ export default function PurchaseDetail() {
             <PurchaseDetailPlace
               latitude={detail.place_latitude}
               longitude={detail.place_longitude}
+              placeName = {detail.place_name}
             />
             )}
           </div>
@@ -189,8 +189,8 @@ export default function PurchaseDetail() {
             <div>
               {(detail.current_person_count !== detail.target_person_count) ? (
                 <div className='space-y-3 mb-3'>
-                  <div className="text-main5">마감까지 남은 시간: {days}일 {hours}시간 {minutes}분 {seconds}초</div>
-                  <div className="text-main2">{detail.current_person_count}/{detail.target_person_count}(현재인원 / 목표인원)</div>
+                  <div className="text-main5">마감까지 남은 시간 : {days}일 {hours}시간 {minutes}분 {seconds}초</div>
+                  <div className="text-main2">목표까지 {detail.target_person_count - detail.current_person_count}명</div>
                 </div>
               ):(
                 <div className="text-main5">모집 마감</div>

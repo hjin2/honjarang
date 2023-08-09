@@ -1,7 +1,8 @@
 import React from 'react'
 import {Map, MapMarker} from 'react-kakao-maps-sdk'
 
-export default function PurchaseDetailPlace({ latitude, longitude }) {
+export default function PurchaseDetailPlace({ latitude, longitude, placeName }) {
+  
   return (
     <div>
       <Map // 로드뷰를 표시할 Container
@@ -25,9 +26,10 @@ export default function PurchaseDetailPlace({ latitude, longitude }) {
             height: 32,
           },
         }}
-      />
+      >
+        <div>{placeName}</div>
+      </MapMarker>
     </Map>
-    <div>{latitude}</div>
     </div>
   )
 }

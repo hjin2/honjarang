@@ -5,7 +5,7 @@ export default function TransactionRoom(roomData) {
   const {id, file_url, is_complete, title, price, user_id, buyer_id, created_at} = roomData;
   return (
     <div >
-      <div className="border w-52 h-52 p-2 ">
+      <div className="border-2 border-gray1 w-52 h-60 p-2 rounded-lg">
         {/* 이미지와 그 위 텍스트 */}
         <div className="flex justify-center relative">
           <div className="w-32 h-32">
