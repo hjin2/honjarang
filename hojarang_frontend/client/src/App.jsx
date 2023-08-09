@@ -20,13 +20,13 @@ import Checkout from './pages/Checkout/Checkout';
 import Fail from './pages/Checkout/Fail';
 import Success from './pages/Checkout/Success';
 import DefaultLayout from './components/DefaultLayout';
-import PurchaseDetail from './components/Market/PurchaseDetail';
-import DeliveryDetail from './components/Market/DeliveryDetail';
+import PurchaseDetail from './pages/Market/PurchaseDetail';
+import DeliveryDetail from './pages/Market/DeliveryDetail';
 import WebRTCCreate from './pages/WebRTC/WebRTCCreate';
 import PurchaseCreate from './pages/Market/PurchaseCreate';
 import DeliveryCreate from './pages/Market/DeliveryCreate';
 import TransactionCreate from './pages/Market/TransactionCreate';
-import FreeChat from './components/WebRTC/FreeChat';
+import FreeChat from './pages/WebRTC/FreeChat';
 
 
 function App() {
