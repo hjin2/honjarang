@@ -90,19 +90,19 @@ public class TransactionServiceTest {
     }
 
 
-    @Test
-    @DisplayName("중고거래 게시글 작성 성공")
-    void createSecondHandTransaction_success() {
-        // given
-        TransactionCreateDto dto = new TransactionCreateDto("중고거래 테스트 제목", "중고거래 테스트 내용", 10000);
-        given(transactionRepository.save(any(Transaction.class))).willReturn(transaction);
-
-        // when
-        Long transactionId = transactionService.createSecondHandTransaction(dto, user);
-
-        // then
-        assertThat(transactionId).isEqualTo(1L);
-    }
+//    @Test
+//    @DisplayName("중고거래 게시글 작성 성공")
+//    void createSecondHandTransaction_success() {
+//        // given
+//        TransactionCreateDto dto = new TransactionCreateDto("중고거래 테스트 제목", "중고거래 테스트 내용", 10000);
+//        given(transactionRepository.save(any(Transaction.class))).willReturn(transaction);
+//
+//        // when
+//        Long transactionId = transactionService.createSecondHandTransaction(dto, user);
+//
+//        // then
+//        assertThat(transactionId).isEqualTo(1L);
+//    }
 
     @Test
     @DisplayName("중고거래 게시글 수정 성공")

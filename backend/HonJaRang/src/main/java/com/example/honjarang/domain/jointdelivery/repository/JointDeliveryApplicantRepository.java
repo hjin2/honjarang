@@ -14,4 +14,6 @@ public interface JointDeliveryApplicantRepository extends JpaRepository<JointDel
     void deleteByJointDeliveryIdAndUserId(Long jointDeliveryId, Long userId);
     Optional<JointDeliveryApplicant> findByJointDeliveryIdAndUserId(Long jointDeliveryId, Long userId);
     Integer countByJointDeliveryId(Long jointDeliveryId);
+
+    Integer countAllByUserId(Long userId);
 }

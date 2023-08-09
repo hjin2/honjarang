@@ -8,10 +8,12 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class TransactionCreateDto {
     private String title;
@@ -24,6 +26,7 @@ public class TransactionCreateDto {
                 .title(this.title)
                 .seller(user)
                 .price(this.price)
+                .transactionImage(transactionImage)
                 .build();
     }
 }

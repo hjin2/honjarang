@@ -70,10 +70,11 @@ public class Transaction extends BaseTimeEntity {
 
     public void soldout(User user){this.buyer = user;}
 
-    public void update(TransactionUpdateDto dto){
+    public void update(TransactionUpdateDto dto, String image){
         this.title = dto.getTitle();
         this.content = dto.getContent();
         this.price = dto.getPrice();
+        this.transactionImage = image;
     }
 
     public void setIdForTest(Long id) {this.Id = id;}

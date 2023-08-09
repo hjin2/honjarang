@@ -56,16 +56,6 @@ public class Post extends BaseTimeEntity {
         this.postImage = postImage;
     }
 
-    @Builder
-    public Post(Long id, User user, String title, String content, Boolean isNotice, Integer views, Category category) {
-        this.id = id;
-        this.user = user;
-        this.title = title;
-        this.content = content;
-        this.isNotice = isNotice;
-        this.views = views;
-        this.category = category;
-    }
 
     public void increaseViews() {
         this.views++;

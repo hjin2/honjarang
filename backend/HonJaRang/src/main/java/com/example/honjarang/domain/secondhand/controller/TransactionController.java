@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -29,8 +30,8 @@ public class TransactionController {
     }
 
     @PutMapping("/{transactionId}")
-    public ResponseEntity<Void> updateSecondHandTransaction(@PathVariable Long transactionId, @RequestBody TransactionUpdateDto transactionUpdateDto, @CurrentUser User user) {
-        transactionService.updateSecondHandTransaction(transactionUpdateDto, user);
+    public ResponseEntity<Void> updateSecondHandTransaction(@RequestPart("transaction_image") MultipartFile transactionImage, @ModelAttribute TransactionUpdateDto transactionUpdateDto, @PathVariable Long transactionId, @CurrentUser User user) throws IOException {
+        transactionService.updateSecondHandTransaction(transactionImage, transactionUpdateDto, user);
         return ResponseEntity.ok().build();
     }
 
