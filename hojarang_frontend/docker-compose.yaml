@@ -1,0 +1,12 @@
+version: "3.2"
+services:
+  frontend:
+    restart: always
+    command : pnpm dev
+    container_name: honjarang_front
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    stdin_open: true
