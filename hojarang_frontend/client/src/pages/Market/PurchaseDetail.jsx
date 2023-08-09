@@ -212,8 +212,7 @@ export default function PurchaseDetail() {
             </div>
           )}
           {isWriter&&timeDiff>0 ? (
-            null
-            // <button className="main5-full-button w-40 mt-3" onClick={deletePurchase}>모집 취소</button>
+            <button className="main5-full-button w-40 mt-3" onClick={deletePurchase}>모집 취소</button>
           ):null}
           <PurchaseApply 
             isAsideOpen={isAsideOpen}
