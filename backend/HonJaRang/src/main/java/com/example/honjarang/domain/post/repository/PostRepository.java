@@ -19,4 +19,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByUserIdOrderByIdDesc(long userId, Pageable pageable);
     List<Post> findAllByIsNoticeTrueOrderByIdDesc(Pageable pageable);
 
+    Integer countAllByUserId(Long userId);
+
 }
