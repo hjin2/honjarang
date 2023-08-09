@@ -139,7 +139,8 @@ public class JointDeliveryService {
             Iterator<String> iterator = jsonNode.fieldNames();
             while (iterator.hasNext()) {
                 String key = iterator.next();
-                if (key.startsWith("Menu")) {
+                // 키의 앞자리 4개가 숫자인 경우
+                if (key.startsWith("Menu") || key.substring(0, 4).matches("^[0-9]*$")) {
                     JsonNode menuNode = jsonNode.get(key);
                     Menu menu = Menu.builder()
                             .storeId(storeId)
@@ -176,6 +177,9 @@ public class JointDeliveryService {
         storeRepository.save(store);
 
         List<Menu> menuListDtoList = getMenuListByApi(jointDeliveryCreateDto.getStoreId());
+
+        // storeId의 메뉴를 가지고 있으면 삭제
+        menuRepository.deleteAllByStoreId(store.getId());
         menuRepository.saveAll(menuListDtoList);
 
         JointDelivery jointDelivery = jointDeliveryRepository.save(jointDeliveryCreateDto.toEntity(jointDeliveryCreateDto, store, user));
@@ -213,21 +217,15 @@ public class JointDeliveryService {
     @Transactional(readOnly = true)
     public List<JointDeliveryListDto> getJointDeliveryList(Integer page, Integer size, User loginUser) {
         Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
-        List<JointDelivery> jointDeliveryList = jointDeliveryRepository.findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(LocalDateTime.now(), pageable).toList();
+        List<JointDelivery> jointDeliveryList = jointDeliveryRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanOrderByCreatedAtDesc(LocalDateTime.now(), loginUser.getLatitude(), loginUser.getLongitude(), pageable).toList();
+
         List<JointDeliveryListDto> jointDeliveryListDtoList = new ArrayList<>();
 
         for (JointDelivery jointDelivery : jointDeliveryList) {
-            // 사용자와 가게 사이의 거리가 필터링 거리보다 큰 경우
-            CoordinateDto userCoordinate = new CoordinateDto(loginUser.getLatitude(), loginUser.getLongitude());
-            CoordinateDto storeCoordinate = new CoordinateDto(jointDelivery.getStore().getLatitude(), jointDelivery.getStore().getLongitude());
-            if (mapService.getDistance(userCoordinate, storeCoordinate) > 5000) {
-                continue;
-            }
-
-            // 총 가격 계산
-            int currentTotalPrice = 0;
-            List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDelivery.getId());
-            for(JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
+                // 총 가격 계산
+                int currentTotalPrice = 0;
+                List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDelivery.getId());
+                for(JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
                 Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
                         .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
                 currentTotalPrice += menu.getPrice() * jointDeliveryCart.getQuantity();

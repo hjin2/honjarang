@@ -70,7 +70,14 @@ public class ChatService {
 
     @Transactional
     public void createChatMessage(ChatMessageCreateDto chatMessageCreateDto) {
-        Long userId = Long.parseLong((String) Objects.requireNonNull(redisTemplate.opsForValue().get(SESSION_USER_PREFIX + chatMessageCreateDto.getSessionId())));
+        log.info("내용 : {}", chatMessageCreateDto.getContent());
+        log.info("채팅방 아이디 : {}", chatMessageCreateDto.getRoomId());
+        log.info("세션 아이디 : {}", chatMessageCreateDto.getSessionId());
+
+        if(redisTemplate.opsForValue().get(SESSION_USER_PREFIX + chatMessageCreateDto.getSessionId()) == null)
+            return;
+
+        Long userId = Long.parseLong((String) redisTemplate.opsForValue().get(SESSION_USER_PREFIX + chatMessageCreateDto.getSessionId()));
         ChatMessage chatMessage = chatMessageCreateDto.toEntity(userId);
         ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
 

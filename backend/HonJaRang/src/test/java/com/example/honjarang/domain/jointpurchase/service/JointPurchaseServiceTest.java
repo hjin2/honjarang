@@ -173,7 +173,7 @@ class JointPurchaseServiceTest {
     void getJointPurchaseList_Success() {
         // given
         Page<JointPurchase> jointPurchasePage = new PageImpl<>(List.of(jointPurchase));
-        given(jointPurchaseRepository.findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(any(LocalDateTime.class), any(Pageable.class))).willReturn(jointPurchasePage);
+        given(jointPurchaseRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanAndTargetPersonCountGreaterThanOrderByCreatedAtDesc(any(LocalDateTime.class),eq(37.123456), eq(127.123456), any(Pageable.class))).willReturn(jointPurchasePage);
         given(jointPurchaseApplicantRepository.countByJointPurchaseId(1L)).willReturn(1);
 
         // when
