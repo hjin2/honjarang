@@ -36,8 +36,7 @@ public class VideoChatController {
     // 화상 채팅 방 접속
     @PostMapping("/{sessionId}/connections")
     public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
-                                                   @RequestBody(required = false) Map<String, Object> params, @CurrentUser User user)
-            throws OpenViduJavaClientException, OpenViduHttpException {
+                                                   @RequestBody(required = false) Map<String, Object> params, @CurrentUser User user) {
         return new ResponseEntity<>(videoChatService.createConnection(sessionId, params, user),HttpStatus.OK);
     }
 

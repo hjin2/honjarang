@@ -1,6 +1,7 @@
 package com.example.honjarang.domain.videochat.repository;
 
 import com.example.honjarang.domain.videochat.entity.VideoChatParticipant;
+import com.example.honjarang.domain.videochat.entity.VideoChatRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +12,7 @@ public interface VideoChatParticipantRepository extends JpaRepository <VideoChat
 
     void deleteByUserId(Long userId);
 
-    @Query(value = "SELECT COUNT(*) FROM video_chat_participant WHERE room_id = :roomId", nativeQuery = true)
-    Integer countByRoomId(@Param("roomId") Long roomId);
+  //  @Query(value = "SELECT COUNT(*) FROM video_chat_participant WHERE room_id = :roomId", nativeQuery = true)
+
+    Integer countByVideoChatRoom(VideoChatRoom videoChatRoom);
 }
