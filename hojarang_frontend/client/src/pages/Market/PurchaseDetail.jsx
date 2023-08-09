@@ -4,12 +4,14 @@ import PurchaseDetailProduct from '../../components/Market/PurchaseDetailProduct
 import PurchaseDetailPlace from '../../components/Market/PurchaseDetailPlace';
 import axios from 'axios';
 import PurchaseApply from '../../components/Market/PurchaseApply';
+import { useNavigate } from 'react-router-dom'
 
 export default function PurchaseDetail() {
+  const navigate = useNavigate()
   const [currentTime, setCurrentTime] = useState(new Date());
   const URL = import.meta.env.VITE_APP_API
   const token = localStorage.getItem('access_token')
-
+  const [point, setPoint] = useState(0)
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
@@ -22,35 +24,59 @@ export default function PurchaseDetail() {
 
   const id = useParams().id;
   // const[detail, setDetail] = useState([])
-  const [detail, setDetail] = useState({
-    id: 1, 
-    product_name: '젤리젤리1', 
-    image: "/src/assets/panda-bear.png", 
-    content: '하리보의 성공은 독일 시장에서 그치지 않았습니다. 하리보는 과일젤리와 감초젤리 부문의 세계 시장 리더로서 120개국 이상에서 만나볼 수 있습니다! 하리보는 10개국에 분포된 16개 지사에서 생산되고 있으며, 7,000명 이상의 직원들이 소비자들이 좋아하는 제품을 변함없는 최고의 품질로 즐길 수 있도록 최선을 다하고 있습니다.하리보는 인정받은 것에만 집중하지 않습니다. 꾸준한 제품 개발과 국내외 고품질 브랜드 인수를 통해 제품군을 지속적으로 확장하고 있습니다. 판매 및 생산망을 긴밀하게 구축하여 전 세계 어디서나 제품을 신속하게 받을 수 있습니다.뿐만아니라 다양한 국가에 따라 선호하는 맛을 정확히 살린 특별한 제품 개발로 세계시장의 리더로 더욱 확고히 자리매김 하고 있습니다.',
-    deadline:'2023-08-05', 
-    current_person_count:'3', 
-    target_person_count:'5', 
-    price:'12345000',
-    delivery_charge: '6000',
-    place_name: '어디어디',
-    place_latitude: '만남 장소 위도',
-    place_longitude: '만남 장소 경도',
-    created_at: '생성일시',
-    user_id: '작성자 ID',
-    nickname:'작성자 닉네임'
-  });
-
-  
+  const [detail, setDetail] = useState({});
+  const [isWriter, setIsWriter] = useState(false)
+  const [isPurchase, setIsPurchase] = useState(false)
+  const loginId = localStorage.getItem("user_id")
+  const headers = {"Authorization" : `Bearer ${token}`}
   useEffect(() => {
-    axios.get(`${URL}/api/v1/joint-purchases/${id}`, {headers: {"Authorization" : `Bearer ${token}`}})
+    axios.get(`${URL}/api/v1/joint-purchases/${id}`, {headers})
     .then((res) => {
       console.log(res.data)
       setDetail(res.data)
+      fetchUserInfo(loginId)
+      if(Number(loginId) === Number(res.data.user_id)){
+        setIsWriter(true)
+      }else{
+        setIsWriter(false)
+      }
     })
     .catch((err) => {
       console.log(err)
     })
-  }, [id]);
+  axios.get(`${URL}/api/v1/joint-purchases/${id}/applicants`, {headers})
+    .then((res) => {
+      console.log(res.data)
+      if(res.data){
+        console.log(2)
+        for(let i=0;i<res.data.length;i++){
+          if(Number(res.data[i].user_id) === Number(loginId)){
+            setIsPurchase(true)
+            console.log(1)
+            break
+          }
+        }
+      }else{
+        setIsPurchase(false)
+      }
+
+    })
+    .catch((err) => console.log(err))
+  }, [id, isPurchase]);
+
+  const fetchUserInfo = (userId)=>{
+    axios.get(`${URL}/api/v1/users/info`,{
+      params:{id:userId},
+      headers
+    })
+    .then((res) => {
+      console.log(res.data)
+      setPoint(res.data.point)
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
+  }
 
   // if (!detail) {
   //   return <div>Loading</div>
@@ -68,25 +94,36 @@ export default function PurchaseDetail() {
     setIsAsideOpen(!isAsideOpen);
   }
 
-  // 구매 갯수
-  const [quantity, setQuantity] = useState(0);
-  const handleIncrement = () => {
-    setQuantity(prevQuantity => prevQuantity + 1);
-    // setQuantity(prevQuantity => (prevQuantity === '' ? 1 : parseInt(prevQuantity) + 1));
-  };
-  const handleDecrement = () => {
-    setQuantity(prevQuantity => (prevQuantity > 0 ? prevQuantity - 1 : 0));
-    // setQuantity(prevQuantity => (prevQuantity === '' ? 0 : Math.max(0, parseInt(prevQuantity) - 1)));
-  };
-  
-  const handleChange = (e) => {
-    const inputQuantity = parseInt(e.target.value);
-    setQuantity(isNaN(inputQuantity) ? 0 : Math.max(0, inputQuantity));
-    // setQuantity(inputQuantity === '' ? '' : Math.max(0, parseInt(inputQuantity)));
-  };
-  const handleCheck = () =>{
-
+  const deletePurchase = () =>{
+    axios.delete(`${URL}/api/v1/joint-purchases/${id}`,{headers})
+      .then((res)=>{
+        console.log(res)
+        navigate('/market')
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
   }
+  const CancelPurchase = () =>{
+    axios.delete(`${URL}/api/v1/joint-purchases/${id}/applicants`, {headers})
+      .then((res) => {
+        console.log(res)
+        setIsPurchase(false)
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+  }
+
+  const handleCheck = () =>{
+    axios.put(`${URL}/api/v1/joint-purchases/${id}/receive`,{headers})
+      .then((res) =>{
+        console.log(res)
+        window.alert("수령하셨습니다")
+      })  
+      .catch((err) => console.log(err))
+  }
+
   const deadline = new Date(detail.deadline)
   const timeDiff = deadline - currentTime;
   const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
@@ -130,32 +167,39 @@ export default function PurchaseDetail() {
           </div>
         </div>
       </div>
-        <div className="border rounded-lg max-w-2xl mx-auto mt-5 mb-10 pb-3 p-5 space-y-5 flex flex-col items-center">
-          {timeDiff > 0 ? (
+        <div className="border rounded-lg max-w-2xl mx-auto mt-5 mb-10 pb-3 p-5 space-y-5 flex flex-col items-center text-center">
+          {timeDiff > 0 && (detail.current_person_count !== detail.target_person_count)? (
             <div>
-              <div>{detail.latitude}</div>
               <div className="text-main5">마감까지 남은 시간: {days}일 {hours}시간 {minutes}분 {seconds}초</div>
               <div className="text-main2">{detail.current_person_count}/{detail.target_person_count}(현재인원 / 목표인원)</div>
+              {isPurchase ? (
+                <button onClick={CancelPurchase} className="main5-full-button w-40">공동구매 취소</button>
+                ):(
+                  <button onClick={handleToggleAside} className="main1-full-button w-40">공동구매 신청</button>
+                )
+              }
             </div>
-          ):(
-            <div className="text-main5">모집 마감</div>
+          ):
+          (
+            <div>
+              <div className="text-main5">모집 마감</div>
+              {isWriter ? (null):(
+                <button onClick={handleCheck} className='main1-full-button w-40'>수령확인</button>
+              )}
+            </div>
           )}
-          {timeDiff > 0 ? (
-            <button onClick={handleToggleAside} className="main1-full-button w-40">공동구매 신청</button>
-          ):(
-            <button onClick={handleCheck} className='main1-full-button w-40'>수령확인</button>
-          )}
+          {isWriter&&timeDiff>0 ? (
+            <button className="main5-full-button w-40" onClick={deletePurchase}>모집 취소</button>
+          ):null}
           <PurchaseApply 
             isAsideOpen={isAsideOpen}
             handleToggleAside={handleToggleAside}
-            quantity={quantity}
-            handleIncrement={handleIncrement}
-            handleDecrement={handleDecrement}
-            handleChange={handleChange}
-            detail={detail}
-            user_id={detail.user_id}
+            point = {point}
+            setPoint = {setPoint}
             price = {detail.price}
-            delivery_charge={detail.delivery_charge}
+            deliveryCharge={Math.floor(detail.delivery_charge/detail.target_person_count/10)*10}
+            purchaseId = {id}
+            setIsPurchase = {setIsPurchase}
           />
         </div>
     </div>
