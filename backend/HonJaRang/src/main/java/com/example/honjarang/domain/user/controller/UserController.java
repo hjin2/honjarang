@@ -140,6 +140,11 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/page-post")
+    public ResponseEntity<Integer> getMyPostsPageCount(@RequestParam Integer size, @CurrentUser User user) {
+        return ResponseEntity.ok(userService.getMyPostsPageCount(size, user));
+    }
+
     @GetMapping("/page-writing")
     public ResponseEntity<Integer> getMyWrittenJointDeliveriesPageCount(@RequestParam Integer size, @CurrentUser User user) {
         return ResponseEntity.ok(userService.getMyWrittenJointDeliveriesPageCount(size, user));
