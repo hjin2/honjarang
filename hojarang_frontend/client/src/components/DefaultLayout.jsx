@@ -5,8 +5,12 @@ export default function DefaultLayout() {
   return (
     <>
       <div className="w-5/6 mx-auto">
-        <Header />
-        <Outlet />
+        <div style={{height : '10%'}}>
+          <Header />
+        </div>
+        <div style={{height : "90%"}}>
+          <Outlet />
+        </div>
       </div>
     </>
   );

@@ -107,7 +107,7 @@ export default function Market() {
 
 
   return (
-    <div className="flex space-x-14 mx-auto">
+    <div className="flex space-x-14 mx-auto h-full">
       <div className="basis-1/6 text-center">
         <SideTab 
           tabs = {tabs}
@@ -118,7 +118,7 @@ export default function Market() {
           {tabs[activeTabIndex].recruit}
         </button>
       </div>
-      <div className="basis-5/6">
+      <div className="basis-5/6 h-full">
         <Content
           tabs = {tabs}
           activeTabIndex = {activeTabIndex}

@@ -5,6 +5,8 @@ import PurchaseDetailPlace from '../../components/Market/PurchaseDetailPlace';
 import axios from 'axios';
 import PurchaseApply from '../../components/Market/PurchaseApply';
 import { useNavigate } from 'react-router-dom'
+import Modal from '../../components/Common/Modal';
+import PurchaserList from '../../components/Market/PurchaserList';
 
 export default function PurchaseDetail() {
   const navigate = useNavigate()
@@ -21,7 +23,7 @@ export default function PurchaseDetail() {
       clearInterval(interval);
     };
   }, []);
-
+  const [modalState, setModalState] = useState(false)
   const id = useParams().id;
   // const[detail, setDetail] = useState([])
   const [detail, setDetail] = useState({});
@@ -29,6 +31,7 @@ export default function PurchaseDetail() {
   const [isPurchase, setIsPurchase] = useState(false)
   const loginId = localStorage.getItem("user_id")
   const headers = {"Authorization" : `Bearer ${token}`}
+  const [purchasers, setPurchasers] = useState([]) 
   useEffect(() => {
     axios.get(`${URL}/api/v1/joint-purchases/${id}`, {headers})
     .then((res) => {
@@ -46,9 +49,10 @@ export default function PurchaseDetail() {
     })
   axios.get(`${URL}/api/v1/joint-purchases/${id}/applicants`, {headers})
     .then((res) => {
-      console.log(res.data)
+      // console.log(res.data)
       if(res.data){
-        console.log(2)
+        setPurchasers(res.data)
+        console.log(purchasers)
         for(let i=0;i<res.data.length;i++){
           if(Number(res.data[i].user_id) === Number(loginId)){
             setIsPurchase(true)
@@ -132,8 +136,8 @@ export default function PurchaseDetail() {
   const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
   return (
-    <div>
-      <div className="border rounded-lg max-w-2xl mx-auto mt-10 pb-3 p-5 space-y-5 ">
+    <div className="w-6/12 mx-auto mt-5">
+      <div className="border rounded-lg p-8 space-y-5 ">
         <div className="flex justify-between">
           <div className="flex flex-row">
             <div className="font-bold text-3xl flex items-end">{detail.product_name}</div>
@@ -148,11 +152,24 @@ export default function PurchaseDetail() {
         </div>
         <hr />
         <div className="space-y-2">
-          <div className="space-x-2">
-            <button onClick={() => handleTabClick('purchase_detail_product')} 
-            className={`mr-2 ${activeTab === 'purchase_detail_product' ? 'font-semibold' : 'font-normal'}`} >상품 설명</button>
-            <button onClick={() => handleTabClick('purchase_detail_place')}
-            className={`${activeTab === 'purchase_detail_place' ? 'font-semibold' : 'font-normal'}`}>만남 장소</button>
+          <div className='flex justify-between'>
+            <div className="space-x-2">
+              <button onClick={() => handleTabClick('purchase_detail_product')} 
+              className={`mr-2 ${activeTab === 'purchase_detail_product' ? 'font-semibold' : 'font-normal'}`} >상품 설명</button>
+              <button onClick={() => handleTabClick('purchase_detail_place')}
+              className={`${activeTab === 'purchase_detail_place' ? 'font-semibold' : 'font-normal'}`}>만남 장소</button>
+            </div>
+            <button onClick={(()=>{setModalState(!modalState)})}>참여자 목록</button>
+            {modalState && (
+              <Modal modalState={modalState} setModalState={setModalState}>
+                <PurchaserList 
+                  modalState={modalState} 
+                  setModalState={setModalState}
+                  purchasers = {purchasers}
+                />
+              </Modal>
+            )}
+
           </div>
           <div>
           {activeTab === 'purchase_detail_product' && (
@@ -167,11 +184,17 @@ export default function PurchaseDetail() {
           </div>
         </div>
       </div>
-        <div className="border rounded-lg max-w-2xl mx-auto mt-5 mb-10 pb-3 p-5 space-y-5 flex flex-col items-center text-center">
-          {timeDiff > 0 && (detail.current_person_count !== detail.target_person_count)? (
+        <div className="border rounded-lg my-3 p-5 mx-auto items-center text-center">
+          {timeDiff > 0 ? (
             <div>
-              <div className="text-main5">마감까지 남은 시간: {days}일 {hours}시간 {minutes}분 {seconds}초</div>
-              <div className="text-main2">{detail.current_person_count}/{detail.target_person_count}(현재인원 / 목표인원)</div>
+              {(detail.current_person_count !== detail.target_person_count) ? (
+                <div className='space-y-3 mb-3'>
+                  <div className="text-main5">마감까지 남은 시간: {days}일 {hours}시간 {minutes}분 {seconds}초</div>
+                  <div className="text-main2">{detail.current_person_count}/{detail.target_person_count}(현재인원 / 목표인원)</div>
+                </div>
+              ):(
+                <div className="text-main5">모집 마감</div>
+              )}
               {isPurchase ? (
                 <button onClick={CancelPurchase} className="main5-full-button w-40">공동구매 취소</button>
                 ):(
@@ -181,7 +204,7 @@ export default function PurchaseDetail() {
             </div>
           ):
           (
-            <div>
+            <div className='space-y-5'>
               <div className="text-main5">모집 마감</div>
               {isWriter ? (null):(
                 <button onClick={handleCheck} className='main1-full-button w-40'>수령확인</button>
@@ -189,7 +212,8 @@ export default function PurchaseDetail() {
             </div>
           )}
           {isWriter&&timeDiff>0 ? (
-            <button className="main5-full-button w-40" onClick={deletePurchase}>모집 취소</button>
+            null
+            // <button className="main5-full-button w-40 mt-3" onClick={deletePurchase}>모집 취소</button>
           ):null}
           <PurchaseApply 
             isAsideOpen={isAsideOpen}
