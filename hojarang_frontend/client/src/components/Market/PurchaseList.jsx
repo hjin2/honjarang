@@ -26,7 +26,7 @@ export default function PurchaseList() {
   useEffect(() => {
     axios.get(`${URL}/api/v1/joint-purchases`,{params:{page:currentPage, size:12}, headers})
     .then((res)=>{
-      console.log(res.data)
+      console.log(res)
       setPurchaseData(res.data)
     })
     .catch((err)=>{
@@ -38,13 +38,15 @@ export default function PurchaseList() {
     setCurrentPage(error);
   };
   return (
-    <div>
-      <Rooms roomsData={purchaseData} component={PurchaseRoom}/>
-      <div className="flex justify-center">
+    <div className="h-full">
+      <div style={{height:"90%"}}>
+        <Rooms roomsData={purchaseData} component={PurchaseRoom}/>
+      </div>
+      <div className="flex justify-center" style={{height:"10%"}}>
         <Pagination
-          activePage={1}
+          activePage={currentPage}
           itemsCountPerPage={12}
-          totalItemsCount={12}
+          totalItemsCount={12*pageSize}
           pageRangeDisplayed={10}
           prevPageText={"<"}
           nextPageText={">"}
