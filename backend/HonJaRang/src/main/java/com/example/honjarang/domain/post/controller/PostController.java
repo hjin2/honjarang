@@ -24,7 +24,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("")
-    public ResponseEntity<Long> createPost(@RequestPart("post_image") MultipartFile postImage, @ModelAttribute PostCreateDto postCreateDto,  @CurrentUser User user) throws IOException {
+    public ResponseEntity<Long> createPost(@RequestPart("post_image") MultipartFile postImage, @ModelAttribute(name = "postCreateDto") PostCreateDto postCreateDto,  @CurrentUser User user) throws IOException {
         Long result = postService.createPost(postCreateDto, postImage, user);
         return ResponseEntity.status(201).body(result);
     }

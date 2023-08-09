@@ -37,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -119,6 +120,17 @@ public class PostControllerTest {
                         .param("category",postCreateDto.getCategory().toString())
                         .param("content", postCreateDto.getContent()))
                 .andExpect(status().isCreated());
+//                .andDo(document("/posts/create",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        requestParts(
+//                                partWithName("post_image").description("이미지 첨부")
+//                        ),
+//                        requestPartFields("postCreateDto",
+//                                fieldWithPath("title").description("제목"),
+//                                fieldWithPath("category").description("카테고리"),
+//                                fieldWithPath("content").description("컨텐트")
+//                        )
     }
 
     @Test

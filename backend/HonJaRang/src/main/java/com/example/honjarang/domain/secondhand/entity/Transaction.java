@@ -47,8 +47,11 @@ public class Transaction extends BaseTimeEntity {
     @ColumnDefault("false")
     private Boolean isReceived;
 
+    @Column
+    private String transactionImage;
+
     @Builder
-    public Transaction(String title, String content, Integer price, User seller, User buyer, Boolean isCompleted, Boolean isReceived) {
+    public Transaction(String title, String content, Integer price, User seller, User buyer, Boolean isCompleted, Boolean isReceived, String transactionImage) {
         this.seller = seller;
         this.buyer = buyer;
         this.title = title;
@@ -56,6 +59,7 @@ public class Transaction extends BaseTimeEntity {
         this.price = price;
         this.isCompleted = isCompleted;
         this.isReceived = isReceived;
+        this.transactionImage = transactionImage;
     }
 
     public void complete() {

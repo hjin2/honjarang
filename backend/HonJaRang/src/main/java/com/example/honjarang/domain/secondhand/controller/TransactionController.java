@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,8 +23,9 @@ public class TransactionController {
 
 
     @PostMapping("")
-    public ResponseEntity<Long> createSecondHandTransaction(@RequestBody TransactionCreateDto dto, @CurrentUser User user) {
-        return ResponseEntity.ok(transactionService.createSecondHandTransaction(dto, user));
+    public ResponseEntity<Long> createSecondHandTransaction(@RequestPart("transaction_image") MultipartFile transactionImage, @ModelAttribute(name="transactionCreateDto") TransactionCreateDto transactionCreateDto, @CurrentUser User user) {
+        Long result = transactionService.createSecondHandTransaction(transactionCreateDto, transactionImage, user);
+        return ResponseEntity.status(201).body(result);
     }
 
     @PutMapping("/{transactionId}")

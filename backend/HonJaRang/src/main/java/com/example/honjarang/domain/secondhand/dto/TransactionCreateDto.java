@@ -18,12 +18,12 @@ public class TransactionCreateDto {
     private String content;
     private Integer price;
 
-    public Transaction toEntity(TransactionCreateDto dto, User user) {
+    public Transaction toEntity(User user, String transactionImage) {
         return Transaction.builder()
-                .content(dto.getContent())
-                .title(dto.getTitle())
+                .content(this.content)
+                .title(this.title)
                 .seller(user)
-                .price(dto.getPrice())
+                .price(this.price)
                 .build();
     }
 }
