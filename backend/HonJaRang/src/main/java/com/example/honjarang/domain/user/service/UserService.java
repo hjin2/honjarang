@@ -117,6 +117,13 @@ public class UserService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public void checkEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new DuplicateEmailException("이미 사용중인 이메일입니다.");
+        }
+    }
+
     @Transactional
     public void changePassword(User user, String password, String newPassword){
         if (!passwordEncoder.matches(password, user.getPassword())) {
@@ -254,6 +261,4 @@ public class UserService {
         loginedUser.deleteUser();
         return ResponseEntity.ok().build();
     }
-
-
 }
