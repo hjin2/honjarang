@@ -16,7 +16,7 @@ const UserinfoSlice = createSlice({
       const {nickname, email, profile_image, point, address, latitude, longitude} = action.payload;
       state.nickname = nickname;
       state.email = email;
-      if(profile_image){
+      if(profile_image !== "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/profileImage/null"){
         state.profile_image = profile_image;
       }else{
         state.profile_image = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
