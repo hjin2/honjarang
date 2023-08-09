@@ -10,7 +10,6 @@ import com.example.honjarang.domain.chat.entity.ChatRoom;
 import com.example.honjarang.domain.chat.exception.ChatParticipantNotFoundException;
 import com.example.honjarang.domain.chat.repository.ChatMessageRepository;
 import com.example.honjarang.domain.chat.repository.ChatParticipantRepository;
-import com.example.honjarang.domain.chat.repository.ChatRoomRepository;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.UserNotFoundException;
 import com.example.honjarang.domain.user.repository.UserRepository;
@@ -31,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -152,7 +150,7 @@ public class ChatService {
     }
 
     @Transactional(readOnly = true)
-    public Integer getChatMessagePage(Long roomId, Integer size) {
+    public Integer getChatMessagePageCount(Long roomId, Integer size) {
         Integer count = chatMessageRepository.countAllByChatRoomId(roomId);
         return (int) Math.ceil((double) count / size);
     }

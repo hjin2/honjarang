@@ -250,7 +250,7 @@ class ChatServiceTest {
         given(chatMessageRepository.countAllByChatRoomId(1L)).willReturn(1);
 
         // when
-        Integer page = chatService.getChatMessagePage(1L, 10);
+        Integer page = chatService.getChatMessagePageCount(1L, 10);
 
         // then
         assertThat(page).isEqualTo(1);

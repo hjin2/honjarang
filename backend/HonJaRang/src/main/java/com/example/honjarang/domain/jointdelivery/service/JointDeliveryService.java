@@ -24,6 +24,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,13 +59,23 @@ public class JointDeliveryService {
     public List<StoreListDto> getStoreListByApi(String keyword) {
         String url = "https://map.naver.com/v5/api/search";
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("referer", "https://map.naver.com/v5/search");
+
         URI targetUrl = UriComponentsBuilder
                 .fromUriString(url)
                 .queryParam("query", keyword)
+                .queryParam("caller", "pcweb")
+                .queryParam("type", "all")
+                .queryParam("searchCoord", "126.97838878631592;37.56661019999999")
+                .queryParam("page", "1")
+                .queryParam("displayCount", "20")
+                .queryParam("isPlaceRecommendationReplace", "true")
+                .queryParam("lang", "ko")
                 .build()
                 .encode(StandardCharsets.UTF_8)
                 .toUri();
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(targetUrl, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(targetUrl, HttpMethod.GET, new HttpEntity<>(headers), String.class);
 
         try {
             JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
@@ -120,7 +133,7 @@ public class JointDeliveryService {
         Element script = document.select("script").get(2);
         String scriptData = script.data();
         String[] splitData = scriptData.split("window.__APOLLO_STATE__ = ");
-        String[] splitData2 = splitData[1].split(";");
+        String[] splitData2 = splitData[1].split("window.__PLACE_STATE__");
         try {
             JsonNode jsonNode = objectMapper.readTree(splitData2[0]);
             Iterator<String> iterator = jsonNode.fieldNames();
@@ -132,7 +145,7 @@ public class JointDeliveryService {
                             .storeId(storeId)
                             .name(menuNode.get("name").asText())
                             .price(menuNode.get("price").asInt())
-                            .image(menuNode.get("images").get(0).asText())
+                            .image(menuNode.get("images").get(0) != null ? menuNode.get("images").get(0).asText() : null)
                             .build();
                     menuList.add(menu);
                 }
@@ -144,7 +157,7 @@ public class JointDeliveryService {
     }
 
     @Transactional
-    public void createJointDelivery(JointDeliveryCreateDto jointDeliveryCreateDto, User loginUser) {
+    public Long createJointDelivery(JointDeliveryCreateDto jointDeliveryCreateDto, User loginUser) {
         User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
         if (user.getPoint() < 1000) {
             throw new InsufficientPointsException("포인트가 부족합니다.");
@@ -171,6 +184,7 @@ public class JointDeliveryService {
                 .user(user)
                 .isReceived(true)
                 .build());
+        return jointDelivery.getId();
     }
 
     private String fetchHtmlByStoreId(Long storeId) {
@@ -184,7 +198,7 @@ public class JointDeliveryService {
     }
 
     @Transactional(readOnly = true)
-    public JointDeliveryDto getJointDelivery(Long jointDeliveryId) {
+    public JointDeliveryDto getJointDelivery(Long jointDeliveryId, User loginUser) {
         JointDelivery jointDelivery = jointDeliveryRepository.findById(jointDeliveryId).orElseThrow(() -> new JointDeliveryNotFoundException("해당 공동배달이 존재하지 않습니다."));
         int currentTotalPrice = 0;
         List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDeliveryId);
@@ -193,7 +207,7 @@ public class JointDeliveryService {
                     .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
             currentTotalPrice += menu.getPrice() * jointDeliveryCart.getQuantity();
         }
-        return new JointDeliveryDto(jointDelivery, currentTotalPrice);
+        return new JointDeliveryDto(jointDelivery, currentTotalPrice, loginUser.getPoint());
     }
 
     @Transactional(readOnly = true)
@@ -283,13 +297,19 @@ public class JointDeliveryService {
         Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCartCreateDto.getMenuId()))
                 .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
 
+        // 공동배달 주최자가 아닌 경우 포인트 차감
         if (!jointDelivery.getUser().getId().equals(loginUser.getId()) && user.getPoint() < menu.getPrice() * jointDeliveryCartCreateDto.getQuantity()) {
             throw new InsufficientPointsException("포인트가 부족합니다.");
         }
-
         if (!jointDelivery.getUser().getId().equals(loginUser.getId())) {
             user.subtractPoint(menu.getPrice() * jointDeliveryCartCreateDto.getQuantity());
         }
+
+        // 공동배달 주최자가 아니고 최초로 장바구니에 담는 경우
+        if(!jointDelivery.getUser().getId().equals(loginUser.getId()) && !jointDeliveryCartRepository.existsByJointDeliveryIdAndUserId(jointDelivery.getId(), user.getId()) && user.getPoint() < 1000) {
+            throw new InsufficientPointsException("포인트가 부족합니다.");
+        }
+        user.subtractPoint(1000);
 
         jointDeliveryCartRepository.save(jointDeliveryCartCreateDto.toEntity(jointDeliveryCartCreateDto, user));
         if (!jointDeliveryApplicantRepository.existsByJointDeliveryIdAndUserId(jointDelivery.getId(), user.getId())) {
@@ -315,20 +335,24 @@ public class JointDeliveryService {
         Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
                 .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
 
+        // 공동배달 주최자가 아닌 경우 포인트 환급
         if (!jointDeliveryCart.getJointDelivery().getUser().getId().equals(loginUser.getId())) {
             user.addPoint(menu.getPrice() * jointDeliveryCart.getQuantity());
         }
 
         jointDeliveryCartRepository.delete(jointDeliveryCart);
 
-        if (!jointDeliveryCartRepository.existsByJointDeliveryIdAndUserId(jointDeliveryCart.getJointDelivery().getId(), user.getId())) {
+        // 공동배달 주최자가 아니고 장바구니에 담긴 상품이 없는 경우
+        if (!jointDeliveryCart.getJointDelivery().getUser().getId().equals(user.getId()) && !jointDeliveryCartRepository.existsByJointDeliveryIdAndUserId(jointDeliveryCart.getJointDelivery().getId(), user.getId())) {
             jointDeliveryApplicantRepository.deleteByJointDeliveryIdAndUserId(jointDeliveryCart.getJointDelivery().getId(), user.getId());
+            user.addPoint(1000);
         }
     }
 
     @Transactional
     public void confirmReceived(Long jointDeliveryId, User loginUser) {
         JointDeliveryApplicant jointDeliveryApplicant = jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(jointDeliveryId, loginUser.getId()).orElseThrow(() -> new JointDeliveryApplicantNotFoundException("공동배달 신청자가 아닙니다."));
+        User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
         if (jointDeliveryApplicant.getJointDelivery().getDeadline().isAfter(LocalDateTime.now())) {
             throw new JointDeliveryNotClosedException("공동배달이 마감되지 않았습니다.");
@@ -342,6 +366,7 @@ public class JointDeliveryService {
 
         jointDeliveryApplicant.confirmReceived();
 
+        // 공동배달 주최자에게 포인트 지급
         List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryIdAndUserId(jointDeliveryId, loginUser.getId());
         Integer totalPrice = 0;
         for (JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
@@ -350,5 +375,17 @@ public class JointDeliveryService {
             totalPrice += menu.getPrice() * jointDeliveryCart.getQuantity();
         }
         jointDeliveryApplicant.getJointDelivery().getUser().addPoint(totalPrice);
+
+        // 배달비 차액 환급
+        Integer applicantCount = jointDeliveryApplicantRepository.countByJointDeliveryId(jointDeliveryId);
+        int refundPoint = 1000 - jointDeliveryApplicant.getJointDelivery().getDeliveryCharge() / applicantCount;
+        if(refundPoint > 0) {
+            user.addPoint(refundPoint);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getJointDeliveryPageCount(Integer size) {
+        return (int) Math.ceil((double) jointDeliveryRepository.countByIsCanceledFalseAndDeadlineAfter(LocalDateTime.now()) / size);
     }
 }

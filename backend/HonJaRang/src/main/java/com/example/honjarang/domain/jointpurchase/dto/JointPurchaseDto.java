@@ -2,7 +2,6 @@ package com.example.honjarang.domain.jointpurchase.dto;
 
 import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchase;
-import com.example.honjarang.domain.user.entity.User;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
@@ -19,14 +18,17 @@ public class JointPurchaseDto {
     private Integer targetPersonCount;
     private Integer deliveryCharge;
     private String deadline;
+
     private String placeName;
     private Double placeLatitude;
     private Double placeLongitude;
     private String createdAt;
+
     private Long userId;
     private String nickname;
+    private Integer myPoint;
 
-    public JointPurchaseDto(JointPurchase jointPurchase, Integer currentPersonCount) {
+    public JointPurchaseDto(JointPurchase jointPurchase, Integer currentPersonCount, Integer myPoint) {
         this.id = jointPurchase.getId();
         this.productName = jointPurchase.getProductName();
         this.image = jointPurchase.getImage();
@@ -42,5 +44,6 @@ public class JointPurchaseDto {
         this.createdAt = DateTimeUtils.formatLocalDateTime(jointPurchase.getCreatedAt());
         this.userId = jointPurchase.getUser().getId();
         this.nickname = jointPurchase.getUser().getNickname();
+        this.myPoint = myPoint;
     }
 }

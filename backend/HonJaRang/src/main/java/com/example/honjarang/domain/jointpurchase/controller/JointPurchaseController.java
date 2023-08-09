@@ -17,9 +17,8 @@ public class JointPurchaseController {
     private final JointPurchaseService jointPurchaseService;
 
     @PostMapping("")
-    public ResponseEntity<Void> createJointPurchase(@RequestBody JointPurchaseCreateDto jointPurchaseCreateDto, @CurrentUser User user) {
-        jointPurchaseService.createJointPurchase(jointPurchaseCreateDto, user);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Long> createJointPurchase(@RequestBody JointPurchaseCreateDto jointPurchaseCreateDto, @CurrentUser User user) {
+        return ResponseEntity.ok(jointPurchaseService.createJointPurchase(jointPurchaseCreateDto, user));
     }
 
     @DeleteMapping("/{jointPurchaseId}")
@@ -35,8 +34,8 @@ public class JointPurchaseController {
     }
 
     @GetMapping("/{jointPurchaseId}")
-    public ResponseEntity<JointPurchaseDto> getJointPurchase(@PathVariable Long jointPurchaseId) {
-        JointPurchaseDto jointPurchaseDto = jointPurchaseService.getJointPurchase(jointPurchaseId);
+    public ResponseEntity<JointPurchaseDto> getJointPurchase(@PathVariable Long jointPurchaseId, @CurrentUser User user) {
+        JointPurchaseDto jointPurchaseDto = jointPurchaseService.getJointPurchase(jointPurchaseId, user);
         return ResponseEntity.ok(jointPurchaseDto);
     }
 
@@ -62,5 +61,11 @@ public class JointPurchaseController {
     public ResponseEntity<Void> confirmReceived(@PathVariable Long jointPurchaseId, @CurrentUser User user) {
         jointPurchaseService.confirmReceived(jointPurchaseId, user);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Integer> getJointPurchasePage(@RequestParam Integer size) {
+        Integer jointPurchasePage = jointPurchaseService.getJointPurchasePageCount(size);
+        return ResponseEntity.ok(jointPurchasePage);
     }
 }

@@ -36,6 +36,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -191,12 +192,14 @@ class JointDeliveryControllerTest {
     void createJointDelivery() throws Exception {
         // given
         JointDeliveryCreateDto dto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, "2000-01-01 00:00:00");
+        given(jointDeliveryService.createJointDelivery(any(JointDeliveryCreateDto.class), any(User.class))).willReturn(1L);
 
         // when & then
         mockMvc.perform(post("/api/v1/joint-deliveries")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(dto)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(1L))
                 .andDo(document("joint-deliveries/create",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
@@ -206,7 +209,8 @@ class JointDeliveryControllerTest {
                                 fieldWithPath("delivery_charge").type(JsonFieldType.NUMBER).description("배달비"),
                                 fieldWithPath("target_min_price").type(JsonFieldType.NUMBER).description("최소 주문 금액"),
                                 fieldWithPath("deadline").type(JsonFieldType.STRING).description("마감 시간")
-                        )
+                        ),
+                        responseBody()
                 ));
     }
 
@@ -256,8 +260,8 @@ class JointDeliveryControllerTest {
     @DisplayName("공동배달 조회")
     void getJointDelivery() throws Exception {
         // given
-        JointDeliveryDto jointDeliveryDto = new JointDeliveryDto(jointDelivery, 10000);
-        given(jointDeliveryService.getJointDelivery(1L)).willReturn(jointDeliveryDto);
+        JointDeliveryDto jointDeliveryDto = new JointDeliveryDto(jointDelivery, 10000, 10000);
+        given(jointDeliveryService.getJointDelivery(eq(1L), any(User.class))).willReturn(jointDeliveryDto);
 
         // when & then
         mockMvc.perform(get("/api/v1/joint-deliveries/{jointDeliveryId}", 1L))
@@ -274,6 +278,7 @@ class JointDeliveryControllerTest {
                 .andExpect(jsonPath("$.store_image").value("test.jpg"))
                 .andExpect(jsonPath("$.user_id").value(1L))
                 .andExpect(jsonPath("$.nickname").value("테스트"))
+                .andExpect(jsonPath("$.my_point").value(10000))
                 .andExpect(jsonPath("$.created_at").exists())
                 .andDo(document("joint-deliveries/detail",
                         preprocessRequest(prettyPrint()),
@@ -293,6 +298,7 @@ class JointDeliveryControllerTest {
                                 fieldWithPath("store_image").type(JsonFieldType.STRING).description("가게 이미지"),
                                 fieldWithPath("user_id").type(JsonFieldType.NUMBER).description("유저 ID"),
                                 fieldWithPath("nickname").type(JsonFieldType.STRING).description("유저 닉네임"),
+                                fieldWithPath("my_point").type(JsonFieldType.NUMBER).description("내 포인트"),
                                 fieldWithPath("created_at").type(JsonFieldType.STRING).description("생성 시간")
                         )
                 ));
@@ -411,6 +417,27 @@ class JointDeliveryControllerTest {
                         pathParameters(
                                 parameterWithName("jointDeliveryId").description("공동배달 ID")
                         )
+                ));
+    }
+
+    @Test
+    @DisplayName("공동배달 페이지 수 조회")
+    void getJointDeliveryPage() throws Exception {
+        // given
+        given(jointDeliveryService.getJointDeliveryPageCount(10)).willReturn(1);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/joint-deliveries/page")
+                .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(1))
+                .andDo(document("joint-deliveries/page",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("size").description("페이지 크기")
+                        ),
+                        responseBody()
                 ));
     }
 }

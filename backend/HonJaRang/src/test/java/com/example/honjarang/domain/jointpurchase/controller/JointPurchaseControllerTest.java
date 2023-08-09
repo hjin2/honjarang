@@ -105,13 +105,15 @@ class JointPurchaseControllerTest {
     @DisplayName("공동구매 생성")
     void createJointPurchase() throws Exception {
         // given
-        JointPurchaseCreateDto jointPurchaseCreateDto = new JointPurchaseCreateDto("테스트 내용", "2030-01-01 00:00:00", 10, "테스트 상품", 10000, 2500, "테스트 장소");
+        JointPurchaseCreateDto jointPurchaseCreateDto = new JointPurchaseCreateDto("테스트 내용", "2030-01-01 00:00:00", 10, "테스트 상품", 10000, 2500, "테스트 장소", 37.123456, 127.123456);
+        given(jointPurchaseService.createJointPurchase(any(), any())).willReturn(1L);
 
         // when & then
         mockMvc.perform(post("/api/v1/joint-purchases")
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(jointPurchaseCreateDto)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(1))
                 .andDo(document("joint-purchases/create",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
@@ -122,8 +124,11 @@ class JointPurchaseControllerTest {
                                 fieldWithPath("product_name").description("공동구매 상품명"),
                                 fieldWithPath("price").description("공동구매 상품 가격"),
                                 fieldWithPath("delivery_charge").description("공동구매 배송비"),
-                                fieldWithPath("place_keyword").description("공동구매 장소 키워드")
-                        )
+                                fieldWithPath("place_keyword").description("공동구매 장소 키워드"),
+                                fieldWithPath("latitude").description("공동구매 장소 위도"),
+                                fieldWithPath("longitude").description("공동구매 장소 경도")
+                        ),
+                        responseBody()
                 ));
     }
 
@@ -185,8 +190,8 @@ class JointPurchaseControllerTest {
     @DisplayName("공동구매 상세 조회")
     void getJointPurchase() throws Exception {
         // given
-        JointPurchaseDto jointPurchaseDto = new JointPurchaseDto(jointPurchase, 1);
-        given(jointPurchaseService.getJointPurchase(1L)).willReturn(jointPurchaseDto);
+        JointPurchaseDto jointPurchaseDto = new JointPurchaseDto(jointPurchase, 1, 10000);
+        given(jointPurchaseService.getJointPurchase(1L, user)).willReturn(jointPurchaseDto);
 
         // when & then
         mockMvc.perform(get("/api/v1/joint-purchases/{jointPurchaseId}", 1L))
@@ -205,6 +210,7 @@ class JointPurchaseControllerTest {
                 .andExpect(jsonPath("$.created_at").value("2000-01-01 00:00:00"))
                 .andExpect(jsonPath("$.user_id").value(1L))
                 .andExpect(jsonPath("$.nickname").value("테스트"))
+                .andExpect(jsonPath("$.my_point").value(10000))
                 .andExpect(jsonPath("$.current_person_count").value(1))
                 .andDo(document("joint-purchases/detail",
                         preprocessRequest(prettyPrint()),
@@ -227,6 +233,7 @@ class JointPurchaseControllerTest {
                                 fieldWithPath("created_at").description("공동구매 생성일"),
                                 fieldWithPath("user_id").description("공동구매 생성자 ID"),
                                 fieldWithPath("nickname").description("공동구매 생성자 닉네임"),
+                                fieldWithPath("my_point").description("내 포인트"),
                                 fieldWithPath("current_person_count").description("공동구매 현재 인원")
                         )
                 ));
@@ -320,6 +327,27 @@ class JointPurchaseControllerTest {
                         pathParameters(
                                 parameterWithName("jointPurchaseId").description("공동구매 ID")
                         )
+                ));
+    }
+
+    @Test
+    @DisplayName("공동구매 페이지 수 조회")
+    void getJointPurchasePage() throws Exception{
+        // given
+        given(jointPurchaseService.getJointPurchasePageCount(10)).willReturn(1);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/joint-purchases/page")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(1))
+                .andDo(document("joint-purchases/page",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("size").description("페이지 크기")
+                        ),
+                        responseBody()
                 ));
     }
 }

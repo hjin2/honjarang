@@ -57,26 +57,13 @@ public class MapService {
     }
 
     public Integer getDistance(CoordinateDto startCoordinateDto, CoordinateDto endCoordinateDto) {
-        String url = "https://apis-navi.kakaomobility.com/v1/directions";
+        // Haversine 공식을 사용하여 좌표를 계산해서 m 단위로 변환
+        double startLatRad = Math.toRadians(startCoordinateDto.getLatitude());
+        double startLonRad = Math.toRadians(startCoordinateDto.getLongitude());
+        double endLatRad = Math.toRadians(endCoordinateDto.getLatitude());
+        double endLonRad = Math.toRadians(endCoordinateDto.getLongitude());
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "KakaoAK " + kakaoRestApiKey);
-
-        HttpEntity<?> entity = new HttpEntity<>(headers);
-        URI targetUrl = UriComponentsBuilder
-                .fromUriString(url)
-                .queryParam("origin", startCoordinateDto.getLongitude() + "," + startCoordinateDto.getLatitude())
-                .queryParam("destination", endCoordinateDto.getLongitude() + "," + endCoordinateDto.getLatitude())
-                .build()
-                .encode(StandardCharsets.UTF_8)
-                .toUri();
-        ResponseEntity<String> responseEntity = restTemplate.exchange(targetUrl, HttpMethod.GET, entity, String.class);
-
-        try {
-            JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
-            return jsonNode.get("routes").get(0).get("summary").get("distance").asInt();
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        double distance = 6371 * Math.acos(Math.cos(startLatRad) * Math.cos(endLatRad) * Math.cos(startLonRad - endLonRad) + Math.sin(startLatRad) * Math.sin(endLatRad));
+        return (int) (distance * 1000);
     }
 }
