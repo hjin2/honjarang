@@ -3,6 +3,7 @@ package com.example.honjarang.domain.post.service;
 
 import com.example.honjarang.domain.post.dto.*;
 import com.example.honjarang.domain.DateTimeUtils;
+import com.example.honjarang.domain.post.entity.Category;
 import com.example.honjarang.domain.post.entity.Comment;
 import com.example.honjarang.domain.post.entity.LikePost;
 import com.example.honjarang.domain.post.entity.Post;
@@ -17,10 +18,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.JSONOutput;
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +42,27 @@ public class PostService {
 
     private final LikePostRepository likePostRepository;
 
+    private final S3Client s3Client;
+
     @Transactional
-    public Long createPost(PostCreateDto postCreateDto, User user) {
-        return postRepository.save(postCreateDto.toEntity(user)).getId();
+    public Long createPost(PostCreateDto postCreateDto, MultipartFile postImage, User user) throws IOException {
+
+        String uuid = UUID.randomUUID().toString();
+
+        try {
+            s3Client.putObject(PutObjectRequest.builder()
+                    .bucket("honjarang-bucket")
+                    .key("postImage/" + uuid + postImage.getOriginalFilename())
+                    .acl(ObjectCannedACL.PUBLIC_READ)
+                    .contentType(postImage.getContentType())
+                    .build(), RequestBody.fromInputStream(postImage.getInputStream(), postImage.getSize()));
+        }catch (IOException e){
+            throw new RuntimeException("게시글 이미지 업로드에 실패했습니다.");
+        }
+
+        String image = uuid + postImage.getOriginalFilename();
+        return postRepository.save(postCreateDto.toEntity(user, image)).getId();
+
     }
 
     @Transactional
@@ -49,13 +77,35 @@ public class PostService {
     }
 
     @Transactional
-    public void updatePost(Long id, PostUpdateDto postUpdateDto, User user) {
-        Post post = postRepository.findById(id).orElseThrow(() ->
+    public void updatePost(MultipartFile postImage, PostUpdateDto postUpdateDto, User user) throws IOException {
+
+        Post post = postRepository.findById(postUpdateDto.getId()).orElseThrow(() ->
                 new PostNotFoundException("존재하지 않는 게시글입니다."));
         if (!Objects.equals(post.getUser().getId(), user.getId())) {
             throw new InvalidUserException("작성자만 수정할 수 있습니다.");
         }
-        post.update(postUpdateDto);
+
+        // 기존에 게시글에 사진이 있으면 사진을 s3에서 지우고 추가
+        if (post.getPostImage() != "") {
+            DeleteObjectRequest request = DeleteObjectRequest.builder()
+                    .bucket("honjarang-bucket")
+                    .key("postImage/" + post.getPostImage())
+                    .build();
+            s3Client.deleteObject(request);
+
+        }
+
+        String uuid = UUID.randomUUID().toString();
+        s3Client.putObject(PutObjectRequest.builder()
+                .bucket("honjarang-bucket")
+                .key("postImage/" + uuid + postImage.getOriginalFilename())
+                .acl(ObjectCannedACL.PUBLIC_READ)
+                .contentType(postImage.getContentType())
+                .build(), RequestBody.fromInputStream(postImage.getInputStream(), postImage.getSize()));
+
+        String image = uuid + postImage.getOriginalFilename();
+        post.update(postUpdateDto,image);
+
     }
 
     @Transactional

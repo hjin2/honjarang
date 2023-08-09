@@ -24,8 +24,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.S3Client;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +37,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doThrow;
@@ -62,6 +67,10 @@ public class PostServiceTest {
     private Comment comment;
 
     private CommentListDto commentListDto;
+
+    @Mock
+    private S3Client s3Client;
+
 
     @BeforeEach
     void setUp() {
@@ -95,13 +104,20 @@ public class PostServiceTest {
 
     @Test
     @DisplayName("게시글 작성 성공")
-    void createPost_success() {
+    void createPost_success() throws IOException {
         // given
+        MultipartFile multipartFile = new MockMultipartFile("test_image", "test_image".getBytes());
+        String imageUrl = multipartFile.getOriginalFilename();
+        PostCreateDto postCreateDto = new PostCreateDto("title",Category.FREE,"content");
 
-        PostCreateDto postCreateDto = new PostCreateDto("test", "test");
+
+        Post savePost = postCreateDto.toEntity(user,imageUrl);
+        savePost.setIdForTest(1L);
+
+        given(postRepository.save(any(Post.class))).willReturn(savePost);
 
         // when & then
-        postRepository.save(postCreateDto.toEntity(user));
+        assertThat(postService.createPost(postCreateDto, multipartFile, user)).isEqualTo(1L);
 
     }
 
@@ -148,51 +164,69 @@ public class PostServiceTest {
 
     @Test
     @DisplayName("게시글 수정 성공")
-    void updatePost_Success() {
+    void updatePost_Success() throws IOException {
 
-        Post post = Post.builder()
-                .title("test")
-                .content("test")
-                .build();
+        // given
+        MultipartFile multipartFile = new MockMultipartFile("test_image", "test_image".getBytes());
+        String imageUrl = multipartFile.getOriginalFilename();
 
-        String testTitle = "testtest";
-        String testContent = "contentcontent";
+        PostUpdateDto postUpdateDto = new PostUpdateDto(1L ,"수정 테스트 타이틀","수정 테스트 본문",Category.TIP,true);
 
-        PostUpdateDto postUpdateDto = new PostUpdateDto(post.getId(), testTitle, testContent,
-                post.getIsNotice(), post.getCategory());
+        given(postRepository.findById(any(Long.class))).willReturn(Optional.ofNullable(post));
 
-        // when
-        post.update(postUpdateDto);
+        postService.updatePost(multipartFile, postUpdateDto, user);
 
-        // then
-        assertThat(post.getId()).isEqualTo(postUpdateDto.getId());
-        assertThat(post.getTitle()).isEqualTo(postUpdateDto.getTitle());
-        assertThat(post.getContent()).isEqualTo(postUpdateDto.getContent());
+        // when & then
+        assertThat(post.getTitle()).isEqualTo("수정 테스트 타이틀");
+        assertThat(post.getContent()).isEqualTo("수정 테스트 본문");
+        assertThat(post.getCategory()).isEqualTo(Category.TIP);
+        assertThat(post.getIsNotice()).isEqualTo(true);
+
     }
 
     @Test
-    @DisplayName("게시글 수정 실패 - 작성자가 아닐 경우")
-    void updatePost_DisMatchUserException() {
+    @DisplayName("게시글 수정 실패 - 존재하지 않는 게시글일 때")
+    void updatePost_PostNotFoundException() throws IOException {
 
         // given
-        User invalidUser = User.builder()
-                .email("invalid")
-                .password("password")
-                .build();
+        MultipartFile multipartFile = new MockMultipartFile("test_image", "test_image".getBytes());
+        String imageUrl = multipartFile.getOriginalFilename();
+        PostUpdateDto postUpdateDto = new PostUpdateDto(1L ,"수정 테스트 타이틀","수정 테스트 본문",Category.TIP,true);
+        given(postRepository.findById(any(Long.class))).willReturn(java.util.Optional.empty());
 
-        String testTitle = "testtest";
-        String testContent = "contentcontent";
+        // when & then
+        assertThrows(PostNotFoundException.class, () -> postService.updatePost(multipartFile, postUpdateDto, user));
 
-        PostUpdateDto postUpdateDto = new PostUpdateDto(post.getId(), testTitle, testContent,
-                post.getIsNotice(), post.getCategory());
-        
-        doThrow(new InvalidUserException("작성자가 아닙니다.")).when(postService).
-                updatePost(post.getId(), postUpdateDto, invalidUser);
-
-        // when & 소
-        assertThrows(InvalidUserException.class, () -> postService.updatePost(post.getId(), postUpdateDto, invalidUser));
 
     }
+
+    @Test
+    @DisplayName("게시글 수정 실패 - 작성자가 아닐때 수정 시도하는 경우")
+    void updatePost_InvalidUserException() throws IOException {
+
+        // given
+        MultipartFile multipartFile = new MockMultipartFile("test_image", "test_image".getBytes());
+        String imageUrl = multipartFile.getOriginalFilename();
+        PostUpdateDto postUpdateDto = new PostUpdateDto(1L ,"수정 테스트 타이틀","수정 테스트 본문",Category.TIP,true);
+        given(postRepository.findById(any(Long.class))).willReturn(Optional.ofNullable(post));
+        User notWriter =  User.builder()
+                .email("test2@test.com")
+                .password("test12345")
+                .nickname("테스트1")
+                .address("서울특별시 강남구")
+                .latitude(37.1)
+                .longitude(127.1)
+                .role(Role.ROLE_USER)
+                .build();
+        notWriter.setIdForTest(3L);
+
+        // when & then
+        assertThrows(InvalidUserException.class, () -> postService.updatePost(multipartFile, postUpdateDto, notWriter));
+
+    }
+
+
+
 
     @Test
     @DisplayName("게시글 목록 조회 성공")
