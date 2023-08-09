@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/time").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/docs/**").permitAll()
                         .requestMatchers("/chat/**").permitAll()

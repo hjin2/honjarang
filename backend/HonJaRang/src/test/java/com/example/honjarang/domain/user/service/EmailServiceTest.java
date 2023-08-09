@@ -55,7 +55,6 @@ class EmailServiceTest {
     @DisplayName("이메일 인증번호 전송 성공")
     void sendVerificationCode_Success() {
         // given
-        given(userRepository.existsByEmail("test@test.com")).willReturn(false);
 
         // when
         emailService.sendVerificationCode("test@test.com");
@@ -64,18 +63,8 @@ class EmailServiceTest {
     }
 
     @Test
-    @DisplayName("이메일 인증번호 전송 실패 - 이미 가입된 이메일인 경우")
-    void sendVerificationCode_DuplicateEmailException() {
-        // given
-        given(userRepository.existsByEmail("test@test.com")).willReturn(true);
-
-        // when & then
-        assertThrows(DuplicateEmailException.class, () -> emailService.sendVerificationCode("test@test.com"));
-    }
-
-    @Test
-    @DisplayName("이메일 인증번호 저장")
-    void saveVerificationCode() {
+    @DisplayName("이메일 인증번호 저장 성공")
+    void saveVerificationCode_Success() {
         // given
         given(emailVerificationRepository.findByEmail("test@test.com")).willReturn(Optional.empty());
 

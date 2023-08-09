@@ -112,22 +112,10 @@ public class JointPurchaseService {
     @Transactional(readOnly = true)
     public List<JointPurchaseListDto> getJointPurchaseList(Integer page, Integer size, User loginUser) {
         Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
-        List<JointPurchase> jointPurchases = jointPurchaseRepository.findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(LocalDateTime.now(), pageable).toList();
+        List<JointPurchase> jointPurchases = jointPurchaseRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanAndTargetPersonCountGreaterThanOrderByCreatedAtDesc(LocalDateTime.now(), loginUser.getLatitude(), loginUser.getLongitude(), pageable).toList();
         List<JointPurchaseListDto> jointPurchaseListDtoList = new ArrayList<>();
         for(JointPurchase jointPurchase : jointPurchases) {
-            // 사용자와 공동구매의 거리가 필터링 거리보다 멀 경우
-            CoordinateDto userCoordinateDto = new CoordinateDto(loginUser.getLatitude(), loginUser.getLongitude());
-            CoordinateDto jointPurchaseCoordinateDto = new CoordinateDto(jointPurchase.getLatitude(), jointPurchase.getLongitude());
-            if(mapService.getDistance(userCoordinateDto, jointPurchaseCoordinateDto) > 5000) {
-                continue;
-            }
-
-            // 현재 인원이 묙표 인원만큼 찼을 경우
             Integer currentPersonCount = jointPurchaseApplicantRepository.countByJointPurchaseId(jointPurchase.getId());
-            if(currentPersonCount >= jointPurchase.getTargetPersonCount()) {
-                continue;
-            }
-
             jointPurchaseListDtoList.add(new JointPurchaseListDto(jointPurchase, currentPersonCount));
         }
         return jointPurchaseListDtoList;

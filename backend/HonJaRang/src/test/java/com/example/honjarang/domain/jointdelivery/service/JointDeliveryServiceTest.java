@@ -343,10 +343,9 @@ class JointDeliveryServiceTest {
         Page<JointDelivery> jointDeliveryPage = new PageImpl<>(List.of(jointDelivery));
         List<JointDeliveryCart> jointDeliveryCartList = List.of(jointDeliveryCart);
 
-        given(jointDeliveryRepository.findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(any(LocalDateTime.class), any(Pageable.class))).willReturn(jointDeliveryPage);
+        given(jointDeliveryRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanOrderByCreatedAtDesc(any(LocalDateTime.class), eq(37.123456), eq(127.123456), any(Pageable.class))).willReturn(jointDeliveryPage);
         given(jointDeliveryCartRepository.findAllByJointDeliveryId(1L)).willReturn(jointDeliveryCartList);
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
-        given(mapService.getDistance(any(CoordinateDto.class), any(CoordinateDto.class))).willReturn(1000);
 
         // when
         List<JointDeliveryListDto> jointDeliveryListDtoList = jointDeliveryService.getJointDeliveryList(1, 10, user);
@@ -371,7 +370,7 @@ class JointDeliveryServiceTest {
         Page<JointDelivery> jointDeliveryPage = new PageImpl<>(List.of(jointDelivery));
         List<JointDeliveryCart> jointDeliveryCartList = List.of(jointDeliveryCart);
 
-        given(jointDeliveryRepository.findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(any(LocalDateTime.class), any(Pageable.class))).willReturn(jointDeliveryPage);
+        given(jointDeliveryRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanOrderByCreatedAtDesc(any(LocalDateTime.class), eq(37.123456), eq(127.123456), any(Pageable.class))).willReturn(jointDeliveryPage);
         given(jointDeliveryCartRepository.findAllByJointDeliveryId(1L)).willReturn(jointDeliveryCartList);
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.empty());
 

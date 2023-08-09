@@ -33,10 +33,8 @@ public class EmailService {
 
     private final UserRepository userRepository;
 
+    @Transactional
     public void sendVerificationCode(String email) {
-        if (userRepository.existsByEmail(email)) {
-            throw new DuplicateEmailException("이미 가입된 이메일입니다.");
-        }
         String verificationCode = generateVerificationCode();
         SendEmailRequest sendEmailRequest = generateSendEmailRequest(email, verificationCode);
         sesClient.sendEmail(sendEmailRequest);
