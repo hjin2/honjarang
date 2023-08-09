@@ -220,12 +220,13 @@ class JointDeliveryControllerTest {
         // given
         List<JointDeliveryListDto> jointDeliveryListDtoList = List.of(new JointDeliveryListDto(jointDelivery, 10000));
 
-        given(jointDeliveryService.getJointDeliveryList(eq(1), eq(10), any(User.class))).willReturn(jointDeliveryListDtoList);
+        given(jointDeliveryService.getJointDeliveryList(eq(1), eq(10), eq("테스트"), any(User.class))).willReturn(jointDeliveryListDtoList);
 
         // when & then
         mockMvc.perform(get("/api/v1/joint-deliveries")
                         .param("page", "1")
-                        .param("size", "10"))
+                        .param("size", "10")
+                        .param("keyword", "테스트"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value(1L))
@@ -241,7 +242,8 @@ class JointDeliveryControllerTest {
                         preprocessResponse(prettyPrint()),
                         queryParameters(
                                 parameterWithName("page").description("페이지 번호"),
-                                parameterWithName("size").description("페이지 크기")
+                                parameterWithName("size").description("페이지 크기"),
+                                parameterWithName("keyword").description("검색할 키워드")
                         ),
                         responseFields(
                                 fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("공동배달 ID"),

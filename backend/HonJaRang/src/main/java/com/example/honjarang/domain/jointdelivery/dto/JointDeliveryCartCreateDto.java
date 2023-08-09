@@ -15,10 +15,10 @@ public class JointDeliveryCartCreateDto {
     private String menuId;
     private Integer quantity;
 
-    public JointDeliveryCart toEntity(JointDeliveryCartCreateDto dto, User user) {
+    public JointDeliveryCart toEntity(User user) {
         return JointDeliveryCart.builder()
-                .menuId(dto.getMenuId())
-                .quantity(dto.getQuantity())
+                .menuId(menuId)
+                .quantity(quantity)
                 .user(user)
                 .build();
     }

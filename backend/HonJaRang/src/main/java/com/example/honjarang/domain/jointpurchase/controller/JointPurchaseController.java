@@ -30,8 +30,8 @@ public class JointPurchaseController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<JointPurchaseListDto>> getJointPurchases(@RequestParam Integer page, @RequestParam Integer size, @CurrentUser User user) {
-        List<JointPurchaseListDto> jointPurchaseListDtos = jointPurchaseService.getJointPurchaseList(page, size, user);
+    public ResponseEntity<List<JointPurchaseListDto>> getJointPurchases(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "15") Integer size, @RequestParam(defaultValue = "") String keyword, @CurrentUser User user) {
+        List<JointPurchaseListDto> jointPurchaseListDtos = jointPurchaseService.getJointPurchaseList(page, size, keyword, user);
         return ResponseEntity.ok(jointPurchaseListDtos);
     }
 

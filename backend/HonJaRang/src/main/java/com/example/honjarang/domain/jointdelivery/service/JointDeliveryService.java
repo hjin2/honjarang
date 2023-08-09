@@ -182,7 +182,7 @@ public class JointDeliveryService {
         menuRepository.deleteAllByStoreId(store.getId());
         menuRepository.saveAll(menuListDtoList);
 
-        JointDelivery jointDelivery = jointDeliveryRepository.save(jointDeliveryCreateDto.toEntity(jointDeliveryCreateDto, store, user));
+        JointDelivery jointDelivery = jointDeliveryRepository.save(jointDeliveryCreateDto.toEntity(store, user));
         jointDeliveryApplicantRepository.save(JointDeliveryApplicant.builder()
                 .jointDelivery(jointDelivery)
                 .user(user)
@@ -215,9 +215,9 @@ public class JointDeliveryService {
     }
 
     @Transactional(readOnly = true)
-    public List<JointDeliveryListDto> getJointDeliveryList(Integer page, Integer size, User loginUser) {
+    public List<JointDeliveryListDto> getJointDeliveryList(Integer page, Integer size, String keyword, User loginUser) {
         Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
-        List<JointDelivery> jointDeliveryList = jointDeliveryRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanOrderByCreatedAtDesc(LocalDateTime.now(), loginUser.getLatitude(), loginUser.getLongitude(), pageable).toList();
+        List<JointDelivery> jointDeliveryList = jointDeliveryRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanOrderByCreatedAtDesc(LocalDateTime.now(), loginUser.getLatitude(), loginUser.getLongitude(), keyword, pageable).toList();
 
         List<JointDeliveryListDto> jointDeliveryListDtoList = new ArrayList<>();
 
@@ -309,7 +309,7 @@ public class JointDeliveryService {
         }
         user.subtractPoint(1000);
 
-        jointDeliveryCartRepository.save(jointDeliveryCartCreateDto.toEntity(jointDeliveryCartCreateDto, user));
+        jointDeliveryCartRepository.save(jointDeliveryCartCreateDto.toEntity(user));
         if (!jointDeliveryApplicantRepository.existsByJointDeliveryIdAndUserId(jointDelivery.getId(), user.getId())) {
             jointDeliveryApplicantRepository.save(JointDeliveryApplicant.builder()
                     .jointDelivery(jointDelivery)

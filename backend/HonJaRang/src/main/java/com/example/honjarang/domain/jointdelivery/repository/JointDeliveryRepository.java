@@ -18,9 +18,10 @@ public interface JointDeliveryRepository extends JpaRepository<JointDelivery, Lo
             "ON j.store = s " +
             "WHERE j.isCanceled = false " +
             "AND j.deadline > :now " +
+            "AND j.store.storeName LIKE %:keyword% " +
             "AND (6371 * acos(cos(radians(:latitude)) * cos(radians(s.latitude)) * cos(radians(s.longitude) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(s.latitude)))) < 10 " +
             "ORDER BY j.createdAt DESC")
-    Page<JointDelivery> findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanOrderByCreatedAtDesc(LocalDateTime now, Double latitude, Double longitude, Pageable pageable);
+    Page<JointDelivery> findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanOrderByCreatedAtDesc(LocalDateTime now, Double latitude, Double longitude, String keyword, Pageable pageable);
 
     Page<JointDelivery> findAllByUserId(Long userId, Pageable pageable);
 
