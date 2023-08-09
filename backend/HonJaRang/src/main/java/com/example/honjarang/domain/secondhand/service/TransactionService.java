@@ -1,5 +1,6 @@
 package com.example.honjarang.domain.secondhand.service;
 
+import com.example.honjarang.domain.post.exception.InvalidUserException;
 import com.example.honjarang.domain.secondhand.dto.TransactionCreateDto;
 import com.example.honjarang.domain.secondhand.dto.TransactionDto;
 import com.example.honjarang.domain.secondhand.dto.TransactionListDto;
@@ -15,9 +16,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,16 +37,57 @@ public class TransactionService {
 
     private final UserRepository userRepository;
 
+    private final S3Client s3Client;
+
 
     @Transactional
-    public Long createSecondHandTransaction(TransactionCreateDto dto, User user) {
-        return transactionRepository.save(dto.toEntity(dto, user)).getId();
+    public Long createSecondHandTransaction(TransactionCreateDto transactionCreateDto, MultipartFile transactionImage, User user) {
+
+        String uuid = UUID.randomUUID().toString();
+
+        try {
+            s3Client.putObject(PutObjectRequest.builder()
+                    .bucket("honjarang-bucket")
+                    .key("transactionImage/" + uuid + transactionImage.getOriginalFilename())
+                    .acl(ObjectCannedACL.PUBLIC_READ)
+                    .contentType(transactionImage.getContentType())
+                    .build(), RequestBody.fromInputStream(transactionImage.getInputStream(), transactionImage.getSize()));
+        }catch (IOException e){
+            throw new RuntimeException("게시글 이미지 업로드에 실패했습니다.");
+        }
+
+        String image = uuid + transactionImage.getOriginalFilename();
+        return transactionRepository.save(transactionCreateDto.toEntity(user, image)).getId();
     }
 
     @Transactional
-    public void updateSecondHandTransaction(TransactionUpdateDto dto, User user) {
-        Transaction transaction = transactionRepository.findById(dto.getId()).orElseThrow(() -> new TransactionException("게시글이 없습니다."));
-        transaction.update(dto);
+    public void updateSecondHandTransaction(MultipartFile transactionImage, TransactionUpdateDto transactionUpdateDto, User user) throws IOException {
+
+        System.out.println(transactionUpdateDto.getId());
+        Transaction transaction = transactionRepository.findById(transactionUpdateDto.getId()).orElseThrow(() -> new TransactionException("게시글이 없습니다."));
+        if(!Objects.equals(transaction.getSeller().getId(),user.getId())){
+            throw new InvalidUserException("작성자만 수정할 수 있습니다.");
+        }
+
+        if(transaction.getTransactionImage()!=""){
+            DeleteObjectRequest request = DeleteObjectRequest.builder()
+                    .bucket("honjarang-bucket")
+                    .key("transaction/"+transaction.getTransactionImage())
+                    .build();
+            s3Client.deleteObject(request);
+        }
+
+        String uuid = UUID.randomUUID().toString();
+        s3Client.putObject(PutObjectRequest.builder()
+                .bucket("honjarang-bucket")
+                .key("transaction/" + uuid + transactionImage.getOriginalFilename())
+                .acl(ObjectCannedACL.PUBLIC_READ)
+                .contentType(transactionImage.getContentType())
+                .build(), RequestBody.fromInputStream(transactionImage.getInputStream(), transactionImage.getSize()));
+
+        String image = uuid + transactionImage.getOriginalFilename();
+        transaction.update(transactionUpdateDto,image);
+
     }
 
     @Transactional

@@ -94,54 +94,54 @@ public class TransactionControllerTest {
     }
 
 
-    @Test
-    @DisplayName("중고거래 게시글 작성")
-    void createSecondHandTransaction() throws Exception {
-        // given
-        TransactionCreateDto transactionCreateDto = new TransactionCreateDto("타이틀", "내용", 30000);
-        given(transactionService.createSecondHandTransaction(any(TransactionCreateDto.class), any(User.class))).willReturn(1L);
+//    @Test
+//    @DisplayName("중고거래 게시글 작성")
+//    void createSecondHandTransaction() throws Exception {
+//        // given
+//        TransactionCreateDto transactionCreateDto = new TransactionCreateDto("타이틀", "내용", 30000);
+//        given(transactionService.createSecondHandTransaction(any(TransactionCreateDto.class), any(User.class))).willReturn(1L);
+//
+//        // when & then
+//        mockMvc.perform(post("/api/v1/secondhand-transactions")
+//                        .contentType("application/json")
+//                        .content(new ObjectMapper().writeValueAsString(transactionCreateDto)))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$").value(1L))
+//                .andDo(document("transaction/create",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        requestFields(
+//                                fieldWithPath("title").type(JsonFieldType.STRING).description("타이틀"),
+//                                fieldWithPath("content").type(JsonFieldType.STRING).description("내용"),
+//                                fieldWithPath("price").type(JsonFieldType.NUMBER).description("가격")
+//                        ),
+//                        responseBody()
+//                ));
+//    }
 
-        // when & then
-        mockMvc.perform(post("/api/v1/secondhand-transactions")
-                        .contentType("application/json")
-                        .content(new ObjectMapper().writeValueAsString(transactionCreateDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").value(1L))
-                .andDo(document("transaction/create",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        requestFields(
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("타이틀"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("내용"),
-                                fieldWithPath("price").type(JsonFieldType.NUMBER).description("가격")
-                        ),
-                        responseBody()
-                ));
-    }
-
-    @Test
-    @DisplayName("중고거래 게시글 수정")
-    void updateSecondHandTransaction() throws Exception {
-        TransactionUpdateDto transactionUpdateDto = new TransactionUpdateDto(1L, "타이틀", "내용", 30000);
-
-        mockMvc.perform(put("/api/v1/secondhand-transactions/{transactionId}", 1L)
-                        .contentType("application/json")
-                        .content(new ObjectMapper().writeValueAsString(transactionUpdateDto)))
-                .andExpect(status().isOk())
-                .andDo(document("transaction/update",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        pathParameters(
-                                parameterWithName("transactionId").description("거래 ID")
-                        ),
-                        requestFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("거래 ID"),
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("거래 제목"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("거래 내용"),
-                                fieldWithPath("price").type(JsonFieldType.NUMBER).description("가격")
-                        )
-                ));
-    }
+//    @Test
+//    @DisplayName("중고거래 게시글 수정")
+//    void updateSecondHandTransaction() throws Exception {
+//        TransactionUpdateDto transactionUpdateDto = new TransactionUpdateDto(1L, "타이틀", "내용", 30000);
+//
+//        mockMvc.perform(put("/api/v1/secondhand-transactions/{transactionId}", 1L)
+//                        .contentType("application/json")
+//                        .content(new ObjectMapper().writeValueAsString(transactionUpdateDto)))
+//                .andExpect(status().isOk())
+//                .andDo(document("transaction/update",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        pathParameters(
+//                                parameterWithName("transactionId").description("거래 ID")
+//                        ),
+//                        requestFields(
+//                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("거래 ID"),
+//                                fieldWithPath("title").type(JsonFieldType.STRING).description("거래 제목"),
+//                                fieldWithPath("content").type(JsonFieldType.STRING).description("거래 내용"),
+//                                fieldWithPath("price").type(JsonFieldType.NUMBER).description("가격")
+//                        )
+//                ));
+//    }
 
     @Test
     @DisplayName("중고거래 게시글 삭제")

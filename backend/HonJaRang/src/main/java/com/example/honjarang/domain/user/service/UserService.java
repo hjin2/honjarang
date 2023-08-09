@@ -2,6 +2,8 @@ package com.example.honjarang.domain.user.service;
 
 import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
+import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryApplicant;
+import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryApplicantRepository;
 import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryCartRepository;
 import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryRepository;
 import com.example.honjarang.domain.jointdelivery.repository.MenuRepository;
@@ -41,6 +43,7 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -63,6 +66,8 @@ public class UserService {
     private final JointDeliveryRepository jointDeliveryRepository;
 
     private final JointDeliveryCartRepository jointDeliveryCartRepository;
+
+    private final JointDeliveryApplicantRepository jointDeliveryApplicantRepository;
 
     private final MenuRepository menuRepository;
 
@@ -260,5 +265,15 @@ public class UserService {
         User loginedUser = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("사용자를 찾을 수 없습니다."));
         loginedUser.deleteUser();
         return ResponseEntity.ok().build();
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getMyWrittenJointDeliveriesPageCount(Integer size, User user) {
+        return (int) Math.ceil((double) jointDeliveryRepository.countAllByUserId(user.getId()) / size) ;
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getMyJoinedJointDeliveriesPageCount(Integer size, User user) {
+        return (int) Math.ceil((double) jointDeliveryApplicantRepository.countAllByUserId(user.getId()) / size) ;
     }
 }

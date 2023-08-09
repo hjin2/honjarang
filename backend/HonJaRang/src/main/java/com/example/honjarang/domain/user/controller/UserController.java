@@ -146,4 +146,15 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/page-writing")
+    public ResponseEntity<Integer> getMyWrittenJointDeliveriesPageCount(@RequestParam Integer size, @CurrentUser User user) {
+        return ResponseEntity.ok(userService.getMyWrittenJointDeliveriesPageCount(size, user));
+    }
+
+    @GetMapping("/page-join")
+    public ResponseEntity<Integer> getMyJoinedJointDeliveriesPageCount(@RequestParam Integer size, @CurrentUser User user) {
+        return ResponseEntity.ok(userService.getMyJoinedJointDeliveriesPageCount(size, user));
+    }
+
+
 }

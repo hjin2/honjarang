@@ -47,8 +47,11 @@ public class Transaction extends BaseTimeEntity {
     @ColumnDefault("false")
     private Boolean isReceived;
 
+    @Column
+    private String transactionImage;
+
     @Builder
-    public Transaction(String title, String content, Integer price, User seller, User buyer, Boolean isCompleted, Boolean isReceived) {
+    public Transaction(String title, String content, Integer price, User seller, User buyer, Boolean isCompleted, Boolean isReceived, String transactionImage) {
         this.seller = seller;
         this.buyer = buyer;
         this.title = title;
@@ -56,6 +59,7 @@ public class Transaction extends BaseTimeEntity {
         this.price = price;
         this.isCompleted = isCompleted;
         this.isReceived = isReceived;
+        this.transactionImage = transactionImage;
     }
 
     public void complete() {
@@ -66,10 +70,11 @@ public class Transaction extends BaseTimeEntity {
 
     public void soldout(User user){this.buyer = user;}
 
-    public void update(TransactionUpdateDto dto){
+    public void update(TransactionUpdateDto dto, String image){
         this.title = dto.getTitle();
         this.content = dto.getContent();
         this.price = dto.getPrice();
+        this.transactionImage = image;
     }
 
     public void setIdForTest(Long id) {this.Id = id;}

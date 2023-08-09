@@ -42,36 +42,31 @@ public class Post extends BaseTimeEntity {
     @Column(nullable = false)
     private Category category;
 
-    @Builder
-    public Post(User user, Category category, String title, Boolean isNotice, String content, Integer views) {
-        this.category = category;
-        this.title = title;
-        this.user = user;
-        this.isNotice = isNotice;
-        this.content = content;
-        this.views = views;
-    }
+    @Column
+    private String postImage;
 
     @Builder
-    public Post(Long id, User user, String title, String content, Boolean isNotice, Integer views, Category category) {
-        this.id = id;
-        this.user = user;
-        this.title = title;
-        this.content = content;
-        this.isNotice = isNotice;
-        this.views = views;
+    public Post(User user, Category category, String title, Boolean isNotice, String content, Integer views, String postImage) {
         this.category = category;
+        this.title = title;
+        this.user = user;
+        this.isNotice = isNotice;
+        this.content = content;
+        this.views = views;
+        this.postImage = postImage;
     }
+
 
     public void increaseViews() {
         this.views++;
     }
 
-    public void update(PostUpdateDto postUpdateDto) {
+    public void update(PostUpdateDto postUpdateDto, String postImage) {
         this.title = postUpdateDto.getTitle();
         this.content = postUpdateDto.getContent();
-        this.isNotice = postUpdateDto.getIsNotice();
         this.category = postUpdateDto.getCategory();
+        this.isNotice = postUpdateDto.getIsNotice();
+        this.postImage = postImage;
     }
 
     public void setIdForTest(Long id){

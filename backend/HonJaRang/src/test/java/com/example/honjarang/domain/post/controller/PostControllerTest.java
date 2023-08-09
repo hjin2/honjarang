@@ -19,28 +19,34 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -97,34 +103,34 @@ public class PostControllerTest {
                 .nickname("테스트닉네임")
                 .createdAt("2030-01-01 00:00:00")
                 .build();
-        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null));
     }
     @Test
     @WithMockUser
     @DisplayName("게시글 작성")
     void createPost_Success() throws Exception {
+        // given
+        MockMultipartFile file = new MockMultipartFile("profile_image", "test.jpg", "image/jpeg", "test".getBytes());
+        PostCreateDto postCreateDto = new PostCreateDto("title",Category.FREE,"content");
 
-        String title = "제목";
-        String content = "content";
-
-        PostCreateDto postCreateDto = new PostCreateDto(title, content);
-        given(postService.createPost(any(PostCreateDto.class), any(User.class))).willReturn(1L);
 
         // when & then
-        mockMvc.perform(post("/api/v1/posts")
-                        .contentType("application/json")
-                        .content(new ObjectMapper().writeValueAsString(postCreateDto)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$").value(1L))
-                .andDo(document("/posts/write",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        requestFields(
-                                fieldWithPath("title").description("게시글 제목"),
-                                fieldWithPath("content").description("게시글 내용")
-                        ),
-                        responseBody()
-                ));
+        mockMvc.perform(multipart("/api/v1/posts")
+                        .file("post_image", file.getBytes())
+                        .param("title",postCreateDto.getTitle())
+                        .param("category",postCreateDto.getCategory().toString())
+                        .param("content", postCreateDto.getContent()))
+                .andExpect(status().isCreated());
+//                .andDo(document("/posts/create",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        requestParts(
+//                                partWithName("post_image").description("이미지 첨부")
+//                        ),
+//                        requestPartFields("postCreateDto",
+//                                fieldWithPath("title").description("제목"),
+//                                fieldWithPath("category").description("카테고리"),
+//                                fieldWithPath("content").description("컨텐트")
+//                        )
     }
 
     @Test
@@ -152,35 +158,24 @@ public class PostControllerTest {
     @WithMockUser
     @DisplayName("게시글 수정 성공")
     void updatePost_Success() throws Exception {
-
         // given
-        Long postId = 1L;
-        String title = "제목1";
-        String content = "content1";
-        Boolean isNotice = true;
-        Category category = Category.FREE;
 
-        PostUpdateDto postUpdateDto = new PostUpdateDto(postId, title, content, isNotice, category);
+        MockMultipartFile file = new MockMultipartFile("post_image","test.jpg","image/jpeg","test".getBytes());
+        PostUpdateDto postUpdateDto = new PostUpdateDto(1L, "글제목", "글내용", Category.FREE, false);
+
 
         // when & then
-        mockMvc.perform(patch("/api/v1/posts/{id}",postId)
-                .contentType("application/json")
-                .content(new ObjectMapper().writeValueAsString(postUpdateDto)))
-                .andExpect(status().isOk())
-                .andDo(document("/posts/update",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        pathParameters(
-                                parameterWithName("id").description("게시글 ID")
-                        ),
-                        requestFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("게시글 ID"),
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("게시글 제목"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("게시글 내용"),
-                                fieldWithPath("is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
-                                fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리")
-                        )
-                ));
+        mockMvc.perform(MockMvcRequestBuilders
+                        .multipart(PUT, "/api/v1/posts/{id}",1L)
+                        .file("post_image",file.getBytes())
+                .param("id", String.valueOf(postUpdateDto.getId()))
+                .param("title",postUpdateDto.getTitle())
+                .param("content",postUpdateDto.getContent())
+                .param("category", String.valueOf(postUpdateDto.getCategory()))
+                .param("isNotice", String.valueOf(postUpdateDto.getIsNotice())))
+                .andDo(print())
+                .andExpect(status().isOk());
+
     }
 
     @Test

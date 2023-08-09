@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -18,8 +19,9 @@ public class PostUpdateDto {
     private Long id;
     private String title;
     private String content;
-    private Boolean isNotice;
     private Category category;
+    private Boolean isNotice;
+
 
     public Post toEntity(boolean isNotice) {
         return Post.builder()
