@@ -69,6 +69,7 @@ public class UserService {
 
     private final JointDeliveryApplicantRepository jointDeliveryApplicantRepository;
 
+
     private final MenuRepository menuRepository;
 
     @Transactional(readOnly = true)
@@ -266,6 +267,13 @@ public class UserService {
         loginedUser.deleteUser();
         return ResponseEntity.ok().build();
     }
+
+    @Transactional(readOnly = true)
+    public Integer getMyPostsPageCount(Integer size, User user) {
+        return (int) Math.ceil((double) postRepository.countAllByUserId(user.getId()) / size) ;
+    }
+
+
 
     @Transactional(readOnly = true)
     public Integer getMyWrittenJointDeliveriesPageCount(Integer size, User user) {
