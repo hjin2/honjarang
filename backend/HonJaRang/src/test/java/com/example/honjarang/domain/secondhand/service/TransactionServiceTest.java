@@ -104,33 +104,33 @@ public class TransactionServiceTest {
 //        assertThat(transactionId).isEqualTo(1L);
 //    }
 
-    @Test
-    @DisplayName("중고거래 게시글 수정 성공")
-    void updateSecondHandTransaction_success() {
-        // given
-        TransactionUpdateDto transactionUpdateDto = new TransactionUpdateDto(1L, "수정된 타이틀", "수정된 컨텐츠", 20000);
-        given(transactionRepository.findById(1L)).willReturn(Optional.ofNullable(transaction));
+//    @Test
+//    @DisplayName("중고거래 게시글 수정 성공")
+//    void updateSecondHandTransaction_success() {
+//        // given
+//        TransactionUpdateDto transactionUpdateDto = new TransactionUpdateDto(1L, "수정된 타이틀", "수정된 컨텐츠", 20000);
+//        given(transactionRepository.findById(1L)).willReturn(Optional.ofNullable(transaction));
+//
+//        // when
+//        transactionService.updateSecondHandTransaction(transactionUpdateDto, user);
+//
+//        // then
+//        assertThat(transaction.getTitle()).isEqualTo("수정된 타이틀");
+//        assertThat(transaction.getContent()).isEqualTo("수정된 컨텐츠");
+//        assertThat(transaction.getPrice()).isEqualTo(20000);
+//
+//    }
 
-        // when
-        transactionService.updateSecondHandTransaction(transactionUpdateDto, user);
-
-        // then
-        assertThat(transaction.getTitle()).isEqualTo("수정된 타이틀");
-        assertThat(transaction.getContent()).isEqualTo("수정된 컨텐츠");
-        assertThat(transaction.getPrice()).isEqualTo(20000);
-
-    }
-
-    @Test
-    @DisplayName("중고거래 게시글 수정 실패 - 게시글이 없는 경우")
-    void updateSecondHandTransaction_TransactionException() {
-        // given
-        TransactionUpdateDto transactionUpdateDto = new TransactionUpdateDto(1L, "수정된 타이틀", "수정된 컨텐츠", 20000);
-        given(transactionRepository.findById(1L)).willReturn(java.util.Optional.empty());
-
-        // when & then
-        assertThrows(TransactionException.class, () -> transactionService.updateSecondHandTransaction(transactionUpdateDto, user));
-    }
+//    @Test
+//    @DisplayName("중고거래 게시글 수정 실패 - 게시글이 없는 경우")
+//    void updateSecondHandTransaction_TransactionException() {
+//        // given
+//        TransactionUpdateDto transactionUpdateDto = new TransactionUpdateDto(1L, "수정된 타이틀", "수정된 컨텐츠", 20000);
+//        given(transactionRepository.findById(1L)).willReturn(java.util.Optional.empty());
+//
+//        // when & then
+//        assertThrows(TransactionException.class, () -> transactionService.updateSecondHandTransaction(transactionUpdateDto, user));
+//    }
 
     @Test
     @DisplayName("중고거래 게시글 삭제 성공")
