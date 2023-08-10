@@ -65,7 +65,7 @@ export default function Edit({ modalState, setModalState }) {
       .catch(function(error) {
         console.log(error);
       });
-    axios.post(`${URL}/api/v1/users/profile-image`,formData,{headers:{"Authorization":`Bearer ${token}`, "Content-Type":"multipart/formed-data"}})
+    axios.post(`${URL}/api/v1/users/profile-image`,formData,{headers:{"Authorization":`Bearer ${token}`, "Content-Type":"multipart/form-data"}})
       .then((res)=>{
         console.log(res)
         dispatch(imageUpload(imageURL))

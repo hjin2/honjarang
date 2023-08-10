@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Pagination from "../Board/Pagination";
 
 export default function ArticlesList() {
   const [posts, setPosts] = useState([
@@ -59,12 +58,6 @@ export default function ArticlesList() {
                 <hr />
               </div>
             ))}
-            <Pagination
-              total={posts.length}
-              limit={limit}
-              page={page}
-              setPage={setPage}
-            />
         </div>
       </div>
     </div>
