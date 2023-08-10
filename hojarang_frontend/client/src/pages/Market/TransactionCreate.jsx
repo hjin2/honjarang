@@ -35,11 +35,12 @@ export default function TransactionCreate() {
   }
   const saveTransaction = () =>{
     const formData = new FormData()
-    formData.append("image", image)
+    formData.append("transaction_image", image)
     formData.append("title", title)
     formData.append("content", content)
     formData.append("price", price)
-    axios.post(`${URL}/api/v1/secondhand-transactions`,{headers})
+    console.log(image,title,content,price)
+    axios.post(`${URL}/api/v1/secondhand-transactions`,formData,{headers})
       .then((res) =>{
         console.log(res)
         navigate(`/market/transactiondetail/${res.data}`,{replace:true})
@@ -55,7 +56,7 @@ export default function TransactionCreate() {
       </div>
       <div>
         <div>상품 가격</div>
-        <input type="number" onChange={handlePrice} />
+        <input type="Number" onChange={handlePrice} />
       </div>
       <div>
         <div>상품 소개</div>

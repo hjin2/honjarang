@@ -9,17 +9,17 @@ export default function ArticlesList() {
   const [pageSize, setPageSize] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   const [articles, setArticles] = useState([])
-  useEffect(() => {
-    axios.get(`${URL}/api/v1/users/page-post`,{params:{size:10}, headers})
-      .then((res)=>{
-        console.log(res)
-        setPageSize(res.data)
-      })
-      .catch((err)=>console.log(err))
-  },[])
+  // useEffect(() => {
+  //   axios.get(`${URL}/api/v1/users/page-post`,{params:{size:10}, headers})
+  //     .then((res)=>{
+  //       console.log(res)
+  //       setPageSize(res.data)
+  //     })
+  //     .catch((err)=>console.log(err))
+  // },[])
 
   useEffect(()=>{
-    axios.get(`${URL}/api/v1/users/posts`,{params:{page:1,size:10}, headers})
+    axios.get(`${URL}/api/v1/users/posts`,{params:{size:10, page:currentPage},headers})
       .then((res)=>{
         console.log(res)
         setArticles(res.data)
