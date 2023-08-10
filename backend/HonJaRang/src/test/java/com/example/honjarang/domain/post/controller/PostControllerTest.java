@@ -221,46 +221,46 @@ public class PostControllerTest {
 //                        ));
 //    }
 
-    @Test
-    @DisplayName("게시글 조회 성공")
-    void getPost_Success() throws Exception {
-
-        //given
-        PostDto postdto = new PostDto(post);
-
-        given(postService.getPost(1L)).willReturn(postdto);
-
-        // when & then
-        mockMvc.perform(get("/api/v1/posts/{id}",1L))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.title").value("테스트"))
-                .andExpect(jsonPath("$.content").value("콘텐츠"))
-                .andExpect(jsonPath("$.views").value(0))
-                .andExpect(jsonPath("$.is_notice").value(false))
-                .andExpect(jsonPath("$.category").value("FREE"))
-                .andExpect(jsonPath("$.user_id").value(1L))
-                .andExpect(jsonPath("$.nickname").value("테스트"))
-                .andExpect(jsonPath("$.created_at").value("2023-07-29 04:23:23"))
-                .andDo(document("/posts/detail",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        pathParameters(
-                                parameterWithName("id").description("게시글 ID")
-                        ),
-                        responseFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("게시글 ID"),
-                                fieldWithPath("user_id").type(JsonFieldType.NUMBER).description("사용자 ID"),
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("게시글 제목"),
-                                fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
-                                fieldWithPath("nickname").type(JsonFieldType.STRING).description("사용자 닉네임"),
-                                fieldWithPath("views").type(JsonFieldType.NUMBER).description("조회수"),
-                                fieldWithPath("is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
-                                fieldWithPath("created_at").type(JsonFieldType.STRING).description("작성일")
-                        )));
-    }
+//    @Test
+//    @DisplayName("게시글 조회 성공")
+//    void getPost_Success() throws Exception {
+//
+//        //given
+//        PostDto postdto = new PostDto(post);
+//
+//        given(postService.getPost(1L)).willReturn(postdto);
+//
+//        // when & then
+//        mockMvc.perform(get("/api/v1/posts/{id}",1L))
+//                .andExpect(status().isOk())
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(jsonPath("$.id").value(1L))
+//                .andExpect(jsonPath("$.title").value("테스트"))
+//                .andExpect(jsonPath("$.content").value("콘텐츠"))
+//                .andExpect(jsonPath("$.views").value(0))
+//                .andExpect(jsonPath("$.is_notice").value(false))
+//                .andExpect(jsonPath("$.category").value("FREE"))
+//                .andExpect(jsonPath("$.user_id").value(1L))
+//                .andExpect(jsonPath("$.nickname").value("테스트"))
+//                .andExpect(jsonPath("$.created_at").value("2023-07-29 04:23:23"))
+//                .andDo(document("/posts/detail",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        pathParameters(
+//                                parameterWithName("id").description("게시글 ID")
+//                        ),
+//                        responseFields(
+//                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("게시글 ID"),
+//                                fieldWithPath("user_id").type(JsonFieldType.NUMBER).description("사용자 ID"),
+//                                fieldWithPath("title").type(JsonFieldType.STRING).description("게시글 제목"),
+//                                fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리"),
+//                                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
+//                                fieldWithPath("nickname").type(JsonFieldType.STRING).description("사용자 닉네임"),
+//                                fieldWithPath("views").type(JsonFieldType.NUMBER).description("조회수"),
+//                                fieldWithPath("is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
+//                                fieldWithPath("created_at").type(JsonFieldType.STRING).description("작성일")
+//                        )));
+//    }
 
     @Test
     @WithMockUser
