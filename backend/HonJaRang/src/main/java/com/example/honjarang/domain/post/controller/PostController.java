@@ -75,4 +75,10 @@ public class PostController {
     public List<CommentListDto> getComments(@PathVariable Long id) {
         return postService.getCommentList(id);
     }
+
+    @GetMapping("/page")
+    public ResponseEntity<Integer> getPostsPageCount(@RequestParam Integer size) {
+        return ResponseEntity.ok(postService.getPostsPageCount(size));
+    }
+
 }

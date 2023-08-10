@@ -178,4 +178,9 @@ public class PostService {
 
     }
 
+    @Transactional(readOnly = true)
+    public Integer getPostsPageCount(Integer size) {
+        return (int) Math.ceil((double) postRepository.count() / size) ;
+    }
+
 }
