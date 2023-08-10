@@ -63,7 +63,6 @@ public class TransactionService {
     @Transactional
     public void updateSecondHandTransaction(MultipartFile transactionImage, TransactionUpdateDto transactionUpdateDto, User user) throws IOException {
 
-        System.out.println(transactionUpdateDto.getId());
         Transaction transaction = transactionRepository.findById(transactionUpdateDto.getId()).orElseThrow(() -> new TransactionException("게시글이 없습니다."));
         if(!Objects.equals(transaction.getSeller().getId(),user.getId())){
             throw new InvalidUserException("작성자만 수정할 수 있습니다.");
