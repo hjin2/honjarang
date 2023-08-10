@@ -1,6 +1,6 @@
 const Tab = ({ tabs, activeTabIndex, setActiveTabIndex }) => {
   return (
-    <div className="flex space-x-14 mx-auto h-96">
+    <div className="flex space-x-14 mx-auto">
       <ul className="border-2 border-main1 rounded-lg basis-1/6 grid">
         {tabs.map((tab, index) => (
           <li
