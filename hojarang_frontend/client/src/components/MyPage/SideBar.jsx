@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import ArticlesList from './ArticlesList';
-import MarKetList from './MarketList';
-import { Link } from 'react-router-dom';
+import ArticlesList from './List/ArticlesList';
+import MarKetList from './List/MarketList';
 import Tab from './Tab';
 import Modal from '../Common/Modal';
-import ChargeTab from './ChargeTab';
+import ChargeTab from './Charge/ChargeTab';
+import DeliveryList from './List/DeliveryList';
 
 function SideBar() {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
@@ -23,7 +23,8 @@ function SideBar() {
       content: <MarKetList />,
     },
     {
-      title: <Link to="/chatting">채팅 확인하기</Link>,
+      title: '공동배달 목록',
+      content : <DeliveryList />
     },
     {
       title: (

@@ -5,14 +5,14 @@ import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 export default function Checkout() {
+  const {price} = useParams()
   const clientKey = 'test_ck_Z0RnYX2w532vOD1DZgg3NeyqApQE';
   const customerKey = 'YbX2HuSlsC9uVJW6NMRMj';
   const token = localStorage.getItem("access_token")
   const paymentWidgetRef = useRef(null);
-  const location = useLocation()
-  const price = location.state.price.activeRadio
   const uuid = uuidv4();
   const nickname = useSelector((state) => state.userinfo.nickname)
   const navigate = useNavigate()

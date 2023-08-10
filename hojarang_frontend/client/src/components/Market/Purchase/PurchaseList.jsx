@@ -51,7 +51,7 @@ export default function PurchaseList() {
           prevPageText={"<"}
           nextPageText={">"}
           onChange={setPage}
-          />
+        />
       </div>
     </div>
   )
