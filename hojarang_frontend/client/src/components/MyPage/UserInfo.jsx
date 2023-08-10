@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Edit from './Edit';
+import Edit from './Edit/Edit';
 import Modal from '../Common/Modal';
 import { useSelector } from 'react-redux';
 

@@ -17,7 +17,7 @@ export default function Login() {
     navigate(`/mypage/${id}`)
   };
   const login = () => {
-    axios.post('http://honjarang.kro.kr:30000/api/v1/users/login', {
+    axios.post(`${import.meta.env.VITE_APP_API}/api/v1/users/login`, {
       email: Email,
       password: Pwd
     },

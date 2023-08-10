@@ -13,6 +13,7 @@ export default function ArticlesList() {
     axios.get(`${URL}/api/v1/users/page-post`,{params:{size:10}, headers})
       .then((res)=>{
         console.log(res)
+        setPageSize(res.data)
       })
       .catch((err)=>console.log(err))
   },[])
@@ -21,6 +22,7 @@ export default function ArticlesList() {
     axios.get(`${URL}/api/v1/users/posts`,{params:{page:1,size:10}, headers})
       .then((res)=>{
         console.log(res)
+        setArticles(res.data)
       })
       .catch((err)=>console.log(err))
   },[currentPage])
