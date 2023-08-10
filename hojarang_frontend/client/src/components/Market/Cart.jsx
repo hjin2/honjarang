@@ -1,44 +1,97 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
-export default function Cart({ modalState, setModalState, selectedMenu, selectedMenuQuantity, cartItems }) {
+export default function Cart({ selectedMenu, detail, modalState, setModalState }) {
   
-  const [quantity, setQuantity] = useState(selectedMenuQuantity || 1)
+  const onClickCloseButton = (()=>{
+    setModalState(false)
+  })
+
+  // 수량 
+  const [quantity, setQuantity] = useState(1)
   // 수량 변경
   const handleQuantityChange = (e) => {
-    const newQuantity = parseInt(e.target.vlaue)
-    setQuantity(newQuantity)
+    if(!isNaN(e) && e >= 1){
+      setQuantity(e)
+    }
+    else{
+      setQuantity(1)
+    }
   }
-  // 수량 저장 후 콜백
-  const handleCartSubmit = () => {
-    // 선택한 메뉴 아이템과 수량을 전달하여 cartItems 콜백 함수 호출
-    cartItems(selectedMenu, quantity);
-    
-  };
+  const handleIncrement = () => {
+    console.log('플')
+    setQuantity(prevQuantity => prevQuantity + 1)
+  }  
+  const handleDecrement = () => {
+    if(quantity > 1){
+      console.log('마')
+      setQuantity(prevQuantity => prevQuantity - 1);
+    }
+    else{
+      setQuantity(1)
+    }
+  }
+ 
+
+  // selectedMenu props에 대한 validation 설정
+  // Cart.propTypes = {
+  //   modalState: PropTypes.bool.isRequired,
+  //   setModalState: PropTypes.func.isRequired,
+  //   selectedMenu: PropTypes.string,
+  //   selectedMenuQuantity: PropTypes.number,
+  //   cartItems: PropTypes.func.isRequired,
+  // };
+  const token = localStorage.getItem("access_token")
+  const URL = import.meta.env.VITE_APP_API
+
+  const createCart = () => {
+
+    const headers = {'Authorization': `Bearer ${token}`}
+    const data = {
+      joint_delivery_id: detail.id,
+      menu_id: selectedMenu.id,
+      quantity: quantity
+    }
+    console.log(data)
+    // 장바구니 추가
+    axios.post(`${URL}/api/v1/joint-deliveries/${detail.id}/carts`, data, {headers})
+    .then((res) => {
+      console.log(res)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
   
+  // 이미지 없을 때 대체 이미지 넣기
+  const defaultImage = '/src/assets/noimage.png';
+
   return (
-    <div className="border rounded-lg max-w-2xl mx-auto mt-10 p-5 space-y-5">
-      <p>클릭아 되어라</p>
+    <div className="relative bg-white m-auto border rounded-lg space-y-5 w-6/12 ">
       <h2 className="text-2xl font-semibold mb-3">장바구니</h2>
-      {selectedMenu && (
-        <div className="flex items-center space-x-4">
-          <p>{selectedMenu.id}</p>
-          <img src={selectedMenu.image} alt={selectedMenu.name} className="w-12 h-12" />
-          <div>
-            <p className="font-semibold">{selectedMenu.name}</p>
-            <p>가격: {selectedMenu.price}</p>
-            <input type="number" value={quantity} onChange={handleQuantityChange}
-            min="1" className="border rounded-md"/>
-            <button onClick={handleCartSubmit}>수량 저장</button>
-          </div>
-          <div>
-            수량에 따른 가격
-            <p>총 가격 : {selectedMenu.price * quantity}</p>
-          </div>
-        </div>
-      )}
-      <div>
-        {/* <button onClick={handleCartSubmit}>구매하기</button> */}
+      <img src={selectedMenu.image|| defaultImage} alt={selectedMenu.name} className="w-12 h-12" />
+      {selectedMenu.name}
+      <div>수량:
+        <button onClick={handleDecrement} className="border p-1">-</button>
+          <input
+            type="number"
+            value={quantity}
+            onChange={(e) => {
+              const newValue = parseInt(e.target.value);
+              if (!isNaN(newValue)) {
+                setQuantity(newValue);
+              }
+            }}
+            className="mx-2 w-16 text-center"
+          />
+        <button onClick={handleIncrement} className="border p-1">+</button>
+        현재가격: {selectedMenu.price * quantity}
       </div>
+      <div> 가격: {selectedMenu.price}/현재포인트 {detail.my_point}</div>
+      <div> <button onClick={createCart}>장바구니에 담기</button></div>
+      <button onClick={onClickCloseButton}>모달 닫기</button>
     </div>
   );
 }

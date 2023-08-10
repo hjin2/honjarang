@@ -74,6 +74,7 @@ export default function DeliveryCreate() {
     console.log(data)
     axios.post(`${URL}/api/v1/joint-deliveries`, data, {headers})
       .then((res) => {
+        console.log(res)
         console.log(res.data)
         navigate(`/market/deliverydetail/${res.data}`)
       })
