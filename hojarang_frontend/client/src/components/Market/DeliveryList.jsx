@@ -42,9 +42,9 @@ export default function DeliveryList() {
       <Rooms roomsData={deliveryData} component={DeliveryRoom}/>
       <div className="flex justify-center">
         <Pagination
-          activePage={1}
+          activePage={currentPage}
           itemsCountPerPage={12}
-          totalItemsCount={12}
+          totalItemsCount={12 * pageSize}
           pageRangeDisplayed={10}
           prevPageText={"<"}
           nextPageText={">"}
