@@ -309,7 +309,7 @@ public class JointDeliveryService {
         }
         user.subtractPoint(1000);
 
-        jointDeliveryCartRepository.save(jointDeliveryCartCreateDto.toEntity(user));
+        jointDeliveryCartRepository.save(jointDeliveryCartCreateDto.toEntity(jointDelivery, user));
         if (!jointDeliveryApplicantRepository.existsByJointDeliveryIdAndUserId(jointDelivery.getId(), user.getId())) {
             jointDeliveryApplicantRepository.save(JointDeliveryApplicant.builder()
                     .jointDelivery(jointDelivery)
