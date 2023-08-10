@@ -184,7 +184,8 @@ public class TransactionControllerTest {
                                 fieldWithPath("[].id").description("중고거래 ID"),
                                 fieldWithPath("[].title").description("중고거래 타이틀"),
                                 fieldWithPath("[].is_complete").description("판매완료 유무"),
-                                fieldWithPath("[].price").description("가격")
+                                fieldWithPath("[].price").description("가격"),
+                                fieldWithPath("[].transaction_image").description("중고거래 이미지")
                         ))
                 );
     }
