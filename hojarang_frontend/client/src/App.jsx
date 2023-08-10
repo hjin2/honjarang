@@ -22,6 +22,7 @@ import Success from './pages/Checkout/Success';
 import DefaultLayout from './components/DefaultLayout';
 import PurchaseDetail from './pages/Market/PurchaseDetail';
 import DeliveryDetail from './pages/Market/DeliveryDetail';
+import TransactionDetial from './pages/Market/TransactionDetail'
 import WebRTCCreate from './pages/WebRTC/WebRTCCreate';
 import PurchaseCreate from './pages/Market/PurchaseCreate';
 import DeliveryCreate from './pages/Market/DeliveryCreate';
@@ -47,6 +48,7 @@ function App() {
               path="/market/deliverydetail/:id"
               element={<DeliveryDetail />}
             ></Route>
+            <Route path="/market/transactiondetail/:id" element={<TransactionDetial/>}></Route>
             <Route path="/market/purchase/create" element={<PurchaseCreate/>}></Route>
             <Route path="/market/delivery/create" element={<DeliveryCreate/>}></Route>
             <Route path="/market/transaction/create" element={<TransactionCreate/>}></Route>
@@ -68,7 +70,7 @@ function App() {
             <Route path="/webrtc/:sessionid" element={<FreeChat/>}/>
             <Route path="/*" element={<Notfound />} />
           </Route>
-          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/checkout/:price" element={<Checkout />} />
           <Route path="/checkout/fail" element={<Fail />} />
           <Route path="/checkout/success" element={<Success />} />
           <Route path="/map2" element={<Map2 />} />

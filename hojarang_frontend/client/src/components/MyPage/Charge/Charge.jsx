@@ -1,5 +1,4 @@
 import {useState} from 'react'
-import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 
@@ -14,10 +13,9 @@ export default function Charge({ modalState, setModalState }) {
     setActiveRadio(e.target.value);
   };
 
-  const popUp = () =>{
-    const newWindow = window.open('/checkout', '_blank', "noopener, noreferrer");
-    newWindow.dataFromOpener = {price : activeRadio };
-    newWindow.location.href = '/checkout';
+  const newTabClick = () => {
+    window.open(`http://localhost:3000/checkout/${activeRadio}`, '결제팝업', 'width=700px,height=800px,scrollbars=yes');
+    setModalState(!modalState)
   }
 
   const tabs = [
@@ -42,13 +40,14 @@ export default function Charge({ modalState, setModalState }) {
     <div className='space-y-4'>
       {tabs.map((tab, index) => {
         return (
-          <div className="flex items-center" key={index} onChange={handleClickRadioButton}>
+          <div className="flex items-center" key={index} >
             <input
               type="radio"
               className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
               value={tab.price}
               checked={activeRadio === `${tab.price}`}
               id={`radio-${index}`}
+              onChange={handleClickRadioButton}
             />
             <label
               htmlFor={`radio-${index}`}
@@ -83,16 +82,7 @@ export default function Charge({ modalState, setModalState }) {
         </div>
       </div>
       <div className="mt-20 flex justify-between">
-        <button className="main1-button w-24">
-          <Link
-            to="/checkout"
-            state={{
-              price: { activeRadio },
-            }}
-          >
-            결제하기
-          </Link>
-        </button>
+        <button className="main1-button w-24" onClick={newTabClick}>결제하기</button>
         {/* <button className='main1-button w-24' onClick={popUp}>
           결제하기
         </button> */}
