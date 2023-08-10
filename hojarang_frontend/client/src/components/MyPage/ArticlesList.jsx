@@ -1,64 +1,66 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import Pagination from "react-js-pagination";
 
 export default function ArticlesList() {
-  const [posts, setPosts] = useState([
-    { id: 1, title: 'testa', user: 'ssafy', date: '2023.07.01' },
-    { id: 2, title: 'testb', user: 'ssafy', date: '2023.07.01' },
-    { id: 3, title: 'testc', user: 'ssafy', date: '2023.07.01' },
-    { id: 4, title: 'testd', user: 'ssafy', date: '2023.07.01' },
-    { id: 5, title: 'teste', user: 'ssafy', date: '2023.07.01' },
-    { id: 6, title: 'tessfsdfsdfdfdtf', user: 'ssadddfy', date: '2023.07.01' },
-    { id: 7, title: 'testg', user: 'ssafy', date: '2023.07.01' },
-    { id: 8, title: 'testh', user: 'ssadfsfdfy', date: '2023.07.01' },
-    { id: 9, title: 'testi', user: 'ssafy', date: '2023.07.01' },
-    { id: 10, title: 'tedfdfdfsdfsdstj', user: 'ssafy', date: '2023.07.01' },
-    { id: 11, title: 'testk', user: 'ssafy', date: '2023.07.01' },
-    { id: 12, title: 'testl', user: 'ssafy', date: '2023.07.01' },
-    { id: 13, title: 'testm', user: 'ssafy', date: '2023.07.01' },
-    { id: 14, title: 'testssssn', user: 'ssafy', date: '2023.07.01' },
-    { id: 15, title: 'testoo', user: 'ssafy', date: '2023.07.01' },
-    { id: 16, title: 'testp', user: 'ssafy', date: '2023.07.01' },
+  const URL = import.meta.env.VITE_APP_API
+  const token = localStorage.getItem("user_id")
+  const headers = {"Authorization" : `Bearer ${token}`}
+  const [pageSize, setPageSize] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [articles, setArticles] = useState([])
+  useEffect(() => {
+    axios.get(`${URL}/api/v1/users/page-post`,{params:{size:10}, headers})
+      .then((res)=>{
+        console.log(res)
+      })
+      .catch((err)=>console.log(err))
+  },[])
 
-  ]);
+  useEffect(()=>{
+    axios.get(`${URL}/api/v1/users/posts`,{params:{page:1,size:10}, headers})
+      .then((res)=>{
+        console.log(res)
+      })
+      .catch((err)=>console.log(err))
+  },[currentPage])
 
-  const limit = 10;
-  const [page, setPage] = useState(1);
-  const offset = (page - 1) * limit;
-
-  // useEffect(() => {
-  //   fetch("http://localhost8080://boards/1/posts")
-  //     .then((res) => res.json())
-  //     .then((data) => setPosts(data));
-  // }, []);
+  const setPage = (error) =>{
+    setCurrentPage(error)
+  }
 
   return (
     <div className="p-6 h-full">
-      {/* <header>
-        <h1>게시글 목록</h1>
-      </header> */}
-      <div className="font-bold text-lg mb-5">최근 작성글 목록</div>
-      <hr />
-      <div className="w-11/12 mx-auto h-full">
-        <div className="flex justify-between font-bold">
-          <div className="w-4/6 text-center">제목</div>
-          <div className="w-1/6">작성자</div>
-          <div className="w-1/6">작성일</div>
-        </div>
-        <hr />
-        <div>
-          {posts
-            .slice(offset, offset + limit)
-            .map(({ id, title, user, date }) => (
-              <div key={id}>
-                <div  className="flex justify-between text-sm">
-                  <div className="w-4/6 text-center">{title}</div>
-                  <div className="w-1/6">{user}</div>
-                  <div className="w-1/6">{date}</div>
+      <div>
+        {articles.length === 0 ?(
+          <div>작성한 글이 없습니다.</div>
+        ):(
+          <div>
+            <div className="flex">
+              <div className="w-4/6">제목</div>
+              <div className="w-2/6">작성일</div>
+            </div>
+            <div>
+              {articles.map((article) => {
+                <div key={article.id} className="flex">
+                  <div className="w-4/6">{article.title}</div>
+                  <div className="w-2/6">{article.created_at?.slice(0,10)}</div>
                 </div>
-                <hr />
-              </div>
-            ))}
-        </div>
+              })}
+            </div>
+            <div>
+              <Pagination
+                activePage={currentPage}
+                itemsCountPerPage={12}
+                totalItemsCount={12*pageSize}
+                pageRangeDisplayed={10}
+                prevPageText={"<"}
+                nextPageText={">"}
+                onChange={setPage}
+                />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

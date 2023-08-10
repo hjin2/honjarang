@@ -130,7 +130,10 @@ export const ArticleDetail = () => {
       <hr />
       {/* 본문 내용 */}
       <div className="whitespace-pre-line p-2 my-2">
-        {detail.content}
+        <img src={`https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/postImage/${detail.post_image}`} alt="" />
+        <div>
+          {detail.content}
+        </div>
       </div>
       <hr />
       {/* 댓글 */}
