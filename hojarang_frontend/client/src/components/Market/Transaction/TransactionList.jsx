@@ -3,6 +3,7 @@ import Rooms from "../Rooms"
 import Pagination from "react-js-pagination"
 import axios from "axios"
 import TransactionRoom from "./TransactionRoom"
+import { current } from "@reduxjs/toolkit"
 
 export default function TransactionList() {
   const URL = import.meta.env.VITE_APP_API
@@ -11,15 +12,24 @@ export default function TransactionList() {
   const [transactionData, setTransactionData] = useState([])
   const [pageSize, setPageSize] = useState(1)
   const [currentPage, setCurrentPage] = useState(1)
+
+  useEffect(() => {
+    axios.get(`${URL}/api/v1/secondhand-transactions/page`,{params:{size:12}, headers})
+      .then((res) => {
+        console.log(res.data)
+        setPageSize(res.data)
+      })
+      .catch((err) => console.log(err))
+  })
+
   useEffect(()=>{
-    axios.get(`${URL}/api/v1/secondhand-transactions`,{params:{page:1, size:12}, headers})
+    axios.get(`${URL}/api/v1/secondhand-transactions`,{params:{page:currentPage, size:12}, headers})
       .then((res)=>{
         console.log(res.data)
         setTransactionData(res.data)
-        console.log(transactionData)
       })
       .catch((err)=>console.log(err))
-  },[])
+  },[currentPage])
 
   const setPage = (error) => {
     setCurrentPage(error)
