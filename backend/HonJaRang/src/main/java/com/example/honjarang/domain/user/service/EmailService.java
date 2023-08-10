@@ -8,6 +8,7 @@ import com.example.honjarang.domain.user.repository.EmailVerificationRepository;
 import com.example.honjarang.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -42,7 +43,12 @@ public class EmailService {
     }
 
     @Transactional
-    public void saveVerificationCode(String email, String code) {
+    public void sendVerificationCodeForTest(String email) {
+        String verificationCode = "000000";
+        saveVerificationCode(email, verificationCode);
+    }
+
+    private void saveVerificationCode(String email, String code) {
         EmailVerification emailVerification = EmailVerification.builder()
                 .email(email)
                 .code(code)

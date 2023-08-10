@@ -19,6 +19,7 @@ public class JointDeliveryController {
     @GetMapping("/stores")
     public ResponseEntity<List<StoreListDto>> getStoreList(String keyword) {
         List<StoreListDto> storeListDtoList = jointDeliveryService.getStoreListByApi(keyword);
+//        List<StoreListDto> storeListDtoList = jointDeliveryService.getStoreListByApiForTest(keyword);
         return ResponseEntity.ok(storeListDtoList);
     }
 

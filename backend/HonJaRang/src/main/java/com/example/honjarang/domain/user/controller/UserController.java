@@ -64,6 +64,7 @@ public class UserController {
     @PostMapping("/send-verification-code")
     public ResponseEntity<Void> sendVerificationCode(@RequestBody Map<String, String> body) {
         emailService.sendVerificationCode(body.get("email"));
+//        emailService.sendVerificationCodeForTest(body.get("email"));
         return ResponseEntity.ok().build();
     }
 
