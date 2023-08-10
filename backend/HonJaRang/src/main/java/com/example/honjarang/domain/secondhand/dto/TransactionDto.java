@@ -21,6 +21,7 @@ public class TransactionDto {
     private Integer price;
     private Boolean isCompleted;
     private String createdAt;
+    private String transactionImage;
 
 
 
@@ -34,6 +35,7 @@ public class TransactionDto {
         this.price = transaction.getPrice();
         this.isCompleted = transaction.getIsCompleted();
         this.createdAt = DateTimeUtils.formatLocalDateTime(transaction.getCreatedAt());
+        this.transactionImage = transaction.getTransactionImage();
     }
 
 

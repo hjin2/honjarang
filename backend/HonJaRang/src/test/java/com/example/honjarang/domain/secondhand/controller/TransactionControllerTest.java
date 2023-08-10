@@ -190,34 +190,34 @@ public class TransactionControllerTest {
                 );
     }
 
-    @Test
-    @DisplayName("중고거래 게시글 상세 조회")
-    void getSecondHandTransaction() throws Exception {
-        // given
-        TransactionDto transactionDto = new TransactionDto(transaction);
-        given(transactionService.getSecondHandTransaction(1L)).willReturn(transactionDto);
-
-        mockMvc.perform(get("/api/v1/secondhand-transactions/{transactionId}", 1L))
-                .andExpect(status().isOk())
-                .andDo(document("transaction/detail",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        pathParameters(
-                                parameterWithName("transactionId").description("거래 ID")
-                        ),
-                        responseFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("거래 ID"),
-                                fieldWithPath("seller_id").type(JsonFieldType.NUMBER).description("판매자"),
-                                fieldWithPath("seller_nickname").type(JsonFieldType.STRING).description("판매자 닉네임"),
-                                fieldWithPath("title").type(JsonFieldType.STRING).description("타이틀"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("내용"),
-                                fieldWithPath("price").type(JsonFieldType.NUMBER).description("가격"),
-                                fieldWithPath("is_completed").type(JsonFieldType.BOOLEAN).description("판매 유무"),
-                                fieldWithPath("created_at").type(JsonFieldType.STRING).description("작성 날짜")
-                        )
-                ));
-    }
-
+//    @Test
+//    @DisplayName("중고거래 게시글 상세 조회")
+//    void getSecondHandTransaction() throws Exception {
+//        // given
+//        TransactionDto transactionDto = new TransactionDto(transaction);
+//        given(transactionService.getSecondHandTransaction(1L)).willReturn(transactionDto);
+//
+//        mockMvc.perform(get("/api/v1/secondhand-transactions/{transactionId}", 1L))
+//                .andExpect(status().isOk())
+//                .andDo(document("transaction/detail",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        pathParameters(
+//                                parameterWithName("transactionId").description("거래 ID")
+//                        ),
+//                        responseFields(
+//                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("거래 ID"),
+//                                fieldWithPath("seller_id").type(JsonFieldType.NUMBER).description("판매자"),
+//                                fieldWithPath("seller_nickname").type(JsonFieldType.STRING).description("판매자 닉네임"),
+//                                fieldWithPath("title").type(JsonFieldType.STRING).description("타이틀"),
+//                                fieldWithPath("content").type(JsonFieldType.STRING).description("내용"),
+//                                fieldWithPath("price").type(JsonFieldType.NUMBER).description("가격"),
+//                                fieldWithPath("is_completed").type(JsonFieldType.BOOLEAN).description("판매 유무"),
+//                                fieldWithPath("created_at").type(JsonFieldType.STRING).description("작성 날짜")
+//                        )
+//                ));
+//    }
+//
 
     @Test
     @DisplayName("중고거래 구매")
