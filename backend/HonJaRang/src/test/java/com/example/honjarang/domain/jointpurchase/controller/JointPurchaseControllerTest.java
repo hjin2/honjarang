@@ -155,12 +155,13 @@ class JointPurchaseControllerTest {
         // given
         List<JointPurchaseListDto> jointPurchaseListDtos = List.of(new JointPurchaseListDto(jointPurchase, 1));
 
-        given(jointPurchaseService.getJointPurchaseList(eq(1), eq(10), any(User.class))).willReturn(jointPurchaseListDtos);
+        given(jointPurchaseService.getJointPurchaseList(eq(1), eq(10), eq("테스트"), any(User.class))).willReturn(jointPurchaseListDtos);
 
         // when & then
         mockMvc.perform(get("/api/v1/joint-purchases")
                         .param("page", "1")
-                        .param("size", "10"))
+                        .param("size", "10")
+                        .param("keyword", "테스트"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1L))
                 .andExpect(jsonPath("$[0].product_name").value("테스트 상품"))
@@ -173,7 +174,8 @@ class JointPurchaseControllerTest {
                         preprocessResponse(prettyPrint()),
                         queryParameters(
                                 parameterWithName("page").description("페이지 번호"),
-                                parameterWithName("size").description("페이지 크기")
+                                parameterWithName("size").description("페이지 크기"),
+                                parameterWithName("keyword").description("검색 키워드")
                         ),
                         responseFields(
                                 fieldWithPath("[].id").description("공동구매 ID"),

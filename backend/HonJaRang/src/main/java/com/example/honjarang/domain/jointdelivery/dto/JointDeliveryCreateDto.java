@@ -21,12 +21,12 @@ public class JointDeliveryCreateDto {
     private Integer targetMinPrice;
     private String deadline;
 
-    public JointDelivery toEntity(JointDeliveryCreateDto dto, Store store, User user) {
+    public JointDelivery toEntity(Store store, User user) {
         return JointDelivery.builder()
-                .content(dto.getContent())
-                .deliveryCharge(dto.getDeliveryCharge())
-                .targetMinPrice(dto.getTargetMinPrice())
-                .deadline(DateTimeUtils.parseLocalDateTime(dto.getDeadline()))
+                .content(content)
+                .deliveryCharge(deliveryCharge)
+                .targetMinPrice(targetMinPrice)
+                .deadline(DateTimeUtils.parseLocalDateTime(deadline))
                 .store(store)
                 .user(user)
                 .build();

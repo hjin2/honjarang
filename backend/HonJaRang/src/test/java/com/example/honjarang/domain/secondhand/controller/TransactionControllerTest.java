@@ -181,6 +181,7 @@ public class TransactionControllerTest {
                                 parameterWithName("keyword").description("키워드")
                         ),
                         responseFields(
+                                fieldWithPath("[].id").description("중고거래 ID"),
                                 fieldWithPath("[].title").description("중고거래 타이틀"),
                                 fieldWithPath("[].is_complete").description("판매완료 유무"),
                                 fieldWithPath("[].price").description("가격")
