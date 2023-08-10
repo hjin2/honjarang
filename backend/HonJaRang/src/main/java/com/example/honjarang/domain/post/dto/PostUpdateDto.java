@@ -16,7 +16,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PostUpdateDto {
-    private Long id;
     private String title;
     private String content;
     private Category category;
