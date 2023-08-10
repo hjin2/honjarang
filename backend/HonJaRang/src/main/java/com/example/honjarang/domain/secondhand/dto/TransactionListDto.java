@@ -12,6 +12,7 @@ public class TransactionListDto {
     private String title;
     private Boolean isComplete;
     private Integer price;
+    private String transactionImage;
 
 
     public TransactionListDto(Transaction transaction){
@@ -19,5 +20,6 @@ public class TransactionListDto {
         this.title = transaction.getTitle();
         this.isComplete = transaction.getIsCompleted();
         this.price = transaction.getPrice();
+        this.transactionImage = transaction.getTransactionImage();
     }
 }
