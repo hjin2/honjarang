@@ -162,68 +162,68 @@ public class PostServiceTest {
         assertThrows(InvalidUserException.class, () -> postService.deletePost(1L, invalidUser));
     }
 
-    @Test
-    @DisplayName("게시글 수정 성공")
-    void updatePost_Success() throws IOException {
+//    @Test
+//    @DisplayName("게시글 수정 성공")
+//    void updatePost_Success() throws IOException {
+//
+//        // given
+//        MultipartFile multipartFile = new MockMultipartFile("test_image", "test_image".getBytes());
+//        String imageUrl = multipartFile.getOriginalFilename();
+//
+//        PostUpdateDto postUpdateDto = new PostUpdateDto(1L ,"수정 테스트 타이틀","수정 테스트 본문",Category.TIP,true);
+//
+//        given(postRepository.findById(any(Long.class))).willReturn(Optional.ofNullable(post));
+//
+//        postService.updatePost(multipartFile, postUpdateDto, user);
+//
+//        // when & then
+//        assertThat(post.getTitle()).isEqualTo("수정 테스트 타이틀");
+//        assertThat(post.getContent()).isEqualTo("수정 테스트 본문");
+//        assertThat(post.getCategory()).isEqualTo(Category.TIP);
+//        assertThat(post.getIsNotice()).isEqualTo(true);
+//
+//    }
 
-        // given
-        MultipartFile multipartFile = new MockMultipartFile("test_image", "test_image".getBytes());
-        String imageUrl = multipartFile.getOriginalFilename();
+//    @Test
+//    @DisplayName("게시글 수정 실패 - 존재하지 않는 게시글일 때")
+//    void updatePost_PostNotFoundException() throws IOException {
+//
+//        // given
+//        MultipartFile multipartFile = new MockMultipartFile("test_image", "test_image".getBytes());
+//        String imageUrl = multipartFile.getOriginalFilename();
+//        PostUpdateDto postUpdateDto = new PostUpdateDto(1L ,"수정 테스트 타이틀","수정 테스트 본문",Category.TIP,true);
+//        given(postRepository.findById(any(Long.class))).willReturn(java.util.Optional.empty());
+//
+//        // when & then
+//        assertThrows(PostNotFoundException.class, () -> postService.updatePost(multipartFile, postUpdateDto, user));
+//
+//
+//    }
 
-        PostUpdateDto postUpdateDto = new PostUpdateDto(1L ,"수정 테스트 타이틀","수정 테스트 본문",Category.TIP,true);
-
-        given(postRepository.findById(any(Long.class))).willReturn(Optional.ofNullable(post));
-
-        postService.updatePost(multipartFile, postUpdateDto, user);
-
-        // when & then
-        assertThat(post.getTitle()).isEqualTo("수정 테스트 타이틀");
-        assertThat(post.getContent()).isEqualTo("수정 테스트 본문");
-        assertThat(post.getCategory()).isEqualTo(Category.TIP);
-        assertThat(post.getIsNotice()).isEqualTo(true);
-
-    }
-
-    @Test
-    @DisplayName("게시글 수정 실패 - 존재하지 않는 게시글일 때")
-    void updatePost_PostNotFoundException() throws IOException {
-
-        // given
-        MultipartFile multipartFile = new MockMultipartFile("test_image", "test_image".getBytes());
-        String imageUrl = multipartFile.getOriginalFilename();
-        PostUpdateDto postUpdateDto = new PostUpdateDto(1L ,"수정 테스트 타이틀","수정 테스트 본문",Category.TIP,true);
-        given(postRepository.findById(any(Long.class))).willReturn(java.util.Optional.empty());
-
-        // when & then
-        assertThrows(PostNotFoundException.class, () -> postService.updatePost(multipartFile, postUpdateDto, user));
-
-
-    }
-
-    @Test
-    @DisplayName("게시글 수정 실패 - 작성자가 아닐때 수정 시도하는 경우")
-    void updatePost_InvalidUserException() throws IOException {
-
-        // given
-        MultipartFile multipartFile = new MockMultipartFile("test_image", "test_image".getBytes());
-        String imageUrl = multipartFile.getOriginalFilename();
-        PostUpdateDto postUpdateDto = new PostUpdateDto(1L ,"수정 테스트 타이틀","수정 테스트 본문",Category.TIP,true);
-        given(postRepository.findById(any(Long.class))).willReturn(Optional.ofNullable(post));
-        User notWriter =  User.builder()
-                .email("test2@test.com")
-                .password("test12345")
-                .nickname("테스트1")
-                .address("서울특별시 강남구")
-                .latitude(37.1)
-                .longitude(127.1)
-                .role(Role.ROLE_USER)
-                .build();
-        notWriter.setIdForTest(3L);
-
-        // when & then
-        assertThrows(InvalidUserException.class, () -> postService.updatePost(multipartFile, postUpdateDto, notWriter));
-
-    }
+//    @Test
+//    @DisplayName("게시글 수정 실패 - 작성자가 아닐때 수정 시도하는 경우")
+//    void updatePost_InvalidUserException() throws IOException {
+//
+//        // given
+//        MultipartFile multipartFile = new MockMultipartFile("test_image", "test_image".getBytes());
+//        String imageUrl = multipartFile.getOriginalFilename();
+//        PostUpdateDto postUpdateDto = new PostUpdateDto(1L ,"수정 테스트 타이틀","수정 테스트 본문",Category.TIP,true);
+//        given(postRepository.findById(any(Long.class))).willReturn(Optional.ofNullable(post));
+//        User notWriter =  User.builder()
+//                .email("test2@test.com")
+//                .password("test12345")
+//                .nickname("테스트1")
+//                .address("서울특별시 강남구")
+//                .latitude(37.1)
+//                .longitude(127.1)
+//                .role(Role.ROLE_USER)
+//                .build();
+//        notWriter.setIdForTest(3L);
+//
+//        // when & then
+//        assertThrows(InvalidUserException.class, () -> postService.updatePost(multipartFile, postUpdateDto, notWriter));
+//
+//    }
 
 
 

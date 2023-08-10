@@ -77,9 +77,9 @@ public class PostService {
     }
 
     @Transactional
-    public void updatePost(MultipartFile postImage, PostUpdateDto postUpdateDto, User user) throws IOException {
+    public void updatePost(MultipartFile postImage, PostUpdateDto postUpdateDto, User user, Long id) throws IOException {
 
-        Post post = postRepository.findById(postUpdateDto.getId()).orElseThrow(() ->
+        Post post = postRepository.findById(id).orElseThrow(() ->
                 new PostNotFoundException("존재하지 않는 게시글입니다."));
         if (!Objects.equals(post.getUser().getId(), user.getId())) {
             throw new InvalidUserException("작성자만 수정할 수 있습니다.");
