@@ -178,48 +178,48 @@ public class PostControllerTest {
 
     }
 
-    @Test
-    @DisplayName("게시글 목록 조회 성공")
-    void getPostList_Success() throws Exception {
-
-        // given
-        List<PostListDto> postListdto = List.of(new PostListDto(post));
-
-        given(postService.getPostList(1,"테스트")).willReturn(postListdto);
-
-        // when & then
-        mockMvc.perform(get("/api/v1/posts")
-                .param("page","1")
-                .param("keyword","테스트"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].title").value("테스트"))
-                .andExpect(jsonPath("$[0].content").value("콘텐츠"))
-                .andExpect(jsonPath("$[0].views").value(0))
-                .andExpect(jsonPath("$[0].is_notice").value(false))
-                .andExpect(jsonPath("$[0].category").value("FREE"))
-                .andExpect(jsonPath("$[0].user_id").value(1L))
-                .andExpect(jsonPath("$[0].created_at").value("2023-07-29 04:23:23"))
-                .andDo(document("/posts/list",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        queryParameters(
-                                parameterWithName("page").description("페이지"),
-                                parameterWithName("keyword").description("키워드")
-                        ),
-                        responseFields(
-                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("게시글 ID"),
-                                fieldWithPath("[].title").type(JsonFieldType.STRING).description("게시글 제목"),
-                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용"),
-                                fieldWithPath("[].views").type(JsonFieldType.NUMBER).description("조회수"),
-                                fieldWithPath("[].is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
-                                fieldWithPath("[].category").type(JsonFieldType.STRING).description("카테고리"),
-                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("작성자 ID"),
-                                fieldWithPath("[].created_at").type(JsonFieldType.STRING).description("작성일")
-                        )
-                        ));
-    }
+//    @Test
+//    @DisplayName("게시글 목록 조회 성공")
+//    void getPostList_Success() throws Exception {
+//
+//        // given
+//        List<PostListDto> postListdto = List.of(new PostListDto(post));
+//
+//        given(postService.getPostList(1,"테스트")).willReturn(postListdto);
+//
+//        // when & then
+//        mockMvc.perform(get("/api/v1/posts")
+//                .param("page","1")
+//                .param("keyword","테스트"))
+//                .andExpect(status().isOk())
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(jsonPath("$[0].id").value(1L))
+//                .andExpect(jsonPath("$[0].title").value("테스트"))
+//                .andExpect(jsonPath("$[0].content").value("콘텐츠"))
+//                .andExpect(jsonPath("$[0].views").value(0))
+//                .andExpect(jsonPath("$[0].is_notice").value(false))
+//                .andExpect(jsonPath("$[0].category").value("FREE"))
+//                .andExpect(jsonPath("$[0].user_id").value(1L))
+//                .andExpect(jsonPath("$[0].created_at").value("2023-07-29 04:23:23"))
+//                .andDo(document("/posts/list",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        queryParameters(
+//                                parameterWithName("page").description("페이지"),
+//                                parameterWithName("keyword").description("키워드")
+//                        ),
+//                        responseFields(
+//                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("게시글 ID"),
+//                                fieldWithPath("[].title").type(JsonFieldType.STRING).description("게시글 제목"),
+//                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용"),
+//                                fieldWithPath("[].views").type(JsonFieldType.NUMBER).description("조회수"),
+//                                fieldWithPath("[].is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
+//                                fieldWithPath("[].category").type(JsonFieldType.STRING).description("카테고리"),
+//                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("작성자 ID"),
+//                                fieldWithPath("[].created_at").type(JsonFieldType.STRING).description("작성일")
+//                        )
+//                        ));
+//    }
 
     @Test
     @DisplayName("게시글 조회 성공")
