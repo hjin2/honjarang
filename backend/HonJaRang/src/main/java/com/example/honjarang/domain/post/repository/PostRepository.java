@@ -21,6 +21,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Integer countAllByUserId(Long userId);
 
-    long count();
-
 }
