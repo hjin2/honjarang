@@ -32,7 +32,7 @@ export default function MyPage() {
   return (
     <div className="my-page space-y-5">
       <UserInfo />
-      <div className='h-96'>
+      <div>
        <SideBar />
       </div>
     </div>

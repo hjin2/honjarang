@@ -10,14 +10,28 @@ export default function TransactionDetail() {
   const headers = {"Authorization" : `Bearer ${token}`}
   const {id} = useParams()
   const [isWriter, setIsWriter] = useState(false)
-  const Buy = () => {
-    axios.put(`${URL}/api/v1/secondhand-transactions/${id}/buy`,{headers})
+  const [isSell, setIsSell] = useState(false)
+  const [isFinish, setIsFinish] = useState(false)
+  const buy = () => {
+    axios.put(`${URL}/api/v1/secondhand-transactions/${id}/buy`,[],{headers})
       .then((res) => {
         console.log(res)
+        setIsSell(true)
       })
       .catch((err) => {
         console.log(err)
         window.alert("포인트가 부족합니다.")
+      })
+  }
+
+  const check = () => {
+    axios.put(`${URL}/api/v1/secondhand-transactions/${id}/check`, [], {headers})
+      .then((res) => {
+        console.log(res)
+        setIsFinish(true)
+      })
+      .catch((err) => {
+        console.log(err)
       })
   }
 
@@ -30,6 +44,11 @@ export default function TransactionDetail() {
           setIsWriter(true)
         }else{
           setIsWriter(false)
+        }
+        if(res.data.is_completed){
+          setIsSell(true)
+        }else{
+          setIsSell(false)
         }
       })
       .catch((err) => console.log(err))
@@ -47,10 +66,16 @@ export default function TransactionDetail() {
         </div>
       </div>
       <div className="flex justify-between my-5">
-        {detail.is_completed ? (
-          <div className="text-main5 font-bold">판매완료</div>
+        {isFinish ? (
+          <div className="text-main1 font-bold">수령완료</div>
         ):(
-          <div className="text-main1 font-bold">판매중</div>
+          <>
+            {isSell ? (
+              <div className="text-main5 font-bold">판매완료</div>
+            ):(
+              <div className="text-main1 font-bold">판매중</div>
+            )}
+          </>
         )}
         <button className="main1-full-button w-24">1:1 채팅</button>
       </div>
@@ -66,10 +91,10 @@ export default function TransactionDetail() {
         </div>
         {!isWriter ? (
           <div>
-            {detail.is_completed ? (
-              <button className="main1-full-button w-full">수령확인</button>
+            {isSell ? (
+              <button className="main1-full-button w-full" onClick={check}>수령확인</button>
             ):(
-              <button className="main1-full-button w-full">구매</button>
+              <button className="main1-full-button w-full" onClick={buy}>구매</button>
             )}
           </div>
         ):(
