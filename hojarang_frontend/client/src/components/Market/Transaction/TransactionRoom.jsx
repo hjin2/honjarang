@@ -14,18 +14,20 @@ export default function TransactionRoom(roomData) {
           <div className="w-32 h-32">
             <img src={`https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/transactionImage/${transaction_image}`} alt="상품 이미지" className="w-full h-full rounded-lg" />
           </div>
-          <div className="absolute inset-0 flex items-end justify-end">
-            <p className="text-sm font-bold">{is_complete}</p>
-          </div>
         </div>
         {/* 상품 제목 */}
         <div className="flex justify-between my-4">
           <div>{title}</div>
-          <div>{price} </div>
+          <div>{price.toLocaleString()}원</div>
         </div>
         {/* 참여버튼 */}
-        <div className="flex justify-end">
-        <button type="button" className="main1-full-button w-20" onClick={onClick}>채팅하기</button>
+        <div className="flex justify-between">
+          {is_complete ? (
+            <div className="text-main5 font-bold">판매완료</div>
+          ):(
+            <div className="text-main1 font-bold">판매중</div>
+          )}
+          <button type="button" className="main1-full-button w-20" onClick={onClick}>채팅하기</button>
         </div>
       </div>
     </div>
