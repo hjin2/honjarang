@@ -1,11 +1,9 @@
-import AricleList from './ArticleList';
-import Posts from '../../components/Board/GetAritcle';
+import ArticleList from "../../components/Board/ArticleList"
 
 export default function Board() {
   return (
     <div>
-      <AricleList />
-      <Posts />
+      <ArticleList/>
     </div>
   );
 }

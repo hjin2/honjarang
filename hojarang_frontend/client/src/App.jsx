@@ -14,7 +14,7 @@ import MyPage from './pages/MyPage/MyPage';
 import FindPassword from './pages/FindPassword/FindPassword';
 import ChangePassword from './pages/FindPassword/ChangePassword';
 import ArticleCreate from './pages/Board/ArticleCreate';
-import { ArticleDetail } from './pages/Board/ArticleDetail';
+import ArticleDetail from './pages/Board/ArticleDetail';
 import ArticleUpdate from './pages/Board/ArticleUpdate';
 import Checkout from './pages/Checkout/Checkout';
 import Fail from './pages/Checkout/Fail';
@@ -64,7 +64,7 @@ function App() {
               element={<ArticleCreate />}
             ></Route>
             <Route path="/board/article/:id" element={<ArticleDetail />} />
-            <Route paht="/board/articleupdate/:id" element={<ArticleUpdate/>}></Route>
+            <Route path="/board/articleupdate/:id" element={<ArticleUpdate/>}></Route>
             <Route path="/webrtc/:sessionid" element={<FreeChat/>}/>
             <Route path="/*" element={<Notfound />} />
           </Route>
