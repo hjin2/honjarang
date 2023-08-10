@@ -2,6 +2,7 @@ package com.example.honjarang.domain.user.controller;
 
 import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
+import com.example.honjarang.domain.secondhand.dto.TransactionListDto;
 import com.example.honjarang.domain.user.dto.*;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.service.EmailService;
@@ -103,14 +104,15 @@ public class UserController {
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<List<PostListDto>> getMyPostList(@RequestParam(value = "page", defaultValue = "1") Integer page, @CurrentUser User user){
-        List<PostListDto> postList = userService.getMyPostList(page,user);
+    public ResponseEntity<List<PostListDto>> getMyPostList(@RequestParam(value = "size", defaultValue = "1") Integer size, @RequestParam(value="page", defaultValue = "1") int page, @CurrentUser User user){
+        List<PostListDto> postList = userService.getMyPostList(page,size, user);
         return ResponseEntity.ok(postList);
     }
 
 
     @GetMapping("/joint-deliveries-writer")
     public ResponseEntity<List<JointDeliveryListDto>> getMyWrittenJointDeliveries(@RequestParam(value = "size", defaultValue = "1") int size, @RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
+        
         List<JointDeliveryListDto> myWrittenJointDeliveryListDtoList = userService.getMyWrittenJointDeliveries(page,size,user);
         return ResponseEntity.ok(myWrittenJointDeliveryListDtoList);
     }
@@ -119,6 +121,12 @@ public class UserController {
     public ResponseEntity<List<JointDeliveryListDto>> getMyJoinedJointDeliveries(@RequestParam(value = "size", defaultValue = "1") int size, @RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
         List<JointDeliveryListDto> myJoinedJointDeliveryListDtoList = userService.getMyJoinedJointDeliveries(page,size,user);
         return ResponseEntity.ok(myJoinedJointDeliveryListDtoList);
+    }
+
+    @GetMapping("/transaction-writer")
+    public ResponseEntity<List<TransactionListDto>> getMyTransactions(@RequestParam(value = "size", defaultValue = "1") int size, @RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
+        List<TransactionListDto> transactionListDtoList = userService.getMyTransactions(page,size,user);
+        return ResponseEntity.ok(transactionListDtoList);
     }
 
 
@@ -160,6 +168,12 @@ public class UserController {
     public ResponseEntity<Integer> getMyJoinedJointDeliveriesPageCount(@RequestParam Integer size, @CurrentUser User user) {
         return ResponseEntity.ok(userService.getMyJoinedJointDeliveriesPageCount(size, user));
     }
+
+    @GetMapping("/page-transaction")
+    public ResponseEntity<Integer> getMyTransactionPageCount(@RequestParam Integer size, @CurrentUser User user) {
+        return ResponseEntity.ok(userService.getMyTransactionPageCount(size, user));
+    }
+
 
 
 }
