@@ -12,6 +12,9 @@ import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.PaymentException;
 import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.post.service.PostService;
+import com.example.honjarang.domain.secondhand.dto.TransactionListDto;
+import com.example.honjarang.domain.secondhand.entity.Transaction;
+import com.example.honjarang.domain.secondhand.repository.TransactionRepository;
 import com.example.honjarang.domain.user.dto.LoginDto;
 import com.example.honjarang.domain.user.dto.PointChargeDto;
 import com.example.honjarang.domain.user.dto.UserCreateDto;
@@ -68,6 +71,8 @@ public class UserService {
     private final JointDeliveryCartRepository jointDeliveryCartRepository;
 
     private final JointDeliveryApplicantRepository jointDeliveryApplicantRepository;
+
+    private final TransactionRepository transactionRepository;
 
 
     private final MenuRepository menuRepository;
@@ -204,10 +209,10 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostListDto> getMyPostList(Integer page, User user){
-        Pageable pageable = PageRequest.of(page-1, 15);
-
+    public List<PostListDto> getMyPostList(Integer page, Integer size, User user){
+        Pageable pageable = Pageable.ofSize(size).withPage(page-1);
         List<Post> posts = postRepository.findAllByUserIdOrderByIdDesc(user.getId(), pageable).toList();
+
         List<PostListDto> postListDtos = new ArrayList<>();
         for(Post post : posts){
             postListDtos.add(new PostListDto(post));
@@ -217,7 +222,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<JointDeliveryListDto> getMyWrittenJointDeliveries(int size, int page, User user){
+    public List<JointDeliveryListDto> getMyWrittenJointDeliveries(int page, int size, User user){
         Pageable pageable = Pageable.ofSize(size).withPage(page-1);
         List<JointDelivery> myWrittenJointDeliveryList = jointDeliveryRepository.findAllByUserId(user.getId(), pageable).toList();
 
@@ -231,7 +236,7 @@ public class UserService {
 
 
     @Transactional(readOnly = true)
-    public List<JointDeliveryListDto> getMyJoinedJointDeliveries(Integer size, Integer page, User user){
+    public List<JointDeliveryListDto> getMyJoinedJointDeliveries(Integer page, Integer size, User user){
         Pageable pageable = Pageable.ofSize(size).withPage(page-1);
         List<JointDeliveryListDto> myJointDeliveryListDtoList = new ArrayList<>();
         List<JointDelivery> myJointDelivery = jointDeliveryCartRepository.findDistinctJointDeliveryByUserId(user.getId(), pageable);
@@ -240,6 +245,19 @@ public class UserService {
             myJointDeliveryListDtoList.add(jointDeliveryListDto);
         }
         return myJointDeliveryListDtoList;
+    }
+
+    @Transactional(readOnly = true)
+    public List<TransactionListDto> getMyTransactions(Integer page, Integer size, User user){
+        Pageable pageable = Pageable.ofSize(size).withPage(page-1);
+        List<TransactionListDto> myTransactionListDtoList = new ArrayList<>();
+        List<Transaction> myTransaction = transactionRepository.findAllBySellerId(user.getId(),pageable).toList();
+        for(Transaction transaction : myTransaction){
+            TransactionListDto myTransactionListDto = new TransactionListDto(transaction);
+            myTransactionListDtoList.add(myTransactionListDto);
+        }
+        return myTransactionListDtoList;
+
     }
 
     @Transactional
@@ -283,5 +301,10 @@ public class UserService {
     @Transactional(readOnly = true)
     public Integer getMyJoinedJointDeliveriesPageCount(Integer size, User user) {
         return (int) Math.ceil((double) jointDeliveryApplicantRepository.countAllByUserId(user.getId()) / size) ;
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getMyTransactionPageCount(Integer size, User user) {
+        return (int) Math.ceil((double) transactionRepository.countAllBySellerId(user.getId()) / size) ;
     }
 }
