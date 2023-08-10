@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import TextField from '../../components/Board/TextFields';
-import TextArea from '../../components/Board/TextArea';
 import { Link } from 'react-router-dom';
 
 
@@ -52,12 +50,10 @@ export default function ArticleUpdate() {
 
   const editArticle = () => {
     const formData = new FormData()
-    formData.append("post_image", image)
+    formData.append("post_image", null)
     formData.append("title", title)
     formData.append("content", content)
     formData.append("category", category)
-    console.log(image, title, content, category)
-    formData.append("id", id)
     formData.append("isNotice", "False")
     console.log
     axios.put(`${URL}/api/v1/posts/${id}`,formData,{headers})
@@ -78,8 +74,8 @@ export default function ArticleUpdate() {
         <p className="mb-2">카테고리 선택</p>
         <form action="" value="카테고리">
           <select value={category} onChange={handleCategory} className="border border-gray3 rounded-lg h-8 w-24">
-            <option value="자유">자유</option>
-            <option value="Tip">꿀Tip</option>
+            <option value="FREE">자유</option>
+            <option value="TIP">꿀Tip</option>
           </select>
         </form>
       </div>
