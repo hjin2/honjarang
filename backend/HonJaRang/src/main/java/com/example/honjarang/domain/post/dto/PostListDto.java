@@ -15,6 +15,7 @@ import lombok.Getter;
 public class PostListDto {
     private Long id;
     private Long userId;
+    private String userNickname;
     private String title;
     private Category category;
     private String content;
@@ -26,6 +27,7 @@ public class PostListDto {
     public PostListDto(Post post) {
         this.id = post.getId();
         this.userId = post.getUser().getId();
+        this.userNickname = post.getUser().getNickname();
         this.title = post.getTitle();
         this.category = post.getCategory();
         this.content = post.getContent();
