@@ -10,20 +10,30 @@ export default function TransactionDetail() {
   const headers = {"Authorization" : `Bearer ${token}`}
   const {id} = useParams()
   const [isWriter, setIsWriter] = useState(false)
+  const Buy = () => {
+    axios.put(`${URL}/api/v1/secondhand-transactions/${id}/buy`,{headers})
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err) => {
+        console.log(err)
+        window.alert("포인트가 부족합니다.")
+      })
+  }
 
   useEffect(()=>{
     axios.get(`${URL}/api/v1/secondhand-transactions/${id}`,{headers})
       .then((res) => {
         console.log(res.data)
         setDetail(res.data)
-        if(Number(LoginId) === detail.seller_id){
+        if(Number(LoginId) === res.data.seller_id){
           setIsWriter(true)
         }else{
           setIsWriter(false)
         }
       })
       .catch((err) => console.log(err))
-  },[id])
+  },[])
   return (
     <div className="w-6/12 mx-auto mt-5 border rounded-lg p-5">
       <div className="flex justify-between">
@@ -47,17 +57,23 @@ export default function TransactionDetail() {
       <hr />
       <div className="my-3">
         <img 
-          src={`https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/transactionImage/${detail?.transaction_image}`} 
+          src={`https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/transactionImage/${detail.transaction_image}`} 
           alt="상품이미지"
           className="mx-auto"
           />
-        <div className="mt-3 mb-5">
+        <div className="my-3">
           {detail.content}
         </div>
-        {!isWriter && detail.is_completed ? (
-          <button className="main1-full-button w-full">수령확인</button>
+        {!isWriter ? (
+          <div>
+            {detail.is_completed ? (
+              <button className="main1-full-button w-full">수령확인</button>
+            ):(
+              <button className="main1-full-button w-full">구매</button>
+            )}
+          </div>
         ):(
-          <button className="main1-full-button w-full">구매하기</button>
+          null
         )}
       </div>
     </div>
