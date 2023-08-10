@@ -38,7 +38,7 @@ public class PostController {
     @PutMapping("/{id}")
     public ResponseEntity<Long> updatePost(@RequestPart("post_image") MultipartFile postImage,
                                            @ModelAttribute PostUpdateDto postUpdateDto, @PathVariable Long id, @CurrentUser User user) throws IOException {
-        postService.updatePost(postImage, postUpdateDto, user);
+        postService.updatePost(postImage, postUpdateDto, user, id);
         return ResponseEntity.ok().build();
     }
 
