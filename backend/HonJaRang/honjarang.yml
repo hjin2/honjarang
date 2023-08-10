@@ -116,6 +116,16 @@ spec:
                 secretKeyRef:
                   name: honjarang-secret
                   key: redis_port
+            - name: REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: redis_username
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: redis_password
             - name: FIRE_BASE_ADMIN_JSON
               valueFrom:
                 secretKeyRef:
