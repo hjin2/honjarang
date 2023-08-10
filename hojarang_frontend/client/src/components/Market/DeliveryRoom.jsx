@@ -12,18 +12,13 @@ export default function DeliveryRoom(roomData) {
   if (store_name.length > MAX_STORE_NAME_LENGTH) {
     adjustedStoreName = store_name.substring(0, MAX_STORE_NAME_LENGTH) + '...';
   }
-  
-  // 대체 이미지 넣기
-  const defaultImage = '/src/assets/noimage.png';
-  const imageToShow = store_image.includes('blogfiles') ? defaultImage : store_image;
-
 
   return (
     <div >
       <div className="border w-52 h-52 p-2 ">
         <div className="flex justify-center relative">
           <div className="w-32 h-32">
-            <img src={imageToShow} alt="가게 이미지" className="w-full h-full" />
+            <img src={store_image} alt="가게 이미지" className="w-full h-full" />
           </div>
           <div className="absolute inset-0 flex items-end justify-end">
             <p className="text-sm font-bold">{current_total_price}/{target_min_price}</p>

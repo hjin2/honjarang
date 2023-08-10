@@ -11,11 +11,9 @@ export default function DeliveryDetail() {
   const URL = import.meta.env.VITE_APP_API
   const headers = {'Authorization': `Bearer ${token}`};
 
-  const [detail, setDetail] = useState([]); // 가게 상세
-  const [menuList, setMenuList] = useState([]); // 메뉴 리스트
-  const [cart, setCart] = useState([]); // 장바구니 목록
+  // 공동 배달 상세
+  const [detail, setDetail] = useState([]);
   useEffect(() => {
-    // 공동 배달 상세
     axios.get(`${URL}/api/v1/joint-deliveries/${id}`,  {headers})
     .then((res) => {
       setDetail(res.data)
@@ -24,55 +22,68 @@ export default function DeliveryDetail() {
     .catch((err) => {
       console.log(err)
     })
-    // 메뉴 목록 조회
+  }, [id]);
+
+  // 메뉴 목록 조회
+  const [menu, setMenu] = useState([]);
+  useEffect(() => {
     axios.get(`${URL}/api/v1/joint-deliveries/${id}/menus`, {headers})
     .then((res) => {
-      setMenuList(res.data)
+      setMenu(res.data)
     })
     .catch((err) => {
       console.log(err)
     })
-    // 장바구니 목록 조회
-    axios.get(`${URL}/api/v1/joint-deliveries/${id}/carts`, {headers})
-    .then((res) => {
-      setCart(res.data)
-      console.log(res.data)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-  }, [id]);
- 
+  })
 
-  // 모달 관련 상태
-  const [modalState, setModalState] = useState(false); // 모달 열림, 닫힘
-  const [selectedMenu, setSelectedMenu] = useState('') // 선택된 메뉴
+  // if (!detail) {
+  //   return <div>Loading</div>
+  // }
+
+  // 장바구니에 추가된 메뉴들
+  const [cart, setCart] = useState([])
+
+  // 메뉴 담기
+  const addToCart = (menuItem) => {
+    // 메뉴 중복 확인
+    const isMenuInCart = cart.some((item) => item.id === menuItem.id)
+    if(!isMenuInCart) {
+      setCart([...cart, menuItem])
+    }
+  }
   
-  // 모달 열어서 선택된 메뉴 정보 설정
-  const onModalOpen = (menu) => {
-    setSelectedMenu(menu)
-    setModalState(true)
+  const [selectedMenu, setSelectedMenu] = useState('')
+  const [selectedMenuQuantity, setSelectedMenuQuantity] = useState(1);
+  
+  // 장바구니에 메뉴 담아서 보여주는 모달
+  const [modalState, setModalState] = useState('');
+  const onModalOpen = (menuItem) => {
+    // addToCart(menuItem)
+    setSelectedMenu(menuItem)
+    setModalState(!modalState);
+    console.log(menuItem)
+  };
+
+  // 모달 내부에서 선택된 메뉴와 수량을 조정하고, 
+  // 수량 저장 버튼을 클릭하면 해당 정보가 menuInCart 함수를 통해 전달
+  const menuInCart = (quantity) => {
+    // setSelectedMenu(cart)
+    setSelectedMenuQuantity(quantity);
+    setModalState(false)
   }
 
-  const [showCartList, setShowCartList] = useState(false)
-  // 장바구니 목록 열기
-  const onCartListOpen = () => {
-    setShowCartList(!showCartList)
-  }
-
-  // 이미지 없을 때 대체 이미지 넣기
-  const defaultImage = '/src/assets/noimage.png';
 
   return (
     <div>
       <div className="border rounded-lg max-w-2xl mx-auto mt-10 pb-3 p-5 space-y-5 ">
         <div className="flex justify-between">
+          
           <div>
             <div className="font-bold text-3xl flex items-end">{detail.store_name}</div>
           </div>
           <div>
             <div className="font-semibold text-right">{detail.nickname}</div>
-            <div className="text-right ">{detail.created_at} </div>
+            <div className="text-right ">{detail.created_at}</div>
           </div>
         </div>
         <hr />
@@ -82,54 +93,46 @@ export default function DeliveryDetail() {
         <hr />
         {/* 메뉴 목록 */}
         <div className="menu-container overflow-y-scroll max-h-96 border rounded-md px-4">
-          {menuList.map((menu) => (
-            <div key={menu.id} className="flex justify-between items-center space-x-4 my-2">
-              <img src={menu.image || defaultImage} alt={menu.name} className="w-16 h-16" />
+          {menu.map((menuItem) => (
+            <div key={menuItem.id} className="flex justify-between items-center space-x-4 my-2">
+              <img src={menuItem.image} alt={menuItem.name} className="w-16 h-16" />
               <div className="text-center">
-                <p className="font-semibold">{menu.name}</p>
-                <p>가격: {menu.price}</p>
+                <p className="font-semibold">{menuItem.name}</p>
+                <p>가격: {menuItem.price} {menuItem.id}</p>
               </div>
               <div>
-                <button onClick={() => onModalOpen(menu)}>
+                {/* <button onClick={() => addToCart(menuItem)}> */}
+                <button onClick={() => onModalOpen(menuItem)}>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
                   </svg>
                 </button>
-                {modalState && selectedMenu && (
+                {modalState &&  (
                   <Modal modalState={modalState} setModalState={setModalState}>
                     <Cart 
+                    modalState={modalState} 
+                    setModalState={setModalState} 
                     selectedMenu={selectedMenu}
-                    detail={detail}
-                    modalState={modalState} setModalState={setModalState} />
+                    selectedMenuQuantity={selectedMenuQuantity}
+                    cartItems={(quantity) => menuInCart(quantity)} />
                   </Modal>
                 )}
               </div>
             </div>
           ))}
         </div>
+        
 
       </div>
       <div className="border rounded-lg max-w-2xl mx-auto mt-5 mb-10 pb-3 p-5 space-y-5 flex flex-col items-center">
         <p>마감일자 {detail.deadline}</p>
         <p>{detail.current_total_price}/{detail.target_min_price}</p>
         {/* 메뉴를 담으면 장바구니 버튼 활성화 */}
-        {cart.length > 0 && (
-          <button onClick={onCartListOpen}>장바구니 목록</button>)}
-          {showCartList && (
-            <div>
-              {cart.map((menu) => (
-                <div key={menu.id}>
-                  <div>
-                    {menu.user_nickname} - {menu.menu_name}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )} 
-     
-        
+        {cart.length > 0 && (<button>장바구니</button>)} 
+        {/* <Cart cartItems={cart} /> */}
       </div>
     </div>
+    
   );
 }
 
