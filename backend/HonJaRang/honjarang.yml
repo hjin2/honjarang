@@ -46,16 +46,11 @@ spec:
                 secretKeyRef:
                   name: honjarang-secret
                   key: aws_ses_sender_email
-            - name: MONGODB_HOST
+            - name: MONGODB_URI
               valueFrom:
                 secretKeyRef:
                   name: honjarang-secret
-                  key: mongodb_host
-            - name: MONGODB_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: honjarang-secret
-                  key: mongodb_port
+                  key: mongodb_uri
             - name: MONGODB_DATABASE
               valueFrom:
                 secretKeyRef:
