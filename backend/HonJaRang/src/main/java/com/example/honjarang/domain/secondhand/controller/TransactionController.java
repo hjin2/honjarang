@@ -31,7 +31,7 @@ public class TransactionController {
 
     @PutMapping("/{transactionId}")
     public ResponseEntity<Void> updateSecondHandTransaction(@RequestPart("transaction_image") MultipartFile transactionImage, @ModelAttribute TransactionUpdateDto transactionUpdateDto, @PathVariable Long transactionId, @CurrentUser User user) throws IOException {
-        transactionService.updateSecondHandTransaction(transactionImage, transactionUpdateDto, user);
+        transactionService.updateSecondHandTransaction(transactionImage, transactionUpdateDto, user, transactionId);
         return ResponseEntity.ok().build();
     }
 
