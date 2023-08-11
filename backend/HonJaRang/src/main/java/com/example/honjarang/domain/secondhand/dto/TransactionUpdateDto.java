@@ -13,7 +13,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class TransactionUpdateDto {
-    private Long id;
     private String title;
     private String content;
     private Integer price;
