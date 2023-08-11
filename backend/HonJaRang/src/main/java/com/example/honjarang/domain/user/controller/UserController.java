@@ -144,7 +144,7 @@ public class UserController {
     }
 
     @GetMapping("/jointpurchase-writer")
-    public ResponseEntity<List<JointPurchaseListDto>> getMyJointPurchase(@RequestParam(value = "size", defaultValue = "1") int size, @RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
+    public ResponseEntity<List<JointPurchaseListDto>> getMyJointPurchase(@RequestParam(defaultValue = "1") int size, @RequestParam(defaultValue = "1") int page, @CurrentUser User user){
         List<JointPurchaseListDto> myJointPurchaseListDtos = userService.getMyJointPurchase(page,size,user);
         return ResponseEntity.ok(myJointPurchaseListDtos);
     }
@@ -201,17 +201,17 @@ public class UserController {
         return ResponseEntity.ok(userService.getMyTransactionPageCount(size, user));
     }
 
-    @GetMapping("/page-jointransaction")
+    @GetMapping("/page-joined-ransaction")
     public ResponseEntity<Integer> getMyJoinedTransactionPageCount(@RequestParam Integer size, @CurrentUser User user) {
         return ResponseEntity.ok(userService.getMyJoinedTransactionPageCount(size, user));
     }
 
-    @GetMapping("/page-jointpurchase")
+    @GetMapping("/page-joint-purchase")
     public ResponseEntity<Integer> getMyJointPurchasePageCount(@RequestParam Integer size, @CurrentUser User user) {
         return ResponseEntity.ok(userService.getMyJointPurchasePageCount(size, user));
     }
 
-    @GetMapping("/page-joinedpurchase")
+    @GetMapping("/page-joined-purchase")
     public ResponseEntity<Integer> getMyJoinedJointPurchasePageCount(@RequestParam Integer size, @CurrentUser User user) {
         return ResponseEntity.ok(userService.getMyJoinedJointPurchasePageCount(size, user));
     }
