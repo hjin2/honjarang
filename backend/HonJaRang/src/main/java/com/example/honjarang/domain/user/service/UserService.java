@@ -7,6 +7,12 @@ import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryApplic
 import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryCartRepository;
 import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryRepository;
 import com.example.honjarang.domain.jointdelivery.repository.MenuRepository;
+import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseDto;
+import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseListDto;
+import com.example.honjarang.domain.jointpurchase.entity.JointPurchase;
+import com.example.honjarang.domain.jointpurchase.entity.JointPurchaseApplicant;
+import com.example.honjarang.domain.jointpurchase.repository.JointPurchaseApplicantRepository;
+import com.example.honjarang.domain.jointpurchase.repository.JointPurchaseRepository;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.PaymentException;
@@ -50,6 +56,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -74,6 +81,10 @@ public class UserService {
     private final JointDeliveryApplicantRepository jointDeliveryApplicantRepository;
 
     private final TransactionRepository transactionRepository;
+
+    private final JointPurchaseRepository jointPurchaseRepository;
+
+    private final JointPurchaseApplicantRepository jointPurchaseApplicantRepository;
 
 
     private final MenuRepository menuRepository;
@@ -286,6 +297,40 @@ public class UserService {
         return myTransactionListDtoList;
     }
 
+    @Transactional(readOnly = true)
+    public List<JointPurchaseListDto> getMyJointPurchase(Integer page, Integer size, User user){
+        Pageable pageable = Pageable.ofSize(size).withPage(page-1);
+        List<JointPurchaseListDto> myJointPurchaseListDtos = new ArrayList<>();
+        List<JointPurchase> myJointPurchaseList = jointPurchaseRepository.findAllByUserId(user.getId(),pageable).toList();
+        for(JointPurchase jointPurchase : myJointPurchaseList){
+            JointPurchaseListDto myJointPurchaseListDto = new JointPurchaseListDto(jointPurchase);
+            myJointPurchaseListDtos.add(myJointPurchaseListDto);
+        }
+        return myJointPurchaseListDtos;
+    }
+
+    @Transactional(readOnly = true)
+    public List<JointPurchaseListDto> getMyJoinedJointPurchase(Integer page, Integer size, User user){
+        Pageable pageable = Pageable.ofSize(size).withPage(page-1);
+        List<JointPurchaseListDto> myJointPurchaseListDtos = new ArrayList<>();
+        List<Long> jointPurchaseIds = new ArrayList<>();
+
+        List<JointPurchaseApplicant> myJointPurchaseList = jointPurchaseApplicantRepository.findAllByUserId(user.getId(),pageable).toList();
+        for(JointPurchaseApplicant jointPurchase : myJointPurchaseList){
+            jointPurchaseIds.add(jointPurchase.getJointPurchase().getId());
+        }
+
+        // jointPurchaseIds여기에 이제 공동구매목록 번호들이 들어있음
+        // 이 번호에 해당하는 공동구미listdto를 내보내야함
+        List<JointPurchaseListDto> results = new ArrayList<>();
+        for(Long jointId : jointPurchaseIds) {
+            JointPurchase tmp = jointPurchaseRepository.findAllById(jointId);
+            JointPurchaseListDto tmpDto = new JointPurchaseListDto(tmp);
+            results.add(tmpDto);
+        }
+        return results;
+    }
+
 
 
 
@@ -340,5 +385,15 @@ public class UserService {
     @Transactional(readOnly = true)
     public Integer getMyJoinedTransactionPageCount(Integer size, User user) {
         return (int) Math.ceil((double) transactionRepository.countAllByBuyerId(user.getId()) / size) ;
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getMyJointPurchasePageCount(Integer size, User user) {
+        return (int) Math.ceil((double) jointPurchaseRepository.countAllByUserId(user.getId()) / size) ;
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getMyJoinedJointPurchasePageCount(Integer size, User user) {
+        return (int) Math.ceil((double) jointPurchaseApplicantRepository.countAllByUserId(user.getId()) / size) ;
     }
 }

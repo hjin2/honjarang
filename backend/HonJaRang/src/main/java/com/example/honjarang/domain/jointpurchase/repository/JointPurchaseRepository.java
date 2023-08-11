@@ -21,4 +21,11 @@ public interface JointPurchaseRepository extends JpaRepository<JointPurchase, Lo
             "ORDER BY j.createdAt DESC")
     Page<JointPurchase> findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanAndTargetPersonCountGreaterThanOrderByCreatedAtDesc(LocalDateTime now, Double latitude, Double longitude, String keyword, Pageable pageable);
     Integer countByIsCanceledFalseAndDeadlineAfter(LocalDateTime now);
+
+    Page<JointPurchase> findAllByUserId(Long id, Pageable pageable);
+
+    JointPurchase findAllById(Long id);
+
+    Integer countAllByUserId(Long id);
+
 }
