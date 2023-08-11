@@ -8,6 +8,7 @@ import com.example.honjarang.domain.chat.entity.ChatRoom;
 import com.example.honjarang.domain.chat.service.ChatService;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,15 +27,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -177,6 +182,27 @@ class ChatControllerTest {
                                 parameterWithName("size").description("페이지 크기")
                         ),
                         responseBody()
+                ));
+    }
+
+    @Test
+    @DisplayName("1:1 채팅방 생성")
+    void createOneToOneChatRoom() throws Exception {
+        // given
+        Map<String, Object> body = new HashMap<>();
+        body.put("target_id", 2L);
+
+        // when & then
+        mockMvc.perform(post("/api/v1/chats/one-to-one")
+                        .contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(body)))
+                .andExpect(status().isOk())
+                .andDo(document("chat/createOneToOneChatRoom",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("target_id").type(JsonFieldType.NUMBER).description("상대방 ID")
+                        )
                 ));
     }
 }
