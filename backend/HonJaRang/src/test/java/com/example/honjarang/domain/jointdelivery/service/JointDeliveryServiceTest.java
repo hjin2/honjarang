@@ -1,6 +1,8 @@
 package com.example.honjarang.domain.jointdelivery.service;
 
 import com.example.honjarang.domain.DateTimeUtils;
+import com.example.honjarang.domain.chat.repository.ChatParticipantRepository;
+import com.example.honjarang.domain.chat.repository.ChatRoomRepository;
 import com.example.honjarang.domain.jointdelivery.document.Menu;
 import com.example.honjarang.domain.jointdelivery.dto.*;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
@@ -67,6 +69,10 @@ class JointDeliveryServiceTest {
     private StoreRepository storeRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private ChatRoomRepository chatRoomRepository;
+    @Mock
+    private ChatParticipantRepository chatParticipantRepository;
     @Mock
     private MapService mapService;
     @Mock

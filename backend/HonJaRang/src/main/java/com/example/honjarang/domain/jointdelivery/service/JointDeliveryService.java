@@ -1,5 +1,11 @@
 package com.example.honjarang.domain.jointdelivery.service;
 
+import com.example.honjarang.domain.chat.entity.ChatParticipant;
+import com.example.honjarang.domain.chat.entity.ChatRoom;
+import com.example.honjarang.domain.chat.exception.ChatParticipantNotFoundException;
+import com.example.honjarang.domain.chat.exception.ChatRoomNotFoundException;
+import com.example.honjarang.domain.chat.repository.ChatParticipantRepository;
+import com.example.honjarang.domain.chat.repository.ChatRoomRepository;
 import com.example.honjarang.domain.jointdelivery.document.Menu;
 import com.example.honjarang.domain.jointdelivery.dto.*;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
@@ -54,6 +60,8 @@ public class JointDeliveryService {
     private final JointDeliveryRepository jointDeliveryRepository;
     private final JointDeliveryCartRepository jointDeliveryCartRepository;
     private final JointDeliveryApplicantRepository jointDeliveryApplicantRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatParticipantRepository chatParticipantRepository;
     private final MapService mapService;
 
     public List<StoreListDto> getStoreListByApi(String keyword) {
@@ -100,7 +108,7 @@ public class JointDeliveryService {
 
     public List<StoreListDto> getStoreListByApiForTest(String keyword) {
         List<StoreListDto> storeListDtoList = new ArrayList<>();
-        for(int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             StoreListDto storeListDto = new StoreListDto();
             storeListDto.setId(1638150004L);
             storeListDto.setName("BBQ치킨 인동재롱점");
@@ -223,6 +231,15 @@ public class JointDeliveryService {
         menuRepository.saveAll(menuList);
 
         JointDelivery jointDelivery = jointDeliveryRepository.save(jointDeliveryCreateDto.toEntity(store, user));
+        ChatRoom chatRoom = ChatRoom.builder()
+                .name(jointDelivery.getId().toString() + "번 공동배달 채팅방")
+                .build();
+        chatRoomRepository.save(chatRoom);
+        ChatParticipant chatParticipant = ChatParticipant.builder()
+                .chatRoom(chatRoom)
+                .user(user)
+                .build();
+        chatParticipantRepository.save(chatParticipant);
         return jointDelivery.getId();
     }
 
@@ -351,9 +368,20 @@ public class JointDeliveryService {
         if (!jointDelivery.getUser().getId().equals(loginUser.getId()) && !jointDeliveryCartRepository.existsByJointDeliveryIdAndUserId(jointDelivery.getId(), user.getId()) && user.getPoint() < 1000) {
             throw new InsufficientPointsException("포인트가 부족합니다.");
         }
-        if (!jointDelivery.getUser().getId().equals(loginUser.getId()) && !jointDeliveryCartRepository.existsByJointDeliveryIdAndUserId(jointDelivery.getId(), user.getId()))
-        {
+        if (!jointDelivery.getUser().getId().equals(loginUser.getId()) && !jointDeliveryCartRepository.existsByJointDeliveryIdAndUserId(jointDelivery.getId(), user.getId())) {
             user.subtractPoint(1000);
+            ChatRoom chatRoom = chatRoomRepository.findByName(jointDelivery.getId().toString() + "번 공동배달 채팅방").orElseThrow(() -> new ChatRoomNotFoundException("채팅방을 찾을 수 없습니다."));
+            ChatParticipant chatParticipant = chatParticipantRepository.findByChatRoomIdAndUserId(chatRoom.getId(), user.getId()).orElse(null);
+            // 최초 입장인 경우
+            if(chatParticipant == null) {
+                chatParticipant = ChatParticipant.builder()
+                        .chatRoom(chatRoom)
+                        .user(user)
+                        .build();
+                chatParticipantRepository.save(chatParticipant);
+            } else {
+                chatParticipant.reEnter();
+            }
         }
 
         jointDeliveryCartRepository.save(jointDeliveryCartCreateDto.toEntity(jointDelivery, user));
@@ -387,11 +415,16 @@ public class JointDeliveryService {
 
         jointDeliveryCartRepository.delete(jointDeliveryCart);
 
-        // 공동배달 주최자가 아니고 장바구니에 담긴 상품이 없는 경우
+        // 장바구니에 담긴 상품이 없는 경우
         if (!jointDeliveryCartRepository.existsByJointDeliveryIdAndUserId(jointDeliveryCart.getJointDelivery().getId(), user.getId())) {
+            // 참석자에서 제거
             jointDeliveryApplicantRepository.deleteByJointDeliveryIdAndUserId(jointDeliveryCart.getJointDelivery().getId(), user.getId());
-            if(!jointDeliveryCart.getJointDelivery().getUser().getId().equals(loginUser.getId())) {
+            // 주최자가 아닌 경우
+            if (!jointDeliveryCart.getJointDelivery().getUser().getId().equals(loginUser.getId())) {
                 user.addPoint(1000);
+                ChatRoom chatRoom = chatRoomRepository.findByName(jointDeliveryCart.getJointDelivery().getId().toString() + "번 공동배달 채팅방").orElseThrow(() -> new ChatRoomNotFoundException("채팅방을 찾을 수 없습니다."));
+                ChatParticipant chatParticipant = chatParticipantRepository.findByChatRoomIdAndUserId(chatRoom.getId(), user.getId()).orElseThrow(() -> new ChatParticipantNotFoundException("채팅방 참여자를 찾을 수 없습니다."));
+                chatParticipant.exit();
             }
         }
     }
@@ -417,7 +450,7 @@ public class JointDeliveryService {
         List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryIdAndUserId(jointDeliveryId, loginUser.getId());
 
         // 공동배달 주최자인 경우 패스
-        if(jointDeliveryApplicant.getJointDelivery().getUser().getId().equals(loginUser.getId())) {
+        if (jointDeliveryApplicant.getJointDelivery().getUser().getId().equals(loginUser.getId())) {
             return;
         }
 

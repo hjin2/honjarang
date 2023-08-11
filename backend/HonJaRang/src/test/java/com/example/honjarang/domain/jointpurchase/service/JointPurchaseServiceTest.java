@@ -1,6 +1,10 @@
 package com.example.honjarang.domain.jointpurchase.service;
 
 import com.example.honjarang.domain.DateTimeUtils;
+import com.example.honjarang.domain.chat.entity.ChatParticipant;
+import com.example.honjarang.domain.chat.entity.ChatRoom;
+import com.example.honjarang.domain.chat.repository.ChatParticipantRepository;
+import com.example.honjarang.domain.chat.repository.ChatRoomRepository;
 import com.example.honjarang.domain.jointpurchase.dto.*;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchase;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchaseApplicant;
@@ -33,6 +37,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -58,9 +63,15 @@ class JointPurchaseServiceTest {
     private MapService mapService;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private ChatRoomRepository chatRoomRepository;
+    @Mock
+    private ChatParticipantRepository chatParticipantRepository;
     private User user;
     private JointPurchase jointPurchase;
     private JointPurchaseApplicant jointPurchaseApplicant;
+    private ChatRoom chatRoom;
+    private ChatParticipant chatParticipant;
 
     @BeforeEach
     void setUp() {
@@ -99,6 +110,15 @@ class JointPurchaseServiceTest {
                 .isReceived(false)
                 .build();
         jointPurchaseApplicant.setIdForTest(1L);
+        chatRoom = ChatRoom.builder()
+                .name("1번 공동구매 채팅방")
+                .build();
+        chatRoom.setIdForTest(1L);
+        chatParticipant = ChatParticipant.builder()
+                .chatRoom(chatRoom)
+                .user(user)
+                .build();
+        chatParticipant.setLastReadMessageIdForTest("60f0b0b9e8b9a91c7c7b0b0b");
     }
 
     @Test
@@ -257,6 +277,8 @@ class JointPurchaseServiceTest {
         JointPurchaseApplyDto jointPurchaseApplyDto = new JointPurchaseApplyDto(1L, 1);
         given(jointPurchaseRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(jointPurchase));
         given(userRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(user));
+        given(chatRoomRepository.findByName("1번 공동구매 채팅방")).willReturn(java.util.Optional.ofNullable(chatRoom));
+        given(chatParticipantRepository.findByChatRoomIdAndUserId(1L, 1L)).willReturn(Optional.of(chatParticipant));
 
         // when
         jointPurchaseService.applyJointPurchase(jointPurchaseApplyDto, user);
@@ -331,6 +353,8 @@ class JointPurchaseServiceTest {
         // given
         given(jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(1L, 1L)).willReturn(java.util.Optional.ofNullable(jointPurchaseApplicant));
         given(userRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(user));
+        given(chatRoomRepository.findByName("1번 공동구매 채팅방")).willReturn(java.util.Optional.ofNullable(chatRoom));
+        given(chatParticipantRepository.findByChatRoomIdAndUserId(1L, 1L)).willReturn(Optional.of(chatParticipant));
 
         // when
         jointPurchaseService.cancelJointPurchaseApplicant(1L, user);

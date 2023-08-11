@@ -1,5 +1,11 @@
 package com.example.honjarang.domain.jointpurchase.service;
 
+import com.example.honjarang.domain.chat.entity.ChatParticipant;
+import com.example.honjarang.domain.chat.entity.ChatRoom;
+import com.example.honjarang.domain.chat.exception.ChatParticipantNotFoundException;
+import com.example.honjarang.domain.chat.exception.ChatRoomNotFoundException;
+import com.example.honjarang.domain.chat.repository.ChatParticipantRepository;
+import com.example.honjarang.domain.chat.repository.ChatRoomRepository;
 import com.example.honjarang.domain.jointpurchase.dto.*;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchase;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchaseApplicant;
@@ -41,6 +47,8 @@ public class JointPurchaseService {
     private final JointPurchaseRepository jointPurchaseRepository;
     private final JointPurchaseApplicantRepository jointPurchaseApplicantRepository;
     private final UserRepository userRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatParticipantRepository chatParticipantRepository;
     private final MapService mapService;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -57,7 +65,15 @@ public class JointPurchaseService {
     @Transactional
     public Long createJointPurchase(JointPurchaseCreateDto jointPurchaseCreateDto, User loginUser) {
         String productImage = getProductImage(jointPurchaseCreateDto.getProductName());
-        JointPurchase jointPurchase = jointPurchaseCreateDto.toEntity(loginUser, productImage);
+        JointPurchase jointPurchase = jointPurchaseRepository.save(jointPurchaseCreateDto.toEntity(loginUser, productImage));
+        ChatRoom chatRoom = ChatRoom.builder()
+                .name(jointPurchase.getId().toString() + "번 공동구매 채팅방")
+                .build();
+        chatRoomRepository.save(chatRoom);
+        chatParticipantRepository.save(ChatParticipant.builder()
+                .chatRoom(chatRoom)
+                .user(loginUser)
+                .build());
         return jointPurchaseRepository.save(jointPurchase).getId();
     }
 
@@ -164,6 +180,17 @@ public class JointPurchaseService {
                 .quantity(jointPurchaseApplyDto.getQuantity())
                 .build();
         jointPurchaseApplicantRepository.save(jointPurchaseApplicant);
+
+        ChatRoom chatRoom = chatRoomRepository.findByName(jointPurchase.getId().toString() + "번 공동구매 채팅방").orElseThrow(() -> new ChatRoomNotFoundException("채팅방을 찾을 수 없습니다."));
+        ChatParticipant chatParticipant = chatParticipantRepository.findByChatRoomIdAndUserId(chatRoom.getId(), user.getId()).orElse(null);
+        if(chatParticipant == null) {
+            chatParticipantRepository.save(ChatParticipant.builder()
+                    .chatRoom(chatRoom)
+                    .user(user)
+                    .build());
+        } else {
+            chatParticipant.reEnter();
+        }
     }
 
     @Transactional
@@ -181,6 +208,10 @@ public class JointPurchaseService {
         user.addPoint(jointPurchaseApplicant.getJointPurchase().getPrice() * jointPurchaseApplicant.getQuantity());
 
         jointPurchaseApplicantRepository.delete(jointPurchaseApplicant);
+
+        ChatRoom chatRoom = chatRoomRepository.findByName(jointPurchaseId.toString() + "번 공동구매 채팅방").orElseThrow(() -> new ChatRoomNotFoundException("채팅방을 찾을 수 없습니다."));
+        ChatParticipant chatParticipant = chatParticipantRepository.findByChatRoomIdAndUserId(chatRoom.getId(), user.getId()).orElseThrow(() -> new ChatParticipantNotFoundException("채팅방 참가자를 찾을 수 없습니다."));
+        chatParticipant.exit();
     }
 
     @Transactional
