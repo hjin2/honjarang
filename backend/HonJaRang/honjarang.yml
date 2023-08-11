@@ -126,6 +126,16 @@ spec:
                 secretKeyRef:
                   name: honjarang-secret
                   key: redis_password
+            - name: OPENVIDU_URL
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: openvidu_url
+            - name: OPENVIDU_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: openvidu_secret
             - name: FIRE_BASE_ADMIN_JSON
               valueFrom:
                 secretKeyRef:
