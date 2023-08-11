@@ -53,4 +53,10 @@ public class ChatController {
     public ResponseEntity<Integer> getChatMessagePage(@PathVariable Long roomId, @RequestParam Integer size) {
         return ResponseEntity.ok(chatService.getChatMessagePageCount(roomId, size));
     }
+
+    @PostMapping("/one-to-one")
+    public ResponseEntity<Long> createOneToOneChatRoom(@RequestBody Map<String, Object> body, @CurrentUser User user) {
+        chatService.createOneToOneChatRoom(user, Long.valueOf((Integer)body.get("target_id")));
+        return ResponseEntity.ok().build();
+    }
 }
