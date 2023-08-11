@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Comment from '@/components/Board/Comment';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 
 export const ArticleDetail = () => {
   const navigate = useNavigate()
@@ -93,6 +95,7 @@ export const ArticleDetail = () => {
     navigate(`/board/articleupdate/${id}`)
   }
 
+
   return (
     <div className="border rounded-lg max-w-2xl mx-auto mt-10 p-5">
       {/* 제목 */}
@@ -132,6 +135,7 @@ export const ArticleDetail = () => {
         <div>
           {detail.content}
         </div>
+        <button className='mt-10 flex justify-center'><FontAwesomeIcon icon={faThumbsUp} size="2xl" style={{color: "#008b57",}} /></button>
       </div>
       <hr />
       {/* 댓글 */}

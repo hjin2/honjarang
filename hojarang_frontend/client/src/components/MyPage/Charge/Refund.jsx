@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux"
 import { useState } from "react"
 import axios from "axios"
-import { refund } from "../../../redux/slice/UserInfoSlice"
+import { refund } from "@/redux/slice/UserInfoSlice"
 
 
 export default function Refund({modalState, setModalState}) {
