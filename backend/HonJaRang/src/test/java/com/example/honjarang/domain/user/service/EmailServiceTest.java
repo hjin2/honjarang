@@ -50,26 +50,13 @@ class EmailServiceTest {
         emailVerification.setIdForTest(1L);
     }
 
-
     @Test
-    @DisplayName("이메일 인증번호 전송 성공")
+    @DisplayName("이메일 인증번호 발송 성공")
     void sendVerificationCode_Success() {
         // given
 
         // when
         emailService.sendVerificationCode("test@test.com");
-
-        // then
-    }
-
-    @Test
-    @DisplayName("이메일 인증번호 저장 성공")
-    void saveVerificationCode_Success() {
-        // given
-        given(emailVerificationRepository.findByEmail("test@test.com")).willReturn(Optional.empty());
-
-        // when
-        emailService.saveVerificationCode("test@test.com", "123456");
 
         // then
     }
