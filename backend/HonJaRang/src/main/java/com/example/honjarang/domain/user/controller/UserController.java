@@ -89,7 +89,7 @@ public class UserController {
 
     @PutMapping("/change-password")
     public void changePassword(@RequestBody PasswordUpdateDto passwordUpdateDto, @CurrentUser User user) {
-        userService.changePassword(user, passwordUpdateDto.getPassword(), passwordUpdateDto.getNewPassword());
+        userService.changePassword(passwordUpdateDto.getPassword(), passwordUpdateDto.getNewPassword(), user);
     }
 
     @PutMapping("/users")

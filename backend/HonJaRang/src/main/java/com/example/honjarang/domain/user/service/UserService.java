@@ -24,6 +24,7 @@ import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.*;
 import com.example.honjarang.domain.user.repository.EmailVerificationRepository;
 import com.example.honjarang.domain.user.repository.UserRepository;
+import com.example.honjarang.security.CurrentUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -119,6 +120,7 @@ public class UserService {
                 .longitude(userCreateDto.getLongitude())
                 .build();
         userRepository.save(user);
+        emailVerificationRepository.delete(emailVerification);
     }
 
     @Transactional(readOnly = true)
@@ -136,7 +138,7 @@ public class UserService {
     }
 
     @Transactional
-    public void changePassword(User user, String password, String newPassword){
+    public void changePassword(String password, String newPassword, @CurrentUser User user) {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
