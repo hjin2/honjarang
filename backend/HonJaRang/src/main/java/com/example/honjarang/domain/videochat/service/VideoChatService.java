@@ -63,16 +63,23 @@ public class VideoChatService {
     }
 
     @Transactional
-    public String createConnection(String sessionId, Map<String, Object> params, User user)
-        throws OpenViduJavaClientException, OpenViduHttpException {
+    public String createConnection(String sessionId, Map<String, Object> params, User user) {
 
         Session session = openvidu.getActiveSession(sessionId);
         if (session == null) {
             return "HttpStatus.NOT_FOUND";
         }
         ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
+        Connection connection = null;
 
-        Connection connection = session.createConnection(properties);
+        try {
+            connection = session.createConnection(properties);
+        } catch (OpenViduJavaClientException e) {
+            throw new RuntimeException(e);
+        } catch (OpenViduHttpException e) {
+            throw new RuntimeException(e);
+        }
+
         VideoChatParticipant videoChatParticipant = VideoChatParticipant.builder()
                         .videoChatRoom(videoChatRoomRepository.findBySessionId(sessionId))
                         .user(user)
@@ -95,7 +102,7 @@ public class VideoChatService {
         List<VideoChatRoom> videoChatRooms = videoChatRoomRepository.findAll();
         List<VideoChatListDto> videoChatRoomList = new ArrayList<>();
         for(VideoChatRoom videoChatRoom  : videoChatRooms) {
-            Integer count = videoChatParticipantRepository.countByRoomId(videoChatRoom.getId());
+            Integer count = videoChatParticipantRepository.countByVideoChatRoom(videoChatRoom);
             if (count >= 8) {
                 continue;
             }
