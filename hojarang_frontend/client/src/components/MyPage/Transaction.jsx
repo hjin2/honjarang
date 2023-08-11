@@ -7,8 +7,8 @@ export default function Transaction() {
   const token = localStorage.getItem("access_token")
   const headers = {"Authorization" : `Bearer ${token}`}
 	const [activeTab, setActiveTab] = useState('join-delivery')
-	const [joinPageSize, setJoinPageSize] = useState(0)
-	const [writePageSize, setWritePageSize] = useState(0)
+	const [joinPageSize, setJoinPageSize] = useState(1)
+	const [writePageSize, setWritePageSize] = useState(1)
 	const [joinCurrentPage, setJoinCurrentPage] = useState(1)
 	const [writeCurrentPage, setWriteCurrentPage] = useState(1)
 	const [joinTransacationData, setJoinTransacationData] = useState([])
@@ -17,7 +17,7 @@ export default function Transaction() {
 		setActiveTab(tab)
 	}
 	useEffect(()=>{
-    axios.get(`${URL}/api/v1/users/page-jointransaction`, {params:{size:4}, headers})
+    axios.get(`${URL}/api/v1/users/page-joined-transaction`, {params:{size:4}, headers})
       .then((res)=>{
         console.log(res.data)
         setJoinPageSize(res.data)
