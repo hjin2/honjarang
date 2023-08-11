@@ -44,7 +44,7 @@ export default function FindPassword() {
   
   const email_code = () => {
     axios
-      .post('http://honjarang.kro.kr:30000/api/v1/users/send-verification-code', {
+      .post(`${import.meta.env.VITE_APP_API}/users/send-verification-code`, {
         email: email,
       })
       .then(function (response) {

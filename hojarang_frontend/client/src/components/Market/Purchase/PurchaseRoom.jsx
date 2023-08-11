@@ -1,13 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function PurchaseRoom(roomData) {
-
+  const navigate = useNavigate()
   const { id, product_name, image, deadline, current_person_count, target_person_count, price } = roomData;
   const MAX_STORE_NAME_LENGTH = 7; 
   let adjustedProducteName = product_name;
   if (product_name?.length > MAX_STORE_NAME_LENGTH) {
     adjustedProducteName = product_name.substring(0, MAX_STORE_NAME_LENGTH) + '...';
+  }
+  const onClick = () =>{
+    navigate(`/market/purchasedetail/${id}`)
   }
 
   return (
@@ -27,9 +30,7 @@ export default function PurchaseRoom(roomData) {
         <div className="text-sm text-main5">목표까지 {target_person_count-current_person_count}명</div>
         {/* 참여버튼 */}
         <div className="flex justify-end">
-          <Link to={{ pathname: `/market/purchasedetail/${id}`}}>
-            <button type="button" className="main1-full-button w-20">참여하기</button>
-          </Link>
+          <button type="button" className="main1-full-button w-20" onClick={onClick}>참여하기</button>
         </div>
       </div>
     </div>

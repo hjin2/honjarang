@@ -56,7 +56,6 @@ export default function PurchaseDetail() {
         for(let i=0;i<res.data.length;i++){
           if(Number(res.data[i].user_id) === Number(loginId)){
             setIsPurchase(true)
-            console.log(1)
             break
           }
         }
