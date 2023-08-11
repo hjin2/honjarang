@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface JointDeliveryCartRepository extends JpaRepository<JointDeliveryCart, Long> {
     List<JointDeliveryCart> findAllByJointDeliveryId(Long jointDeliveryId);
@@ -19,4 +20,5 @@ public interface JointDeliveryCartRepository extends JpaRepository<JointDelivery
     List<JointDelivery> findDistinctJointDeliveryByUserId(@Param("id")Long id, Pageable pageable);
 
 
+    Optional<JointDeliveryCart> findByJointDeliveryIdAndMenuIdAndUserId(Long jointDeliveryId, String menuId, Long userId);
 }

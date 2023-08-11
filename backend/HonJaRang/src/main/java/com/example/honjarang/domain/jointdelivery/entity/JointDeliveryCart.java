@@ -38,6 +38,10 @@ public class JointDeliveryCart {
         this.user = user;
     }
 
+    public void addQuantity(Integer quantity) {
+        this.quantity += quantity;
+    }
+
     public void setIdForTest(Long id) {
         this.id = id;
     }
