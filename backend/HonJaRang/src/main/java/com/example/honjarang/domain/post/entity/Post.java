@@ -61,11 +61,13 @@ public class Post extends BaseTimeEntity {
         this.views++;
     }
 
-    public void update(PostUpdateDto postUpdateDto, String postImage) {
+    public void update(PostUpdateDto postUpdateDto) {
         this.title = postUpdateDto.getTitle();
         this.content = postUpdateDto.getContent();
         this.category = postUpdateDto.getCategory();
         this.isNotice = postUpdateDto.getIsNotice();
+    }
+    public void updateImage(String postImage){
         this.postImage = postImage;
     }
 
