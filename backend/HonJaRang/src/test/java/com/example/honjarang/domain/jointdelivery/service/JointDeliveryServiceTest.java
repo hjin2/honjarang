@@ -673,4 +673,23 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
         // then
         assertThat(jointDeliveryPageCount).isEqualTo(1);
     }
+
+    @Test
+    @DisplayName("공동배달 신청자 목록 조회 성공")
+    void getJointDeliveryApplicantList_Success() {
+        // given
+        List<JointDeliveryApplicant> jointDeliveryApplicantList = List.of(jointDeliveryApplicant);
+        given(jointDeliveryApplicantRepository.findAllByJointDeliveryId(1L)).willReturn(jointDeliveryApplicantList);
+
+        // when
+        List<JointDeliveryApplicantListDto> jointDeliveryApplicantListDtoList = jointDeliveryService.getJointDeliveryApplicantList(1L);
+
+        // then
+        assertThat(jointDeliveryApplicantListDtoList).isNotNull();
+        assertThat(jointDeliveryApplicantListDtoList.size()).isEqualTo(1);
+        assertThat(jointDeliveryApplicantListDtoList.get(0).getId()).isEqualTo(1L);
+        assertThat(jointDeliveryApplicantListDtoList.get(0).getUserId()).isEqualTo(1L);
+        assertThat(jointDeliveryApplicantListDtoList.get(0).getNickname()).isEqualTo("테스트");
+        assertThat(jointDeliveryApplicantListDtoList.get(0).getIsReceived()).isEqualTo(false);
+    }
 }

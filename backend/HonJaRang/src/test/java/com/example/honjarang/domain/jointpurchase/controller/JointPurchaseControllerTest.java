@@ -265,11 +265,11 @@ class JointPurchaseControllerTest {
                         ),
                         responseFields(
                                 fieldWithPath("[].id").description("공동구매 신청자 ID"),
-                                fieldWithPath("[].user_id").description("공동구매 신청자 ID"),
-                                fieldWithPath("[].nickname").description("공동구매 신청자 닉네임"),
+                                fieldWithPath("[].user_id").description("유저 ID"),
+                                fieldWithPath("[].nickname").description("유저 닉네임"),
                                 fieldWithPath("[].quantity").description("공동구매 신청 수량"),
                                 fieldWithPath("[].total_price").description("공동구매 신청 총 가격"),
-                                fieldWithPath("[].is_received").description("공동구매 신청 수령 여부")
+                                fieldWithPath("[].is_received").description("공동구매 수령 여부")
                         )
                 ));
     }

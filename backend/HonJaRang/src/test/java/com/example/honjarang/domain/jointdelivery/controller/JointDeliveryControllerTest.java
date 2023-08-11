@@ -442,4 +442,36 @@ class JointDeliveryControllerTest {
                         responseBody()
                 ));
     }
+
+    @Test
+    @DisplayName("공동배달 신청자 목록 조회")
+    void getJointDeliveryApplicantList() throws Exception{
+        // given
+        List<JointDeliveryApplicantListDto> jointDeliveryApplicantListDtoList = List.of(new JointDeliveryApplicantListDto(jointDeliveryApplicant, 10000));
+        given(jointDeliveryService.getJointDeliveryApplicantList(1L)).willReturn(jointDeliveryApplicantListDtoList);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/joint-deliveries/{jointDeliveryId}/applicants", 1L))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].user_id").value(1L))
+                .andExpect(jsonPath("$[0].nickname").value("테스트"))
+                .andExpect(jsonPath("$[0].total_price").value(10000))
+                .andExpect(jsonPath("$[0].is_received").value(false))
+                .andDo(document("joint-deliveries/applicants/list",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("jointDeliveryId").description("공동배달 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("공동배달 신청자 ID"),
+                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("유저 ID"),
+                                fieldWithPath("[].nickname").type(JsonFieldType.STRING).description("유저 닉네임"),
+                                fieldWithPath("[].total_price").type(JsonFieldType.NUMBER).description("총 금액"),
+                                fieldWithPath("[].is_received").type(JsonFieldType.BOOLEAN).description("수령 여부")
+                        )
+                ));
+    }
 }
