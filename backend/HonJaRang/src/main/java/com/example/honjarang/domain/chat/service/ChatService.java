@@ -10,6 +10,7 @@ import com.example.honjarang.domain.chat.entity.ChatRoom;
 import com.example.honjarang.domain.chat.exception.ChatParticipantNotFoundException;
 import com.example.honjarang.domain.chat.repository.ChatMessageRepository;
 import com.example.honjarang.domain.chat.repository.ChatParticipantRepository;
+import com.example.honjarang.domain.chat.repository.ChatRoomRepository;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.UserNotFoundException;
 import com.example.honjarang.domain.user.repository.UserRepository;
@@ -39,6 +40,7 @@ public class ChatService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatParticipantRepository chatParticipantRepository;
+    private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final FirebaseMessaging firebaseMessaging;
@@ -160,6 +162,25 @@ public class ChatService {
     public Integer getChatMessagePageCount(Long roomId, Integer size) {
         Integer count = chatMessageRepository.countAllByChatRoomId(roomId);
         return (int) Math.ceil((double) count / size);
+    }
+
+    @Transactional
+    public void createOneToOneChatRoom(User loginUser, Long targetUserId) {
+        User targetUser = userRepository.findById(targetUserId).orElseThrow(() -> new UserNotFoundException("존재하지 않는 유저입니다."));
+        ChatRoom chatRoom = ChatRoom.builder()
+                .name(loginUser.getNickname() + " & " + targetUser.getNickname() + " 1:1 채팅방")
+                .build();
+        ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
+        ChatParticipant loginUserChatParticipant = ChatParticipant.builder()
+                .chatRoom(savedChatRoom)
+                .user(loginUser)
+                .build();
+        ChatParticipant targetUserChatParticipant = ChatParticipant.builder()
+                .chatRoom(savedChatRoom)
+                .user(targetUser)
+                .build();
+        chatParticipantRepository.save(loginUserChatParticipant);
+        chatParticipantRepository.save(targetUserChatParticipant);
     }
 
     private void sendPushNotification(String token, String title, String body) {
