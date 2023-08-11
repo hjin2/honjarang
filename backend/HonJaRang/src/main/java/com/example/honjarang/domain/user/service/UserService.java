@@ -155,13 +155,13 @@ public class UserService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
-        User loginedUser = userRepository.findByEmail(user.getEmail()).orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다."));
+        User loginedUser = userRepository.findById(user.getId()).orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다."));
         loginedUser.changePassword(passwordEncoder.encode(newPassword));
     }
 
     @Transactional
     public void changeUserInfo(User user, String nickname, String address, Double latitude, Double longitude) {
-        User loginedUser = userRepository.findByEmail(user.getEmail()).orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다."));
+        User loginedUser = userRepository.findById(user.getId()).orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다."));
         loginedUser.changeUserInfo(nickname, address, latitude, longitude);
     }
 
@@ -214,7 +214,7 @@ public class UserService {
                 throw new PaymentException("결제 오류가 발생하었습니다.");
             }
 
-            User loginedUser = userRepository.findByEmail(user.getEmail()).orElseThrow(()->new UserNotFoundException("사용자를 찾을 수 없습니다."));
+            User loginedUser = userRepository.findById(user.getId()).orElseThrow(()->new UserNotFoundException("사용자를 찾을 수 없습니다."));
             loginedUser.changePoint(pointDto.getAmount()+loginedUser.getPoint());
             userRepository.save(loginedUser);
 
@@ -291,7 +291,7 @@ public class UserService {
 
     @Transactional
     public void withdrawPoint(Integer point, User user){
-        User loginedUser = userRepository.findByEmail(user.getEmail()).orElseThrow(()->new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        User loginedUser = userRepository.findById(user.getId()).orElseThrow(()->new UserNotFoundException("사용자를 찾을 수 없습니다."));
         if(user.getPoint() < point){
             throw new InsufficientPointsException("포인트가 부족합니다.");
         }
