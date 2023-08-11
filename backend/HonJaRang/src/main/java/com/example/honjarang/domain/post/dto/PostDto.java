@@ -25,6 +25,8 @@ public class PostDto {
     private Integer views;
     private Boolean isNotice;
     private String createdAt;
+    private String postImage;
+
 
     public PostDto(Post post){
         this.id = post.getId();
@@ -36,6 +38,7 @@ public class PostDto {
         this.views = post.getViews();
         this.isNotice = post.getIsNotice();
         this.createdAt = DateTimeUtils.formatLocalDateTime(post.getCreatedAt());
+        this.postImage = post.getPostImage();
     }
 }
 

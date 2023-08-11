@@ -2,6 +2,8 @@ package com.example.honjarang.domain.user.service;
 
 import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
+import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryApplicant;
+import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryApplicantRepository;
 import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryCartRepository;
 import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryRepository;
 import com.example.honjarang.domain.jointdelivery.repository.MenuRepository;
@@ -10,6 +12,9 @@ import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.PaymentException;
 import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.post.service.PostService;
+import com.example.honjarang.domain.secondhand.dto.TransactionListDto;
+import com.example.honjarang.domain.secondhand.entity.Transaction;
+import com.example.honjarang.domain.secondhand.repository.TransactionRepository;
 import com.example.honjarang.domain.user.dto.LoginDto;
 import com.example.honjarang.domain.user.dto.PointChargeDto;
 import com.example.honjarang.domain.user.dto.UserCreateDto;
@@ -19,6 +24,7 @@ import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.*;
 import com.example.honjarang.domain.user.repository.EmailVerificationRepository;
 import com.example.honjarang.domain.user.repository.UserRepository;
+import com.example.honjarang.security.CurrentUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +47,7 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -63,6 +70,11 @@ public class UserService {
     private final JointDeliveryRepository jointDeliveryRepository;
 
     private final JointDeliveryCartRepository jointDeliveryCartRepository;
+
+    private final JointDeliveryApplicantRepository jointDeliveryApplicantRepository;
+
+    private final TransactionRepository transactionRepository;
+
 
     private final MenuRepository menuRepository;
 
@@ -108,6 +120,7 @@ public class UserService {
                 .longitude(userCreateDto.getLongitude())
                 .build();
         userRepository.save(user);
+        emailVerificationRepository.delete(emailVerification);
     }
 
     @Transactional(readOnly = true)
@@ -117,8 +130,28 @@ public class UserService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public void checkEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new DuplicateEmailException("이미 사용중인 이메일입니다.");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public void setNewPassword(String password, User loginUser)
+    {
+        EmailVerification emailVerification = emailVerificationRepository.findByEmail(loginUser.getEmail()).orElseThrow(() -> new EmailNotVerifiedException("이메일 인증이 되지 않았습니다."));
+        if(!emailVerification.getIsVerified()){
+            throw new EmailNotVerifiedException("이메일 인증이 되지 않았습니다.");
+        }
+
+        User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        user.changePassword(passwordEncoder.encode(password));
+        emailVerificationRepository.delete(emailVerification);
+    }
+
     @Transactional
-    public void changePassword(User user, String password, String newPassword){
+    public void changePassword(String password, String newPassword, @CurrentUser User user) {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
@@ -191,10 +224,10 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostListDto> getMyPostList(Integer page, User user){
-        Pageable pageable = PageRequest.of(page-1, 15);
-
+    public List<PostListDto> getMyPostList(Integer page, Integer size, User user){
+        Pageable pageable = Pageable.ofSize(size).withPage(page-1);
         List<Post> posts = postRepository.findAllByUserIdOrderByIdDesc(user.getId(), pageable).toList();
+
         List<PostListDto> postListDtos = new ArrayList<>();
         for(Post post : posts){
             postListDtos.add(new PostListDto(post));
@@ -204,7 +237,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<JointDeliveryListDto> getMyWrittenJointDeliveries(int size, int page, User user){
+    public List<JointDeliveryListDto> getMyWrittenJointDeliveries(int page, int size, User user){
         Pageable pageable = Pageable.ofSize(size).withPage(page-1);
         List<JointDelivery> myWrittenJointDeliveryList = jointDeliveryRepository.findAllByUserId(user.getId(), pageable).toList();
 
@@ -218,7 +251,7 @@ public class UserService {
 
 
     @Transactional(readOnly = true)
-    public List<JointDeliveryListDto> getMyJoinedJointDeliveries(Integer size, Integer page, User user){
+    public List<JointDeliveryListDto> getMyJoinedJointDeliveries(Integer page, Integer size, User user){
         Pageable pageable = Pageable.ofSize(size).withPage(page-1);
         List<JointDeliveryListDto> myJointDeliveryListDtoList = new ArrayList<>();
         List<JointDelivery> myJointDelivery = jointDeliveryCartRepository.findDistinctJointDeliveryByUserId(user.getId(), pageable);
@@ -228,6 +261,33 @@ public class UserService {
         }
         return myJointDeliveryListDtoList;
     }
+
+    @Transactional(readOnly = true)
+    public List<TransactionListDto> getMyTransactions(Integer page, Integer size, User user){
+        Pageable pageable = Pageable.ofSize(size).withPage(page-1);
+        List<TransactionListDto> myTransactionListDtoList = new ArrayList<>();
+        List<Transaction> myTransaction = transactionRepository.findAllBySellerId(user.getId(),pageable).toList();
+        for(Transaction transaction : myTransaction){
+            TransactionListDto myTransactionListDto = new TransactionListDto(transaction);
+            myTransactionListDtoList.add(myTransactionListDto);
+        }
+        return myTransactionListDtoList;
+    }
+
+    @Transactional(readOnly = true)
+    public List<TransactionListDto> getMyJoinedTransactions(Integer page, Integer size, User user){
+        Pageable pageable = Pageable.ofSize(size).withPage(page-1);
+        List<TransactionListDto> myTransactionListDtoList = new ArrayList<>();
+        List<Transaction> myTransaction = transactionRepository.findAllByBuyerId(user.getId(),pageable).toList();
+        for(Transaction transaction : myTransaction){
+            TransactionListDto myTransactionListDto = new TransactionListDto(transaction);
+            myTransactionListDtoList.add(myTransactionListDto);
+        }
+        return myTransactionListDtoList;
+    }
+
+
+
 
     @Transactional
     public void withdrawPoint(Integer point, User user){
@@ -255,5 +315,30 @@ public class UserService {
         return ResponseEntity.ok().build();
     }
 
+    @Transactional(readOnly = true)
+    public Integer getMyPostsPageCount(Integer size, User user) {
+        return (int) Math.ceil((double) postRepository.countAllByUserId(user.getId()) / size) ;
+    }
 
+
+
+    @Transactional(readOnly = true)
+    public Integer getMyWrittenJointDeliveriesPageCount(Integer size, User user) {
+        return (int) Math.ceil((double) jointDeliveryRepository.countAllByUserId(user.getId()) / size) ;
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getMyJoinedJointDeliveriesPageCount(Integer size, User user) {
+        return (int) Math.ceil((double) jointDeliveryApplicantRepository.countAllByUserId(user.getId()) / size) ;
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getMyTransactionPageCount(Integer size, User user) {
+        return (int) Math.ceil((double) transactionRepository.countAllBySellerId(user.getId()) / size) ;
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getMyJoinedTransactionPageCount(Integer size, User user) {
+        return (int) Math.ceil((double) transactionRepository.countAllByBuyerId(user.getId()) / size) ;
+    }
 }

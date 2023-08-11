@@ -42,3 +42,5 @@ secret.yml
 .idea
 honjarang-firebase-adminsdk.json
 */static/docs/*
+gradle.properties
+/src/main/resources/static/docs/

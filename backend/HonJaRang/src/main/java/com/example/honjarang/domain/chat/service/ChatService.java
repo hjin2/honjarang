@@ -10,7 +10,6 @@ import com.example.honjarang.domain.chat.entity.ChatRoom;
 import com.example.honjarang.domain.chat.exception.ChatParticipantNotFoundException;
 import com.example.honjarang.domain.chat.repository.ChatMessageRepository;
 import com.example.honjarang.domain.chat.repository.ChatParticipantRepository;
-import com.example.honjarang.domain.chat.repository.ChatRoomRepository;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.UserNotFoundException;
 import com.example.honjarang.domain.user.repository.UserRepository;
@@ -31,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -72,7 +70,14 @@ public class ChatService {
 
     @Transactional
     public void createChatMessage(ChatMessageCreateDto chatMessageCreateDto) {
-        Long userId = Long.parseLong((String) Objects.requireNonNull(redisTemplate.opsForValue().get(SESSION_USER_PREFIX + chatMessageCreateDto.getSessionId())));
+        log.info("내용 : {}", chatMessageCreateDto.getContent());
+        log.info("채팅방 아이디 : {}", chatMessageCreateDto.getRoomId());
+        log.info("세션 아이디 : {}", chatMessageCreateDto.getSessionId());
+
+        if(redisTemplate.opsForValue().get(SESSION_USER_PREFIX + chatMessageCreateDto.getSessionId()) == null)
+            return;
+
+        Long userId = Long.parseLong((String) redisTemplate.opsForValue().get(SESSION_USER_PREFIX + chatMessageCreateDto.getSessionId()));
         ChatMessage chatMessage = chatMessageCreateDto.toEntity(userId);
         ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
 
@@ -152,7 +157,7 @@ public class ChatService {
     }
 
     @Transactional(readOnly = true)
-    public Integer getChatMessagePage(Long roomId, Integer size) {
+    public Integer getChatMessagePageCount(Long roomId, Integer size) {
         Integer count = chatMessageRepository.countAllByChatRoomId(roomId);
         return (int) Math.ceil((double) count / size);
     }

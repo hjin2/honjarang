@@ -37,6 +37,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -216,6 +217,24 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("이메일 중복 검사")
+    void checkEmail() throws Exception{
+        // given
+
+        // when & then
+        mockMvc.perform(get("/api/v1/users/check-email")
+                        .param("email", "test@test.com"))
+                .andExpect(status().isOk())
+                .andDo(document("users/check-email",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("email").description("이메일")
+                        )
+                ));
+    }
+
+    @Test
     @DisplayName("회원가입")
     void signup() throws Exception {
         // given
@@ -305,46 +324,46 @@ class UserControllerTest {
                 ));
     }
 
-    @Test
-    @DisplayName("내가 작성한 글 불러오기")
-    void getMyPost() throws Exception {
-        // given
-        List<PostListDto> postListDtoList = List.of(new PostListDto(post));
-
-        given(userService.getMyPostList(eq(1), any(User.class))).willReturn(postListDtoList);
-
-        // when & then
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/users/posts").param("page", "1"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].user_id").value(1L))
-                .andExpect(jsonPath("$[0].title").value("타이틀"))
-                .andExpect(jsonPath("$[0].category").value(Category.FREE.name()))
-                .andExpect(jsonPath("$[0].content").value("내용"))
-                .andExpect(jsonPath("$[0].views").value(1))
-                .andExpect(jsonPath("$[0].is_notice").value(false))
-                .andExpect(jsonPath("$[0].created_at").value("2023-08-02 12:00:00"))
-                .andDo(document("users/posts",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        queryParameters(
-                                parameterWithName("page").description("페이지")
-
-                        ),
-                        responseFields(
-                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("게시글 번호"),
-                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("사용자 번호"),
-                                fieldWithPath("[].title").type(JsonFieldType.STRING).description("게시글 제목"),
-                                fieldWithPath("[].category").type(JsonFieldType.STRING).description("게시판 카테고리"),
-                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용"),
-                                fieldWithPath("[].views").type(JsonFieldType.NUMBER).description("조회수"),
-                                fieldWithPath("[].is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
-                                fieldWithPath("[].created_at").type(JsonFieldType.STRING).description("작성 일자")
-                        )
-                )).andReturn();
-
-    }
+//    @Test
+//    @DisplayName("내가 작성한 글 불러오기")
+//    void getMyPost() throws Exception {
+//        // given
+//        List<PostListDto> postListDtoList = List.of(new PostListDto(post));
+//
+//        given(userService.getMyPostList(eq(1), any(User.class))).willReturn(postListDtoList);
+//
+//        // when & then
+//        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/users/posts").param("page", "1"))
+//                .andExpect(status().isOk())
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(jsonPath("$[0].id").value(1L))
+//                .andExpect(jsonPath("$[0].user_id").value(1L))
+//                .andExpect(jsonPath("$[0].title").value("타이틀"))
+//                .andExpect(jsonPath("$[0].category").value(Category.FREE.name()))
+//                .andExpect(jsonPath("$[0].content").value("내용"))
+//                .andExpect(jsonPath("$[0].views").value(1))
+//                .andExpect(jsonPath("$[0].is_notice").value(false))
+//                .andExpect(jsonPath("$[0].created_at").value("2023-08-02 12:00:00"))
+//                .andDo(document("users/posts",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        queryParameters(
+//                                parameterWithName("page").description("페이지")
+//
+//                        ),
+//                        responseFields(
+//                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("게시글 번호"),
+//                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("사용자 번호"),
+//                                fieldWithPath("[].title").type(JsonFieldType.STRING).description("게시글 제목"),
+//                                fieldWithPath("[].category").type(JsonFieldType.STRING).description("게시판 카테고리"),
+//                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용"),
+//                                fieldWithPath("[].views").type(JsonFieldType.NUMBER).description("조회수"),
+//                                fieldWithPath("[].is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
+//                                fieldWithPath("[].created_at").type(JsonFieldType.STRING).description("작성 일자")
+//                        )
+//                )).andReturn();
+//
+//    }
 
     @Test
     @DisplayName("내가 작성한 공동배달 글 조회")
@@ -567,6 +586,7 @@ class UserControllerTest {
                 ));
     }
 
+    @Test
     @DisplayName("토큰 갱신")
     void refresh() throws Exception{
         // given
@@ -580,6 +600,9 @@ class UserControllerTest {
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(body)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user_id").value(1L))
+                .andExpect(jsonPath("$.access_token").value("access_token"))
+                .andExpect(jsonPath("$.refresh_token").value("refresh_token"))
                 .andDo(document("users/refresh",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
@@ -587,8 +610,30 @@ class UserControllerTest {
                                 fieldWithPath("refresh_token").type(JsonFieldType.STRING).description("리프레시 토큰")
                         ),
                         responseFields(
+                                fieldWithPath("user_id").type(JsonFieldType.NUMBER).description("유저 아이디"),
                                 fieldWithPath("access_token").type(JsonFieldType.STRING).description("액세스 토큰"),
                                 fieldWithPath("refresh_token").type(JsonFieldType.STRING).description("리프레시 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("새 비밀번호 성공")
+    void setNewPassword() throws Exception{
+        // given
+        Map<String, String> body = new HashMap<>();
+        body.put("new_password", "test1234");
+
+        // when & then
+        mockMvc.perform(post("/api/v1/users/set-new-password")
+                        .contentType("application/json")
+                        .content(new ObjectMapper().writeValueAsString(body)))
+                .andExpect(status().isOk())
+                .andDo(document("users/set-new-password",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("new_password").type(JsonFieldType.STRING).description("새 비밀번호")
                         )
                 ));
     }

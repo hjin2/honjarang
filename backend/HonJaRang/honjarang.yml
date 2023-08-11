@@ -46,16 +46,11 @@ spec:
                 secretKeyRef:
                   name: honjarang-secret
                   key: aws_ses_sender_email
-            - name: MONGODB_HOST
+            - name: MONGODB_URI
               valueFrom:
                 secretKeyRef:
                   name: honjarang-secret
-                  key: mongodb_host
-            - name: MONGODB_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: honjarang-secret
-                  key: mongodb_port
+                  key: mongodb_uri
             - name: MONGODB_DATABASE
               valueFrom:
                 secretKeyRef:
@@ -121,6 +116,16 @@ spec:
                 secretKeyRef:
                   name: honjarang-secret
                   key: redis_port
+            - name: REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: redis_username
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: honjarang-secret
+                  key: redis_password
             - name: FIRE_BASE_ADMIN_JSON
               valueFrom:
                 secretKeyRef:

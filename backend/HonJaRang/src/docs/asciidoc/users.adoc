@@ -6,6 +6,9 @@ operation::users/login[snippets='http-request,request-fields,response-fields']
 === 회원가입
 operation::users/signup[snippets='http-request,request-fields']
 
+=== 이메일 중복 확인
+operation::users/check-email[snippets='http-request,query-parameters']
+
 === 인증번호 전송
 operation::users/send-verification-code[snippets='http-request,request-fields']
 
@@ -23,6 +26,9 @@ operation::users/refresh[snippets='http-request,request-fields,response-fields']
 
 === FCM 토큰 등록
 operation::users/fcm-token[snippets='http-request,request-fields']
+
+=== 새 비밀번호 설정
+operation::users/set-new-password[snippets='http-request,request-fields']
 
 === 비밀번호 변경
 operation::users/change-password[snippets='http-request,request-fields']

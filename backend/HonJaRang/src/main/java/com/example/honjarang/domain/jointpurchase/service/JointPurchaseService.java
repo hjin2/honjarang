@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -56,11 +55,10 @@ public class JointPurchaseService {
     private String kakaoRestApiKey;
 
     @Transactional
-    public void createJointPurchase(JointPurchaseCreateDto jointPurchaseCreateDto, User loginUser) {
+    public Long createJointPurchase(JointPurchaseCreateDto jointPurchaseCreateDto, User loginUser) {
         String productImage = getProductImage(jointPurchaseCreateDto.getProductName());
-        PlaceDto placeDto = getPlace(jointPurchaseCreateDto.getPlaceKeyword());
-        JointPurchase jointPurchase = jointPurchaseCreateDto.toEntity(jointPurchaseCreateDto, loginUser, productImage, placeDto);
-        jointPurchaseRepository.save(jointPurchase);
+        JointPurchase jointPurchase = jointPurchaseCreateDto.toEntity(loginUser, productImage);
+        return jointPurchaseRepository.save(jointPurchase).getId();
     }
 
     private String getProductImage(String productName) {
@@ -90,36 +88,6 @@ public class JointPurchaseService {
         }
     }
 
-    private PlaceDto getPlace(String keyword) {
-        String url = "https://dapi.kakao.com/v2/local/search/keyword.json";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "KakaoAK " + kakaoRestApiKey);
-
-        HttpEntity<?> entity = new HttpEntity<>(headers);
-
-        URI targetUrl = UriComponentsBuilder
-                .fromUriString(url)
-                .queryParam("query", keyword)
-                .build()
-                .encode(StandardCharsets.UTF_8)
-                .toUri();
-        ResponseEntity<String> responseEntity = restTemplate.exchange(targetUrl, HttpMethod.GET, entity, String.class);
-
-        try {
-            JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
-            if (jsonNode.get("documents").size() == 0) {
-                throw new PlaceNotFoundException("장소를 찾을 수 없습니다.");
-            }
-            String placeName = jsonNode.get("documents").get(0).get("place_name").asText();
-            Double latitude = jsonNode.get("documents").get(0).get("y").asDouble();
-            Double longitude = jsonNode.get("documents").get(0).get("x").asDouble();
-            return new PlaceDto(placeName, latitude, longitude);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Transactional
     public void cancelJointPurchase(Long jointPurchaseId, User loginUser) {
         JointPurchase jointPurchase = jointPurchaseRepository.findById(jointPurchaseId).orElseThrow(() -> new JointPurchaseNotFoundException("공동구매를 찾을 수 없습니다."));
@@ -142,24 +110,12 @@ public class JointPurchaseService {
     }
 
     @Transactional(readOnly = true)
-    public List<JointPurchaseListDto> getJointPurchaseList(Integer page, Integer size, User loginUser) {
+    public List<JointPurchaseListDto> getJointPurchaseList(Integer page, Integer size, String keyword, User loginUser) {
         Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
-        List<JointPurchase> jointPurchases = jointPurchaseRepository.findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(LocalDateTime.now(), pageable).toList();
+        List<JointPurchase> jointPurchases = jointPurchaseRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanAndTargetPersonCountGreaterThanOrderByCreatedAtDesc(LocalDateTime.now(), loginUser.getLatitude(), loginUser.getLongitude(), keyword, pageable).toList();
         List<JointPurchaseListDto> jointPurchaseListDtoList = new ArrayList<>();
         for(JointPurchase jointPurchase : jointPurchases) {
-            // 사용자와 공동구매의 거리가 필터링 거리보다 멀 경우
-            CoordinateDto userCoordinateDto = new CoordinateDto(loginUser.getLatitude(), loginUser.getLongitude());
-            CoordinateDto jointPurchaseCoordinateDto = new CoordinateDto(jointPurchase.getLatitude(), jointPurchase.getLongitude());
-            if(mapService.getDistance(userCoordinateDto, jointPurchaseCoordinateDto) > 5000) {
-                continue;
-            }
-
-            // 현재 인원이 묙표 인원만큼 찼을 경우
             Integer currentPersonCount = jointPurchaseApplicantRepository.countByJointPurchaseId(jointPurchase.getId());
-            if(currentPersonCount >= jointPurchase.getTargetPersonCount()) {
-                continue;
-            }
-
             jointPurchaseListDtoList.add(new JointPurchaseListDto(jointPurchase, currentPersonCount));
         }
         return jointPurchaseListDtoList;
@@ -245,5 +201,11 @@ public class JointPurchaseService {
 
         jointPurchaseApplicant.getJointPurchase().getUser().addPoint(jointPurchaseApplicant.getJointPurchase().getPrice() * jointPurchaseApplicant.getQuantity());
         jointPurchaseApplicant.getJointPurchase().getUser().addPoint(jointPurchaseApplicant.getJointPurchase().getDeliveryCharge() / jointPurchaseApplicant.getJointPurchase().getTargetPersonCount());
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getJointPurchasePageCount(Integer size) {
+        Integer jointPurchaseCount = jointPurchaseRepository.countByIsCanceledFalseAndDeadlineAfter(LocalDateTime.now());
+        return (int) Math.ceil((double) jointPurchaseCount / size);
     }
 }

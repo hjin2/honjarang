@@ -2,6 +2,7 @@ package com.example.honjarang.domain.user.controller;
 
 import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
 import com.example.honjarang.domain.post.dto.PostListDto;
+import com.example.honjarang.domain.secondhand.dto.TransactionListDto;
 import com.example.honjarang.domain.user.dto.*;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.service.EmailService;
@@ -54,9 +55,16 @@ public class UserController {
         return ResponseEntity.ok(tokenDto);
     }
 
+    @GetMapping("/check-email")
+    public ResponseEntity<Void> checkEmail(@RequestParam String email) {
+        userService.checkEmail(email);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/send-verification-code")
     public ResponseEntity<Void> sendVerificationCode(@RequestBody Map<String, String> body) {
         emailService.sendVerificationCode(body.get("email"));
+//        emailService.sendVerificationCodeForTest(body.get("email"));
         return ResponseEntity.ok().build();
     }
 
@@ -81,7 +89,12 @@ public class UserController {
 
     @PutMapping("/change-password")
     public void changePassword(@RequestBody PasswordUpdateDto passwordUpdateDto, @CurrentUser User user) {
-        userService.changePassword(user, passwordUpdateDto.getPassword(), passwordUpdateDto.getNewPassword());
+        userService.changePassword(passwordUpdateDto.getPassword(), passwordUpdateDto.getNewPassword(), user);
+    }
+
+    @PostMapping("/set-new-password")
+    public void setNewPassword(@RequestBody Map<String, Object> body, @CurrentUser User user) {
+        userService.setNewPassword((String) body.get("new_password"), user);
     }
 
     @PutMapping("/users")
@@ -97,14 +110,15 @@ public class UserController {
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<List<PostListDto>> getMyPostList(@RequestParam(value = "page", defaultValue = "1") Integer page, @CurrentUser User user){
-        List<PostListDto> postList = userService.getMyPostList(page,user);
+    public ResponseEntity<List<PostListDto>> getMyPostList(@RequestParam(value = "size", defaultValue = "1") Integer size, @RequestParam(value="page", defaultValue = "1") int page, @CurrentUser User user){
+        List<PostListDto> postList = userService.getMyPostList(page,size, user);
         return ResponseEntity.ok(postList);
     }
 
 
     @GetMapping("/joint-deliveries-writer")
     public ResponseEntity<List<JointDeliveryListDto>> getMyWrittenJointDeliveries(@RequestParam(value = "size", defaultValue = "1") int size, @RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
+        
         List<JointDeliveryListDto> myWrittenJointDeliveryListDtoList = userService.getMyWrittenJointDeliveries(page,size,user);
         return ResponseEntity.ok(myWrittenJointDeliveryListDtoList);
     }
@@ -115,6 +129,17 @@ public class UserController {
         return ResponseEntity.ok(myJoinedJointDeliveryListDtoList);
     }
 
+    @GetMapping("/transaction-writer")
+    public ResponseEntity<List<TransactionListDto>> getMyTransactions(@RequestParam(value = "size", defaultValue = "1") int size, @RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
+        List<TransactionListDto> transactionListDtoList = userService.getMyTransactions(page,size,user);
+        return ResponseEntity.ok(transactionListDtoList);
+    }
+
+    @GetMapping("/transaction-participating")
+    public ResponseEntity<List<TransactionListDto>> getMyJoinedTransactions(@RequestParam(value = "size", defaultValue = "1") int size, @RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
+        List<TransactionListDto> transactionListDtoList = userService.getMyJoinedTransactions(page,size,user);
+        return ResponseEntity.ok(transactionListDtoList);
+    }
 
     @PutMapping("/withdraw")
     public ResponseEntity<Void> withdrawPoint(@RequestBody PointWithdrawDto pointWithdrawDto, @CurrentUser User user){
@@ -139,5 +164,33 @@ public class UserController {
         userService.updateProfileImage(profileImage, user);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/page-post")
+    public ResponseEntity<Integer> getMyPostsPageCount(@RequestParam Integer size, @CurrentUser User user) {
+        return ResponseEntity.ok(userService.getMyPostsPageCount(size, user));
+    }
+
+    @GetMapping("/page-writing")
+    public ResponseEntity<Integer> getMyWrittenJointDeliveriesPageCount(@RequestParam Integer size, @CurrentUser User user) {
+        return ResponseEntity.ok(userService.getMyWrittenJointDeliveriesPageCount(size, user));
+    }
+
+    @GetMapping("/page-join")
+    public ResponseEntity<Integer> getMyJoinedJointDeliveriesPageCount(@RequestParam Integer size, @CurrentUser User user) {
+        return ResponseEntity.ok(userService.getMyJoinedJointDeliveriesPageCount(size, user));
+    }
+
+    @GetMapping("/page-transaction")
+    public ResponseEntity<Integer> getMyTransactionPageCount(@RequestParam Integer size, @CurrentUser User user) {
+        return ResponseEntity.ok(userService.getMyTransactionPageCount(size, user));
+    }
+
+    @GetMapping("/page-jointransaction")
+    public ResponseEntity<Integer> getMyJoinedTransactionPageCount(@RequestParam Integer size, @CurrentUser User user) {
+        return ResponseEntity.ok(userService.getMyJoinedTransactionPageCount(size, user));
+    }
+
+
+
 
 }

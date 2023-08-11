@@ -1,5 +1,6 @@
 package com.example.honjarang.domain.jointdelivery.dto;
 
+import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
 import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryCart;
 import com.example.honjarang.domain.user.entity.User;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -15,10 +16,11 @@ public class JointDeliveryCartCreateDto {
     private String menuId;
     private Integer quantity;
 
-    public JointDeliveryCart toEntity(JointDeliveryCartCreateDto dto, User user) {
+    public JointDeliveryCart toEntity(JointDelivery jointDelivery, User user) {
         return JointDeliveryCart.builder()
-                .menuId(dto.getMenuId())
-                .quantity(dto.getQuantity())
+                .menuId(menuId)
+                .jointDelivery(jointDelivery)
+                .quantity(quantity)
                 .user(user)
                 .build();
     }

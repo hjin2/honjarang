@@ -8,6 +8,7 @@ import com.example.honjarang.domain.user.repository.EmailVerificationRepository;
 import com.example.honjarang.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -33,10 +34,8 @@ public class EmailService {
 
     private final UserRepository userRepository;
 
+    @Transactional
     public void sendVerificationCode(String email) {
-        if (userRepository.existsByEmail(email)) {
-            throw new DuplicateEmailException("이미 가입된 이메일입니다.");
-        }
         String verificationCode = generateVerificationCode();
         SendEmailRequest sendEmailRequest = generateSendEmailRequest(email, verificationCode);
         sesClient.sendEmail(sendEmailRequest);
@@ -44,7 +43,12 @@ public class EmailService {
     }
 
     @Transactional
-    public void saveVerificationCode(String email, String code) {
+    public void sendVerificationCodeForTest(String email) {
+        String verificationCode = "000000";
+        saveVerificationCode(email, verificationCode);
+    }
+
+    private void saveVerificationCode(String email, String code) {
         EmailVerification emailVerification = EmailVerification.builder()
                 .email(email)
                 .code(code)

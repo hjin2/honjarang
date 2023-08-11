@@ -19,6 +19,7 @@ public class JointDeliveryController {
     @GetMapping("/stores")
     public ResponseEntity<List<StoreListDto>> getStoreList(String keyword) {
         List<StoreListDto> storeListDtoList = jointDeliveryService.getStoreListByApi(keyword);
+//        List<StoreListDto> storeListDtoList = jointDeliveryService.getStoreListByApiForTest(keyword);
         return ResponseEntity.ok(storeListDtoList);
     }
 
@@ -29,9 +30,8 @@ public class JointDeliveryController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Void> createJointDelivery(@RequestBody JointDeliveryCreateDto dto, @CurrentUser User user) {
-        jointDeliveryService.createJointDelivery(dto, user);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Long> createJointDelivery(@RequestBody JointDeliveryCreateDto dto, @CurrentUser User user) {
+        return ResponseEntity.ok(jointDeliveryService.createJointDelivery(dto, user));
     }
 
     @DeleteMapping("/{jointDeliveryId}")
@@ -41,8 +41,8 @@ public class JointDeliveryController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<JointDeliveryListDto>> getJointDeliveryList(@RequestParam Integer page, @RequestParam Integer size, @CurrentUser User user) {
-        List<JointDeliveryListDto> jointDeliveryList = jointDeliveryService.getJointDeliveryList(page, size, user);
+    public ResponseEntity<List<JointDeliveryListDto>> getJointDeliveryList(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "15") Integer size, @RequestParam(defaultValue = "") String keyword, @CurrentUser User user) {
+        List<JointDeliveryListDto> jointDeliveryList = jointDeliveryService.getJointDeliveryList(page, size, keyword, user);
         return ResponseEntity.ok(jointDeliveryList);
     }
 
@@ -74,5 +74,16 @@ public class JointDeliveryController {
     public ResponseEntity<Void> confirmReceipt(@PathVariable Long jointDeliveryId, @CurrentUser User user) {
         jointDeliveryService.confirmReceived(jointDeliveryId, user);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{jointDeliveryId}/applicants")
+    public ResponseEntity<List<JointDeliveryApplicantListDto>> getJointDeliveryApplicantList(@PathVariable Long jointDeliveryId) {
+        List<JointDeliveryApplicantListDto> jointDeliveryApplicantList = jointDeliveryService.getJointDeliveryApplicantList(jointDeliveryId);
+        return ResponseEntity.ok(jointDeliveryApplicantList);
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Integer> getJointDeliveryPage(@RequestParam Integer size) {
+        return ResponseEntity.ok(jointDeliveryService.getJointDeliveryPageCount(size));
     }
 }

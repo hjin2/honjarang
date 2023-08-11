@@ -31,6 +31,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
@@ -156,7 +158,7 @@ class JointDeliveryServiceTest {
         ResponseEntity<String> responseEntity = ResponseEntity.ok(responseBody);
         JsonNode jsonNode = new ObjectMapper().readTree(responseEntity.getBody());
 
-        given(restTemplate.getForEntity(any(URI.class), eq(String.class))).willReturn(responseEntity);
+        given(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class))).willReturn(responseEntity);
         given(objectMapper.readTree(responseEntity.getBody())).willReturn(jsonNode);
 
         // when
@@ -187,7 +189,7 @@ class JointDeliveryServiceTest {
         ResponseEntity<String> responseEntity = ResponseEntity.ok(responseBody);
         JsonNode jsonNode = new ObjectMapper().readTree(responseEntity.getBody());
 
-        given(restTemplate.getForEntity(any(URI.class), eq(String.class))).willReturn(responseEntity);
+        given(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class))).willReturn(responseEntity);
         given(objectMapper.readTree(responseEntity.getBody())).willReturn(jsonNode);
 
         // when
@@ -262,11 +264,14 @@ class JointDeliveryServiceTest {
         given(objectMapper.readTree(responseEntity.getBody())).willReturn(jsonNode);
         given(objectMapper.readTree(not(eq(responseEntity.getBody())))).willReturn(jsonNode1);
         given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(jointDeliveryRepository.save(any(JointDelivery.class))).willReturn(jointDelivery);
 
         // when
-        jointDeliveryService.createJointDelivery(jointDeliveryCreateDto, user);
+        Long jointDeliveryId = jointDeliveryService.createJointDelivery(jointDeliveryCreateDto, user);
 
         // then
+        assertThat(jointDeliveryId).isNotNull();
+        assertThat(jointDeliveryId).isEqualTo(1L);
     }
 
     @Test
@@ -338,13 +343,12 @@ class JointDeliveryServiceTest {
         Page<JointDelivery> jointDeliveryPage = new PageImpl<>(List.of(jointDelivery));
         List<JointDeliveryCart> jointDeliveryCartList = List.of(jointDeliveryCart);
 
-        given(jointDeliveryRepository.findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(any(LocalDateTime.class), any(Pageable.class))).willReturn(jointDeliveryPage);
+        given(jointDeliveryRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanOrderByCreatedAtDesc(any(LocalDateTime.class), eq(37.123456), eq(127.123456), eq("테스트"), any(Pageable.class))).willReturn(jointDeliveryPage);
         given(jointDeliveryCartRepository.findAllByJointDeliveryId(1L)).willReturn(jointDeliveryCartList);
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
-        given(mapService.getDistance(any(CoordinateDto.class), any(CoordinateDto.class))).willReturn(1000);
 
         // when
-        List<JointDeliveryListDto> jointDeliveryListDtoList = jointDeliveryService.getJointDeliveryList(1, 10, user);
+        List<JointDeliveryListDto> jointDeliveryListDtoList = jointDeliveryService.getJointDeliveryList(1, 10, "테스트", user);
 
         // then
         assertThat(jointDeliveryListDtoList).isNotNull();
@@ -366,12 +370,12 @@ class JointDeliveryServiceTest {
         Page<JointDelivery> jointDeliveryPage = new PageImpl<>(List.of(jointDelivery));
         List<JointDeliveryCart> jointDeliveryCartList = List.of(jointDeliveryCart);
 
-        given(jointDeliveryRepository.findAllByDeadlineAfterAndIsCanceledFalseOrderByCreatedAtDesc(any(LocalDateTime.class), any(Pageable.class))).willReturn(jointDeliveryPage);
+        given(jointDeliveryRepository.findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanOrderByCreatedAtDesc(any(LocalDateTime.class), eq(37.123456), eq(127.123456), eq("테스트"), any(Pageable.class))).willReturn(jointDeliveryPage);
         given(jointDeliveryCartRepository.findAllByJointDeliveryId(1L)).willReturn(jointDeliveryCartList);
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.empty());
 
         // when & then
-        assertThrows(MenuNotFoundException.class, () -> jointDeliveryService.getJointDeliveryList(1, 10, user));
+        assertThrows(MenuNotFoundException.class, () -> jointDeliveryService.getJointDeliveryList(1, 10, "테스트", user));
     }
 
     @Test
@@ -595,7 +599,12 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
     @DisplayName("공동배달 수령 확인 성공")
     void confirmReceived_Success() {
         // given
+        User userForTest = User.builder()
+                .point(10000)
+                .build();
+        userForTest.setIdForTest(2L);
         jointDelivery.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
+        jointDelivery.setUserForTest(userForTest);
         given(jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(1L, 1L)).willReturn(Optional.of(jointDeliveryApplicant));
         given(jointDeliveryCartRepository.findAllByJointDeliveryIdAndUserId(1L, 1L)).willReturn(List.of(jointDeliveryCart));
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
@@ -655,5 +664,37 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
 
         // when & then
         assertThrows(JointDeliveryAlreadyReceivedException.class, () -> jointDeliveryService.confirmReceived(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 페이지 수 조회 성공")
+    void getJointDeliveryPageCount_Success() {
+        // given
+        given(jointDeliveryRepository.countByIsCanceledFalseAndDeadlineAfter(any(LocalDateTime.class))).willReturn(1);
+
+        // when
+        Integer jointDeliveryPageCount = jointDeliveryService.getJointDeliveryPageCount(10);
+
+        // then
+        assertThat(jointDeliveryPageCount).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("공동배달 신청자 목록 조회 성공")
+    void getJointDeliveryApplicantList_Success() {
+        // given
+        List<JointDeliveryApplicant> jointDeliveryApplicantList = List.of(jointDeliveryApplicant);
+        given(jointDeliveryApplicantRepository.findAllByJointDeliveryId(1L)).willReturn(jointDeliveryApplicantList);
+
+        // when
+        List<JointDeliveryApplicantListDto> jointDeliveryApplicantListDtoList = jointDeliveryService.getJointDeliveryApplicantList(1L);
+
+        // then
+        assertThat(jointDeliveryApplicantListDtoList).isNotNull();
+        assertThat(jointDeliveryApplicantListDtoList.size()).isEqualTo(1);
+        assertThat(jointDeliveryApplicantListDtoList.get(0).getId()).isEqualTo(1L);
+        assertThat(jointDeliveryApplicantListDtoList.get(0).getUserId()).isEqualTo(1L);
+        assertThat(jointDeliveryApplicantListDtoList.get(0).getNickname()).isEqualTo("테스트");
+        assertThat(jointDeliveryApplicantListDtoList.get(0).getIsReceived()).isEqualTo(false);
     }
 }

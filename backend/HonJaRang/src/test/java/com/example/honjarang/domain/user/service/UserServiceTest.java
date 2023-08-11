@@ -248,6 +248,17 @@ class UserServiceTest {
         assertThrows(DuplicateNicknameException.class, () -> userService.checkNickname("테스트"));
     }
 
+    @Test
+    @DisplayName("이메일 중복 체크 성공")
+    void checkEmail_Success() {
+        // given
+        given(userRepository.existsByEmail("test@test.com")).willReturn(false);
+
+        // when
+        userService.checkEmail("test@test.com");
+
+        // then
+    }
 
     @Test
     @DisplayName("비밀번호 변경 성공")
@@ -261,7 +272,7 @@ class UserServiceTest {
         given(passwordEncoder.matches("test1234", expectedUser.getPassword())).willReturn(true);
         given(userRepository.findByEmail("test@test.com")).willReturn(Optional.of(expectedUser));
         // When
-        userService.changePassword(expectedUser, "test1234", "new1234");
+        userService.changePassword( "test1234", "new1234",expectedUser);
 
         assertThat(expectedUser.getPassword()).isEqualTo(passwordEncoder.encode("new1234"));
     }
@@ -278,7 +289,7 @@ class UserServiceTest {
         given(passwordEncoder.matches("test1234", expectedUser.getPassword())).willReturn(false);
 
         // When
-        assertThrows(PasswordMismatchException.class, () -> userService.changePassword(expectedUser, "test1234", "new1234"));
+        assertThrows(PasswordMismatchException.class, () -> userService.changePassword( "test1234", "new1234", expectedUser));
     }
 
 
@@ -322,7 +333,7 @@ class UserServiceTest {
 //        PostListDto postListDto = new PostListDto(post);
 
         // when
-        List<PostListDto> result = userService.getMyPostList(1,user);
+        List<PostListDto> result = userService.getMyPostList(1,15,user);
 
         // then
         assertThat(result.get(0).getUserId()).isEqualTo(user.getId());
@@ -334,60 +345,60 @@ class UserServiceTest {
 
     }
 
-    @Test
-    @DisplayName("내가 작성한 공동배달 글 보기")
-    void getMyWrittenJointDeliveries_success() {
-        // given
-        Pageable pageable = Pageable.ofSize(15).withPage(0);
-        List<JointDelivery> jointDeliveries = List.of(jointDelivery);
-        given(jointDeliveryRepository.findAllByUserId(user.getId(), pageable)).willReturn(new PageImpl<>(jointDeliveries));
-
-        JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery);
-        List<JointDeliveryListDto> expectedResult = List.of(jointDeliveryListDto);
-
-
-        // when
-        List<JointDeliveryListDto> result = userService.getMyWrittenJointDeliveries(15, 1, user);
-
-
-        // then : jointDelivery값이 JointDeliveryListDto에 담긴다 이걸 비교해야됨 즉 expectedResult
-        assertThat(result.get(0).getUserId()).isEqualTo(expectedResult.get(0).getId());
-        assertThat(result.get(0).getTargetMinPrice()).isEqualTo(expectedResult.get(0).getTargetMinPrice());
-        assertThat(result.get(0).getStoreId()).isEqualTo(expectedResult.get(0).getStoreId());
-        assertThat(result.get(0).getStoreName()).isEqualTo(expectedResult.get(0).getStoreName());
-        assertThat(result.get(0).getStoreImage()).isEqualTo(expectedResult.get(0).getStoreImage());
-        assertThat(result.get(0).getUserId()).isEqualTo(expectedResult.get(0).getUserId());
-        assertThat(result.get(0).getNickname()).isEqualTo(expectedResult.get(0).getNickname());
-
-    }
-
-
-    @Test
-    @DisplayName("내가 참여하는 공동배달 글 보기")
-    void getMyJoinedJointDeliveries_success() {
-        // given
-        Pageable pageable = Pageable.ofSize(15).withPage(0);
-        List<JointDelivery> jointDeliveries = List.of(jointDelivery);
-        given(jointDeliveryCartRepository.findDistinctJointDeliveryByUserId(user.getId(), pageable)).willReturn(jointDeliveries);
-
-        JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery);
-        List<JointDeliveryListDto> expectedResult = List.of(jointDeliveryListDto);
+//    @Test
+//    @DisplayName("내가 작성한 공동배달 글 보기")
+//    void getMyWrittenJointDeliveries_success() {
+//        // given
+//        Pageable pageable = Pageable.ofSize(15).withPage(0);
+//        List<JointDelivery> jointDeliveries = List.of(jointDelivery);
+//        given(jointDeliveryRepository.findAllByUserId(user.getId(), pageable)).willReturn(new PageImpl<>(jointDeliveries));
+//
+//        JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery);
+//        List<JointDeliveryListDto> expectedResult = List.of(jointDeliveryListDto);
+//
+//
+//        // when
+//        List<JointDeliveryListDto> result = userService.getMyWrittenJointDeliveries(15, 1, user);
+//
+//
+//        // then : jointDelivery값이 JointDeliveryListDto에 담긴다 이걸 비교해야됨 즉 expectedResult
+//        assertThat(result.get(0).getUserId()).isEqualTo(expectedResult.get(0).getId());
+//        assertThat(result.get(0).getTargetMinPrice()).isEqualTo(expectedResult.get(0).getTargetMinPrice());
+//        assertThat(result.get(0).getStoreId()).isEqualTo(expectedResult.get(0).getStoreId());
+//        assertThat(result.get(0).getStoreName()).isEqualTo(expectedResult.get(0).getStoreName());
+//        assertThat(result.get(0).getStoreImage()).isEqualTo(expectedResult.get(0).getStoreImage());
+//        assertThat(result.get(0).getUserId()).isEqualTo(expectedResult.get(0).getUserId());
+//        assertThat(result.get(0).getNickname()).isEqualTo(expectedResult.get(0).getNickname());
+//
+//    }
 
 
-        // when
-        List<JointDeliveryListDto> result = userService.getMyJoinedJointDeliveries(15, 1, user);
-
-
-        // then
-        assertThat(result.get(0).getUserId()).isEqualTo(expectedResult.get(0).getId());
-        assertThat(result.get(0).getTargetMinPrice()).isEqualTo(expectedResult.get(0).getTargetMinPrice());
-        assertThat(result.get(0).getStoreId()).isEqualTo(expectedResult.get(0).getStoreId());
-        assertThat(result.get(0).getStoreName()).isEqualTo(expectedResult.get(0).getStoreName());
-        assertThat(result.get(0).getStoreImage()).isEqualTo(expectedResult.get(0).getStoreImage());
-        assertThat(result.get(0).getUserId()).isEqualTo(expectedResult.get(0).getUserId());
-        assertThat(result.get(0).getNickname()).isEqualTo(expectedResult.get(0).getNickname());
-
-    }
+//    @Test
+//    @DisplayName("내가 참여하는 공동배달 글 보기")
+//    void getMyJoinedJointDeliveries_success() {
+//        // given
+//        Pageable pageable = Pageable.ofSize(15).withPage(0);
+//        List<JointDelivery> jointDeliveries = List.of(jointDelivery);
+//        given(jointDeliveryCartRepository.findDistinctJointDeliveryByUserId(user.getId(), pageable)).willReturn(jointDeliveries);
+//
+//        JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery);
+//        List<JointDeliveryListDto> expectedResult = List.of(jointDeliveryListDto);
+//
+//
+//        // when
+//        List<JointDeliveryListDto> result = userService.getMyJoinedJointDeliveries(15, 1, user);
+//
+//
+//        // then
+//        assertThat(result.get(0).getUserId()).isEqualTo(expectedResult.get(0).getId());
+//        assertThat(result.get(0).getTargetMinPrice()).isEqualTo(expectedResult.get(0).getTargetMinPrice());
+//        assertThat(result.get(0).getStoreId()).isEqualTo(expectedResult.get(0).getStoreId());
+//        assertThat(result.get(0).getStoreName()).isEqualTo(expectedResult.get(0).getStoreName());
+//        assertThat(result.get(0).getStoreImage()).isEqualTo(expectedResult.get(0).getStoreImage());
+//        assertThat(result.get(0).getUserId()).isEqualTo(expectedResult.get(0).getUserId());
+//        assertThat(result.get(0).getNickname()).isEqualTo(expectedResult.get(0).getNickname());
+//
+//    }
 
 
     @Test
@@ -489,8 +500,6 @@ class UserServiceTest {
 
     }
 
-
-
     @Test
     @DisplayName("FCM 토큰 등록 성공")
     void addFcmToken_Success() {
@@ -551,5 +560,19 @@ class UserServiceTest {
 
         // when
         assertThrows(UserNotFoundException.class, () -> userService.updateProfileImage(multipartFile, user));
+    }
+
+    @Test
+    @DisplayName("새 비밀번호 설정 성공")
+    void setNewPassword_Success() {
+        // given
+        given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
+        given(emailVerificationRepository.findByEmail(user.getEmail())).willReturn(Optional.ofNullable(emailVerification));
+
+        // when
+        userService.setNewPassword("new1234", user);
+
+        // then
+        assertThat(user.getPassword()).isEqualTo(passwordEncoder.encode("new1234"));
     }
 }

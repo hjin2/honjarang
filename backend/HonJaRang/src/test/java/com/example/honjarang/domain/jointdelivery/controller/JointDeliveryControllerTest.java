@@ -36,6 +36,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -191,12 +192,14 @@ class JointDeliveryControllerTest {
     void createJointDelivery() throws Exception {
         // given
         JointDeliveryCreateDto dto = new JointDeliveryCreateDto("테스트 공동배달", 1L, 3000, 10000, "2000-01-01 00:00:00");
+        given(jointDeliveryService.createJointDelivery(any(JointDeliveryCreateDto.class), any(User.class))).willReturn(1L);
 
         // when & then
         mockMvc.perform(post("/api/v1/joint-deliveries")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(dto)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(1L))
                 .andDo(document("joint-deliveries/create",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
@@ -206,7 +209,8 @@ class JointDeliveryControllerTest {
                                 fieldWithPath("delivery_charge").type(JsonFieldType.NUMBER).description("배달비"),
                                 fieldWithPath("target_min_price").type(JsonFieldType.NUMBER).description("최소 주문 금액"),
                                 fieldWithPath("deadline").type(JsonFieldType.STRING).description("마감 시간")
-                        )
+                        ),
+                        responseBody()
                 ));
     }
 
@@ -216,12 +220,13 @@ class JointDeliveryControllerTest {
         // given
         List<JointDeliveryListDto> jointDeliveryListDtoList = List.of(new JointDeliveryListDto(jointDelivery, 10000));
 
-        given(jointDeliveryService.getJointDeliveryList(eq(1), eq(10), any(User.class))).willReturn(jointDeliveryListDtoList);
+        given(jointDeliveryService.getJointDeliveryList(eq(1), eq(10), eq("테스트"), any(User.class))).willReturn(jointDeliveryListDtoList);
 
         // when & then
         mockMvc.perform(get("/api/v1/joint-deliveries")
                         .param("page", "1")
-                        .param("size", "10"))
+                        .param("size", "10")
+                        .param("keyword", "테스트"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value(1L))
@@ -237,7 +242,8 @@ class JointDeliveryControllerTest {
                         preprocessResponse(prettyPrint()),
                         queryParameters(
                                 parameterWithName("page").description("페이지 번호"),
-                                parameterWithName("size").description("페이지 크기")
+                                parameterWithName("size").description("페이지 크기"),
+                                parameterWithName("keyword").description("검색할 키워드")
                         ),
                         responseFields(
                                 fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("공동배달 ID"),
@@ -412,6 +418,59 @@ class JointDeliveryControllerTest {
                         preprocessResponse(prettyPrint()),
                         pathParameters(
                                 parameterWithName("jointDeliveryId").description("공동배달 ID")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("공동배달 페이지 수 조회")
+    void getJointDeliveryPage() throws Exception {
+        // given
+        given(jointDeliveryService.getJointDeliveryPageCount(10)).willReturn(1);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/joint-deliveries/page")
+                .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(1))
+                .andDo(document("joint-deliveries/page",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("size").description("페이지 크기")
+                        ),
+                        responseBody()
+                ));
+    }
+
+    @Test
+    @DisplayName("공동배달 신청자 목록 조회")
+    void getJointDeliveryApplicantList() throws Exception{
+        // given
+        List<JointDeliveryApplicantListDto> jointDeliveryApplicantListDtoList = List.of(new JointDeliveryApplicantListDto(jointDeliveryApplicant, 10000));
+        given(jointDeliveryService.getJointDeliveryApplicantList(1L)).willReturn(jointDeliveryApplicantListDtoList);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/joint-deliveries/{jointDeliveryId}/applicants", 1L))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].user_id").value(1L))
+                .andExpect(jsonPath("$[0].nickname").value("테스트"))
+                .andExpect(jsonPath("$[0].total_price").value(10000))
+                .andExpect(jsonPath("$[0].is_received").value(false))
+                .andDo(document("joint-deliveries/applicants/list",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("jointDeliveryId").description("공동배달 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("공동배달 신청자 ID"),
+                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("유저 ID"),
+                                fieldWithPath("[].nickname").type(JsonFieldType.STRING).description("유저 닉네임"),
+                                fieldWithPath("[].total_price").type(JsonFieldType.NUMBER).description("총 금액"),
+                                fieldWithPath("[].is_received").type(JsonFieldType.BOOLEAN).description("수령 여부")
                         )
                 ));
     }
