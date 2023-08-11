@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
+import { useNavigate } from 'react-router-dom'
 
 export default function TransactionDetail() {
   const URL = import.meta.env.VITE_APP_API
@@ -12,6 +13,24 @@ export default function TransactionDetail() {
   const [isWriter, setIsWriter] = useState(false)
   const [isSell, setIsSell] = useState(false)
   const [isFinish, setIsFinish] = useState(false)
+  const [isClick, setIsClick] = useState(false)
+  const navigate = useNavigate()
+  const handleClick = () => {
+    setIsClick(!isClick)
+  }
+  const editTransaction = () =>{
+    navigate(`/market/transactionupdate/${id}`)
+  }
+  const handelTransaction = () =>{
+    axios.delete(`${URL}/api/v1/secondhand-transactions/${id}`,{headers})
+      .then((res) => {
+        console.log(res)
+        navigate('/market', {replace : true})
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
   const buy = () => {
     axios.put(`${URL}/api/v1/secondhand-transactions/${id}/buy`,[],{headers})
       .then((res) => {
@@ -60,9 +79,24 @@ export default function TransactionDetail() {
           <div className="font-bold text-3xl">{detail.title}</div>
           <div className="mt-3">{detail.price?.toLocaleString()}원</div>
         </div>
-        <div>
-          <div className="font-semibold text-right">{detail.seller_nickname}</div>
-          <div>{detail.created_at?.slice(0,10)}</div>
+        <div className="flex">
+          <div>
+            <div className="font-semibold text-right">{detail.seller_nickname}</div>
+            <div>{detail.created_at?.slice(0,10)}</div>
+          </div>
+          {isWriter ? (
+            <button onClick={handleClick}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+              </svg>
+            </button>
+          ):(null)}
+          {isClick&&isWriter ? (
+            <div className='absolute border-2 rounded-lg bg-white text-center space-y-2 p-2'>
+              <div className="cursor-pointer" onClick={editTransaction}>수정</div>
+              <div className="cursor-pointer" onClick={handelTransaction}>삭제</div>
+            </div>
+          ):null}
         </div>
       </div>
       <div className="flex justify-between my-5">

@@ -119,9 +119,7 @@ export const ArticleDetail = () => {
           </button>
           {isClick&&isWriter ? (
             <div className='absolute border-2 rounded-lg bg-white text-center space-y-2 p-2'>
-              <Link to={`/board/articleupdate/${id}`}>
-                <div type="button" className="cursor-pointer" onClick={editArticle}>수정</div>
-              </Link>
+              <div type="button" className="cursor-pointer" onClick={editArticle}>수정</div>
               <div type="button" className="coursor-pointer" onClick={handelArticleDelete}>삭제</div>
             </div>
           ):null}
