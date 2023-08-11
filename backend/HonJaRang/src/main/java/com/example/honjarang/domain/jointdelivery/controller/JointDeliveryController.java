@@ -75,6 +75,12 @@ public class JointDeliveryController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/{jointDeliveryId}/applicants")
+    public ResponseEntity<List<JointDeliveryApplicantListDto>> getJointDeliveryApplicantList(@PathVariable Long jointDeliveryId) {
+        List<JointDeliveryApplicantListDto> jointDeliveryApplicantList = jointDeliveryService.getJointDeliveryApplicantList(jointDeliveryId);
+        return ResponseEntity.ok(jointDeliveryApplicantList);
+    }
+
     @GetMapping("/page")
     public ResponseEntity<Integer> getJointDeliveryPage(@RequestParam Integer size) {
         return ResponseEntity.ok(jointDeliveryService.getJointDeliveryPageCount(size));

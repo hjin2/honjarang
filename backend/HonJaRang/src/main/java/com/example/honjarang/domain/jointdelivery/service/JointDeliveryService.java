@@ -383,6 +383,26 @@ public class JointDeliveryService {
     }
 
     @Transactional(readOnly = true)
+    public List<JointDeliveryApplicantListDto> getJointDeliveryApplicantList(Long jointDeliveryId) {
+        List<JointDeliveryApplicantListDto> jointDeliveryApplicantListDtoList = new ArrayList<>();
+        List<JointDeliveryApplicant> jointDeliveryApplicantList = jointDeliveryApplicantRepository.findAllByJointDeliveryId(jointDeliveryId);
+        for(JointDeliveryApplicant jointDeliveryApplicant : jointDeliveryApplicantList) {
+            // 총 가격 계산
+            int currentTotalPrice = 0;
+            List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryIdAndUserId(jointDeliveryId, jointDeliveryApplicant.getUser().getId());
+            for(JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
+                Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
+                        .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
+                currentTotalPrice += menu.getPrice() * jointDeliveryCart.getQuantity();
+            }
+
+            JointDeliveryApplicantListDto jointDeliveryApplicantListDto = new JointDeliveryApplicantListDto(jointDeliveryApplicant, currentTotalPrice);
+            jointDeliveryApplicantListDtoList.add(jointDeliveryApplicantListDto);
+        }
+        return jointDeliveryApplicantListDtoList;
+    }
+
+    @Transactional(readOnly = true)
     public Integer getJointDeliveryPageCount(Integer size) {
         return (int) Math.ceil((double) jointDeliveryRepository.countByIsCanceledFalseAndDeadlineAfter(LocalDateTime.now()) / size);
     }
