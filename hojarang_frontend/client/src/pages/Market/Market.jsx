@@ -6,6 +6,7 @@ import TransactionList from '@/components/Market/Transaction/TransactionList';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+
 export default function Market() {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   // const [purchaseData, setPurchaseData] = useState([]);
@@ -86,17 +87,17 @@ export default function Market() {
     {
       title: '공동구매',
       content: <PurchaseList/>,
-      recruit: <Link to="/market/purchase/create">모집하기</Link>
+      recruit: <Link to="/market/purchase/create">모집하기</Link>,
     },
     {
       title: '공동배달',
       content: <DeliveryList/>,
-      recruit: <Link to="/market/delivery/create">모집하기</Link>
+      recruit: <Link to="/market/delivery/create">모집하기</Link>,
     },
     {
       title: '중고거래',
       content: <TransactionList/>,
-      recruit: <Link to="/market/transaction/create">모집하기</Link>
+      recruit: <Link to="/market/transaction/create">모집하기</Link>,
     },
   ]
 
@@ -109,7 +110,7 @@ export default function Market() {
           activeTabIndex = {activeTabIndex}
           setActiveTabIndex = {setActiveTabIndex}
           />
-        <button type = "button" className="main3-full-button w-28" >
+        <button className="main3-full-button w-28 mb-10" >
           {tabs[activeTabIndex].recruit}
         </button>
       </div>

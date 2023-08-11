@@ -17,7 +17,7 @@ export default function Purchase() {
 		setActiveTab(tab)
 	}
 	useEffect(()=>{
-    axios.get(`${URL}/api/v1/users/page-join`, {params:{size:4}, headers})
+    axios.get(`${URL}/api/v1/users/page-joined-purchase`, {params:{size:4}, headers})
       .then((res)=>{
         console.log(res.data)
         setJoinPageSize(res.data)
@@ -26,7 +26,7 @@ export default function Purchase() {
   },[])
 
 	useEffect(()=>{
-    axios.get(`${URL}/api/v1/users/joint-deliveries-participating`, {params:{page:joinCurrentPage, size:4},headers})
+    axios.get(`${URL}/api/v1/users/jointpurchase-participating`, {params:{page:joinCurrentPage, size:4},headers})
       .then((res) => {
         console.log(res)
         setJoinPurchaseData(res.data)
@@ -35,7 +35,7 @@ export default function Purchase() {
   },[joinCurrentPage])
 
   useEffect(() => {
-    axios.get(`${URL}/api/v1/users/page-writing`,{params:{size:4},headers})
+    axios.get(`${URL}/api/v1/users/page-joint-purchase`,{params:{size:4},headers})
       .then((res) =>{
         console.log(res.data)
         setWritePageSize(res.data)
@@ -46,7 +46,7 @@ export default function Purchase() {
   },[])
 
 	useEffect(() => {
-    axios.get(`${URL}/api/v1/users/joint-deliveries-writer`,{params:{size:4,page:writeCurrentPage},headers})
+    axios.get(`${URL}/api/v1/users/jointpurchase-writer`,{params:{size:4,page:writeCurrentPage},headers})
       .then((res) => {
         console.log(res.data)
         setWritePurchaseData(res.data)
