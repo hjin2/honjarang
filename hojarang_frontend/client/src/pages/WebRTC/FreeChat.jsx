@@ -1,11 +1,11 @@
-import UserVideoComponent from "../../components/WebRTC/UserVideoComponent"
+import UserVideoComponent from "@/components/WebRTC/UserVideoComponent"
 import { useState, useRef, useCallback, useEffect } from "react"
 import { OpenVidu } from "openvidu-browser";
-import { createSession, createToken } from "../../components/WebRTC/Util";
+import { createSession, createToken } from "@/components/WebRTC/Util";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import { handleSession } from "../../redux/slice/sessionSlice";
+import { handleSession } from "@/redux/slice/sessionSlice";
 
 export default function FreeChat() {
   const [session, setSession] = useState(undefined)

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Comment from '../../components/Board/Comment';
+import Comment from '@/components/Board/Comment';
 
 export const ArticleDetail = () => {
   const navigate = useNavigate()

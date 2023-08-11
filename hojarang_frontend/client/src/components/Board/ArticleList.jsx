@@ -1,4 +1,4 @@
-import Article from './Article';
+import Article from '@/components/Board/Article';
 import { useNavigate } from 'react-router-dom';
 import { Fragment, useEffect, useState } from 'react';
 import axios from 'axios';

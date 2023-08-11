@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import { useParams } from 'react-router';
-import PurchaseDetailProduct from '../../components/Market/Purchase/PurchaseDetailProduct';
-import PurchaseDetailPlace from '../../components/Market/Purchase/PurchaseDetailPlace';
+import PurchaseDetailProduct from '@/components/Market/Purchase/PurchaseDetailProduct';
+import PurchaseDetailPlace from '@/components/Market/Purchase/PurchaseDetailPlace';
 import axios from 'axios';
-import PurchaseApply from '../../components/Market/Purchase/PurchaseApply';
+import PurchaseApply from '@/components/Market/Purchase/PurchaseApply';
 import { useNavigate } from 'react-router-dom'
-import Modal from '../../components/Common/Modal';
-import PurchaserList from '../../components/Market/Purchase/PurchaserList';
+import Modal from '@/components/Common/Modal';
+import PurchaserList from '@/components/Market/Purchase/PurchaserList';
 
 export default function PurchaseDetail() {
   const navigate = useNavigate()

@@ -1,7 +1,7 @@
 import axios from 'axios'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import PurchaseMap from '../../components/Market/Purchase/PurchaseMap'
+import PurchaseMap from '@/components/Market/Purchase/PurchaseMap'
 
 export default function PurchaseCreate() {
 
