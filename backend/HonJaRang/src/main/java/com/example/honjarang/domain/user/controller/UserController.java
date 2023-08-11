@@ -91,6 +91,11 @@ public class UserController {
         userService.changePassword(passwordUpdateDto.getPassword(), passwordUpdateDto.getNewPassword(), user);
     }
 
+    @PostMapping("/set-new-password")
+    public void setNewPassword(@RequestBody Map<String, Object> body, @CurrentUser User user) {
+        userService.setNewPassword((String) body.get("new_password"), user);
+    }
+
     @PutMapping("/users")
     public ResponseEntity<Void> changeUserInfo(@RequestBody UserInfoUpdateDto userInfoUpdateDto, @CurrentUser User user) {
         userService.changeUserInfo(user, userInfoUpdateDto.getNickname(), userInfoUpdateDto.getAddress(), userInfoUpdateDto.getLatitude(), userInfoUpdateDto.getLongitude());

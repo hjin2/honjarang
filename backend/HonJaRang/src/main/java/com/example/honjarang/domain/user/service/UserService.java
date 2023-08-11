@@ -137,6 +137,19 @@ public class UserService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public void setNewPassword(String password, User loginUser)
+    {
+        EmailVerification emailVerification = emailVerificationRepository.findByEmail(loginUser.getEmail()).orElseThrow(() -> new EmailNotVerifiedException("이메일 인증이 되지 않았습니다."));
+        if(!emailVerification.getIsVerified()){
+            throw new EmailNotVerifiedException("이메일 인증이 되지 않았습니다.");
+        }
+
+        User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        user.changePassword(passwordEncoder.encode(password));
+        emailVerificationRepository.delete(emailVerification);
+    }
+
     @Transactional
     public void changePassword(String password, String newPassword, @CurrentUser User user) {
         if (!passwordEncoder.matches(password, user.getPassword())) {
