@@ -561,4 +561,18 @@ class UserServiceTest {
         // when
         assertThrows(UserNotFoundException.class, () -> userService.updateProfileImage(multipartFile, user));
     }
+
+    @Test
+    @DisplayName("새 비밀번호 설정 성공")
+    void setNewPassword_Success() {
+        // given
+        given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
+        given(emailVerificationRepository.findByEmail(user.getEmail())).willReturn(Optional.ofNullable(emailVerification));
+
+        // when
+        userService.setNewPassword("new1234", user);
+
+        // then
+        assertThat(user.getPassword()).isEqualTo(passwordEncoder.encode("new1234"));
+    }
 }
