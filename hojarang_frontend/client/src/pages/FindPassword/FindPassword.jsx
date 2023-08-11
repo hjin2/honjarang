@@ -16,7 +16,7 @@ export default function FindPassword() {
 
   const email_code = () => {
     axios
-      .post('http://localhost:8080/users/send-verification-code', {
+      .post(`${import.meta.env.VITE_APP_API}/users/send-verification-code`, {
         email: email,
       })
       .then(function (response) {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Edit from './Edit/Edit';
-import Modal from '../Common/Modal';
+import Edit from '@/components/MyPage/Edit/Edit';
+import Modal from '@/components/Common/Modal';
 import { useSelector } from 'react-redux';
 
 export default function UserInfo() {

@@ -49,7 +49,7 @@ export default function ArticleUpdate() {
 
   const editArticle = () => {
     const formData = new FormData()
-    formData.append("post_image", null)
+    formData.append("post_image", image)
     formData.append("title", title)
     formData.append("content", content)
     formData.append("category", category)
