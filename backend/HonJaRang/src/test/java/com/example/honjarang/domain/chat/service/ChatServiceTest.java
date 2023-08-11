@@ -11,8 +11,10 @@ import com.example.honjarang.domain.chat.entity.ChatRoom;
 import com.example.honjarang.domain.chat.exception.ChatParticipantNotFoundException;
 import com.example.honjarang.domain.chat.repository.ChatMessageRepository;
 import com.example.honjarang.domain.chat.repository.ChatParticipantRepository;
+import com.example.honjarang.domain.chat.repository.ChatRoomRepository;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
+import com.example.honjarang.domain.user.exception.UserNotFoundException;
 import com.example.honjarang.domain.user.repository.UserRepository;
 import com.example.honjarang.domain.user.service.UserService;
 import com.example.honjarang.security.service.TokenService;
@@ -64,6 +66,8 @@ class ChatServiceTest {
     private ChatParticipantRepository chatParticipantRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private ChatRoomRepository chatRoomRepository;
     @Mock
     private UserService userService;
     @Mock
@@ -254,5 +258,30 @@ class ChatServiceTest {
 
         // then
         assertThat(page).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("1:1 채팅방 생성 성공")
+    void createOneToOneChatRoom_Success() {
+        // given
+        User target = User.builder().build();
+        target.setIdForTest(2L);
+
+        given(userRepository.findById(2L)).willReturn(Optional.of(target));
+
+        // when
+        chatService.createOneToOneChatRoom(user, 2L);
+
+        // then
+    }
+
+    @Test
+    @DisplayName("1:1 채팅방 생성 실패 - 상대방이 존재하지 않는 경우")
+    void createOneToOneChatRoom_UserNotFoundException() {
+        // given
+        given(userRepository.findById(2L)).willReturn(Optional.empty());
+
+        // when & then
+        assertThrows(UserNotFoundException.class, () -> chatService.createOneToOneChatRoom(user, 2L));
     }
 }

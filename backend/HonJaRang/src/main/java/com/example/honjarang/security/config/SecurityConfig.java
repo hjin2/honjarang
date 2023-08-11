@@ -49,7 +49,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/users/test").permitAll()
                         .requestMatchers("/api/v1/users/login").permitAll()
                         .requestMatchers("/api/v1/users/signup").permitAll()
+                        .requestMatchers("/api/v1/video-room/**").permitAll()
                         .requestMatchers("/api/v1/users/refresh").permitAll()
+                        .requestMatchers("/api/v1/users/check-email").permitAll()
                         .requestMatchers("/api/v1/users/check-nickname").permitAll()
                         .requestMatchers("/api/v1/users/send-verification-code").permitAll()
                         .requestMatchers("/api/v1/users/verify-code").permitAll()
@@ -66,7 +68,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:63342", "http://localhost:3000", "https://honjarang.kro.kr", "http://honjarang.kro.kr:3000"));
+        configuration.setAllowedOrigins(List.of("http://localhost:63342", "http://localhost:3000", "http://localhost:3001", "https://honjarang.kro.kr", "http://honjarang.kro.kr:3000"));
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowedHeaders(Collections.singletonList("*"));
         configuration.setAllowCredentials(true);
