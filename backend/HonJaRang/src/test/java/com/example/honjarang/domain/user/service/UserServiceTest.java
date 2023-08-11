@@ -268,9 +268,10 @@ class UserServiceTest {
                 .email("test@test.com")
                 .password("test1234")
                 .build();
+        expectedUser.setIdForTest(1L);
 
         given(passwordEncoder.matches("test1234", expectedUser.getPassword())).willReturn(true);
-        given(userRepository.findByEmail("test@test.com")).willReturn(Optional.of(expectedUser));
+        given(userRepository.findById(1L)).willReturn(Optional.of(expectedUser));
         // When
         userService.changePassword( "test1234", "new1234",expectedUser);
 
@@ -298,7 +299,7 @@ class UserServiceTest {
     @DisplayName("회원정보 수정 성공")
     void changeUserInfo_Success() {
         // when
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
         userService.changeUserInfo(user, "수정된 테스트 닉네임","경상북도 구미시", 10.23445, 23.32423);
 
         // then
@@ -313,7 +314,7 @@ class UserServiceTest {
     @DisplayName("회원정보 수정 실패 - 사용자가 존재하지 않는 경우")
     void changeUserInfo_UserNotFoundException() {
         // given
-        given(userRepository.findByEmail("test@test.com")).willReturn(Optional.empty());
+        given(userRepository.findById(1L)).willReturn(Optional.empty());
 
         // then
         assertThrows(UserNotFoundException.class, () -> userService.changeUserInfo(user,"수정된 테스트 닉네임","경상북도 구미시",10.23445,23.32423));
@@ -405,7 +406,7 @@ class UserServiceTest {
     @DisplayName("포인트 출금 기능")
     void withdrawPoint_success(){
         // given
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.ofNullable(user));
+        given(userRepository.findById(1L)).willReturn(Optional.ofNullable(user));
 
         // when
         userService.withdrawPoint(3000,user);
@@ -418,7 +419,7 @@ class UserServiceTest {
     @DisplayName("포인트 출금 실패 - 사용자가 존재하지 않을 때")
     void withdrawPoint_UserNotFoundException(){
         //given
-        given(userRepository.findByEmail("test@test.com")).willReturn(Optional.empty());
+        given(userRepository.findById(1L)).willReturn(Optional.empty());
 
         // then
         assertThrows(UserNotFoundException.class, ()-> userService.withdrawPoint(30000,user));
@@ -428,7 +429,7 @@ class UserServiceTest {
     @DisplayName("포인트 출금 실패 - 사용자가 가지고있는 포인트보다 더 많은 포인트를 출금하려할 때")
     void withdrawPoint_InsufficientPointsException(){
         // given
-        given(userRepository.findByEmail("test@test.com")).willReturn(Optional.of(user));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
 
         // 10000보다 더 커야함
         assertThrows(InsufficientPointsException.class, ()-> userService.withdrawPoint(15000,user));
