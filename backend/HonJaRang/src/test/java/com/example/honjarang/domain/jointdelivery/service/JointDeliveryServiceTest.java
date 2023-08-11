@@ -599,7 +599,12 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
     @DisplayName("공동배달 수령 확인 성공")
     void confirmReceived_Success() {
         // given
+        User userForTest = User.builder()
+                .point(10000)
+                .build();
+        userForTest.setIdForTest(2L);
         jointDelivery.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
+        jointDelivery.setUserForTest(userForTest);
         given(jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(1L, 1L)).willReturn(Optional.of(jointDeliveryApplicant));
         given(jointDeliveryCartRepository.findAllByJointDeliveryIdAndUserId(1L, 1L)).willReturn(List.of(jointDeliveryCart));
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));

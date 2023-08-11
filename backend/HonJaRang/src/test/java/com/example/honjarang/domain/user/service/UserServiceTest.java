@@ -272,7 +272,7 @@ class UserServiceTest {
         given(passwordEncoder.matches("test1234", expectedUser.getPassword())).willReturn(true);
         given(userRepository.findByEmail("test@test.com")).willReturn(Optional.of(expectedUser));
         // When
-        userService.changePassword(expectedUser, "test1234", "new1234");
+        userService.changePassword( "test1234", "new1234",expectedUser);
 
         assertThat(expectedUser.getPassword()).isEqualTo(passwordEncoder.encode("new1234"));
     }
@@ -289,7 +289,7 @@ class UserServiceTest {
         given(passwordEncoder.matches("test1234", expectedUser.getPassword())).willReturn(false);
 
         // When
-        assertThrows(PasswordMismatchException.class, () -> userService.changePassword(expectedUser, "test1234", "new1234"));
+        assertThrows(PasswordMismatchException.class, () -> userService.changePassword( "test1234", "new1234", expectedUser));
     }
 
 
