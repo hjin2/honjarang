@@ -1,11 +1,12 @@
 // import React from 'react'
 import { useParams } from 'react-router-dom';
-import UserInfo from '../../components/MyPage/UserInfo';
-import SideBar from '../../components/MyPage/SideBar';
+import UserInfo from '@/components/MyPage/UserInfo';
+import SideBar from '@/components/MyPage/SideBar';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import { Userinfo } from '../../redux/slice/UserInfoSlice';
+import { Userinfo } from '@/redux/slice/UserInfoSlice';
+
 
 export default function MyPage() {
   const { id } = useParams();

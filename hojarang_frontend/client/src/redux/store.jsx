@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import loginSlice from './slice/loginSlice';
-import articleSlice from './slice/articleSlice';
-import UserinfoSlice from './slice/UserInfoSlice';
-import sessionSlice from './slice/sessionSlice';
+import loginSlice from '@/redux/slice/loginSlice';
+import articleSlice from '@/redux/slice/articleSlice';
+import UserinfoSlice from '@/redux/slice/UserInfoSlice';
+import sessionSlice from '@/redux/slice/sessionSlice';
 
 // 스토어 생성
 const store = configureStore({

@@ -1,5 +1,5 @@
 import axios from "axios";
-const APPLICATION_SERVER_URL = "https://demos.openvidu.io/";
+const APPLICATION_SERVER_URL = "https://honjarang.kro.kr:8443";
 
 
 

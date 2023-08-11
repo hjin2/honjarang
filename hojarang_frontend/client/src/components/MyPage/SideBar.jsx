@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import ArticleList from '@/components/MyPage/List/ArticleList';
-import MarKetList from '@/components/MyPage/List/MarketList';
 import Tab from '@/components/MyPage/Tab';
 import Modal from '@/components/Common/Modal';
 import ChargeTab from '@/components/MyPage/Charge/ChargeTab';
 import Delivery from '@/components/MyPage/Delivery';
 import Transaction from '@/components/MyPage/Transaction';
+import Purchase from '@/components/MyPage/Purchase';
 
 function SideBar() {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
@@ -21,7 +21,7 @@ function SideBar() {
     },
     {
       title: '공동구매 목록',
-      content: <MarKetList />,
+      content: <Purchase />,
     },
     {
       title: '공동배달 목록',
