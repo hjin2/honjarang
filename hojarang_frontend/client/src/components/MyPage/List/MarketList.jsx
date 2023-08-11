@@ -37,10 +37,10 @@ export default function MarketList() {
     <div className="h-full p-6">
       {purchaseData.length > 0 ?(
         <div className="h-full">
-        <div style={{height:"90%"}}>
+        <div>
           <Rooms roomsData={purchaseData} component={PurchaseRoom}/>
         </div>
-        <div className="flex justify-center" style={{height:"10%"}}>
+        <div className="flex justify-center">
           <Pagination
             activePage={currentPage}
             itemsCountPerPage={8}

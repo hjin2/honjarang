@@ -30,7 +30,7 @@ export default function DeliveryList() {
       setDeliveryData(res.data)
     })
     .catch((err)=>{
-      console.log(err)
+      console.log(err)  
     })
   },[currentPage])
 

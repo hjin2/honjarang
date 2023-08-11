@@ -1,8 +1,9 @@
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import axios from 'axios'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate, useParams} from 'react-router-dom'
 
-export default function TransactionCreate() {
+export default function TransactionUpdate() {
+	const {id} = useParams()
   const navigate = useNavigate()
   const URL = import.meta.env.VITE_APP_API
   const token = localStorage.getItem("access_token")
@@ -14,6 +15,19 @@ export default function TransactionCreate() {
   const [price, setPrice] = useState(0)
   const [content, setContent] = useState('')
   const [image, setImage] = useState()
+
+	useEffect(()=>{
+    axios.get(`${URL}/api/v1/secondhand-transactions/${id}`,{headers})
+      .then((res) => {
+        console.log(res.data)
+        setTitle(res.data.title)
+				setContent(res.data.content)
+				setPrice(res.data.price)
+				setImage(res.data.image)
+			})
+      .catch((err) => console.log(err))
+  },[])
+
   const handleTitle = (e) =>{
     setTitle(e.target.value)
   }
@@ -33,17 +47,16 @@ export default function TransactionCreate() {
       setImage(e.target.files[0])
     }
   }
-  const saveTransaction = () =>{
+  const editTransaction = () =>{
     const formData = new FormData()
-    formData.append("transaction_image", image)
+    // formData.append("transaction_image", image)
     formData.append("title", title)
     formData.append("content", content)
     formData.append("price", price)
-    console.log(image,title,content,price)
-    axios.post(`${URL}/api/v1/secondhand-transactions`,formData,{headers})
+    axios.put(`${URL}/api/v1/secondhand-transactions`,formData,{headers})
       .then((res) =>{
         console.log(res)
-        navigate(`/market/transactiondetail/${res.data}`,{replace:true})
+        navigate(`/market/transactiondetail/${id}`,{replace:true})
       })
       .catch((err)=>console.log(err))
   }
@@ -52,15 +65,15 @@ export default function TransactionCreate() {
     <div className="border rounded-lg max-w-2xl mx-auto mt-10 pb-3 p-5 space-y-5 ">
       <div>
         <div>상품명</div>
-        <input type="text" onChange={handleTitle} />
+        <input type="text" onChange={handleTitle} value={title}/>
       </div>
       <div>
         <div>상품 가격</div>
-        <input type="number" onChange={handlePrice} />
+        <input type="number" onChange={handlePrice} value={price}/>
       </div>
       <div>
         <div>상품 소개</div>
-        <textarea className="resize-none border border-black h-48 w-full " onChange={handleContent}></textarea>
+        <textarea className="resize-none border border-black h-48 w-full " onChange={handleContent} value={content}></textarea>
       </div>
       <div>
         <div>상품사진 첨부</div>
@@ -75,8 +88,8 @@ export default function TransactionCreate() {
         <button 
           type="button" 
           className="main1-full-button w-20"
-          onClick={saveTransaction}
-        >작성완료</button>
+          onClick={editTransaction}
+        >수정완료</button>
       </div>
     </div>
   )
