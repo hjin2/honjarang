@@ -52,7 +52,7 @@ public class TransactionService {
                     .acl(ObjectCannedACL.PUBLIC_READ)
                     .contentType(transactionImage.getContentType())
                     .build(), RequestBody.fromInputStream(transactionImage.getInputStream(), transactionImage.getSize()));
-        }catch (IOException e){
+        } catch (IOException e) {
             throw new RuntimeException("게시글 이미지 업로드에 실패했습니다.");
         }
 
@@ -61,31 +61,65 @@ public class TransactionService {
     }
 
     @Transactional
-    public void updateSecondHandTransaction(MultipartFile transactionImage, TransactionUpdateDto transactionUpdateDto, User user) throws IOException {
+    public void updateSecondHandTransaction(MultipartFile transactionImage, TransactionUpdateDto transactionUpdateDto, User user, Long transactionId) throws IOException {
 
-        Transaction transaction = transactionRepository.findById(transactionUpdateDto.getId()).orElseThrow(() -> new TransactionException("게시글이 없습니다."));
-        if(!Objects.equals(transaction.getSeller().getId(),user.getId())){
+        Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new TransactionException("게시글이 없습니다."));
+        if (!Objects.equals(transaction.getSeller().getId(), user.getId())) {
             throw new InvalidUserException("작성자만 수정할 수 있습니다.");
         }
 
-        if(transaction.getTransactionImage()!=""){
+        String uuid = UUID.randomUUID().toString();
+
+        String image = "";
+        // 기존에 게시글에 사진이 있었고 사용자가 사진을 첨부했을 때
+        // 기존의 사진을 삭제하고 새로운 사진 추가
+        if (transaction.getTransactionImage() != null && transactionImage != null) {
             DeleteObjectRequest request = DeleteObjectRequest.builder()
                     .bucket("honjarang-bucket")
-                    .key("transaction/"+transaction.getTransactionImage())
+                    .key("transactionImage/" + transaction.getTransactionImage())
                     .build();
             s3Client.deleteObject(request);
+
+            // 사진추가
+            s3Client.putObject(PutObjectRequest.builder()
+                    .bucket("honjarang-bucket")
+                    .key("transactionImage/" + uuid + transactionImage.getOriginalFilename())
+                    .acl(ObjectCannedACL.PUBLIC_READ)
+                    .contentType(transactionImage.getContentType())
+                    .build(), RequestBody.fromInputStream(transactionImage.getInputStream(), transactionImage.getSize()));
+            image = uuid + transactionImage.getOriginalFilename();
         }
 
-        String uuid = UUID.randomUUID().toString();
-        s3Client.putObject(PutObjectRequest.builder()
-                .bucket("honjarang-bucket")
-                .key("transaction/" + uuid + transactionImage.getOriginalFilename())
-                .acl(ObjectCannedACL.PUBLIC_READ)
-                .contentType(transactionImage.getContentType())
-                .build(), RequestBody.fromInputStream(transactionImage.getInputStream(), transactionImage.getSize()));
+        // 기존에 게시글에 사진이 있었고 사용자가 사진을 첨부하지 않았을 때
+        // 그냥 놔둬야 됨, 아무것도 건들이지 않음
+        // 아예 parameter를 없애야 성공적으로 됨
+        if (transaction.getTransactionImage() != null && transactionImage == null) {
+            image = transaction.getTransactionImage();
+        }
 
-        String image = uuid + transactionImage.getOriginalFilename();
-        transaction.update(transactionUpdateDto,image);
+
+        // 기존에 사진이 없었고 사용자가 사진을 첨부했을 때
+        // 사진 추가와 글 업데이트
+        if (transaction.getTransactionImage() == null && transactionImage != null) {
+            // 사진추가
+            s3Client.putObject(PutObjectRequest.builder()
+                    .bucket("honjarang-bucket")
+                    .key("transactionImage/" + uuid + transactionImage.getOriginalFilename())
+                    .acl(ObjectCannedACL.PUBLIC_READ)
+                    .contentType(transactionImage.getContentType())
+                    .build(), RequestBody.fromInputStream(transactionImage.getInputStream(), transactionImage.getSize()));
+
+            image = uuid + transactionImage.getOriginalFilename();
+
+        }
+
+        // 기존에 사진이 없었고 사용자가 사진을 첨부하지 않았을 때
+        // 그냥 글만 업데이트 하면됨
+        if (transaction.getTransactionImage() == null && transactionImage == null) {
+            image = null;
+        }
+
+        transaction.update(transactionUpdateDto, image);
 
     }
 
