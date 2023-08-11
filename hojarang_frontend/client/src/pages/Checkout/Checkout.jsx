@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import { loadPaymentWidget } from '@tosspayments/payment-widget-sdk';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';

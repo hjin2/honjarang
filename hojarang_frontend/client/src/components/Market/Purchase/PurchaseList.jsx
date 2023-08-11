@@ -39,10 +39,10 @@ export default function PurchaseList() {
   };
   return (
     <div className="h-full">
-      <div style={{height:"90%"}}>
+      <div>
         <Rooms roomsData={purchaseData} component={PurchaseRoom}/>
       </div>
-      <div className="flex justify-center" style={{height:"10%"}}>
+      <div className="flex justify-center">
         <Pagination
           activePage={currentPage}
           itemsCountPerPage={12}
