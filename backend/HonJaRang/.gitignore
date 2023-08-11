@@ -38,6 +38,7 @@ out/
 
 application-secret.properties
 application-dev.properties
+application-test.properties
 secret.yml
 .idea
 honjarang-firebase-adminsdk.json
