@@ -26,7 +26,7 @@ export default function PurchaseList() {
   useEffect(() => {
     axios.get(`${URL}/api/v1/joint-purchases`,{params:{page:currentPage, size:12}, headers})
     .then((res)=>{
-      console.log(res)
+      console.log(res.data)
       setPurchaseData(res.data)
     })
     .catch((err)=>{

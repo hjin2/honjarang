@@ -3,7 +3,6 @@ import Rooms from "../Rooms"
 import Pagination from "react-js-pagination"
 import axios from "axios"
 import TransactionRoom from "./TransactionRoom"
-import { current } from "@reduxjs/toolkit"
 
 export default function TransactionList() {
   const URL = import.meta.env.VITE_APP_API

@@ -1,13 +1,13 @@
-import ImageInput from './ImageInput';
+import ImageInput from '@/components/MyPage/Edit/ImageInput';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import Address from './Address';
-import Nickname from './Nickname';
+import Address from '@/components/MyPage/Edit/Address';
+import Nickname from '@/components/MyPage/Edit/Nickname';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import { setUserInfo, imageUpload } from '../../../redux/slice/UserInfoSlice';
+import { setUserInfo, imageUpload } from '@/redux/slice/UserInfoSlice';
 import { useDispatch } from 'react-redux';
-import image from '../../../assets/DefaultImage.png'
+import image from '@/assets/DefaultImage.png'
 
 export default function Edit({ modalState, setModalState }) {
   const nickname = useSelector((state) => state.userinfo.nickname)

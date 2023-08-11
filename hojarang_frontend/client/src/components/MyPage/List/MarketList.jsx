@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Rooms from "../../Market/Rooms";
-import PurchaseRoom from "../../Market/Purchase/PurchaseRoom";
+import Rooms from "@/components/Market/Rooms";
+import PurchaseRoom from "@/components/Market/Purchase/PurchaseRoom";
 import Pagination from "react-js-pagination";
 
 export default function MarketList() {
@@ -12,7 +12,7 @@ export default function MarketList() {
   const [pageSize, setPageSize] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   useEffect(()=>{
-    axios.get(`${URL}/api/v1/users/joint-deliveries-pages`, {params:{size:10}, headers})
+    axios.get(`${URL}/api/v1/users/page-join`, {params:{size:10}, headers})
       .then((res)=>{
         console.log(res.data)
         setPageSize(res.data)
@@ -23,7 +23,7 @@ export default function MarketList() {
   useEffect(()=>{
     axios.get(`${URL}/api/v1/users/joint-deliveries-participating`, {params:{page:currentPage, size:8},headers})
       .then((res) => {
-        console.log(res)
+        console.log(res.data)
         setPurchaseData(res.data)
       })
       .catch((err) => console.log(err))

@@ -33,7 +33,7 @@ export default function DeliveryRoom(roomData) {
           <div>{adjustedStoreName}</div>
         </div>
         <div className="flex justify-end">
-          <Link to={{ pathname: `deliverydetail/${id}` }}>
+          <Link to={{ pathname: `/market/deliverydetail/${id}` }}>
             <button type="button" className="main1-full-button w-20">참여하기</button>
           </Link>
         </div>
