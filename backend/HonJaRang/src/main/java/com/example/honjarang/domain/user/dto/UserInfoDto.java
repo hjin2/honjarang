@@ -24,7 +24,7 @@ public class UserInfoDto {
     public UserInfoDto(User user) {
         this.nickname = user.getNickname();
         this.email = user.getEmail();
-        this.profileImage = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/profileImage/" + user.getProfileImage();
+        this.profileImage = user.getProfileImage();
         this.point = user.getPoint();
         this.address = user.getAddress();
         this.latitude = user.getLatitude();

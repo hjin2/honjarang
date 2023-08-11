@@ -129,6 +129,7 @@ public class UserService {
                 .address(userCreateDto.getAddress())
                 .latitude(userCreateDto.getLatitude())
                 .longitude(userCreateDto.getLongitude())
+                .profileImage("https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/profileImage/basic.jpg")
                 .build();
         userRepository.save(user);
         emailVerificationRepository.delete(emailVerification);

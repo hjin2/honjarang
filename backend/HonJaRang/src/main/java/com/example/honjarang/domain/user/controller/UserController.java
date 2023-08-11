@@ -201,7 +201,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getMyTransactionPageCount(size, user));
     }
 
-    @GetMapping("/page-joined-ransaction")
+    @GetMapping("/page-joined-transaction")
     public ResponseEntity<Integer> getMyJoinedTransactionPageCount(@RequestParam Integer size, @CurrentUser User user) {
         return ResponseEntity.ok(userService.getMyJoinedTransactionPageCount(size, user));
     }

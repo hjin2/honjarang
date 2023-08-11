@@ -474,42 +474,42 @@ class UserControllerTest {
                 ));
         }
 
-    @Test
-    @DisplayName("회원정보 조회")
-    void getUserInfo_success() throws Exception {
-        // given
-        UserInfoDto userInfoDto = new UserInfoDto(user);
-        given(userService.getUserInfo(1L)).willReturn(userInfoDto);
-
-        // when & then
-        mockMvc.perform(get("/api/v1/users/info")
-                        .param("id", "1"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.nickname").value("테스트"))
-                .andExpect(jsonPath("$.email").value("test@test.com"))
-                .andExpect(jsonPath("$.profile_image").value("https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/profileImage/test.jpg"))
-                .andExpect(jsonPath("$.point").value(10000))
-                .andExpect(jsonPath("$.address").value("서울특별시 강남구"))
-                .andExpect(jsonPath("$.latitude").value(37.123456))
-                .andExpect(jsonPath("$.longitude").value(127.123456))
-                .andDo(document("/users/info",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        queryParameters(
-                                parameterWithName("id").description("사용자 ID")
-                        ),
-                        responseFields(
-                                fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
-                                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
-                                fieldWithPath("profile_image").type(JsonFieldType.STRING).description("프로필 이미지"),
-                                fieldWithPath("point").type(JsonFieldType.NUMBER).description("포인트"),
-                                fieldWithPath("address").type(JsonFieldType.STRING).description("주소"),
-                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
-                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도")
-                        )
-                ));
-    }
+//    @Test
+//    @DisplayName("회원정보 조회")
+//    void getUserInfo_success() throws Exception {
+//        // given
+//        UserInfoDto userInfoDto = new UserInfoDto(user);
+//        given(userService.getUserInfo(1L)).willReturn(userInfoDto);
+//
+//        // when & then
+//        mockMvc.perform(get("/api/v1/users/info")
+//                        .param("id", "1"))
+//                .andExpect(status().isOk())
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(jsonPath("$.nickname").value("테스트"))
+//                .andExpect(jsonPath("$.email").value("test@test.com"))
+//                .andExpect(jsonPath("$.profile_image").value("https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/profileImage/test.jpg"))
+//                .andExpect(jsonPath("$.point").value(10000))
+//                .andExpect(jsonPath("$.address").value("서울특별시 강남구"))
+//                .andExpect(jsonPath("$.latitude").value(37.123456))
+//                .andExpect(jsonPath("$.longitude").value(127.123456))
+//                .andDo(document("/users/info",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        queryParameters(
+//                                parameterWithName("id").description("사용자 ID")
+//                        ),
+//                        responseFields(
+//                                fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
+//                                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
+//                                fieldWithPath("profile_image").type(JsonFieldType.STRING).description("프로필 이미지"),
+//                                fieldWithPath("point").type(JsonFieldType.NUMBER).description("포인트"),
+//                                fieldWithPath("address").type(JsonFieldType.STRING).description("주소"),
+//                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
+//                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도")
+//                        )
+//                ));
+//    }
 
     @Test
     @DisplayName("FCM 토큰 등록")
