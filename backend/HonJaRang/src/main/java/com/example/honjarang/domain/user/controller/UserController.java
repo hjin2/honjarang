@@ -130,6 +130,11 @@ public class UserController {
         return ResponseEntity.ok(transactionListDtoList);
     }
 
+    @GetMapping("/transaction-participating")
+    public ResponseEntity<List<TransactionListDto>> getMyJoinedTransactions(@RequestParam(value = "size", defaultValue = "1") int size, @RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
+        List<TransactionListDto> transactionListDtoList = userService.getMyJoinedTransactions(page,size,user);
+        return ResponseEntity.ok(transactionListDtoList);
+    }
 
     @PutMapping("/withdraw")
     public ResponseEntity<Void> withdrawPoint(@RequestBody PointWithdrawDto pointWithdrawDto, @CurrentUser User user){
@@ -174,6 +179,12 @@ public class UserController {
     public ResponseEntity<Integer> getMyTransactionPageCount(@RequestParam Integer size, @CurrentUser User user) {
         return ResponseEntity.ok(userService.getMyTransactionPageCount(size, user));
     }
+
+    @GetMapping("/page-jointransaction")
+    public ResponseEntity<Integer> getMyJoinedTransactionPageCount(@RequestParam Integer size, @CurrentUser User user) {
+        return ResponseEntity.ok(userService.getMyJoinedTransactionPageCount(size, user));
+    }
+
 
 
 

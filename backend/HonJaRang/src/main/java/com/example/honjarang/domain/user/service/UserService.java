@@ -259,8 +259,22 @@ public class UserService {
             myTransactionListDtoList.add(myTransactionListDto);
         }
         return myTransactionListDtoList;
-
     }
+
+    @Transactional(readOnly = true)
+    public List<TransactionListDto> getMyJoinedTransactions(Integer page, Integer size, User user){
+        Pageable pageable = Pageable.ofSize(size).withPage(page-1);
+        List<TransactionListDto> myTransactionListDtoList = new ArrayList<>();
+        List<Transaction> myTransaction = transactionRepository.findAllByBuyerId(user.getId(),pageable).toList();
+        for(Transaction transaction : myTransaction){
+            TransactionListDto myTransactionListDto = new TransactionListDto(transaction);
+            myTransactionListDtoList.add(myTransactionListDto);
+        }
+        return myTransactionListDtoList;
+    }
+
+
+
 
     @Transactional
     public void withdrawPoint(Integer point, User user){
@@ -308,5 +322,10 @@ public class UserService {
     @Transactional(readOnly = true)
     public Integer getMyTransactionPageCount(Integer size, User user) {
         return (int) Math.ceil((double) transactionRepository.countAllBySellerId(user.getId()) / size) ;
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getMyJoinedTransactionPageCount(Integer size, User user) {
+        return (int) Math.ceil((double) transactionRepository.countAllByBuyerId(user.getId()) / size) ;
     }
 }

@@ -17,5 +17,8 @@ public interface TransactionRepository extends JpaRepository<Transaction,Long> {
     Page<Transaction> findAllBySellerId(Long id, Pageable pageable);
 
     Integer countAllBySellerId(Long id);
+     Page<Transaction> findAllByBuyerId(Long id, Pageable pageable);
+
+     Integer countAllByBuyerId(Long id);
 
 }
