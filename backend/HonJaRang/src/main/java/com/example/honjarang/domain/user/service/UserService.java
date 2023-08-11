@@ -195,7 +195,7 @@ public class UserService {
                     .contentType(profileImage.getContentType())
                     .build(), RequestBody.fromInputStream(profileImage.getInputStream(), profileImage.getSize()));
             User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다."));
-            user.changeProfileImage(profileImage.getOriginalFilename());
+            user.changeProfileImage("https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/profileImage/"+profileImage.getOriginalFilename());
         } catch (IOException e) {
             throw new RuntimeException("프로필 이미지 업로드에 실패했습니다.");
         }
@@ -331,8 +331,6 @@ public class UserService {
         }
         return results;
     }
-
-
 
 
     @Transactional
