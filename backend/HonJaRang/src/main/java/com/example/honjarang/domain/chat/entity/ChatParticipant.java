@@ -44,6 +44,11 @@ public class ChatParticipant {
         this.user = user;
     }
 
+    public void reEnter() {
+        this.isDeleted = false;
+        this.deletedAt = null;
+    }
+
     public void exit() {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
