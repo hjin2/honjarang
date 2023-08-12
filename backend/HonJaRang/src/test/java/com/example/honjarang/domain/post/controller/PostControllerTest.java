@@ -271,7 +271,7 @@ public class PostControllerTest {
         Long id = 1L;
 
         // when & then
-        mockMvc.perform(get("/api/v1/posts/{id}/like", id))
+        mockMvc.perform(post("/api/v1/posts/{id}/like", id))
                 .andExpect(status().isOk())
         .andDo(document("posts/like",
                 preprocessRequest(prettyPrint()),
