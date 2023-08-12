@@ -172,9 +172,10 @@ public class PostService {
     @Transactional
     public PostDto getPost(long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
+        Integer cnt = likePostRepository.countByPostId(id);
         postRepository.increaseViews(id);
         post.increaseViews();
-        return new PostDto(post);
+        return new PostDto(post, cnt);
 
     }
 
