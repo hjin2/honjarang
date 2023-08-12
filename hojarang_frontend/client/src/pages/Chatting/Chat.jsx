@@ -6,31 +6,28 @@ import { useNavigate } from 'react-router';
 import axios from 'axios';
 
 const Chat = () => {
-  const params = useParams()
-  const Key = params["id"]
-  const navigate = useNavigate()
+  const params = useParams();
+  const Key = params["id"];
+  const navigate = useNavigate();
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [socket, setSocket] = useState(null);
-  const [stomp, setStomp] = useState(null)
-  const [pages, setPages] = useState(0)
-  const [msg, setMsg] = useState([])
-  const token = localStorage.getItem('access_token')
+  const [stomp, setStomp] = useState(null);
+  const [pages, setPages] = useState(0);
+  const [msg, setMsg] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const token = localStorage.getItem('access_token');
 
   const stompClientRef = useRef(null);
-  useEffect(() => {
-    connect()
-    getChats()
-    getChat()
-  },[])
+  const chatAreaRef = useRef(null);
 
   const connect = () => {
     const serverAddress = 'http://honjarang.kro.kr:30000/chat';
     const socket = new SockJS(serverAddress);
     stompClientRef.current = Stomp.over(socket);
 
-    setSocket(socket)
-    setStomp(stompClientRef)
+    setSocket(socket);
+    setStomp(stompClientRef);
 
     stompClientRef.current.connect('guest', 'guest', (frame) => {
       stompClientRef.current.subscribe(`/topic/room.${Key}`, (message) => {
@@ -39,10 +36,10 @@ const Chat = () => {
       });
       stompClientRef.current.send(`/app/chat/connect.${Key}`, {}, JSON.stringify({ token: token }));
     });
-  }
+  };
 
   const showMessage = (message) => {
-    console.log(message)
+    console.log(message);
     setMessages((prevMessages) => [...prevMessages, `${message.id}: ${message.content}`]);
   };
 
@@ -56,85 +53,111 @@ const Chat = () => {
     setMessage('');
   };
 
-
   const getChats = () => {
-    axios.get(`http://honjarang.kro.kr:30000/api/v1/chats/${Key}/page`,{
+    axios.get(`http://honjarang.kro.kr:30000/api/v1/chats/${Key}/page`, {
       params: {
-        size:10
+        size: 30
       },
       headers: {
-        "Authorization" : `Bearer ${token}` 
+        "Authorization": `Bearer ${token}`
       }
     })
-    .then((res) => {
-      console.log(res.data)
-      setPages(res.data)
-    })
-  }
+      .then((res) => {
+        console.log(res.data);
+        setPages(res.data);
+      })
+      .then(() => {
+        axios.get(`http://honjarang.kro.kr:30000/api/v1/chats/${Key}`, {
+          params: {
+            page: pages,
+            size: 30
+          },
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        })
+          .then((res) => {
+            console.log(res.data);
+            setMsg(res.data);
 
-  const getChat = () => {
-    axios.get(`http://honjarang.kro.kr:30000/api/v1/chats/${Key}`,{
+            // Scroll to bottom after loading messages
+            chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
+          });
+      });
+  };
+
+  const loadMoreChat = () => {
+    setIsLoading(true);
+    const currentPage = pages;
+    axios.get(`http://honjarang.kro.kr:30000/api/v1/chats/${Key}`, {
       params: {
-        page:1,
-        size:10
+        page: currentPage + 1,
+        size: 30
       },
       headers: {
-        "Authorization" : `Bearer ${token}` 
+        "Authorization": `Bearer ${token}`
       }
     })
-    .then((res) => {
-      console.log(res.data)
-      setMsg(res.data)
-    })
-  }
-  
-  const getMoreChat = () => {
-    let cnt = 0
-    cnt ++ 
-    let page = pages - cnt
-    
-    axios.get(`http://honjarang.kro.kr:30000/api/v1/chats/${Key}`,{
-      params: {
-        page: pages,
-        size:10
-      },
-      headers: {
-        "Authorization" : `Bearer ${token}` 
-      }
-    })
-    .then((res) => {
-      console.log(res.data)
-      setMsg(res.data)
-    })
-  }
-  
+      .then((res) => {
+        if (res.data.length > 0) {
+          setMsg((prevMsgs) => [...prevMsgs, ...res.data]);
+          setPages(currentPage + 1);
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
   const Back = () => {
-  if (stomp && stomp.current) {
-    stomp.current.unsubscribe(`/topic/room.${Key}`);
-    stomp.current.disconnect();
-  }
-  
-  if (socket) {
-    socket.close();
-  }
+    if (stomp && stomp.current) {
+      stomp.current.unsubscribe(`/topic/room.${Key}`);
+      stomp.current.disconnect();
+    }
 
-  navigate('/chatting');
-};
+    if (socket) {
+      socket.close();
+    }
+
+    navigate('/chatting');
+  };
+
+  useEffect(() => {
+    connect();
+    getChats();
+    // getChat();
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [msg]);
+
+  const handleScroll = () => {
+    const isScrollNearTop = window.scrollY <= 100;
+    if (isScrollNearTop && !isLoading) {
+      loadMoreChat();
+    }
+  };
+
   return (
-    <div>
-      <div id="chatArea">
-        {msg.map((ms, idx) => (
-          <div key={idx}>{ms.nickname} : {ms.content}</div>
-        ))}
+    <div className="h-screen flex flex-col">
+      <div id="chatArea" ref={chatAreaRef} className="overflow-y-auto flex-grow border border-gray-300 p-4">
         {messages.map((msg, index) => (
           <div key={index}>{msg.content}</div>
         ))}
+        {msg.map((ms, idx) => (
+          <div key={idx}>{ms.nickname} : {ms.content}</div>
+        ))}
       </div>
-      <div>
-        <input type="text" id="message" value={message} onChange={(e) => setMessage(e.target.value)} />
-        <button onClick={sendMessage}>전송</button>
+      <div className="py-2 px-4 border-t border-gray-300">
+        <input type="text" id="message" value={message} onChange={(e) => setMessage(e.target.value)} className="border rounded p-2 w-full" />
+        <button onClick={sendMessage} className="mt-2 bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600">전송</button>
       </div>
-      <button onClick={Back}>뒤로가기</button>
+      <button onClick={Back} className="bg-red-500 text-white rounded px-4 py-2 mt-2 mx-4 self-center hover:bg-red-600">뒤로가기</button>
     </div>
   );
 };

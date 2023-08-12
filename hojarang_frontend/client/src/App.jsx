@@ -14,21 +14,21 @@ import MyPage from './pages/MyPage/MyPage';
 import FindPassword from './pages/FindPassword/FindPassword';
 import ChangePassword from './pages/FindPassword/ChangePassword';
 import ArticleCreate from './pages/Board/ArticleCreate';
-import ArticleDetail from './pages/Board/ArticleDetail';
+import { ArticleDetail } from './pages/Board/ArticleDetail';
 import ArticleUpdate from './pages/Board/ArticleUpdate';
 import Checkout from './pages/Checkout/Checkout';
 import Fail from './pages/Checkout/Fail';
 import Success from './pages/Checkout/Success';
 import DefaultLayout from './components/DefaultLayout';
-import PurchaseDetail from './pages/Market/PurchaseDetail';
-import DeliveryDetail from './pages/Market/DeliveryDetail';
-import TransactionDetial from './pages/Market/TransactionDetail'
+import PurchaseDetail from './components/Market/PurchaseDetail';
+import DeliveryDetail from './components/Market/DeliveryDetail';
 import WebRTCCreate from './pages/WebRTC/WebRTCCreate';
 import PurchaseCreate from './pages/Market/PurchaseCreate';
 import DeliveryCreate from './pages/Market/DeliveryCreate';
 import TransactionCreate from './pages/Market/TransactionCreate';
-import FreeChat from './pages/WebRTC/FreeChat';
-import TransactionUpdate from './pages/Market/TransactionUpdate';
+import FreeChat from './components/WebRTC/FreeChat';
+import FirebaseMessaging from './pages/PushTest/PushTest';
+
 
 function App() {
   return (
@@ -48,8 +48,6 @@ function App() {
               path="/market/deliverydetail/:id"
               element={<DeliveryDetail />}
             ></Route>
-            <Route path="/market/transactiondetail/:id" element={<TransactionDetial/>}></Route>
-            <Route path="/market/transactionupdate/:id" element={<TransactionUpdate/>}></Route>
             <Route path="/market/purchase/create" element={<PurchaseCreate/>}></Route>
             <Route path="/market/delivery/create" element={<DeliveryCreate/>}></Route>
             <Route path="/market/transaction/create" element={<TransactionCreate/>}></Route>
@@ -67,14 +65,15 @@ function App() {
               element={<ArticleCreate />}
             ></Route>
             <Route path="/board/article/:id" element={<ArticleDetail />} />
-            <Route path="/board/articleupdate/:id" element={<ArticleUpdate/>}></Route>
+            <Route paht="/board/articleupdate/:id" element={<ArticleUpdate/>}></Route>
             <Route path="/webrtc/:sessionid" element={<FreeChat/>}/>
             <Route path="/*" element={<Notfound />} />
           </Route>
-          <Route path="/checkout/:price" element={<Checkout />} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route path="/checkout/fail" element={<Fail />} />
           <Route path="/checkout/success" element={<Success />} />
           <Route path="/map2" element={<Map2 />} />
+          <Route path="/push" element={<FirebaseMessaging />} />
         </Routes>
       </BrowserRouter>
     </div>

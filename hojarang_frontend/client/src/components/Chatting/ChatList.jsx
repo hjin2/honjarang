@@ -15,6 +15,8 @@ function ChatList({list}) {
       <span>{list.name}</span>
       <br />
       <span>{list.last_message}</span>
+      <br />
+      <span>{list.unread_message_count}</span>
     </div>
   )
 }
