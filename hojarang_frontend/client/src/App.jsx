@@ -26,6 +26,7 @@ import WebRTCCreate from '@/pages/WebRTC/WebRTCCreate';
 import PurchaseCreate from '@/pages/Market/PurchaseCreate';
 import DeliveryCreate from '@/pages/Market/DeliveryCreate';
 import TransactionCreate from '@/pages/Market/TransactionCreate';
+import TransactionDetail from '@/pages/Market/TransactionDetail';
 import FreeChat from '@/pages/WebRTC/FreeChat';
 import FirebaseMessaging from '@/pages/PushTest/PushTest';
 
@@ -51,6 +52,7 @@ function App() {
             <Route path="/market/purchase/create" element={<PurchaseCreate/>}></Route>
             <Route path="/market/delivery/create" element={<DeliveryCreate/>}></Route>
             <Route path="/market/transaction/create" element={<TransactionCreate/>}></Route>
+            <Route path="/market/transactiondetail/:id" element={<TransactionDetail/>}></Route>
             <Route path="/board" element={<Board />} />
             <Route path="/map" element={<Map1 />} />
             <Route path="/chatting/:id" element={<Chat />} />
