@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import axios from 'axios';
 import Modal from '../../components/Common/Modal';
 import Stores from '../../components/Market/Delivery/Stores';
-
 import { useNavigate } from 'react-router-dom';
+import TextArea from '@/components/Board/TextArea';
 
 
 export default function DeliveryCreate() {
@@ -91,8 +91,9 @@ export default function DeliveryCreate() {
   return (
     <div className="border rounded-lg max-w-2xl mx-auto mt-10 pb-3 p-5 space-y-5 ">
       <div>
-        <div type="button" onClick={onModalOpen}>가게 선택</div>  
-        <input type="text" value={selectedStore ? selectedStore.name : ''} onChange={(e) => setStoreId(e.target.value)}/>
+        <div >가게명</div>  
+        <input type="text" onClick={onModalOpen} value={selectedStore ? selectedStore.name : ''} 
+        onChange={(e) => setStoreId(e.target.value)}/>
           {modalState && (
             <Modal modalState={modalState} setModalState={setModalState}>
               <Stores 
@@ -106,9 +107,15 @@ export default function DeliveryCreate() {
       </div>
       <div>
         <div>내용</div>
-        <input type="text" 
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="border rounded p-2 w-full resize-none h-64"
+          rows="4"  // 원하는 높이 조절
+        ></textarea>
+        {/* <input type="text" 
         value={content} 
-        onChange={(e) => setContent(e.target.value)}/>
+        onChange={(e) => setContent(e.target.value)}/> */}
       </div>
       <div>
         <div>최소금액 (1,000,000원 미만의 금액만 가능)</div>
