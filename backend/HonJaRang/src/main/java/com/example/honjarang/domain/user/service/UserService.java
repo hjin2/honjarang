@@ -223,6 +223,12 @@ public class UserService {
         }
     }
 
+    @Transactional
+    public void successPaymentForTest(PointChargeDto pointDto, User user) {
+        User loginedUser = userRepository.findById(user.getId()).orElseThrow(()->new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        loginedUser.addPoint(pointDto.getAmount());
+    }
+
     @Transactional(readOnly = true)
     public List<PostListDto> getMyPostList(Integer page, Integer size, User user){
         Pageable pageable = Pageable.ofSize(size).withPage(page-1);
@@ -285,9 +291,6 @@ public class UserService {
         }
         return myTransactionListDtoList;
     }
-
-
-
 
     @Transactional
     public void withdrawPoint(Integer point, User user){
