@@ -13,7 +13,7 @@ export default function TransactionList({transactionData, currentPage, pageSize,
           <div className="h-full">
             <Rooms roomsData={transactionData} component={TransactionRoom}/>
           </div>
-          <div className="flex justify-center">
+          <div className="mt-10 flex justify-center">
             <Pagination
               activePage={currentPage}
               itemsCountPerPage={12}

@@ -9,7 +9,6 @@ const Tab = ({ tabs, activeTabIndex, setActiveTabIndex }) => {
     alignItems: 'center',
     backgroundImage: `url(${Highlight})`, // 배경 이미지 경로 설정
     backgroundSize: 'cover',
-    minHeight: '80px', // 원하는 높이 조정
     padding: '10px',
     cursor: 'pointer',
     transition: 'background-color 0.3s',
@@ -20,13 +19,13 @@ const Tab = ({ tabs, activeTabIndex, setActiveTabIndex }) => {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: '80px', // 원하는 높이 조정
     padding: '10px',
     cursor: 'pointer',
     transition: 'background-color 0.3s',
     color : "#888888",
     fontWeight : "bold"
   }
+  
 
 
   return (
@@ -47,7 +46,7 @@ const Tab = ({ tabs, activeTabIndex, setActiveTabIndex }) => {
         ))}
       </ul>
       <div
-        className="border-2 border-main2 rounded-lg basis-5/6"
+        className="basis-5/6"
         style={{ minHeight: '400px'}}
       >
         {tabs[activeTabIndex].content}

@@ -120,7 +120,7 @@ export default function PurchaseDetail() {
 
   const handleCheck = () =>{
     console.log(id)
-    axios.put(`${URL}/api/v1/joint-purchases/${id}/receive`,{headers})
+    axios.put(`${URL}/api/v1/joint-purchases/${id}/receive`,[],{headers})
       .then((res) =>{
         console.log(res)
         window.alert("수령하셨습니다")

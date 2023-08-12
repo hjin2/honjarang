@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react"
 import TransacationList from "@/components/MyPage/List/TransacationList"
 import axios from "axios"
+import { activetabStyles, tabStyles } from "@/components/MyPage/MypageCss"
 
 export default function Transaction() {
 	const URL = import.meta.env.VITE_APP_API
   const token = localStorage.getItem("access_token")
   const headers = {"Authorization" : `Bearer ${token}`}
-	const [activeTab, setActiveTab] = useState('join-delivery')
+	const [activeTab, setActiveTab] = useState('join-transaction')
 	const [joinPageSize, setJoinPageSize] = useState(1)
 	const [writePageSize, setWritePageSize] = useState(1)
 	const [joinCurrentPage, setJoinCurrentPage] = useState(1)
@@ -60,16 +61,26 @@ export default function Transaction() {
     <div className="p-6">
 			<div className="space-x-5 mb-5">
 				<button 
-					onClick={() => handleTabClick("join-delivery")}
-					className={`${activeTab === "join-delivery" ? "font-semibold" : "font-normal"}`}
+					onClick={() => handleTabClick("join-transaction")}
+					className={`${activeTab === "join-transaction" ? "font-semibold" : "font-normal"}`}
+          style={
+            activeTab === "join-transaction"
+            ? activetabStyles
+            : tabStyles
+          }
 					>참여 중고</button>
 				<button 
-					onClick={() => handleTabClick("write-delivery")}
-					className={`${activeTab === "write-delivery" ? "font-semibold" : "font-normal"}`}
+					onClick={() => handleTabClick("write-transaction")}
+					className={`${activeTab === "write-transaction" ? "font-semibold" : "font-normal"}`}
+          style={
+            activeTab === "write-transaction"
+            ? activetabStyles
+            : tabStyles
+          }
 					>작성 중고</button>
 			</div>
-			<div>
-				{activeTab === `join-delivery`&&(
+			<div className="">
+				{activeTab === `join-transaction`&&(
 					<TransacationList
 						pageSize={joinPageSize}
 						transactionData={joinTransacationData}
@@ -77,14 +88,13 @@ export default function Transaction() {
 						currentPage={joinCurrentPage}
 					/>
 				)}
-				{activeTab === "write-delivery"&&(
+				{activeTab === "write-transaction"&&(
 					<TransacationList
 						pageSize={writePageSize}
 						transactionData={writeTransacationData}
 						setCurrentPage={setWriteCurrentPage}
 						currentPage={writeCurrentPage}
 					/>
-          // <div>Write</div>
 				)}
 			</div>
     </div>
