@@ -98,8 +98,8 @@ public class ChatService {
             if (!fcmTokenSet.isEmpty()) {
                 User user = userRepository.findById(chatMessage.getUserId())
                         .orElseThrow(() -> new UserNotFoundException("존재하지 않는 유저입니다."));
-                String title = user.getNickname();
-                String body = chatMessage.getContent();
+                String title = chatParticipant.getChatRoom().getName();
+                String body = user.getNickname() + " - " + chatMessage.getContent();
                 fcmTokenSet.forEach(token -> sendPushNotification(token, title, body));
             }
         }
