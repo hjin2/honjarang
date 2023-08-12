@@ -12,10 +12,11 @@ export default function MyPage() {
   const { id } = useParams();
   const dispatch = useDispatch()
   const token = localStorage.getItem("access_token")
+  const URL = import.meta.env.VITE_APP_API
   useEffect(() => {
     console.log(id)
     console.log(token)
-    axios.get(`${import.meta.env.VITE_APP_API}/api/v1/users/info`,
+    axios.get(`${URL}/api/v1/users/info`,
       {
         params : {id : id},
         headers : {'Authorization' : `Bearer ${token}`}
@@ -28,7 +29,7 @@ export default function MyPage() {
       .catch(function(error){
         console.log(error)
       })
-  },[]);
+  },[id, token]);
 
   return (
     <div className="my-page space-y-5">

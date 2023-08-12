@@ -28,7 +28,7 @@ export default function Transaction() {
 	useEffect(()=>{
     axios.get(`${URL}/api/v1/users/transaction-participating`, {params:{page:joinCurrentPage, size:4},headers})
       .then((res) => {
-        console.log(res)
+        console.log(res.data)
         setJoinTransacationData(res.data)
       })
       .catch((err) => console.log(err))
@@ -57,8 +57,8 @@ export default function Transaction() {
   },[writeCurrentPage])
 
   return (
-    <div>
-			<div className="text-center space-x-5 mt-5">
+    <div className="p-6">
+			<div className="space-x-5 mb-5">
 				<button 
 					onClick={() => handleTabClick("join-delivery")}
 					className={`${activeTab === "join-delivery" ? "font-semibold" : "font-normal"}`}

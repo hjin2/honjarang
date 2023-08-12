@@ -40,15 +40,8 @@ export default function ArticleList() {
         {articles.length === 0 ?(
           <div>작성한 글이 없습니다.</div>
         ):(
-          <div>
-            <div className="flex">
-              <div className="w-1/6">팁</div>
-              <div className="w-3/6 text-center">제목</div>
-              <div className="w-1/6">작성일</div>
-              <div className="w-1/6">조회수</div>
-            </div>
-            <hr />
-            <div>
+          <>
+            <div className="w-full">
               {articles?.map((article)=>(
                 <div 
                   key={article.id} 
@@ -58,6 +51,7 @@ export default function ArticleList() {
                   <Article
                     article={article}
                     />
+                  <hr />
                 </div>
               ))}
             </div>
@@ -72,7 +66,7 @@ export default function ArticleList() {
                 onChange={setPage}
                 />
             </div>
-          </div>
+          </>
         )}
       </div>
     </div>
