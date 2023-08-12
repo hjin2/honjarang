@@ -20,7 +20,7 @@ import Checkout from './pages/Checkout/Checkout';
 import Fail from './pages/Checkout/Fail';
 import Success from './pages/Checkout/Success';
 import DefaultLayout from './components/DefaultLayout';
-import PurchaseDetail from './components/Market/PurchaseDetail';
+import PurchaseDetail from '@/pages/Market/PurchaseDetail';
 import DeliveryDetail from './components/Market/DeliveryDetail';
 import WebRTCCreate from './pages/WebRTC/WebRTCCreate';
 import PurchaseCreate from './pages/Market/PurchaseCreate';
@@ -65,7 +65,7 @@ function App() {
               element={<ArticleCreate />}
             ></Route>
             <Route path="/board/article/:id" element={<ArticleDetail />} />
-            <Route paht="/board/articleupdate/:id" element={<ArticleUpdate/>}></Route>
+            <Route path="/board/articleupdate/:id" element={<ArticleUpdate/>}></Route>
             <Route path="/webrtc/:sessionid" element={<FreeChat/>}/>
             <Route path="/*" element={<Notfound />} />
           </Route>
