@@ -2,6 +2,7 @@ package com.example.honjarang.security.filter;
 
 
 import com.example.honjarang.domain.user.entity.User;
+import com.example.honjarang.security.exception.InvalidTokenException;
 import com.example.honjarang.security.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,10 +26,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
-        if (token != null && tokenService.verifyToken(token)) {
-            User user = tokenService.getUserByToken(token);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, Collections.singleton(new SimpleGrantedAuthority(user.getRole().toString())));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            if (token != null && tokenService.verifyToken(token)) {
+                User user = tokenService.getUserByToken(token);
+                Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, Collections.singleton(new SimpleGrantedAuthority(user.getRole().toString())));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch(Exception e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
         filterChain.doFilter(request, response);
     }
