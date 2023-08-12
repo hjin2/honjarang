@@ -5,6 +5,7 @@ import axios from "axios"
 import TransactionRoom from "./TransactionRoom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { useCallback } from "react"
 
 export default function TransactionList() {
   const URL = import.meta.env.VITE_APP_API
@@ -15,31 +16,40 @@ export default function TransactionList() {
   const [currentPage, setCurrentPage] = useState(1)
   const [keyword, setKeyword] = useState('')
 
-  const fetchTransacationData = () =>{
+  const fetchTransacationData = useCallback(() =>{
     axios.get(`${URL}/api/v1/secondhand-transactions`,{params:{page:currentPage, size:12, keyword: keyword}, headers})
     .then((res)=>{
       console.log(res.data)
       setTransactionData(res.data)
     })
     .catch((err)=>console.log(err))
-  }
+  },[currentPage, keyword])
+  const fetchPageSize = useCallback(()=>{
+    axios.get(`${URL}/api/v1/secondhand-transactions/page`,{params:{size:12}, headers})
+    .then((res) => {
+      console.log(res.data)
+      setPageSize(res.data)
+    })
+    .catch((err) => console.log(err))
+  },[])
 
   useEffect(() => {
-    axios.get(`${URL}/api/v1/secondhand-transactions/page`,{params:{size:12}, headers})
-      .then((res) => {
-        console.log(res.data)
-        setPageSize(res.data)
-      })
-      .catch((err) => console.log(err))
+    fetchPageSize()
   },[])
 
   useEffect(()=>{
     fetchTransacationData()
   },[currentPage])
 
-  const setPage = (error) => {
+  useEffect(()=>{
+    if(keyword){
+      fetchTransacationData()
+    }
+  },[keyword])
+
+  const setPage = useCallback((error) => {
     setCurrentPage(error)
-  }
+  },[])
 
   const search = (e) =>{
     e.preventDefault()

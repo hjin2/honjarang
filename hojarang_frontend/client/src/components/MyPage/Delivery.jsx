@@ -57,8 +57,8 @@ export default function Delivery() {
   },[writeCurrentPage])
 
   return (
-    <div>
-			<div className="text-center space-x-5 mt-5">
+    <div className="p-6">
+			<div className="space-x-5 mb-5">
 				<button 
 					onClick={() => handleTabClick("join-delivery")}
 					className={`${activeTab === "join-delivery" ? "font-semibold" : "font-normal"}`}

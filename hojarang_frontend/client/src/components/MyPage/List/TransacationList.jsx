@@ -2,9 +2,12 @@ import Rooms from "@/components/Market/Rooms"
 import Pagination from "react-js-pagination"
 import TransactionRoom from "@/components/Market/Transaction/TransactionRoom"
 
-export default function TransactionList({transactionData, currentPage, pageSize, setPage}) {
+export default function TransactionList({transactionData, currentPage, pageSize, setCurrentPage}) {
+ const setPage = (error) =>{
+  setCurrentPage(error)
+ } 
   return (
-    <div className="h-full p-6">
+    <div className="h-full">
       {transactionData.length > 0 ?(
         <>
           <div className="h-full">

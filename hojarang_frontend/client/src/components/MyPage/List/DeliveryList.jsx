@@ -10,7 +10,7 @@ export default function DeliveryList({pageSize, deliveryData, setCurrentPage, cu
   }
 
   return(
-    <div className="h-full p-6">
+    <div className="h-full">
       {deliveryData.length > 0 ?(
         <>
         <div className="h-full">

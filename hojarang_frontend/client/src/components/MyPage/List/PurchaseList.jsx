@@ -10,7 +10,7 @@ export default function PurchaseList({pageSize, purchaseData, setCurrentPage, cu
   }
 
   return(
-    <div className="h-full p-6">
+    <div className="h-full">
       {purchaseData.length > 0 ?(
         <>
         <div className="h-full">

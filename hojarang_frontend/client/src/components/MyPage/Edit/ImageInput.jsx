@@ -36,9 +36,9 @@ const ImageInput = ({imageURL, setImageURL,imageInput, setImageInput}) => {
     }
   };
   const removeImage = () =>{
-    setImage("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
-    setImageInput("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
-    setImageURL("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
+    setImage("https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/profileImage/basic.jpg")
+    setImageInput("https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/profileImage/basic.jpg")
+    setImageURL("https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/profileImage/basic.jpg")
   }
   
 
