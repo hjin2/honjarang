@@ -115,11 +115,13 @@ export default function TransactionDetail() {
       </div>
       <hr />
       <div className="my-3">
-        <img 
-          src={`https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/transactionImage/${detail.transaction_image}`} 
-          alt="상품이미지"
-          className="mx-auto"
+        {detail.transaction_image ? (
+          <img 
+            src={`https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/transactionImage/${detail.transaction_image}`} 
+            alt="상품이미지"
+            className="mx-auto"
           />
+        ):(null)}
         <div className="my-3">
           {detail.content}
         </div>

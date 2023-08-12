@@ -15,7 +15,7 @@ export default function PurchaseRoom(roomData) {
 
   return (
     <div >
-      <div className="border-2 border-gray1 w-52 h-60 p-2 rounded-lg">
+      <div className="border-2 border-gray1 w-52 p-2 rounded-lg">
         {/* 이미지와 그 위 텍스트 */}
         <div className="flex justify-center">
           <div className="w-32 h-32">
