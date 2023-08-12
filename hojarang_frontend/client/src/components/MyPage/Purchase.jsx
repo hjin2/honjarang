@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react"
 import PurchaseList from "@/components/MyPage/List/PurchaseList"
 import axios from "axios"
+import { activetabStyles, tabStyles } from "@/components/MyPage/MypageCss"
+
 
 export default function Purchase() {
 	const URL = import.meta.env.VITE_APP_API
@@ -62,11 +64,21 @@ export default function Purchase() {
 				<button 
 					onClick={() => handleTabClick("join-purchase")}
 					className={`${activeTab === "join-purchase" ? "font-semibold" : "font-normal"}`}
-					>참여 공구</button>
+					style={
+						activeTab === "join-purchase"
+						? activetabStyles
+						: tabStyles
+					}	
+				>참여 공구</button>
 				<button 
 					onClick={() => handleTabClick("write-purchase")}
 					className={`${activeTab === "write-purchase" ? "font-semibold" : "font-normal"}`}
-					>작성 공구</button>
+					style={
+						activeTab === "write-purchase"
+						? activetabStyles
+						: tabStyles
+					}	
+				>작성 공구</button>
 			</div>
 			<div>
 				{activeTab === `join-purchase`&&(
