@@ -205,9 +205,9 @@ export default function PurchaseDetail() {
           (
             <div className='space-y-5'>
               <div className="text-main5">모집 마감</div>
-              {isWriter ? (null):(
+              {isPurchase&&(detail.current_person_count===detail.target_person_count)  ? (
                 <button onClick={handleCheck} className='main1-full-button w-40'>수령확인</button>
-              )}
+              ):(null)}
             </div>
           )}
           {isWriter&&timeDiff>0 ? (
