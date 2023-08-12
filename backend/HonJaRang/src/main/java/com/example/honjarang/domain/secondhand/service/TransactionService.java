@@ -44,19 +44,22 @@ public class TransactionService {
     public Long createSecondHandTransaction(TransactionCreateDto transactionCreateDto, MultipartFile transactionImage, User user) {
 
         String uuid = UUID.randomUUID().toString();
+        String image = "";
 
-        try {
-            s3Client.putObject(PutObjectRequest.builder()
-                    .bucket("honjarang-bucket")
-                    .key("transactionImage/" + uuid + transactionImage.getOriginalFilename())
-                    .acl(ObjectCannedACL.PUBLIC_READ)
-                    .contentType(transactionImage.getContentType())
-                    .build(), RequestBody.fromInputStream(transactionImage.getInputStream(), transactionImage.getSize()));
-        } catch (IOException e) {
-            throw new RuntimeException("게시글 이미지 업로드에 실패했습니다.");
+        if(transactionImage!=null) {
+            try {
+                s3Client.putObject(PutObjectRequest.builder()
+                        .bucket("honjarang-bucket")
+                        .key("transactionImage/" + uuid + transactionImage.getOriginalFilename())
+                        .acl(ObjectCannedACL.PUBLIC_READ)
+                        .contentType(transactionImage.getContentType())
+                        .build(), RequestBody.fromInputStream(transactionImage.getInputStream(), transactionImage.getSize()));
+            } catch (IOException e) {
+                throw new RuntimeException("게시글 이미지 업로드에 실패했습니다.");
+            }
+
+           image =  uuid + transactionImage.getOriginalFilename();
         }
-
-        String image = uuid + transactionImage.getOriginalFilename();
         return transactionRepository.save(transactionCreateDto.toEntity(user, image)).getId();
     }
 
