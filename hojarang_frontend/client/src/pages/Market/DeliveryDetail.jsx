@@ -82,8 +82,18 @@ export default function DeliveryDetail() {
       })
   }
 
-  
+  // 수령 확인
+  const [received, setReceived] = useState(false)
 
+  const handleCheck = () =>{
+    axios.put(`${URL}/api/v1/joint-deliveries/${id}/receive`,[], {headers})
+      .then((res) =>{
+        console.log(res)
+        window.alert("수령하셨습니다")
+        setReceived(true)
+      })  
+      .catch((err) => console.log(err))
+  }
 
   const deadline = new Date(detail.deadline)
   const timeDiff = deadline - currentTime;
@@ -111,22 +121,24 @@ export default function DeliveryDetail() {
         <hr />
         {/* 메뉴 목록 */}
         <div className="menu-container overflow-y-scroll max-h-96 border rounded-md px-4">
-          {menuList.map((menu) => (
-            <div key={menu.id} className="flex justify-between items-center space-x-4 my-2">
-              <img src={menu.image || defaultImage} alt={menu.name} className="w-16 h-16" />
-              <div className="text-center">
-                <p className="font-semibold">{menu.name}</p>
-                <p>가격: {menu.price}</p>
+            {menuList.map((menu) => (
+              <div key={menu.id} className="flex justify-between items-center space-x-4 my-2">
+                <img src={menu.image || defaultImage} alt={menu.name} className="w-16 h-16" />
+                <div className="text-center">
+                  <p className="font-semibold">{menu.name}</p>
+                  <p>가격: {menu.price}</p>
+                </div>
+                {timeDiff > 0 ? (
+                  <div>
+                    <button onClick={() => onModalOpen(menu)}>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                      </svg>
+                    </button>
+                  </div>
+                ): ('')}
               </div>
-              <div>
-                <button onClick={() => onModalOpen(menu)}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          ))}
+            ))}
           {modalState && selectedMenu && (
             <Modal modalState={modalState} setModalState={setModalState}>
               <Cart 
@@ -134,26 +146,34 @@ export default function DeliveryDetail() {
                 detail={detail}
                 modalState={modalState} setModalState={setModalState}
                 setIsAdd = {setIsAdd}
-              />
+                />
             </Modal>
           )}
-        </div>
+          </div>
       </div>
       <div className="border rounded-lg max-w-2xl mx-auto mt-5 mb-10 pb-3 p-5 space-y-5 flex flex-col items-center">
-        <div className="text-main5">마감까지 남은 시간 : {days}일 {hours}시간 {minutes}분 {seconds}초</div>
-        <div className="text-main2">목표까지 {detail.target_min_price - detail.current_total_price >0 ? detail.target_min_price - detail.current_total_price : 0}원</div>
+        {timeDiff > 0 ? (
+          <div>
+            <div className="text-main5">마감까지 남은 시간 : {days}일 {hours}시간 {minutes}분 {seconds}초</div>
+            <div className="text-main2">목표까지 {detail.target_min_price - detail.current_total_price >0 ? detail.target_min_price - detail.current_total_price : 0}원</div>
+          </div>
+        ):(
+          <div className='space-y-5'>
+            <div className="text-main5 flex justify-center">모집 마감</div>
+            {detail.target_min_price - detail.current_total_price <= 0 ? (
+              <button onClick={handleCheck} 
+                className={`main1-full-button w-40 ${received ? 'main3-full-button' : ''}`}
+                >{received ? '수령 완료' : '수령 확인'}
+              </button>
+            ) : ('')}
+          </div>
+        )}
         {/* 메뉴를 담으면 장바구니 버튼 활성화 */}
         <CartList id={id} loginId={loginId} />
- 
-
-        {isWriter ? (
+        {isWriter && timeDiff>0 ? (
           <button className="main5-full-button w-40 mt-3" onClick={deleteDelivery}>모집 취소</button>
-          ):null}
-       
+          ):null}    
       </div>
-
-
-      
     </div>
   );
 }
