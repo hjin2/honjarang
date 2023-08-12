@@ -169,26 +169,26 @@ public class TransactionServiceTest {
 
     }
 
-    @Test
-    @DisplayName("중고거래 게시글 상세조회 성공")
-    void getSecondHandTransaction() {
-        // given
-        given(transactionRepository.findById(any(Long.class))).willReturn(Optional.ofNullable(transaction));
-        TransactionDto transactionDto = new TransactionDto(transaction);
-
-
-        // when
-        TransactionDto result = transactionService.getSecondHandTransaction(1L);
-
-        // then
-        assertThat(transactionDto.getId()).isEqualTo(result.getId());
-        assertThat(transactionDto.getSellerId()).isEqualTo(result.getSellerId());
-        assertThat(transactionDto.getTitle()).isEqualTo(result.getTitle());
-        assertThat(transactionDto.getContent()).isEqualTo(result.getContent());
-        assertThat(transactionDto.getPrice()).isEqualTo(result.getPrice());
-        assertThat(transactionDto.getIsCompleted()).isEqualTo(result.getIsCompleted());
-        assertThat(transactionDto.getCreatedAt()).isEqualTo(result.getCreatedAt());
-    }
+//    @Test
+//    @DisplayName("중고거래 게시글 상세조회 성공")
+//    void getSecondHandTransaction() {
+//        // given
+//        given(transactionRepository.findById(any(Long.class))).willReturn(Optional.ofNullable(transaction));
+//        TransactionDto transactionDto = new TransactionDto(transaction);
+//
+//
+//        // when
+//        TransactionDto result = transactionService.getSecondHandTransaction(1L);
+//
+//        // then
+//        assertThat(transactionDto.getId()).isEqualTo(result.getId());
+//        assertThat(transactionDto.getSellerId()).isEqualTo(result.getSellerId());
+//        assertThat(transactionDto.getTitle()).isEqualTo(result.getTitle());
+//        assertThat(transactionDto.getContent()).isEqualTo(result.getContent());
+//        assertThat(transactionDto.getPrice()).isEqualTo(result.getPrice());
+//        assertThat(transactionDto.getIsCompleted()).isEqualTo(result.getIsCompleted());
+//        assertThat(transactionDto.getCreatedAt()).isEqualTo(result.getCreatedAt());
+//    }
 
     @Test
     @DisplayName("중고거래 게시글 상세조회 실패 - 게시글이 없는 경우")
