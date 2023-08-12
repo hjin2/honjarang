@@ -44,11 +44,11 @@ export default function WebRTCCreate() {
     // formData.append("Category", category)
     const data = {
       category : category,
-      sessionId : title,
-      onlyVoicd : voiceSelect,
+      customSessionId : title,
+      onlyVoice : voiceSelect,
     }
     console.log(data)
-    axios.post(`${URL}/api/v1/video-room/sessions`,data, {headers})
+    axios.post(`${URL}/api/v1/video-room/sessions`, data)
       .then((res) => {
         console.log(res.data)
         navigate(`/webrtc`, {replace:true})
