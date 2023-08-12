@@ -83,9 +83,7 @@ const ArticleCreate = () => {
         onChange={handleImage}
       />
       <div className="py-3">
-        <Link to={`/board/`}>
-          <button onClick={saveArticle} className="main1-button w-24">작성 완료</button>
-        </Link>
+        <button onClick={saveArticle} className="main1-button w-24">작성 완료</button>
       </div>
     </div>
   );

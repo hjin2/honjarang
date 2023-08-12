@@ -21,8 +21,8 @@ export default function Edit({ modalState, setModalState }) {
   const [NicknameValid, setNicknameValid] = useState(false)
   const [AddressValid, setAddressValid] = useState(false)
   const [nicknameInput, setNicknameInput] = useState(nickname)
-  const [latitude, setLatitude] = useState(useSelector((state) => state.userinfo.longitude))
-  const [longitude, setLongitude] = useState(useSelector((state) => state.userinfo.latitude))
+  const [latitude, setLatitude] = useState(useSelector((state) => state.userinfo.latitude))
+  const [longitude, setLongitude] = useState(useSelector((state) => state.userinfo.longitude))
   const [imageInput, setImageInput] = useState(profile_image)
   
   const token = localStorage.getItem("access_token")
@@ -30,27 +30,19 @@ export default function Edit({ modalState, setModalState }) {
   const dispatch = useDispatch()
   const URL = import.meta.env.VITE_APP_API
 
-
-  const editUserInfo = async() => {
-    console.log(latitude,longitude,nickname,address)
-    const data = {
-      nickname: nicknameInput,
-      address: addressInput,
-      latitude: latitude,
-      longitude: longitude
-    };
-    console.log(imageInput)
-    const formData = new FormData()
-    if(imageInput !=="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"){
-      formData.append('profile_image', imageInput)
-    }else{
-      const extension = image.split('.').pop();
-      const imageFile = await fetch(image).then(response => response.blob());
-      // Blob 객체와 확장자를 함께 formData에 추가
-      formData.append('profile_image', imageFile, `DefaultImage.${extension}`);
-    }
-    console.log(formData)
-    console.log(data)
+  
+  const axiosimageUpload = (formData) =>{
+    axios.post(`${URL}/api/v1/users/profile-image`,formData,{headers:{"Authorization":`Bearer ${token}`, "Content-Type":"multipart/form-data"}})
+    .then((res)=>{
+      console.log(res)
+      dispatch(imageUpload(imageURL))
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
+  }
+  
+  const axiosEditInfo = (data) => {
     axios.put(`${URL}/api/v1/users/users`, data, { headers:{'Authorization': `Bearer ${token}`, "Content-Type":"Application/json"} })
       .then((res)=>{
           console.log(res)
@@ -65,16 +57,27 @@ export default function Edit({ modalState, setModalState }) {
       .catch(function(error) {
         console.log(error);
       });
-    axios.post(`${URL}/api/v1/users/profile-image`,formData,{headers:{"Authorization":`Bearer ${token}`, "Content-Type":"multipart/form-data"}})
-      .then((res)=>{
-        console.log(res)
-        dispatch(imageUpload(imageURL))
-      })
-      .catch((err)=>{
-        console.log(err)
-      })
+  }
+  const editUserInfo = async() => {
+    const data = {
+      nickname: nicknameInput,
+      address: addressInput,
+      latitude: latitude,
+      longitude: longitude
+    };
+    const formData = new FormData()
+    if(imageInput !=="https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/profileImage/basic.jpg"){
+      formData.append('profile_image', imageInput)
+    }else{
+      const extension = image.split('.').pop();
+      const imageFile = await fetch(image).then(response => response.blob());
+      // Blob 객체와 확장자를 함께 formData에 추가
+      formData.append('profile_image', imageFile, `basic.${extension}`);
     }
-
+    axiosEditInfo(data)
+    axiosimageUpload(formData)
+    setModalState(!modalState)
+  }
 
   const handleNickname = (() => {
     setisNicknameModified(!isNicknameModifed)

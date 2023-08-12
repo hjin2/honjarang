@@ -57,16 +57,16 @@ export default function Purchase() {
   },[writeCurrentPage])
 
   return (
-    <div>
-			<div className="text-center space-x-5 mt-5">
+    <div className="p-6">
+			<div className="space-x-5 mb-5">
 				<button 
 					onClick={() => handleTabClick("join-purchase")}
 					className={`${activeTab === "join-purchase" ? "font-semibold" : "font-normal"}`}
-					>참여 배달</button>
+					>참여 공구</button>
 				<button 
 					onClick={() => handleTabClick("write-purchase")}
 					className={`${activeTab === "write-purchase" ? "font-semibold" : "font-normal"}`}
-					>작성 배달</button>
+					>작성 공구</button>
 			</div>
 			<div>
 				{activeTab === `join-purchase`&&(

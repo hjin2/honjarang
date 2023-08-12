@@ -1,12 +1,17 @@
-import React from 'react'
-
 export default function Article({article}) {
   return (
-    <div className="flex">
-      <div className="w-1/6">{article.category}</div>
-      <div className="w-3/6 text-center">{article.title}</div>
-      <div className="w-1/6">{article.created_at?.slice(0,10)}</div>
-      <div className="w-1/6">{article.views}</div>
+    <div className="flex space-x-2">
+      <div>
+        <div className="flex space-x-1">
+          <div className="">{article.title}</div>
+          <div className="text-main1">[{article.views}]</div>
+        </div>
+        <div className="flex text-gray3 text-xs space-x-1">
+          <div className="font-semibold">{article.category}</div>
+          <div>{article.user_nickname}</div>
+          <div>{article.created_at?.slice(0,10)}</div>
+        </div>
+      </div>
     </div>
   )
 }

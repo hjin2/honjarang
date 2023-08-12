@@ -1,10 +1,11 @@
 import Article from '@/components/Board/Article';
 import { useNavigate } from 'react-router-dom';
-import { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import axios from 'axios';
 import Pagination from 'react-js-pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { useCallback } from 'react';
 
 
 export default function AricleList() {
@@ -18,14 +19,15 @@ export default function AricleList() {
   const handleKeyword = (e) =>{
     setKeyworkd(e.target.value)
   }
-  const fetchArticles = () =>{
+  const fetchArticles = useCallback(() =>{
     axios.get(`${URL}/api/v1/posts`,{params:{page:currentPage, keyword:keyword}, headers})
     .then((res)=>{
       console.log(res.data)
       setArticles(res.data)
     })
     .catch((err)=>console.log(err))
-  }
+  },[currentPage, keyword])
+
   const search = (e) =>{
     e.preventDefault()
     if(keyword){
@@ -42,17 +44,21 @@ export default function AricleList() {
         console.log(err)
       })
     },[])
-    useEffect(()=>{
+
+  useEffect(()=>{
       fetchArticles()
     },[currentPage])
-    const navigate = useNavigate()
-    const handleButton = () =>{
-      navigate("/board/articlecreate")
-    }
-    const setPage = (error)=>{
-      setCurrentPage(error)
-    }
-    return (
+  
+  const navigate = useNavigate()
+  const handleButton = () =>{
+    navigate("/board/articlecreate")
+  }
+  const setPage = (error)=>{
+    setCurrentPage(error)
+  }
+  const MemorizedArticle = React.memo(Article)
+
+  return (
     <div>
       <div className="w-3/5 mx-auto">
         <div className='flex justify-between mb-5'>
@@ -71,7 +77,7 @@ export default function AricleList() {
               onClick={()=>{navigate(`/board/article/${article.id}`)}}
               className="cursor-pointer"
             >
-              <Article
+              <MemorizedArticle
                 article={article}
                 />
             </div>
