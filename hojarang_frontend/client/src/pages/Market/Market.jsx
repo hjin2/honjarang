@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import SideTab from '@/components/Common/SideTab'
 import Content from '@/components/Common/Content';
 import PurchaseList from '@/components/Market/Purchase/PurchaseList';

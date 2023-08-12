@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import axios from 'axios';
 import Modal from '../../components/Common/Modal';
-import Stores from '../../components/Market/Stores';
+import Stores from '../../components/Market/Delivery/Stores';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -25,11 +25,15 @@ export default function DeliveryCreate() {
   const [deadline, setDeadline] = useState('')
 
   const [selectedStore, setSelectedStore] = useState('')
+  
+
   // 선택한 가게 ID 저장
   const onStoreClick = (store) => {
     setSelectedStore(store)
-    setStoreId(store.id)
+    
+    // setStoreId(store.id)
     setModalState(false)
+    
   }
 
   // 선택한 가게 전달
@@ -65,7 +69,7 @@ export default function DeliveryCreate() {
     const headers = {'Authorization': `Bearer ${token}`};
     const data = {
       content: content,
-      store_id: storeId,
+      store_id: selectedStore.id,
       delivery_charge: deliveryCharge,
       target_min_price: targetMinPrice,
       deadline: deadline.slice(0,10)+" "+deadline.slice(11,16)+":00"
@@ -78,6 +82,7 @@ export default function DeliveryCreate() {
         navigate(`/market/deliverydetail/${res.data}`)
       })
       .catch((err) => {
+        console.log(data)
         console.log(err)
       })
   };
@@ -86,8 +91,8 @@ export default function DeliveryCreate() {
   return (
     <div className="border rounded-lg max-w-2xl mx-auto mt-10 pb-3 p-5 space-y-5 ">
       <div>
-        <div>가게</div>
-        <input type="number" value={selectedStore ? selectedStore.id : ''} readOnly onClick={onModalOpen}/>
+        <div type="button" onClick={onModalOpen}>가게 선택</div>  
+        <input type="text" value={selectedStore ? selectedStore.name : ''} onChange={(e) => setStoreId(e.target.value)}/>
           {modalState && (
             <Modal modalState={modalState} setModalState={setModalState}>
               <Stores 

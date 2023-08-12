@@ -20,20 +20,26 @@ export default function DeliveryRoom(roomData) {
 
   return (
     <div >
-      <div className="border w-52 h-52 p-2 ">
-        <div className="flex justify-center relative">
+      <div className="border-2 border-gray1 w-52 h-60 p-2 rounded-lg">
+        <div className="flex justify-center">
           <div className="w-32 h-32">
             <img src={imageToShow} alt="가게 이미지" className="w-full h-full" />
           </div>
-          <div className="absolute inset-0 flex items-end justify-end">
+          {/* <div className="absolute inset-0 flex items-end justify-end">
             <p className="text-sm font-bold">{current_total_price}/{target_min_price}</p>
-          </div>
+          </div> */}
         </div>
         <div className="flex justify-between my-1">
-          <div>{adjustedStoreName}</div>
+          <div className='font-bold text-base'>{adjustedStoreName}</div>
         </div>
+<<<<<<< HEAD:hojarang_frontend/client/src/components/Market/Delivery/DeliveryRoom.jsx
+        <div className="text-sm text-main5 my-1">목표까지 {target_min_price - current_total_price > 0 ? target_min_price - current_total_price : 0 }원</div>
+        <div className="flex justify-end mt-2">
+          <Link to={{ pathname: `deliverydetail/${id}` }}>
+=======
         <div className="flex justify-end">
           <Link to={{ pathname: `/market/deliverydetail/${id}` }}>
+>>>>>>> frontend:hojarang_frontend/client/src/components/Market/DeliveryRoom.jsx
             <button type="button" className="main1-full-button w-20">참여하기</button>
           </Link>
         </div>
