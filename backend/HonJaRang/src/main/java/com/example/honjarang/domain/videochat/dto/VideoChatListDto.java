@@ -18,7 +18,7 @@ public class VideoChatListDto {
         this.id = videoChatRoom.getId();
         this.sessionId = videoChatRoom.getSessionId();
         this.category = videoChatRoom.getCategory();
-        this.isScreen = videoChatRoom.getIsScreen();
+        this.isScreen = videoChatRoom.getOnlyVoice();
         this.createdAt = DateTimeUtils.formatLocalDateTime(videoChatRoom.getCreatedAt());
         this.count = count;
 
