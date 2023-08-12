@@ -63,7 +63,7 @@ const FirebaseMessaging = () => {
   const PushTest = () => {
     const token = localStorage.getItem('fcm_token')
     const access_token = localStorage.getItem('access_token')
-    axios.post('http://honjarang.kro.kr:30000/api/v1/users/fcm-token',
+    axios.post(`${import.meta.env.VITE_APP_API}/api/v1/users/fcm-token`,
     {fcm_token : token},
     {headers: {
       'Authorization' : `Bearer ${access_token}`
