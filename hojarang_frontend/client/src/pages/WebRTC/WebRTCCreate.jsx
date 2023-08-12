@@ -3,26 +3,24 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSquareCheck } from "@fortawesome/free-solid-svg-icons"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import { data } from "autoprefixer"
 
 export default function WebRTCCreate() {
   const navigate = useNavigate()
   const URL = import.meta.env.VITE_APP_API
   const token = localStorage.getItem("access_token")
   const headers = {
-    "Authorization" : `Bearer ${token}`,
-    "Content-Type" : "multipart/formed-data"
+    "Authorization" : `Bearer ${token}`
+    // "Content-Type" : "multipart/formed-data"
   }
-  const [ voiceSelect, setVoiceSelect ] = useState(true)
+  const [ voiceSelect, setVoiceSelect ] = useState(false)
   const handleVoiceSelectToggle = () => {
     setVoiceSelect(!voiceSelect);
   };
   const [title, setTitle] = useState('')
   const [numPeople, setNumPeople] = useState(0)
   const [image, setImage] = useState()
-
-  
   const [category, setCategory] = useState("")
-
   const handleTitle = (e) =>{
     setTitle(e.target.value)
   }
@@ -35,15 +33,22 @@ export default function WebRTCCreate() {
     }
   }
   const handleCategory = (e) =>{
+    console.log(e.target.value)
     setCategory(e.target.value)
   }
   const createWebRTC = () =>{
     const formData = new FormData()
-    formData.append("webrtc_image", image)
-    formData.append("title", title)
-    formData.append("numPeople", numPeople)
-    formData.append("category", category)
-    axios.post(`${URL}/api/v1/webrtc`,formData, {headers})
+    // formData.append("webrtc_image", image)
+    // formData.append("sessionId", title)
+    // formData.append("numPeople", numPeople)
+    // formData.append("Category", category)
+    const data = {
+      category : category,
+      sessionId : title,
+      onlyVoicd : voiceSelect,
+    }
+    console.log(data)
+    axios.post(`${URL}/api/v1/video-room/sessions`,data, {headers})
       .then((res) => {
         console.log(res.data)
         navigate(`/webrtc`, {replace:true})
@@ -91,11 +96,11 @@ export default function WebRTCCreate() {
       <div>
         <div>카테고리</div>
         <form action="" value="카테고리">
-          <select name="" id="" className="border" onChange={handleCategory}>
-            <option value="자유">자유</option>
-            <option value="혼밥/혼술">혼밥/혼술</option>
-            <option value="도와주세요">도와주세요</option>
-            <option value="게임">게임</option>
+          <select value={category} className="border" onChange={handleCategory}>
+            <option value="FREE">자유</option>
+            <option value="MUKBANG">혼밥/혼술</option>
+            <option value="HELP">도와주세요</option>
+            <option value="GAME">게임</option>
           </select>
         </form>
       </div>

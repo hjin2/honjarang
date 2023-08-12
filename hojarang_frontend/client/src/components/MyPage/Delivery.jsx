@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react"
 import DeliveryList from "@/components/MyPage/List/DeliveryList"
 import axios from "axios"
+import { activetabStyles, tabStyles } from "@/components/MyPage/MypageCss"
+
 
 export default function Delivery() {
 	const URL = import.meta.env.VITE_APP_API
@@ -62,11 +64,21 @@ export default function Delivery() {
 				<button 
 					onClick={() => handleTabClick("join-delivery")}
 					className={`${activeTab === "join-delivery" ? "font-semibold" : "font-normal"}`}
-					>참여 배달</button>
+					style={
+						activeTab === "join-delivery"
+						? activetabStyles
+						: tabStyles
+					}	
+				>참여 배달</button>
 				<button 
 					onClick={() => handleTabClick("write-delivery")}
 					className={`${activeTab === "write-delivery" ? "font-semibold" : "font-normal"}`}
-					>작성 배달</button>
+					style={
+						activeTab === "write-delivery"
+						? activetabStyles
+						: tabStyles
+					}
+				>작성 배달</button>
 			</div>
 			<div>
 				{activeTab === `join-delivery`&&(
