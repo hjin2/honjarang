@@ -326,7 +326,8 @@ public class UserService {
         List<JointPurchaseListDto> myJointPurchaseListDtos = new ArrayList<>();
         List<JointPurchase> myJointPurchaseList = jointPurchaseRepository.findAllByUserId(user.getId(),pageable).toList();
         for(JointPurchase jointPurchase : myJointPurchaseList){
-            JointPurchaseListDto myJointPurchaseListDto = new JointPurchaseListDto(jointPurchase);
+            Integer currentPersonCnt = jointPurchaseApplicantRepository.countByJointPurchaseId(jointPurchase.getId());
+            JointPurchaseListDto myJointPurchaseListDto = new JointPurchaseListDto(jointPurchase,currentPersonCnt);
             myJointPurchaseListDtos.add(myJointPurchaseListDto);
         }
         return myJointPurchaseListDtos;
@@ -348,7 +349,8 @@ public class UserService {
         List<JointPurchaseListDto> results = new ArrayList<>();
         for(Long jointId : jointPurchaseIds) {
             JointPurchase tmp = jointPurchaseRepository.findAllById(jointId);
-            JointPurchaseListDto tmpDto = new JointPurchaseListDto(tmp);
+            Integer currentPersonCnt = jointPurchaseApplicantRepository.countByJointPurchaseId(jointId);
+            JointPurchaseListDto tmpDto = new JointPurchaseListDto(tmp, currentPersonCnt);
             results.add(tmpDto);
         }
         return results;
