@@ -141,13 +141,13 @@ public class JointDeliveryService {
     private StoreDto getStoreByApiForTest(Long storeId) {
         String json = """
                 {
-                  "id": 1638150004,
-                  "name": "BBQ치킨 인동재롱점"
-                  "imageURL": "https://ldb-phinf.pstatic.net/20230515_91/1684150548650oQLHs_PNG/%B9%E8%B9%CE%2C_%B9%E8%B9%CE%BF%F8_%B7%CE%B0%ED_2.png",
-                  "fullRoadAddress": "경상북도 구미시 인동중앙로3길 29 영무메트로 상가 1층 106호",
-                  "x": 128.418346217966,
-                  "y": 36.10857936950589,
-                """;
+                         "id": 1638150004,
+                         "name": "BBQ치킨 인동재롱점",
+                         "imageURL": "https://ldb-phinf.pstatic.net/20230515_91/1684150548650oQLHs_PNG/%B9%E8%B9%CE%2C_%B9%E8%B9%CE%BF%F8_%B7%CE%B0%ED_2.png",
+                         "fullRoadAddress": "경상북도 구미시 인동중앙로3길 29 영무메트로 상가 1층 106호",
+                         "x": 128.418346217966,
+                         "y": 36.10857936950589
+                 }""";
         try {
             JsonNode jsonNode = objectMapper.readTree(json);
             StoreDto storeDto = new StoreDto();
@@ -165,14 +165,13 @@ public class JointDeliveryService {
 
     @Transactional(readOnly = true)
     public List<MenuListDto> getMenuList(Long jointDeliveryId) {
-        JointDelivery jointDelivery = jointDeliveryRepository.findById(jointDeliveryId).orElseThrow(() -> new JointDeliveryNotFoundException("해당 공동배달이 존재하지 않습니다."));
-        List<Menu> menuList = menuRepository.findAllByStoreId(jointDelivery.getStore().getId());
+        List<Menu> menuList = menuRepository.findAllByJointDeliveryId(jointDeliveryId);
         return menuList.stream()
                 .map(MenuListDto::new)
                 .toList();
     }
 
-    private List<Menu> getMenuListByApi(Long storeId) {
+    private List<Menu> getMenuListByApi(Long storeId, Long jointDeliveryId) {
         List<Menu> menuList = new ArrayList<>();
         String html = fetchHtmlByStoreId(storeId);
 //        String html = fetchHtmlByStoreIdForTest(storeId);
@@ -190,7 +189,7 @@ public class JointDeliveryService {
                 if (key.startsWith("Menu") || key.substring(0, 4).matches("^[0-9]*$")) {
                     JsonNode menuNode = jsonNode.get(key);
                     Menu menu = Menu.builder()
-                            .storeId(storeId)
+                            .jointDeliveryId(jointDeliveryId)
                             .name(menuNode.get("name").asText())
                             .price(menuNode.get("price").asInt())
                             .image(menuNode.get("images").get(0) != null ? menuNode.get("images").get(0).asText() : null)
@@ -214,6 +213,17 @@ public class JointDeliveryService {
 
         StoreDto storeDto = getStoreByApi(jointDeliveryCreateDto.getStoreId());
 //        StoreDto storeDto = getStoreByApiForTest(jointDeliveryCreateDto.getStoreId());
+        if(!storeRepository.existsById(storeDto.getId())) {
+            Store store = Store.builder()
+                    .id(storeDto.getId())
+                    .storeName(storeDto.getName())
+                    .image(storeDto.getImage())
+                    .address(storeDto.getAddress())
+                    .latitude(storeDto.getLatitude())
+                    .longitude(storeDto.getLongitude())
+                    .build();
+            storeRepository.save(store);
+        }
         Store store = Store.builder()
                 .id(storeDto.getId())
                 .storeName(storeDto.getName())
@@ -222,15 +232,18 @@ public class JointDeliveryService {
                 .latitude(storeDto.getLatitude())
                 .longitude(storeDto.getLongitude())
                 .build();
-        storeRepository.save(store);
-
-        List<Menu> menuList = getMenuListByApi(jointDeliveryCreateDto.getStoreId());
-
-        // storeId의 메뉴를 가지고 있으면 삭제
-        menuRepository.deleteAllByStoreId(store.getId());
-        menuRepository.saveAll(menuList);
+        if(storeRepository.existsById(storeDto.getId())) {
+            store = storeRepository.findById(storeDto.getId()).orElseThrow(() -> new StoreNotFoundException("가게를 찾을 수 없습니다."));
+        } else {
+            storeRepository.save(store);
+        }
 
         JointDelivery jointDelivery = jointDeliveryRepository.save(jointDeliveryCreateDto.toEntity(store, user));
+        List<Menu> menuList = getMenuListByApi(jointDeliveryCreateDto.getStoreId(), jointDelivery.getId());
+
+        // storeId의 메뉴를 가지고 있으면 삭제
+        menuRepository.saveAll(menuList);
+
         ChatRoom chatRoom = ChatRoom.builder()
                 .name(jointDelivery.getId().toString() + "번 공동배달 채팅방")
                 .build();

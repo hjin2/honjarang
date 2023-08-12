@@ -16,14 +16,14 @@ public class Menu {
     private String name;
     private Integer price;
     private String image;
-    private Long storeId;
+    private Long jointDeliveryId;
 
     @Builder
-    public Menu(String name, Integer price, String image, Long storeId) {
+    public Menu(String name, Integer price, String image, Long jointDeliveryId) {
         this.name = name;
         this.price = price;
         this.image = image;
-        this.storeId = storeId;
+        this.jointDeliveryId = jointDeliveryId;
     }
 
     public void setIdForTest(ObjectId id) {

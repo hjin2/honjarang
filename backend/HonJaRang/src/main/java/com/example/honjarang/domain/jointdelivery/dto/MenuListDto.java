@@ -18,13 +18,11 @@ public class MenuListDto {
     private String name;
     private Integer price;
     private String image;
-    private Long storeId;
 
     public MenuListDto(Menu menu) {
         this.id = menu.getId().toString();
         this.name = menu.getName();
         this.price = menu.getPrice();
         this.image = menu.getImage();
-        this.storeId = menu.getStoreId();
     }
 }
