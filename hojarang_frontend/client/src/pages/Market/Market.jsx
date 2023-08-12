@@ -1,7 +1,7 @@
 import SideTab from '../../components/Common/SideTab'
 import Content from '../../components/Common/Content';
 import PurchaseList from '../../components/Market/Purchase/PurchaseList';
-import DeliveryList from '../../components/Market/DeliveryList';
+import DeliveryList from '../../components/Market/Delivery/DeliveryList';
 import TransactionList from '../../components/Market/Transaction/TransactionList';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
