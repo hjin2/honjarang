@@ -48,22 +48,29 @@ public class VideoChatService {
             throws OpenViduJavaClientException, OpenViduHttpException {
 
         SessionProperties properties = SessionProperties.fromJson(params).build();
-
         if (videoChatRoomRepository.findBySessionId(properties.customSessionId()) != null)
             throw new ExistVideoChatException("동일한 방이 이미 있습니다.");
+
+        Category option = Category.FREE;
+        switch((String)params.get("category")) {
+            case "FREE": option = Category.FREE; break;
+            case "MUKBANG": option = Category.MUKBANG; break;
+            case "GAME": option = Category.GAME; break;
+            case "STUDY": option = Category.STUDY; break;
+        }
 
         Session session = openvidu.createSession(properties);
         VideoChatRoom videoChatRoom = VideoChatRoom.builder()
                 .sessionId(properties.customSessionId())
-                .category(Category.MUKBANG)
-                .isScreen(properties.defaultRecordingProperties().hasVideo())
+                .category(option)
+                .onlyVoice((Boolean)params.get("onlyVoice"))
                 .build();
         videoChatRoomRepository.save(videoChatRoom);
         return session.getSessionId();
     }
 
     @Transactional
-    public String createConnection(String sessionId, Map<String, Object> params, User user) {
+    public String createConnection(String sessionId, Map<String, Object> params) {
 
         Session session = openvidu.getActiveSession(sessionId);
         if (session == null) {
@@ -80,12 +87,11 @@ public class VideoChatService {
             throw new RuntimeException(e);
         }
 
-        VideoChatParticipant videoChatParticipant = VideoChatParticipant.builder()
-                        .videoChatRoom(videoChatRoomRepository.findBySessionId(sessionId))
-                        .user(user)
-                        .build();
-
-        videoChatParticipantRepository.save(videoChatParticipant);
+//        VideoChatParticipant videoChatParticipant = VideoChatParticipant.builder()
+//                        .videoChatRoom(videoChatRoomRepository.findBySessionId(sessionId))
+//                        .build();
+//
+//        videoChatParticipantRepository.save(videoChatParticipant);
         return connection.getToken();
     }
 
