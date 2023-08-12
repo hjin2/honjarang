@@ -1,10 +1,10 @@
-import SideTab from "../../components/Common/SideTab";
-import Content from "../../components/Common/Content";
+import SideTab from "@/components/Common/SideTab";
+import Content from "@/components/Common/Content";
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import RTC from "../../components/WebRTC/RTC"
+import RTC from "@/components/WebRTC/RTC"
 import { useSelector } from "react-redux";
-import { handleSession } from "../../redux/slice/sessionSlice";
+import { handleSession } from "@/redux/slice/sessionSlice";
 
 export default function WebRTC() {
   const session = useSelector((state) => state.session.session)

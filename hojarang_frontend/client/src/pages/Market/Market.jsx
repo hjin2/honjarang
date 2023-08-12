@@ -1,11 +1,12 @@
-import SideTab from '../../components/Common/SideTab'
-import Content from '../../components/Common/Content';
-import PurchaseList from '../../components/Market/Purchase/PurchaseList';
-import DeliveryList from '../../components/Market/Delivery/DeliveryList';
-import TransactionList from '../../components/Market/Transaction/TransactionList';
 import { useEffect, useState } from 'react';
+import SideTab from '@/components/Common/SideTab'
+import Content from '@/components/Common/Content';
+import PurchaseList from '@/components/Market/Purchase/PurchaseList';
+import DeliveryList from '@/components/Market/DeliveryList';
+import TransactionList from '@/components/Market/Transaction/TransactionList';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+
 
 export default function Market() {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
@@ -87,17 +88,17 @@ export default function Market() {
     {
       title: '공동구매',
       content: <PurchaseList/>,
-      recruit: <Link to="/market/purchase/create">모집하기</Link>
+      recruit: <Link to="/market/purchase/create">모집하기</Link>,
     },
     {
       title: '공동배달',
       content: <DeliveryList/>,
-      recruit: <Link to="/market/delivery/create">모집하기</Link>
+      recruit: <Link to="/market/delivery/create">모집하기</Link>,
     },
     {
       title: '중고거래',
       content: <TransactionList/>,
-      recruit: <Link to="/market/transaction/create">모집하기</Link>
+      recruit: <Link to="/market/transaction/create">모집하기</Link>,
     },
   ]
 
@@ -110,7 +111,7 @@ export default function Market() {
           activeTabIndex = {activeTabIndex}
           setActiveTabIndex = {setActiveTabIndex}
           />
-        <button type = "button" className="main3-full-button w-28" >
+        <button className="main3-full-button w-28 mb-10" >
           {tabs[activeTabIndex].recruit}
         </button>
       </div>

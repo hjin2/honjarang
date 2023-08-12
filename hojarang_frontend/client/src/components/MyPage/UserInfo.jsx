@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Edit from './Edit/Edit';
-import Modal from '../Common/Modal';
+import Edit from '@/components/MyPage/Edit/Edit';
+import Modal from '@/components/Common/Modal';
 import { useSelector } from 'react-redux';
 
 export default function UserInfo() {
@@ -13,7 +13,7 @@ export default function UserInfo() {
   const point = useSelector((state) => state.userinfo.point)
   return (
     <div className="flex justify-center space-x-10">
-      <img className="h-20 w-20 rounded-full" src={image} size={200}></img>
+      <img className="h-20 w-20 rounded-full" src={image} loading='lazy'></img>
       <div className="space-y-2">
         <div className="flex">
           <div className="font-bold text-lg mr-3">{nickname}</div>

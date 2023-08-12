@@ -1,11 +1,9 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
 import Rooms from "@/components/Market/Rooms";
-import DeliveryRoom from "@/components/Market/DeliveryRoom"
+import PurchaseRoom from "@/components/Market/Purchase/PurchaseRoom"
 import Pagination from "react-js-pagination";
 
 
-export default function DeliveryList({pageSize, deliveryData, setCurrentPage, currentPage}) {
+export default function PurchaseList({pageSize, purchaseData, setCurrentPage, currentPage}) {
 
   const setPage = (error) =>{
     setCurrentPage(error)
@@ -13,10 +11,10 @@ export default function DeliveryList({pageSize, deliveryData, setCurrentPage, cu
 
   return(
     <div className="h-full">
-      {deliveryData.length > 0 ?(
+      {purchaseData.length > 0 ?(
         <>
         <div className="h-full">
-          <Rooms roomsData={deliveryData} component={DeliveryRoom}/>
+          <Rooms roomsData={purchaseData} component={PurchaseRoom}/>
         </div>
         <div className="flex justify-center">
           <Pagination
@@ -31,7 +29,7 @@ export default function DeliveryList({pageSize, deliveryData, setCurrentPage, cu
         </div>
       </>
       ):(
-        <div>참여한 공동배달이 없습니다.</div>
+        <div>참여한 공동구매가 없습니다.</div>
       )}
     </div>
   )

@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Comment from '../../components/Board/Comment';
+import Comment from '@/components/Board/Comment';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 
 export const ArticleDetail = () => {
   const navigate = useNavigate()
@@ -26,7 +28,6 @@ export const ArticleDetail = () => {
     }
     axios.post(`${URL}/api/v1/posts/${id}/comments`,data,{headers})
       .then((res)=>{
-        console.log(res)
         fetchComments()
       })
       .catch((err)=>console.log(err))
@@ -41,50 +42,51 @@ export const ArticleDetail = () => {
     }
   }
 
-  const fetchUser = (userId) =>{
+  const fetchUser = useCallback((userId) =>{
     axios.get(`${URL}/api/v1/users/info`,{params:{id:userId}, headers})
       .then((res)=>{
-        console.log(res.data)
         setUser(res.data)
       })
       .catch((err)=>{
         console.log(err)
       })
-  }
-
+  },[])
+  const userId = localStorage.getItem("user_id")
   useEffect(()=>{
-    axios.get(`${URL}/api/v1/posts/${id}`, {headers})
-      .then((res) =>{
-        setDetail(res.data)
-        console.log(res.data)
-        if(Number(res.data.user_id) === Number(localStorage.getItem("user_id"))){
-          setIsWriter(true)
-        }else{
-          setIsWriter(false)
-        }
-        fetchUser(res.data.user_id)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+      fetchDetail()
       fetchComments()
-  },[id])
+  },[])
+
+  const fetchDetail = useCallback(() => {
+    axios.get(`${URL}/api/v1/posts/${id}`, { headers })
+    .then((res) =>{
+      setDetail(res.data)
+      console.log(res.data)
+      if(res.data.user_id == userId){
+        setIsWriter(true)
+      }else{
+        setIsWriter(false)
+      }
+      fetchUser(res.data.user_id)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  },[id, headers, userId])
   
   const fetchComments = useCallback(() =>{
     axios.get(`${URL}/api/v1/posts/${id}/comments`, {headers})
     .then((res)=>{
-      console.log(res.data)
       setComments(res.data)
     })
     .catch((err)=>{
       console.log(err)
     })
-  },[id])
+  },[id, headers])
   
   const handelArticleDelete = () => {
     axios.delete(`${URL}/api/v1/posts/${id}`,{headers})
       .then((res)=>{
-        console.log(res)
         navigate("/board", {replace:true})
       })
       .catch((err)=>console.log(err))
@@ -93,6 +95,12 @@ export const ArticleDetail = () => {
     navigate(`/board/articleupdate/${id}`)
   }
 
+  const updateComments = (deletedCommentId) => {
+    setComments((prevComments) => prevComments.filter(comment => comment.id !== deletedCommentId));
+  };
+
+
+
   return (
     <div className="border rounded-lg max-w-2xl mx-auto mt-10 p-5">
       {/* 제목 */}
@@ -100,29 +108,28 @@ export const ArticleDetail = () => {
         <div className='text-xl font-semibold mb-5'>
           [{detail.category}] {detail.title}
         </div>
-        <button>좋아요</button>
       </div>
       <div className="flex justify-between px-2 my-3">
         <div className='flex'>
-          <img src={user.profile_image} alt="pofile_image" className="w-10 h-10 rounded-full mr-3"/>
-          <div>
+          <div> 
             <div className='text-xs font-semibold'>{detail.nickname}</div>
             <div className='text-xs'>{detail.created_at?.slice(0,16)}</div>
           </div>
         </div>
         <div className="flex space-x-2">
           <div className="text-xs mt-3">댓글 개수 : {comments.length}</div>
-          <button onClick={handleClick}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
-            </svg>
-          </button>
+
           {isClick&&isWriter ? (
-            <div className='absolute border-2 rounded-lg bg-white text-center space-y-2 p-2'>
-              <Link to={`/board/articleupdate/${id}`}>
+            <div>
+              <button onClick={handleClick}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+                </svg>
+              </button>
+              <div className='absolute border-2 rounded-lg bg-white text-center space-y-2 p-2'>
                 <div type="button" className="cursor-pointer" onClick={editArticle}>수정</div>
-              </Link>
-              <div type="button" className="coursor-pointer" onClick={handelArticleDelete}>삭제</div>
+                <div type="button" className="coursor-pointer" onClick={handelArticleDelete}>삭제</div>
+              </div>
             </div>
           ):null}
         </div>
@@ -130,10 +137,11 @@ export const ArticleDetail = () => {
       <hr />
       {/* 본문 내용 */}
       <div className="whitespace-pre-line p-2 my-2">
-        <img src={`https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/postImage/${detail.post_image}`} alt="" />
+        <img src={`https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/postImage/${detail?.post_image}`} alt="image" loading="lazy" />
         <div>
           {detail.content}
         </div>
+        <button className='mt-10 flex justify-center'><FontAwesomeIcon icon={faThumbsUp} size="2xl" style={{color: "#008b57",}} /></button>
       </div>
       <hr />
       {/* 댓글 */}
@@ -154,7 +162,7 @@ export const ArticleDetail = () => {
               key={comment.id}
               comment={comment}
               id = {detail.id}
-              fetchComments={fetchComments}
+              updateComments = {updateComments}
             />
           ))}
         </div>

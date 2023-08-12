@@ -28,7 +28,7 @@ import PurchaseCreate from './pages/Market/PurchaseCreate';
 import DeliveryCreate from './pages/Market/DeliveryCreate';
 import TransactionCreate from './pages/Market/TransactionCreate';
 import FreeChat from './pages/WebRTC/FreeChat';
-
+import TransactionUpdate from './pages/Market/TransactionUpdate';
 
 function App() {
   return (
@@ -49,6 +49,7 @@ function App() {
               element={<DeliveryDetail />}
             ></Route>
             <Route path="/market/transactiondetail/:id" element={<TransactionDetial/>}></Route>
+            <Route path="/market/transactionupdate/:id" element={<TransactionUpdate/>}></Route>
             <Route path="/market/purchase/create" element={<PurchaseCreate/>}></Route>
             <Route path="/market/delivery/create" element={<DeliveryCreate/>}></Route>
             <Route path="/market/transaction/create" element={<TransactionCreate/>}></Route>

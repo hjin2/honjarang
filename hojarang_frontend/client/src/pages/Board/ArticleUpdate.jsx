@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 
 
 export default function ArticleUpdate() {
@@ -50,7 +49,7 @@ export default function ArticleUpdate() {
 
   const editArticle = () => {
     const formData = new FormData()
-    formData.append("post_image", null)
+    formData.append("post_image", image)
     formData.append("title", title)
     formData.append("content", content)
     formData.append("category", category)
@@ -106,9 +105,7 @@ export default function ArticleUpdate() {
         onChange={handleImage}
       />
       <div className="py-3">
-        <Link to={`/board/`}>
-          <button onClick={editArticle} className="main1-button w-24">수정하기</button>
-        </Link>
+        <button onClick={editArticle} className="main1-button w-24">수정하기</button>
       </div>
     </div>
   );

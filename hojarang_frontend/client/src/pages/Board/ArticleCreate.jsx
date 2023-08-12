@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import TextField from '../../components/Board/TextFields';
-import TextArea from '../../components/Board/TextArea';
+import TextField from '@/components/Board/TextFields';
+import TextArea from '@/components/Board/TextArea';
 import { Link } from 'react-router-dom';
 
 
@@ -44,7 +44,7 @@ const ArticleCreate = () => {
     axios.post(`${URL}/api/v1/posts`,formData,{headers})
       .then((res) => {
         console.log(res)
-        navigate(`/board/article/${res.data}`);
+        navigate(`/board/article/${res.data}`,{replace:true});
       })
       .catch((err)=>{
         console.log(err)
@@ -83,9 +83,7 @@ const ArticleCreate = () => {
         onChange={handleImage}
       />
       <div className="py-3">
-        <Link to={`/board/`}>
-          <button onClick={saveArticle} className="main1-button w-24">작성 완료</button>
-        </Link>
+        <button onClick={saveArticle} className="main1-button w-24">작성 완료</button>
       </div>
     </div>
   );

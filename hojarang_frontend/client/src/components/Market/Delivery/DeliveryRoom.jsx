@@ -32,9 +32,14 @@ export default function DeliveryRoom(roomData) {
         <div className="flex justify-between my-1">
           <div className='font-bold text-base'>{adjustedStoreName}</div>
         </div>
+<<<<<<< HEAD:hojarang_frontend/client/src/components/Market/Delivery/DeliveryRoom.jsx
         <div className="text-sm text-main5 my-1">목표까지 {target_min_price - current_total_price > 0 ? target_min_price - current_total_price : 0 }원</div>
         <div className="flex justify-end mt-2">
           <Link to={{ pathname: `deliverydetail/${id}` }}>
+=======
+        <div className="flex justify-end">
+          <Link to={{ pathname: `/market/deliverydetail/${id}` }}>
+>>>>>>> frontend:hojarang_frontend/client/src/components/Market/DeliveryRoom.jsx
             <button type="button" className="main1-full-button w-20">참여하기</button>
           </Link>
         </div>
