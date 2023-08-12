@@ -65,8 +65,8 @@ public class UserController {
 
     @PostMapping("/send-verification-code")
     public ResponseEntity<Void> sendVerificationCode(@RequestBody Map<String, String> body) {
-        emailService.sendVerificationCode(body.get("email"));
-//        emailService.sendVerificationCodeForTest(body.get("email"));
+//        emailService.sendVerificationCode(body.get("email"));
+        emailService.sendVerificationCodeForTest(body.get("email"));
         return ResponseEntity.ok().build();
     }
 
@@ -108,6 +108,7 @@ public class UserController {
     @PostMapping("/success")
     public ResponseEntity<Void> successPayment(@RequestBody PointChargeDto pointDto, @CurrentUser User user){
         userService.successPayment(pointDto, user);
+//        userService.successPaymentForTest(pointDto, user);
         return ResponseEntity.ok().build();
     }
 

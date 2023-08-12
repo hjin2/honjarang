@@ -415,13 +415,16 @@ public class JointDeliveryService {
 
     @Transactional
     public void removeJointDeliveryCart(Long jointDeliveryCartId, User loginUser) {
-        JointDeliveryCart jointDeliveryCart = jointDeliveryCartRepository.findById(jointDeliveryCartId).orElseThrow(() -> new JointDeliveryNotFoundException("해당 공동배달이 존재하지 않습니다."));
+        JointDeliveryCart jointDeliveryCart = jointDeliveryCartRepository.findById(jointDeliveryCartId).orElseThrow(() -> new JointDeliveryCartNotFoundException("해당 공동배달이 존재하지 않습니다."));
 
         if (jointDeliveryCart.getJointDelivery().getDeadline().isBefore(LocalDateTime.now())) {
             throw new JointDeliveryExpiredException("공동배달이 마감되었습니다.");
         }
         if (jointDeliveryCart.getJointDelivery().getIsCanceled()) {
             throw new JointDeliveryCanceledException("공동배달이 취소되었습니다.");
+        }
+        if (!jointDeliveryCart.getUser().getId().equals(loginUser.getId())) {
+            throw new JointDeliveryCartAccessException("장바구니에 접근할 수 없습니다.");
         }
 
         User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
