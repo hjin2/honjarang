@@ -123,7 +123,7 @@ class JointDeliveryServiceTest {
                 .name("테스트 메뉴")
                 .price(10000)
                 .image("test.jpg")
-                .storeId(1L)
+                .jointDeliveryId(1L)
                 .build();
         menu.setIdForTest(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"));
         jointDeliveryCart = JointDeliveryCart.builder()
@@ -211,8 +211,7 @@ class JointDeliveryServiceTest {
     void getMenuList_Success() {
         // given
         List<Menu> menuList = List.of(menu);
-        given(jointDeliveryRepository.findById(1L)).willReturn(Optional.of(jointDelivery));
-        given(menuRepository.findAllByStoreId(1L)).willReturn(menuList);
+        given(menuRepository.findAllByJointDeliveryId(1L)).willReturn(menuList);
 
         // when
         List<MenuListDto> menuListDtoList = jointDeliveryService.getMenuList(1L);
@@ -224,16 +223,6 @@ class JointDeliveryServiceTest {
         assertThat(menuListDtoList.get(0).getName()).isEqualTo("테스트 메뉴");
         assertThat(menuListDtoList.get(0).getPrice()).isEqualTo(10000);
         assertThat(menuListDtoList.get(0).getImage()).isEqualTo("test.jpg");
-    }
-
-    @Test
-    @DisplayName("메뉴 리스트 가져오기 실패 - 공동 배달을 찾을 수 없는 경우")
-    void getMenuList_JointDeliveryNotFoundException() {
-        // given
-        given(jointDeliveryRepository.findById(1L)).willReturn(Optional.empty());
-
-        // when & then
-        assertThrows(JointDeliveryNotFoundException.class, () -> jointDeliveryService.getMenuList(1L));
     }
 
     @Test

@@ -104,7 +104,7 @@ class JointDeliveryControllerTest {
                 .name("테스트 메뉴")
                 .price(10000)
                 .image("test.jpg")
-                .storeId(1L)
+                .jointDeliveryId(1L)
                 .build();
         menu.setIdForTest(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"));
         jointDeliveryCart = JointDeliveryCart.builder()
@@ -170,7 +170,6 @@ class JointDeliveryControllerTest {
                 .andExpect(jsonPath("$[0].name").value("테스트 메뉴"))
                 .andExpect(jsonPath("$[0].price").value(10000))
                 .andExpect(jsonPath("$[0].image").value("test.jpg"))
-                .andExpect(jsonPath("$[0].store_id").value(1L))
                 .andDo(document("joint-deliveries/menus",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
@@ -181,8 +180,7 @@ class JointDeliveryControllerTest {
                                 fieldWithPath("[].id").type(JsonFieldType.STRING).description("메뉴 ID"),
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("메뉴 이름"),
                                 fieldWithPath("[].price").type(JsonFieldType.NUMBER).description("메뉴 가격"),
-                                fieldWithPath("[].image").type(JsonFieldType.STRING).description("메뉴 이미지"),
-                                fieldWithPath("[].store_id").type(JsonFieldType.NUMBER).description("가게 ID")
+                                fieldWithPath("[].image").type(JsonFieldType.STRING).description("메뉴 이미지")
                         )
                 ));
     }
