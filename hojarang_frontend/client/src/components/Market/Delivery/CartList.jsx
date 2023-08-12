@@ -44,7 +44,7 @@ export default function CartList({id, loginId, isAdd}) {
   return (
     <div className="flex items-center flex-col">
       {cart.length > 0 && hasMyMenu && (
-        <button className="main1-full-button w-40 mt-3" onClick={onClick}>장바구니 목록</button>)}
+        <button className="main2-button w-40 mt-3" onClick={onClick}>장바구니 목록</button>)}
         {showCartList  &&  (
           <div className="flex flex-col">
             {cart.map((menu) => (
