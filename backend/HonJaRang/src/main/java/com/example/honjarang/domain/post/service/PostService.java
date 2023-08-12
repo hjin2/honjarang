@@ -49,21 +49,22 @@ public class PostService {
     public Long createPost(PostCreateDto postCreateDto, MultipartFile postImage, User user) throws IOException {
 
         String uuid = UUID.randomUUID().toString();
+        String image = "";
+        if (postImage != null) {
+            try {
+                s3Client.putObject(PutObjectRequest.builder()
+                        .bucket("honjarang-bucket")
+                        .key("postImage/" + uuid + postImage.getOriginalFilename())
+                        .acl(ObjectCannedACL.PUBLIC_READ)
+                        .contentType(postImage.getContentType())
+                        .build(), RequestBody.fromInputStream(postImage.getInputStream(), postImage.getSize()));
+            } catch (IOException e) {
+                throw new RuntimeException("게시글 이미지 업로드에 실패했습니다.");
+            }
 
-        try {
-            s3Client.putObject(PutObjectRequest.builder()
-                    .bucket("honjarang-bucket")
-                    .key("postImage/" + uuid + postImage.getOriginalFilename())
-                    .acl(ObjectCannedACL.PUBLIC_READ)
-                    .contentType(postImage.getContentType())
-                    .build(), RequestBody.fromInputStream(postImage.getInputStream(), postImage.getSize()));
-        }catch (IOException e){
-            throw new RuntimeException("게시글 이미지 업로드에 실패했습니다.");
+            image = uuid + postImage.getOriginalFilename();
         }
-
-        String image = uuid + postImage.getOriginalFilename();
         return postRepository.save(postCreateDto.toEntity(user, image)).getId();
-
     }
 
     @Transactional
@@ -171,9 +172,10 @@ public class PostService {
     @Transactional
     public PostDto getPost(long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
+        Integer cnt = likePostRepository.countByPostId(id);
         postRepository.increaseViews(id);
         post.increaseViews();
-        return new PostDto(post);
+        return new PostDto(post, cnt);
 
     }
 
