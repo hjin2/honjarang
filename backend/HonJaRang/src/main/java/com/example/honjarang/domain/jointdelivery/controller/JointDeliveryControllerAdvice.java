@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class JointDeliveryControllerAdvice {
     // 404 Not Found
-    @ExceptionHandler({JointDeliveryNotFoundException.class, StoreNotFoundException.class, MenuNotFoundException.class, JointDeliveryApplicantNotFoundException.class, JointDeliveryCanceledException.class})
+    @ExceptionHandler({JointDeliveryNotFoundException.class, JointDeliveryCartNotFoundException.class, StoreNotFoundException.class, MenuNotFoundException.class, JointDeliveryApplicantNotFoundException.class, JointDeliveryCanceledException.class})
     public ResponseEntity<Void> handleNotFoundException(RuntimeException e) {
         log.info("{}", e.getMessage());
         return ResponseEntity.notFound().build();
