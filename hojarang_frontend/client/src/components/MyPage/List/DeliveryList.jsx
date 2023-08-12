@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Rooms from "@/components/Market/Rooms";
-import DeliveryRoom from "@/components/Market/DeliveryRoom"
+import DeliveryRoom from "@/components/Market/Delivery/DeliveryRoom"
 import Pagination from "react-js-pagination";
 
 
