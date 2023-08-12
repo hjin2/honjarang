@@ -47,7 +47,7 @@ public class TokenService {
         return new TokenDto(id, accessToken, refreshToken);
     }
 
-    public Boolean verifyToken(String token) {
+    public Boolean verifyToken(String token) throws TokenExpiredException, InvalidTokenException {
         try {
             Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
             return true;
