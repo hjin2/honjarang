@@ -28,7 +28,7 @@ public class ChatParticipant {
     private User user;
 
     @Column
-    @ColumnDefault("000000000000000000000000")
+    @ColumnDefault("'000000000000000000000000'")
     private String lastReadMessageId;
 
     @Column
