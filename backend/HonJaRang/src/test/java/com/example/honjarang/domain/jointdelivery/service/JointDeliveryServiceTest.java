@@ -559,13 +559,13 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
     }
 
     @Test
-    @DisplayName("공동배달 장바구니 삭제 실패 - 공동배달을 찾을 수 없는 경우")
-    void removeJointDeliveryCart_JointDeliveryNotFoundException() {
+    @DisplayName("공동배달 장바구니 삭제 실패 - 공동배달 장바구니를을 찾을 수 없는 경우")
+    void removeJointDeliveryCart_JointDeliveryCartNotFoundException() {
         // given
         given(jointDeliveryCartRepository.findById(1L)).willReturn(Optional.empty());
 
         // when & then
-        assertThrows(JointDeliveryNotFoundException.class, () -> jointDeliveryService.removeJointDeliveryCart(1L, user));
+        assertThrows(JointDeliveryCartNotFoundException.class, () -> jointDeliveryService.removeJointDeliveryCart(1L, user));
     }
 
     @Test
@@ -588,6 +588,19 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
 
         // when & then
         assertThrows(JointDeliveryCanceledException.class, () -> jointDeliveryService.removeJointDeliveryCart(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동배달 장바구니 삭제 실패 - 접근 권한이 없는 경우")
+    void removeJointDeliveryCart_JointDeliveryCartAccessException() {
+        // given
+        User userForTest = User.builder().build();
+        userForTest.setIdForTest(2L);
+
+        given(jointDeliveryCartRepository.findById(1L)).willReturn(Optional.of(jointDeliveryCart));
+
+        // when & then
+        assertThrows(JointDeliveryCartAccessException.class, () -> jointDeliveryService.removeJointDeliveryCart(1L, userForTest));
     }
 
     @Test
