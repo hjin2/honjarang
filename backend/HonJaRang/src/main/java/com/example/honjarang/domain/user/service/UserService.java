@@ -1,8 +1,11 @@
 package com.example.honjarang.domain.user.service;
 
+import com.example.honjarang.domain.jointdelivery.document.Menu;
 import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
 import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryApplicant;
+import com.example.honjarang.domain.jointdelivery.entity.JointDeliveryCart;
+import com.example.honjarang.domain.jointdelivery.exception.MenuNotFoundException;
 import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryApplicantRepository;
 import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryCartRepository;
 import com.example.honjarang.domain.jointdelivery.repository.JointDeliveryRepository;
@@ -34,6 +37,7 @@ import com.example.honjarang.security.CurrentUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -258,10 +262,16 @@ public class UserService {
     public List<JointDeliveryListDto> getMyWrittenJointDeliveries(int page, int size, User user){
         Pageable pageable = Pageable.ofSize(size).withPage(page-1);
         List<JointDelivery> myWrittenJointDeliveryList = jointDeliveryRepository.findAllByUserId(user.getId(), pageable).toList();
-
         List<JointDeliveryListDto> myWrittenJointDeliveryListDtoList = new ArrayList<>();
         for(JointDelivery jointDelivery : myWrittenJointDeliveryList){
-             JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery,-1);
+            // 총 가격 계산
+            int currentToalPrice = 0;
+            List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDelivery.getId());
+            for(JointDeliveryCart jointDeliveryCart : jointDeliveryCartList){
+                Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId())).orElseThrow(()->new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
+                currentToalPrice += menu.getPrice() * jointDeliveryCart.getQuantity();
+            }
+             JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery,currentToalPrice);
             myWrittenJointDeliveryListDtoList.add(jointDeliveryListDto);
         }
         return myWrittenJointDeliveryListDtoList;
@@ -274,7 +284,13 @@ public class UserService {
         List<JointDeliveryListDto> myJointDeliveryListDtoList = new ArrayList<>();
         List<JointDelivery> myJointDelivery = jointDeliveryCartRepository.findDistinctJointDeliveryByUserId(user.getId(), pageable);
         for(JointDelivery jointDelivery : myJointDelivery){ // 내가 참여한 jointdeliverycart 카트, 이 카트가 담긴 주문을 알아내야함
-            JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery,-1);
+                int currentToalPrice = 0;
+                List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDelivery.getId());
+                for(JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
+                    Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId())).orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
+                    currentToalPrice += menu.getPrice() * jointDeliveryCart.getQuantity();
+                }
+            JointDeliveryListDto jointDeliveryListDto = new JointDeliveryListDto(jointDelivery,currentToalPrice);
             myJointDeliveryListDtoList.add(jointDeliveryListDto);
         }
         return myJointDeliveryListDtoList;

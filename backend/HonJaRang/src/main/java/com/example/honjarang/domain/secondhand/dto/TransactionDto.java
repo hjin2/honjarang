@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 @Getter
 @NoArgsConstructor
@@ -22,7 +23,7 @@ public class TransactionDto {
     private Boolean isCompleted;
     private String createdAt;
     private String transactionImage;
-
+    private Boolean isReceived;
 
 
 
@@ -35,7 +36,13 @@ public class TransactionDto {
         this.price = transaction.getPrice();
         this.isCompleted = transaction.getIsCompleted();
         this.createdAt = DateTimeUtils.formatLocalDateTime(transaction.getCreatedAt());
-        this.transactionImage = transaction.getTransactionImage();
+        this.isReceived = transaction.getIsReceived();
+
+        if(transaction.getTransactionImage().equals("")){
+            this.transactionImage = "";
+        }else{
+            this.transactionImage = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/transactionImage/" + transaction.getTransactionImage();
+        }
     }
 
 
