@@ -26,9 +26,10 @@ public class PostDto {
     private Boolean isNotice;
     private String createdAt;
     private String postImage;
+    private Integer likeCnt;
 
 
-    public PostDto(Post post){
+    public PostDto(Post post, Integer likeCnt){
         this.id = post.getId();
         this.userId = post.getUser().getId();
         this.title = post.getTitle();
@@ -38,7 +39,12 @@ public class PostDto {
         this.views = post.getViews();
         this.isNotice = post.getIsNotice();
         this.createdAt = DateTimeUtils.formatLocalDateTime(post.getCreatedAt());
-        this.postImage = post.getPostImage();
+        if(post.getPostImage().equals("")){
+            this.postImage = "";
+        }else {
+            this.postImage = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/postImage/" + post.getPostImage();
+        }
+        this.likeCnt= likeCnt;
     }
 }
 

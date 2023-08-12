@@ -23,4 +23,12 @@ public class JointPurchaseListDto {
         this.currentPersonCount = currentPersonCount;
         this.targetPersonCount = jointPurchase.getTargetPersonCount();
     }
+
+    public JointPurchaseListDto(JointPurchase jointPurchase){
+        this.id = jointPurchase.getId();
+        this.productName = jointPurchase.getProductName();
+        this.image = jointPurchase.getImage();
+        this.price = jointPurchase.getPrice();
+        this.targetPersonCount = jointPurchase.getTargetPersonCount();
+    }
 }
