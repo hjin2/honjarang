@@ -3,14 +3,10 @@ import { useNavigate } from 'react-router-dom';
 
 export default function WebRTCRoom(roomData) {
   const navigate = useNavigate()
-  const { id, product_name, image, deadline, current_person_count, target_person_count, price } = roomData;
-  const MAX_STORE_NAME_LENGTH = 7; 
-  let adjustedProducteName = product_name;
-  if (product_name?.length > MAX_STORE_NAME_LENGTH) {
-    adjustedProducteName = product_name.substring(0, MAX_STORE_NAME_LENGTH) + '...';
-  }
+  const { sessionId, category } = roomData;
   const onClick = () =>{
-    navigate(`/webrtc/${id}`)
+    console.log(roomData)
+    navigate(`/webrtc/${sessionId}`)
   }
   return (
     <div >
@@ -18,7 +14,7 @@ export default function WebRTCRoom(roomData) {
         {/* 이미지와 그 위 텍스트 */}
           <div className="flex justify-center">
             <div className="w-32 h-32">
-              <img src={image} alt="썸네일" className="w-full h-full" />
+              <img alt="썸네일" className="w-full h-full" />
             </div>
           </div>
           <div>
