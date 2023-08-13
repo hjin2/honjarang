@@ -26,10 +26,11 @@ public class PostDto {
     private Boolean isNotice;
     private String createdAt;
     private String postImage;
-    private Boolean likeCnt;
+    private Boolean isLiked;
+    private Integer likeCnt;
 
 
-    public PostDto(Post post, Boolean likeCnt){
+    public PostDto(Post post, Integer likeCnt, Boolean isLiked){
         this.id = post.getId();
         this.userId = post.getUser().getId();
         this.title = post.getTitle();
@@ -45,6 +46,7 @@ public class PostDto {
             this.postImage = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/postImage/" + post.getPostImage();
         }
         this.likeCnt= likeCnt;
+        this.isLiked = isLiked;
     }
 }
 
