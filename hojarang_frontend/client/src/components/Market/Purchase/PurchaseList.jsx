@@ -27,7 +27,7 @@ export default function PurchaseList() {
   }
   
   useEffect(() => {
-    axios.get(`${URL}/api/v1/joint-purchases/page`,{params:{size:12},headers})
+    axios.get(`${URL}/api/v1/joint-purchases/page`,{params:{size:12, keyword:keyword},headers})
     .then((res)=>{
       console.log(res.data)
       setPageSize(res.data)

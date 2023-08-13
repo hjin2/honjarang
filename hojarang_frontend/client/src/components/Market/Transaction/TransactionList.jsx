@@ -25,7 +25,7 @@ export default function TransactionList() {
     .catch((err)=>console.log(err))
   },[currentPage, keyword])
   const fetchPageSize = useCallback(()=>{
-    axios.get(`${URL}/api/v1/secondhand-transactions/page`,{params:{size:12}, headers})
+    axios.get(`${URL}/api/v1/secondhand-transactions/page`,{params:{size:12, keyword:keyword}, headers})
     .then((res) => {
       console.log(res.data)
       setPageSize(res.data)
