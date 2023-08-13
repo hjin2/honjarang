@@ -83,31 +83,51 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
   
   // 이미지 없을 때 대체 이미지 넣기
   const defaultImage = '/src/assets/noimage.png';
+  
+  const Highlight = `/src/assets/Highlight.png`;
 
   return (
-    <div className="relative bg-white m-auto border rounded-lg space-y-5 w-6/12">
-      <h2 className="text-2xl font-semibold mb-3">장바구니</h2>
-      <div className="font-semibold">{selectedMenu.name}</div>
-      <div className="flex flex-row">
-        <img src={selectedMenu.image|| defaultImage} alt={selectedMenu.name} className="w-12 h-15 mr-5" />
-        <div className="flex flex-col">
-          <div>
-            <button onClick={handleDecrement} className="border p-1">-</button>
-              <input
-                type="number"
-                value={quantity}
-                onChange={handleChange}
-                className="mx-2 w-16 text-center"
-                />
-            <button onClick={handleIncrement} className="border p-1">+</button>
+    <div className="relative bg-white m-auto border rounded-lg space-y-5 w-6/12 p-9">
+      <div className="relative flex flex-col items-center justify-center w-3/12">
+        <img src={Highlight} alt="" className="relative"/>
+        <h2 className="absolute text-2xl font-semibold mb-3">장바구니</h2>
+      </div>
+      <div className="pt-0 p-5">
+        <p className="font-semibold">{selectedMenu.name}</p>
+        <div className="flex flex-row">
+          <img src={selectedMenu.image|| defaultImage} alt={selectedMenu.name} className="w-36 h-36 mr-5 shadow-md shadow-gray3/30 p-1" />
+          <div className="flex flex-col justify-around ml-3">
+            {/* 가격 */}
+            <div className="">
+              <div>
+                <button onClick={handleDecrement} className="border px-2 font-semibold hover:border-main2 w-8 rounded-l-sm">-</button>
+                  <input
+                    type="number"
+                    value={quantity}
+                    onChange={handleChange}
+                    className=" w-28 text-center border-gray1 rounded-none focus:outline-none focus:border-main2 "
+                    />
+                <button onClick={handleIncrement} className="border px-2 font-semibold hover:border-main2 w-8 rounded-r-sm">+</button>
+              </div>
+              <p className="mt-1">현재 가격 {selectedMenu.price * quantity}원</p>
+            </div>
+            {/* 포인트 */}
+            <div className="w-52">
+              <div className="flex justify-between">
+                <p>보유 포인트</p> 
+                <p>{detail.my_point} P</p> 
+              </div>
+              <div className="flex justify-between">
+                <p>차감 후 포인트</p>
+                <p>{detail.my_point - (selectedMenu.price * quantity)} P</p>
+              </div>
+            </div>
           </div>
-          현재가격: {selectedMenu.price * quantity}
+        </div>
+        <div className="mt-5">
+          <button onClick={createCart} className="main1-full-button w-36">장바구니에 담기</button>
         </div>
       </div>
-      <div> 현재포인트 {detail.my_point} P</div>
-      {/* <div> 차감 포인트 {selectedMenu.price * quantity} P</div> */}
-      <div> 차감 후 포인트 {detail.my_point - (selectedMenu.price * quantity)} P</div>
-      <div> <button onClick={createCart}>장바구니에 담기</button></div>
     </div>
   );
 }

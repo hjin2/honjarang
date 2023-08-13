@@ -77,12 +77,12 @@ export default function PurchaseApply({
         <aside
           className={`${
             isAsideOpen
-              ? 'fixed bottom-0 left-1/2 transform -translate-x-1/2 h-48 w-4/5 bg-white border p-4 rounded-t-lg'
+              ? 'fixed bottom-0 left-1/2 transform -translate-x-1/2 h-52 w-5/12 bg-white p-2 border-2'
               : 'hidden'
           }`}
         >
           <div className="flex flex-col items-center">
-            <button onClick={handleToggleAside}>
+            <button onClick={handleToggleAside} className="my-3 hover:text-main2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -95,24 +95,28 @@ export default function PurchaseApply({
               </svg>
             </button>
             <div>
-              <button onClick={handleDecrement} data-quantity="minus">
-                -
-              </button>
+              <button onClick={handleDecrement} className="border px-2 font-semibold hover:border-main2 w-8 rounded-l-sm">-</button>
               <input
                 type="number"
                 name="quantity"
                 value={quantity}
                 onChange={handleChange}
+                className=" w-28 text-center border-gray1 rounded-none focus:outline-none focus:border-main2 "
               />
-              <button onClick={handleIncrement} data-quantity="plus">
-                +
-              </button>
+              <button onClick={handleIncrement} className="border px-2 font-semibold hover:border-main2 w-8 rounded-r-sm">+</button>
             </div>
-            <h2 className="">개수 {quantity}개</h2>
-            <p className="">현재 포인트 : {point}P</p>
-            <p className="">차감 포인트 : {price * quantity + deliveryCharge}P</p>
-            <p className="">차감 후 포인트 : {afterPoint}P</p>
-            <button type="button" className="main1-full-button w-20" onClick={purchase}>
+            <div className="my-3 w-6/12">
+              <div className="flex justify-between">
+                <p className="">보유 포인트</p>
+                <p className="">{point}P</p>
+              </div>
+                {/* <p className="">차감 포인트 : {price * quantity + deliveryCharge}P</p> */}
+              <div className="flex justify-between">
+                <p className="">차감 후 포인트</p>
+                <p className="">{afterPoint}P</p>
+              </div>
+            </div>
+            <button type="button" className="main1-full-button w-32 mb-3" onClick={purchase}>
               구매하기
             </button>
           </div>
