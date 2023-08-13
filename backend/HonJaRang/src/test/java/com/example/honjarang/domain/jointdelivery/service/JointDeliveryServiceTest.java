@@ -41,6 +41,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -691,8 +692,9 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
     @DisplayName("공동배달 신청자 목록 조회 성공")
     void getJointDeliveryApplicantList_Success() {
         // given
-        List<JointDeliveryApplicant> jointDeliveryApplicantList = List.of(jointDeliveryApplicant);
-        given(jointDeliveryApplicantRepository.findAllByJointDeliveryId(1L)).willReturn(jointDeliveryApplicantList);
+        Object[] objects = {jointDeliveryApplicant, jointDeliveryCart};
+        given(jointDeliveryApplicantRepository.findAllByJointDeliveryId(1L)).willReturn(Collections.singletonList(objects));
+        given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
 
         // when
         List<JointDeliveryApplicantListDto> jointDeliveryApplicantListDtoList = jointDeliveryService.getJointDeliveryApplicantList(1L);

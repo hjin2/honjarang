@@ -65,6 +65,7 @@ public class JointPurchaseService {
     @Transactional
     public Long createJointPurchase(JointPurchaseCreateDto jointPurchaseCreateDto, User loginUser) {
         String productImage = getProductImage(jointPurchaseCreateDto.getProductName());
+//        String productImage = getProductImageForTest(jointPurchaseCreateDto.getProductName());
         JointPurchase jointPurchase = jointPurchaseRepository.save(jointPurchaseCreateDto.toEntity(loginUser, productImage));
         ChatRoom chatRoom = ChatRoom.builder()
                 .name(jointPurchase.getId().toString() + "번 공동구매 채팅방")
@@ -102,6 +103,10 @@ public class JointPurchaseService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String getProductImageForTest(String productName) {
+        return "tsst.jpg";
     }
 
     @Transactional
