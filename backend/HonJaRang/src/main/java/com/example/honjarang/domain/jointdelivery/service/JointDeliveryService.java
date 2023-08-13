@@ -514,7 +514,7 @@ public class JointDeliveryService {
     }
 
     @Transactional(readOnly = true)
-    public Integer getJointDeliveryPageCount(Integer size) {
-        return (int) Math.ceil((double) jointDeliveryRepository.countByIsCanceledFalseAndDeadlineAfter(LocalDateTime.now()) / size);
+    public Integer getJointDeliveryPageCount(Integer size, String keyword) {
+        return (int) Math.ceil((double) jointDeliveryRepository.countByIsCanceledFalseAndDeadlineAfterAndContentContainingIgnoreCase(LocalDateTime.now(), keyword) / size);
     }
 }

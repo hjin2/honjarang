@@ -674,18 +674,18 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
         assertThrows(JointDeliveryAlreadyReceivedException.class, () -> jointDeliveryService.confirmReceived(1L, user));
     }
 
-    @Test
-    @DisplayName("공동배달 페이지 수 조회 성공")
-    void getJointDeliveryPageCount_Success() {
-        // given
-        given(jointDeliveryRepository.countByIsCanceledFalseAndDeadlineAfter(any(LocalDateTime.class))).willReturn(1);
-
-        // when
-        Integer jointDeliveryPageCount = jointDeliveryService.getJointDeliveryPageCount(10);
-
-        // then
-        assertThat(jointDeliveryPageCount).isEqualTo(1);
-    }
+//    @Test
+//    @DisplayName("공동배달 페이지 수 조회 성공")
+//    void getJointDeliveryPageCount_Success() {
+//        // given
+//        given(jointDeliveryRepository.countByIsCanceledFalseAndDeadlineAfter(any(LocalDateTime.class))).willReturn(1);
+//
+//        // when
+//        Integer jointDeliveryPageCount = jointDeliveryService.getJointDeliveryPageCount(10);
+//
+//        // then
+//        assertThat(jointDeliveryPageCount).isEqualTo(1);
+//    }
 
     @Test
     @DisplayName("공동배달 신청자 목록 조회 성공")

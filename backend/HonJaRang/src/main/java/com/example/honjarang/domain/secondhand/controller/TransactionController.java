@@ -71,7 +71,7 @@ public class TransactionController {
     }
 
     @GetMapping("/page")
-    public ResponseEntity<Integer> getTransactionPageCount(@RequestParam Integer size) {
-        return ResponseEntity.ok(transactionService.getTransactionsPageCount(size));
+    public ResponseEntity<Integer> getTransactionPageCount(@RequestParam Integer size,  @RequestParam(value="keyword", defaultValue = "")String keyword) {
+        return ResponseEntity.ok(transactionService.getTransactionsPageCount(size, keyword));
     }
 }
