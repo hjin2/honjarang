@@ -12,7 +12,25 @@ export default function FreeChatList() {
   const [freeChatData, setFreeChatData] = useState([])
   const [pageSize, setPageSize] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
+  useEffect(() => {
+    axios.get(`${URL}/api/v1`)
+    .then((res) => {
+      console.log(res.data)
+      setPageSize(res.data)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  },[])
 
+  useEffect(() => {
+    axios.get(`${URL}/api/v1/video-room/sessions`,)
+    .then((res) =>{
+      console.log(res.data)
+      setFreeChatData(res.data)
+    })
+    .catch((err) => console.log(err))
+  },[])
   const setPage = (error) => {
     setCurrentPage(error);
   };

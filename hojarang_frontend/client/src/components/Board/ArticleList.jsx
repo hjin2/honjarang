@@ -14,7 +14,7 @@ export default function AricleList() {
   const headers = {"Authorization" : `Bearer ${token}`}
   const [articles, setArticles] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(0)
+  const [pageSize, setPageSize] = useState(1)
   const [keyword, setKeyworkd] = useState('')
   const handleKeyword = (e) =>{
     setKeyworkd(e.target.value)

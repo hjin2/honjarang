@@ -10,7 +10,7 @@ export default function WebRTCRoom(roomData) {
     adjustedProducteName = product_name.substring(0, MAX_STORE_NAME_LENGTH) + '...';
   }
   const onClick = () =>{
-    navigate(`/market/purchasedetail/${id}`)
+    navigate(`/webrtc/${id}`)
   }
   return (
     <div >
@@ -25,7 +25,7 @@ export default function WebRTCRoom(roomData) {
             <div>[카테고리] 제목</div>
             <div>1명/6명</div>
           </div>
-          <button className='main1-full-button w-24'>참여하기</button>
+          <button className='main1-full-button w-24' onClick={onClick}>참여하기</button>
         </div>
     </div>
   )

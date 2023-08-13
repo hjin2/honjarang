@@ -99,15 +99,26 @@ export const ArticleDetail = () => {
     setComments((prevComments) => prevComments.filter(comment => comment.id !== deletedCommentId));
   };
 
-
+  const [isNotice, setIsNotice] = useState(false)
+  const handleNotice = () =>{
+    setIsNotice(!isNotice)
+  }
+  const notice = () =>{
+    
+  }
 
   return (
     <div className="border rounded-lg max-w-2xl mx-auto mt-10 p-5">
       {/* 제목 */}
-      <div>
+      <div className='flex justify-between'>
         <div className='text-xl font-semibold mb-5'>
           [{detail.category}] {detail.title}
         </div>
+        <form onSubmit={notice}>
+          <label htmlFor="notice" className='mr-2'>공지
+          <input type="checkbox" onChange={handleNotice} checked={isNotice} />
+          </label>
+        </form>
       </div>
       <div className="flex justify-between px-2 my-3">
         <div className='flex'>

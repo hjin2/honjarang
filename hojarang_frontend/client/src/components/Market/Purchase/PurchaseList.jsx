@@ -12,7 +12,7 @@ export default function PurchaseList() {
   const token = localStorage.getItem('access_token')
   const headers = {"Authorization" : `Bearer ${token}`}
   const [purchaseData, setPurchaseData] = useState([])
-  const [pageSize, setPageSize] = useState(0)
+  const [pageSize, setPageSize] = useState(1)
   const [currentPage, setCurrentPage] = useState(1)
   const [keyword, setKeyword] = useState('')
   const fetchPurChaseData = () =>{

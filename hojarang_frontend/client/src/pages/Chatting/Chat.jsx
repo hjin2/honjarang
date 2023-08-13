@@ -13,7 +13,7 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [socket, setSocket] = useState(null);
   const [stomp, setStomp] = useState(null);
-  const [pages, setPages] = useState(0);
+  const [pages, setPages] = useState(1);
   const [msg, setMsg] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem('access_token');
@@ -37,7 +37,6 @@ const Chat = () => {
       stompClientRef.current.send(`/app/chat/connect.${Key}`, {}, JSON.stringify({ token: token }));
     });
   };
-
   const showMessage = (message) => {
     console.log(message);
     setMessages((prevMessages) => [...prevMessages, `${message.id}: ${message.content}`]);
