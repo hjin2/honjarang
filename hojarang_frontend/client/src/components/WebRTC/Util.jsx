@@ -9,15 +9,7 @@ export const createSession = async (sessionId) => {
 	console.log(sessionId)
 	const response = await axios.post(APPLICATION_SERVER_URL + '/api/v1/video-room/sessions', { customSessionId: sessionId }, {
 		headers: { 'Content-Type': 'application/json', },
-	}
-	.then((res) => {
-		console.log(res)
 	})
-	.catch((err) => {
-		console.log(err)
-	})
-	
-	);
 	return response.data; // The sessionId
 };
 
