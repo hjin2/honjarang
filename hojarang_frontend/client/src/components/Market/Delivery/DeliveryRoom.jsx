@@ -20,7 +20,7 @@ export default function DeliveryRoom(roomData) {
 
   return (
     <div >
-      <div className="border-2 border-gray1 w-52 h-60 p-2 rounded-lg">
+      <div className="border-2 border-gray1 p-2 rounded-lg">
         <div className="flex justify-center">
           <div className="w-32 h-32">
             <img src={imageToShow} alt="가게 이미지" className="w-full h-full" />

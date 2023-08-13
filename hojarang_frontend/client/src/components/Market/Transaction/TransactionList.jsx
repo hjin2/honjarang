@@ -62,15 +62,15 @@ export default function TransactionList() {
 
   return (
     <div className="h-full">
-      <div>
-        <div className="flex justify-end">
-          <form action="" className="space-x-2" onSubmit={search}>
-            <input type="text" placeholder="검색어" onChange={handleKeyword}/>
-            <button>
-              <FontAwesomeIcon icon={faMagnifyingGlass} style={{color: "#008b28",}} />
-            </button>
-          </form>
-        </div>
+      <div className="flex justify-end mb-5">
+        <form action="" className="space-x-2" onSubmit={search}>
+          <input type="text" placeholder="검색어" onChange={handleKeyword}/>
+          <button>
+            <FontAwesomeIcon icon={faMagnifyingGlass} style={{color: "#008b28",}} />
+          </button>
+        </form>
+      </div>
+      <div className="flex justify-center">
         <Rooms roomsData={transactionData} component={TransactionRoom}/>
       </div>
       <div className="flex justify-center" style={{height:"10%"}}>
