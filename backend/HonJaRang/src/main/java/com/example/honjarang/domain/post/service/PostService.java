@@ -178,15 +178,15 @@ public class PostService {
     @Transactional
     public PostDto getPost(long id, User user) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
-        Integer cnt = likePostRepository.countByPostId(id);
-        int like = likePostRepository.countByPostIdAndUserId(id,user.getId());
-        Boolean liked = false;
+        Integer likedCnt = likePostRepository.countByPostId(id);
+        int liked = likePostRepository.countByPostIdAndUserId(id,user.getId());
+        Boolean isLiked = false;
         postRepository.increaseViews(id);
         post.increaseViews();
-        if(like==1){
-            liked = true;
+        if(liked==1){
+            isLiked = true;
         }
-        return new PostDto(post, liked);
+        return new PostDto(post, likedCnt, isLiked);
 
     }
 
