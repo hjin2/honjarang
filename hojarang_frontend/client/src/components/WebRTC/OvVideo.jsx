@@ -9,5 +9,5 @@ export default function OpenViduVideoComponent({ streamManager }) {
         }
     }, [streamManager]);
 
-    return <video autoPlay={true} ref={videoRef} className='rounded-2'/>;
+    return <video autoPlay={true} ref={videoRef} className='rounded-lg'/>
 }

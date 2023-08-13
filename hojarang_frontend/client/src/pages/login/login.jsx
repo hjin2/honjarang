@@ -16,7 +16,8 @@ export default function Login() {
     const id = localStorage.getItem("user_id")
     navigate(`/mypage/${id}`)
   };
-  const login = () => {
+  const login = (e) => {
+    e.preventDefault()
     axios.post(`${import.meta.env.VITE_APP_API}/api/v1/users/login`, {
       email: Email,
       password: Pwd
@@ -38,7 +39,7 @@ export default function Login() {
 
   return (
     <div className="container flex flex-col items-center justify-center mx-auto mt-10">
-      <form className="space-y-4 md:space-y-6" action="#">
+      <form className="space-y-4 md:space-y-6" onSubmit={login}>
         <div>
           <label htmlFor="email" className="block mb-1 font-semibold text-lg text-main2">
             이메일
@@ -57,13 +58,13 @@ export default function Login() {
             className="border-gray2 rounded-lg block w-72 h-10 text-base p-2 focus:outline-main2 "
             onChange = {e => setPwd(e.target.value)}/>
         </div>
+        <button
+          type="submit"
+          className="w-72 h-10 main1-button my-10"
+        >
+          로그인
+        </button>
       </form>
-      <button
-        onClick={login}
-        className="w-72 h-10 main1-button my-10"
-      >
-        로그인
-      </button>
       <div className="w-72 flex justify-around text-base p-1 text-gray4">
         <Link to="/signup">회원가입</Link>
         <Link to="/findpassword">비밀번호 찾기</Link> 
