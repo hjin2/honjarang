@@ -160,8 +160,6 @@ public class UserController {
         return ResponseEntity.ok(myJointPurchaseListDtos);
     }
 
-
-
     @PutMapping("/withdraw")
     public ResponseEntity<Void> withdrawPoint(@RequestBody PointWithdrawDto pointWithdrawDto, @CurrentUser User user){
         userService.withdrawPoint(pointWithdrawDto.getPoint(),user);

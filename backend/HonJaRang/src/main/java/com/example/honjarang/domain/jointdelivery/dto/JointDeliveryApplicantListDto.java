@@ -21,4 +21,8 @@ public class JointDeliveryApplicantListDto {
         this.totalPrice = totalPrice;
         this.isReceived = jointDeliveryApplicant.getIsReceived();
     }
+
+    public void addTotalPrice(Integer totalPrice) {
+        this.totalPrice += totalPrice;
+    }
 }

@@ -22,17 +22,21 @@ import com.example.honjarang.domain.user.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
+import org.hibernate.mapping.Join;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -43,9 +47,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -213,17 +215,6 @@ public class JointDeliveryService {
 
         StoreDto storeDto = getStoreByApi(jointDeliveryCreateDto.getStoreId());
 //        StoreDto storeDto = getStoreByApiForTest(jointDeliveryCreateDto.getStoreId());
-        if(!storeRepository.existsById(storeDto.getId())) {
-            Store store = Store.builder()
-                    .id(storeDto.getId())
-                    .storeName(storeDto.getName())
-                    .image(storeDto.getImage())
-                    .address(storeDto.getAddress())
-                    .latitude(storeDto.getLatitude())
-                    .longitude(storeDto.getLongitude())
-                    .build();
-            storeRepository.save(store);
-        }
         Store store = Store.builder()
                 .id(storeDto.getId())
                 .storeName(storeDto.getName())
@@ -495,22 +486,25 @@ public class JointDeliveryService {
 
     @Transactional(readOnly = true)
     public List<JointDeliveryApplicantListDto> getJointDeliveryApplicantList(Long jointDeliveryId) {
-        List<JointDeliveryApplicantListDto> jointDeliveryApplicantListDtoList = new ArrayList<>();
-        List<JointDeliveryApplicant> jointDeliveryApplicantList = jointDeliveryApplicantRepository.findAllByJointDeliveryId(jointDeliveryId);
-        for (JointDeliveryApplicant jointDeliveryApplicant : jointDeliveryApplicantList) {
-            // 총 가격 계산
-            int currentTotalPrice = 0;
-            List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryIdAndUserId(jointDeliveryId, jointDeliveryApplicant.getUser().getId());
-            for (JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
-                Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
-                        .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
-                currentTotalPrice += menu.getPrice() * jointDeliveryCart.getQuantity();
-            }
+        List<Object[]> queryResults = jointDeliveryApplicantRepository.findAllByJointDeliveryId(jointDeliveryId);
+        Map<Long, JointDeliveryApplicantListDto> jointDeliveryApplicantListDtoMap = new HashMap<>();
 
-            JointDeliveryApplicantListDto jointDeliveryApplicantListDto = new JointDeliveryApplicantListDto(jointDeliveryApplicant, currentTotalPrice);
-            jointDeliveryApplicantListDtoList.add(jointDeliveryApplicantListDto);
+        for (Object[] result : queryResults) {
+            JointDeliveryApplicant jda = (JointDeliveryApplicant) result[0];
+            JointDeliveryCart jdc = (JointDeliveryCart) result[1];
+            Menu menu = menuRepository.findById(new ObjectId(jdc.getMenuId()))
+                    .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
+
+            if(jointDeliveryApplicantListDtoMap.containsKey(jda.getId())) {
+                JointDeliveryApplicantListDto jointDeliveryApplicantListDto = jointDeliveryApplicantListDtoMap.get(jda.getId());
+                jointDeliveryApplicantListDto.addTotalPrice(menu.getPrice() * jdc.getQuantity());
+            } else {
+                JointDeliveryApplicantListDto jointDeliveryApplicantListDto = new JointDeliveryApplicantListDto(jda, menu.getPrice() * jdc.getQuantity());
+                jointDeliveryApplicantListDtoMap.put(jda.getId(), jointDeliveryApplicantListDto);
+            }
         }
-        return jointDeliveryApplicantListDtoList;
+        return jointDeliveryApplicantListDtoMap.values().stream()
+                .toList();
     }
 
     @Transactional(readOnly = true)
