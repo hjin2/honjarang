@@ -53,7 +53,7 @@ export default function WebRTCCreate() {
     //   onlyVoice : voiceSelect,
     // }
     // console.log(data)
-    axios.post(`${URL}/api/v1/video-room/sessions`, formData,{"Content-Type" : "multipart/fomed-data"})
+    axios.post(`${URL}/api/v1/video-room/sessions`, formData,{"Content-Type" : "multipart/form-data"})
       .then((res) => {
         console.log(res.data)
         navigate(`/webrtc`, {replace:true})
