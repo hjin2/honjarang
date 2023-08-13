@@ -20,7 +20,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByIsNoticeTrueOrderByIdDesc(Pageable pageable);
 
     Integer countAllByUserId(Long userId);
-
-
     long count();
+
+    Integer countAllByTitleContainingIgnoreCase(String keyword);
 }
