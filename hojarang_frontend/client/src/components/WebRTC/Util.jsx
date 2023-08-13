@@ -6,16 +6,26 @@ const APPLICATION_SERVER_URL = "https://honjarang.kro.kr";
 
 
 export const createSession = async (sessionId) => {
-	const response = await axios.post(APPLICATION_SERVER_URL + '/api/sessions', { customSessionId: sessionId }, {
+	console.log(sessionId)
+	const response = await axios.post(APPLICATION_SERVER_URL + '/api/v1/video-room/sessions', { customSessionId: sessionId }, {
 		headers: { 'Content-Type': 'application/json', },
-	});
+	}
+	.then((res) => {
+		console.log(res)
+	})
+	.catch((err) => {
+		console.log(err)
+	})
+	
+	);
 	return response.data; // The sessionId
 };
 
 export const createToken = async (sessionId) => {
-	const response = await axios.post(APPLICATION_SERVER_URL + '/api/sessions/' + sessionId + '/connections', {}, {
+	const response = await axios.post(APPLICATION_SERVER_URL + '/api/v1/video-room/sessions/' + sessionId + '/connections', {}, {
 		headers: { 'Content-Type': 'application/json', },
 	});
+	console.log(sessionId)
 	return response.data; // The token
 };
 
