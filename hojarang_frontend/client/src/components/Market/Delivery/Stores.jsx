@@ -36,6 +36,13 @@ export default function Stores({ modalState, setModalState, onStoreClick }) {
     setModalState(false)
   }
 
+  // 엔터로도 검색 가능하도록
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      search();
+    }
+  };
+
   return (
     <div className="relative border bg-white m-auto rounded-lg w-3/6">
       <input
@@ -44,6 +51,7 @@ export default function Stores({ modalState, setModalState, onStoreClick }) {
         onChange={handleKeywordChange}
         className="h-7 border-gray3 m-2 w-80"
         placeholder="가게명을 정확하게 입력해 주세요"
+        onKeyDown={handleKeyDown}
       />
       <button className="main1-button w-20" onClick={search}>검색</button>
       <div className="h-96 overflow-y-scroll">
