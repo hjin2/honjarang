@@ -7,8 +7,10 @@ const APPLICATION_SERVER_URL = "https://honjarang.kro.kr";
 
 export const createSession = async (sessionId) => {
 	console.log(sessionId)
-	const response = await axios.post(APPLICATION_SERVER_URL + '/api/v1/video-room/sessions', { customSessionId: sessionId }, {
-		headers: { 'Content-Type': 'application/json', },
+	const formData = new FormData()
+	formData.append("customSessionId", sessionId)
+	const response = await axios.post(APPLICATION_SERVER_URL + '/api/v1/video-room/sessions', formData, {
+		headers: { 'Content-Type': 'multipart/form-data', },
 	})
 	return response.data; // The sessionId
 };
