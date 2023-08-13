@@ -49,10 +49,9 @@ public class VideoChatService {
 
         SessionProperties properties = SessionProperties.fromJson(params).build();
 
-        try {
-            VideoChatRoom check = videoChatRoomRepository.findBySessionId((String)params.get("customSessionId"));
+        VideoChatRoom check = videoChatRoomRepository.findBySessionId((String)params.get("customSessionId"));
 
-        } catch(NullPointerException e) {
+        if (check == null) {
             Category option = Category.FREE;
             switch((String)params.get("category")) {
                 case "FREE": option = Category.FREE; break;
