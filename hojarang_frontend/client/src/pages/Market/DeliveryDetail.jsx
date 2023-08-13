@@ -115,12 +115,12 @@ export default function DeliveryDetail() {
           </div>
         </div>
         <hr />
-        <div className="m-2">
+        <div className="m-2 whitespace-pre-line">
           {detail.content}
         </div>
         <hr />
         {/* 메뉴 목록 */}
-        <div className="menu-container overflow-y-scroll max-h-96 border rounded-md px-4">
+        <div className="menu-container overflow-y-scroll max-h-96 border rounded-md px-10">
             {menuList.map((menu) => (
               <div key={menu.id} className="flex justify-between items-center space-x-4 my-2">
                 <img src={menu.image || defaultImage} alt={menu.name} className="w-16 h-16" />
@@ -151,7 +151,7 @@ export default function DeliveryDetail() {
           )}
           </div>
       </div>
-      <div className="border rounded-lg max-w-2xl mx-auto mt-5 mb-10 pb-3 p-5 space-y-5 flex flex-col items-center">
+      <div className="border rounded-lg max-w-2xl mx-auto mt-5 mb-10 pb-3 p-5 space-y-5 flex flex-col items-center text-center">
         {timeDiff > 0 ? (
           <div>
             <div className="text-main5">마감까지 남은 시간 : {days}일 {hours}시간 {minutes}분 {seconds}초</div>
