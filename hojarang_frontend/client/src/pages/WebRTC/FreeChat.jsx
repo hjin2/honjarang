@@ -36,7 +36,9 @@ export default function FreeChat() {
 
 
   const getToken = useCallback(async () => {
-    createToken(mySessionId)
+    return createSession(mySessionId).then(sessionId =>
+        createToken(sessionId),
+    );
   }, [mySessionId]);
   
   const toggleAudio= () => {
@@ -133,7 +135,6 @@ export default function FreeChat() {
   useEffect(() => {
     if (session) {
         // Get a token from the OpenVidu deployment
-        console.log(session)
       getToken().then(async (token) => {
         try {
           await session.connect(token, { clientData: nickname });
