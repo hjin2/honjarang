@@ -65,19 +65,15 @@ public class VideoChatService {
 
             String thumbnail = "";
             if(multipartFile==null) {
-                switch (params.getCategory()) {
-                    case FREE ->
-                            thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/free.png";
-                    case MUKBANG ->
-                            thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/mukbang.png";
-                    case GAME ->
-                            thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/game.png";
-                    case HELP ->
-                            thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/help.png";
+                if(params.getCategory()!=null) {
+                    switch (params.getCategory()) {
+                        case FREE -> thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/free.png";
+                        case MUKBANG -> thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/mukbang.png";
+                        case GAME -> thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/game.png";
+                        case HELP -> thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/help.png";
+                    }
                 }
             }else{
-                System.out.println("왜....");
-                // 사진 s3에 저장하기
                 String uuid = UUID.randomUUID().toString();
                 s3Client.putObject(PutObjectRequest.builder()
                         .bucket("honjarang-bucket")
@@ -86,7 +82,6 @@ public class VideoChatService {
                         .contentType(multipartFile.getContentType())
                         .build(), RequestBody.fromInputStream(multipartFile.getInputStream(), multipartFile.getSize()));
 
-                // thumbnail에 풀주소 저장하기
                 thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/" + uuid + multipartFile.getOriginalFilename();
 
             }
