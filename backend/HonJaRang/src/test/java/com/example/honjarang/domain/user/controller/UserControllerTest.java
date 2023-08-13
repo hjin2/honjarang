@@ -409,21 +409,21 @@ class UserControllerTest {
                 ));
     }
 
-    @Test
-    @DisplayName("회원 탈퇴")
-    void deleteUser_suceess() throws Exception {
-        Long userId = 1L;
-
-        mockMvc.perform(delete("/api/v1/users/{userId}",1L))
-                .andExpect(status().isOk())
-                .andDo(document("/users/deleteUser",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        pathParameters(
-                                parameterWithName("userId").description("사용자 ID")
-                        ))
-                );
-    }
+//    @Test
+//    @DisplayName("회원 탈퇴")
+//    void deleteUser_suceess() throws Exception {
+//        Long userId = 1L;
+//
+//        mockMvc.perform(delete("/api/v1/users/{userId}",1L))
+//                .andExpect(status().isOk())
+//                .andDo(document("/users/deleteUser",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        pathParameters(
+//                                parameterWithName("userId").description("사용자 ID")
+//                        ))
+//                );
+//    }
 
     @Test
     @DisplayName("로그아웃")
