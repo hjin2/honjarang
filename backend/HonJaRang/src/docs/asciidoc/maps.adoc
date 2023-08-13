@@ -1,0 +1,4 @@
+== 지도
+
+=== 키워드로 장소 검색
+operation::maps/coordinates[snippets='http-request,query-parameters,response-fields']
