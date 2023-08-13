@@ -51,9 +51,9 @@ public class VideoChatController {
     }
 
     // 화상 채팅 방 목록 조회
-    @GetMapping("")
-    public List<VideoChatListDto> getSessionList() {
-        return videoChatService.getSessionList();
+    @GetMapping("/{category}")
+    public List<VideoChatListDto> getSessionList(@PathVariable("category") String category) {
+        return videoChatService.getSessionList(category);
     }
 
 

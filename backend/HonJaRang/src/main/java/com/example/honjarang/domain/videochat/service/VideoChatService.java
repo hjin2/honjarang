@@ -148,9 +148,21 @@ public class VideoChatService {
     }
 
     @Transactional(readOnly = true)
-    public List<VideoChatListDto> getSessionList() {
+    public List<VideoChatListDto> getSessionList(String category) {
 
-        List<VideoChatRoom> videoChatRooms = videoChatRoomRepository.findAll();
+        Category option = Category.FREE;
+
+        switch(category) {
+            case "free": option = Category.FREE; break;
+            case "game": option = Category.GAME; break;
+            case "study": option = Category.STUDY; break;
+            case "mukbang": option = Category.MUKBANG; break;
+            case "help": option = Category.HELP; break;
+            case "honsul": option = Category.HONSUL; break;
+        }
+
+
+        List<VideoChatRoom> videoChatRooms = videoChatRoomRepository.findByCategory(option);
         List<VideoChatListDto> videoChatRoomList = new ArrayList<>();
         for(VideoChatRoom videoChatRoom  : videoChatRooms) {
             Integer count = videoChatParticipantRepository.countByVideoChatRoom(videoChatRoom);
