@@ -14,7 +14,7 @@ export default function Chatting() {
 
   useEffect(() => {
     const access_token = localStorage.getItem('access_token');
-    axios.get('http://honjarang.kro.kr:30000/api/v1/chats', {
+    axios.get(`${import.meta.env.VITE_APP_API}/api/v1/chats`, {
       headers: {
         'Authorization' : `Bearer ${access_token}`
       }
@@ -27,7 +27,7 @@ export default function Chatting() {
   }, []);
 
   const CreateChat = () => {
-    axios.post('http://honjarang.kro.kr:30000/api/v1/chats/one-to-one',
+    axios.post(`${import.meta.env.VITE_APP_API}/api/v1/chats/one-to-one`,
     {target_id: 5},
     {headers: {
       'Authorization': `Bearer ${access_token}`
