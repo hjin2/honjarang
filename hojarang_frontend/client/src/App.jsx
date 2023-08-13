@@ -9,7 +9,6 @@ import Market from '@/pages/Market/Market';
 import WebRTC from '@/pages/WebRTC/WebRTC';
 import Board from '@/pages/Board/Board';
 import Map1 from '@/pages/Map/Map';
-import Map2 from '@/pages/Map/Map2';
 import MyPage from '@/pages/MyPage/MyPage';
 import FindPassword from '@/pages/FindPassword/FindPassword';
 import ChangePassword from '@/pages/FindPassword/ChangePassword';
@@ -74,7 +73,6 @@ function App() {
           <Route path="/checkout/:price" element={<Checkout />} />
           <Route path="/checkout/fail" element={<Fail />} />
           <Route path="/checkout/success" element={<Success />} />
-          <Route path="/map2" element={<Map2 />} />
           <Route path="/push" element={<FirebaseMessaging />} />
         </Routes>
       </BrowserRouter>
