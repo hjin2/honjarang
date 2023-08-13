@@ -119,7 +119,7 @@ public class PostControllerTest {
 //                        .param("title",postCreateDto.getTitle())
 //                        .param("category",postCreateDto.getCategory().toString())
 //                        .param("content", postCreateDto.getContent()))
-//                .andExpect(status().isCreated());
+//                .andExpect(status().isCreated())
 //                .andDo(document("/posts/create",
 //                        preprocessRequest(prettyPrint()),
 //                        preprocessResponse(prettyPrint()),
