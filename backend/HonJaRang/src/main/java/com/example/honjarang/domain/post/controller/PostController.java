@@ -49,8 +49,8 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostDto> getPost(@PathVariable Long id) {
-        PostDto postDto = postService.getPost(id);
+    public ResponseEntity<PostDto> getPost(@PathVariable Long id, @CurrentUser User user) {
+        PostDto postDto = postService.getPost(id, user);
         return ResponseEntity.ok(postDto);
     }
 
@@ -82,7 +82,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}/notice")
-    public ResponseEntity<Void> noticePost(@RequestParam Long id, @CurrentUser User user) {
+    public ResponseEntity<Void> noticePost(@PathVariable Long id, @CurrentUser User user) {
         postService.noticePost(id, user);
         return ResponseEntity.ok().build();
     }
