@@ -9,8 +9,8 @@ export default function Delivery() {
   const token = localStorage.getItem("access_token")
   const headers = {"Authorization" : `Bearer ${token}`}
 	const [activeTab, setActiveTab] = useState('join-delivery')
-	const [joinPageSize, setJoinPageSize] = useState(0)
-	const [writePageSize, setWritePageSize] = useState(0)
+	const [joinPageSize, setJoinPageSize] = useState(1)
+	const [writePageSize, setWritePageSize] = useState(1)
 	const [joinCurrentPage, setJoinCurrentPage] = useState(1)
 	const [writeCurrentPage, setWriteCurrentPage] = useState(1)
 	const [joinDeliveryData, setJoinDeliveryData] = useState([])

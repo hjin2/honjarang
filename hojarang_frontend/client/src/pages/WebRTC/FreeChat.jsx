@@ -19,6 +19,7 @@ export default function FreeChat() {
   const asession = useSelector((state) => state.session.session)
   const [publishVideo, setPublishVideo] = useState(true)
   const [publishAudio, setPublishAudio] = useState(true)
+  const [chatMessages, setChatMessages] = useState([]);
   const leaveSession = useCallback(() => {
     // Leave the session
     if (session) {
@@ -51,6 +52,23 @@ export default function FreeChat() {
     publisher.publishVideo(!publishVideo)
   }
 
+  const sendChatMessage = (message) => {
+    const newMessage = {
+      text: message,
+      sender: nickname,
+    };
+  
+    // Push the new message to the chatMessages state
+    setChatMessages((prevMessages) => [...prevMessages, newMessage]);
+    console.log(chatMessages)
+  
+    // Broadcast the message to all subscribers
+    session.signal({
+      type: 'chat',
+      data: JSON.stringify(newMessage),
+    });
+  };
+
   const joinSession = useCallback(() => {
     const mySession = OV.current.initSession();
 
@@ -65,6 +83,11 @@ export default function FreeChat() {
 
     mySession.on('exception', (exception) => {
       console.warn(exception);
+    });
+
+    mySession.on('signal:chat', (event) => {
+      const newMessage = JSON.parse(event.data);
+      setChatMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
     setSession(mySession);
@@ -169,19 +192,40 @@ export default function FreeChat() {
 
   return (
     <div id="session">
-      <div id="video-container" className="flex flex-wrap flex-row gap-4">
+      <div id="video-container" className="grid grid-cols-4 gap-4">
         {publisher !== undefined ? (
-          <div className="basis-1/4">
+          <div className="">
             <UserVideoComponent
               streamManager={publisher} />
           </div>
         ) : null}
         {subscribers.map((sub, i) => (
-          <div key={sub.id} className="basis-1/4">
+          <div key={sub.id} className="">
             <span>{sub.id}</span>
             <UserVideoComponent streamManager={sub} />
           </div>
         ))}
+    </div>
+    <div className="chat-container">
+      <div className="chat-messages">
+        {chatMessages.map((message, index) => (
+          <div key={index} className="chat-message">
+            <strong>{message.sender}:</strong> {message.text}
+          </div>
+        ))}
+      </div>
+      <div className="chat-input">
+        <input
+          type="text"
+          placeholder="Type your message..."
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              sendChatMessage(e.target.value);
+              e.target.value = '';
+            }
+          }}
+        />
+      </div>
     </div>
     <div className="flex justify-center space-x-5">
       <button className="flex h-8 w-20 bg-main3 rounded-lg text-white justify-center items-center" onClick={toggleAudio}>

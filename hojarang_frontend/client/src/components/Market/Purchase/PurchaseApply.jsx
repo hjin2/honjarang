@@ -51,6 +51,7 @@ export default function PurchaseApply({
       joint_purchase_id : purchaseId,
       quantity : quantity,
     }
+    console.log(data)
     if((point-(price * quantity + deliveryCharge))>=0){
       axios.post(`${URL}/api/v1/joint-purchases/${purchaseId}/applicants`,data,
         {

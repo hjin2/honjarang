@@ -1,4 +1,4 @@
-import {Map, MapMarker} from 'react-kakao-maps-sdk'
+import { StaticMap, Map, MapMarker} from 'react-kakao-maps-sdk'
 import { useState, useEffect } from 'react'
 const {kakao} = window
 

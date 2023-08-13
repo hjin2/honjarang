@@ -50,7 +50,7 @@ export default function Checkout() {
               const amount = data.amount
               const paymenttype = data.paymentType
               
-              axios.post('http://honjarang.kro.kr:30000/api/v1/users/success',
+              axios.post(`${import.meta.env.VITE_APP_API}/api/v1/users/success`,
                 data = {
                   payment_key : paymentKey,
                   order_id : orderId,
