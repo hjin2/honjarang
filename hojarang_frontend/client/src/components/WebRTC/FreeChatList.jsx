@@ -24,7 +24,7 @@ export default function FreeChatList() {
   },[])
 
   useEffect(() => {
-    axios.get(`${URL}/api/v1/video-room/sessions`,)
+    axios.get(`${URL}/api/v1/video-room/sessions/free`,)
     .then((res) =>{
       console.log(res.data)
       setFreeChatData(res.data)
