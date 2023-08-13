@@ -20,6 +20,12 @@ export default function FreeChat() {
   const [publishVideo, setPublishVideo] = useState(true)
   const [publishAudio, setPublishAudio] = useState(true)
   const [chatMessages, setChatMessages] = useState([]);
+  const [isChatOpen, setIsChatOpen] = useState(false)
+
+  const handleChatting = () =>{
+    setIsChatOpen(!isChatOpen)
+  }
+
   const leaveSession = useCallback(() => {
     // Leave the session
     if (session) {
@@ -112,7 +118,6 @@ export default function FreeChat() {
   //   const handleBackButton = (event) => {
   //     console.log('뒤로가기 버튼이 눌렸습니다.');
   //     leaveSession()
-  //     // 추가적인 동작을 여기에 작성하세요.
   //   };
 
   //   window.onpopstate = handleBackButton()
@@ -192,6 +197,7 @@ export default function FreeChat() {
 
   return (
     <div id="session">
+      <div className="flex space-x-5">
       <div id="video-container" className="grid grid-cols-4 gap-4">
         {publisher !== undefined ? (
           <div className="">
@@ -205,28 +211,31 @@ export default function FreeChat() {
             <UserVideoComponent streamManager={sub} />
           </div>
         ))}
-    </div>
-    <div className="chat-container">
-      <div className="chat-messages">
-        {chatMessages.map((message, index) => (
-          <div key={index} className="chat-message">
-            <strong>{message.sender}:</strong> {message.text}
+      </div>
+      {isChatOpen ? (
+        <div className="chat-container border-2 rounded-lg p-6">
+          <div className="chat-messages h-40">
+            {chatMessages.map((message, index) => (
+              <div key={index} className="chat-message">
+                <strong>{message.sender}:</strong> {message.text}
+              </div>
+            ))}
           </div>
-        ))}
+          <div className="chat-input">
+            <input
+              type="text"
+              placeholder="Type your message..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  sendChatMessage(e.target.value);
+                  e.target.value = '';
+                }
+              }}
+            />
+          </div>
+        </div>
+      ):(null)}
       </div>
-      <div className="chat-input">
-        <input
-          type="text"
-          placeholder="Type your message..."
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              sendChatMessage(e.target.value);
-              e.target.value = '';
-            }
-          }}
-        />
-      </div>
-    </div>
     <div className="flex justify-center space-x-5">
       <button className="flex h-8 w-20 bg-main3 rounded-lg text-white justify-center items-center" onClick={toggleAudio}>
         {publishAudio === true ? (
@@ -253,7 +262,11 @@ export default function FreeChat() {
             Start Video
           </div>
         )}
-
+      </button>
+      <button onClick={handleChatting}>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+        </svg>
       </button>
       <button 
         onClick={leaveSession}
