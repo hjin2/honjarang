@@ -48,8 +48,6 @@ public class VideoChatService {
             throws OpenViduJavaClientException, OpenViduHttpException {
 
         SessionProperties properties = SessionProperties.fromJson(params).build();
-        if (videoChatRoomRepository.findBySessionId(properties.customSessionId()) != null)
-            throw new ExistVideoChatException("동일한 방이 이미 있습니다.");
 
         Category option = Category.FREE;
         switch((String)params.get("category")) {
@@ -66,6 +64,7 @@ public class VideoChatService {
                 .onlyVoice((Boolean)params.get("onlyVoice"))
                 .build();
         videoChatRoomRepository.save(videoChatRoom);
+
         return session.getSessionId();
     }
 
@@ -87,11 +86,11 @@ public class VideoChatService {
             throw new RuntimeException(e);
         }
 
-//        VideoChatParticipant videoChatParticipant = VideoChatParticipant.builder()
-//                        .videoChatRoom(videoChatRoomRepository.findBySessionId(sessionId))
-//                        .build();
-//
-//        videoChatParticipantRepository.save(videoChatParticipant);
+        VideoChatParticipant videoChatParticipant = VideoChatParticipant.builder()
+                        .videoChatRoom(videoChatRoomRepository.findBySessionId(sessionId))
+                        .build();
+
+        videoChatParticipantRepository.save(videoChatParticipant);
         return connection.getToken();
     }
 
