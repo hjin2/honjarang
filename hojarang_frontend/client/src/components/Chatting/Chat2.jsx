@@ -40,13 +40,13 @@ const Chat2 = () => {
 
     
     const webSocketLogin = useCallback(() => {
-        ws.current = new WebSocket("ws://localhost:8080/socket/chatt");
+        ws.current = new WebSocket("ws://localhost:8080/socket/chat");
 
         ws.current.onmessage = (message) => {
             const dataSet = JSON.parse(message.data);
             setSocketData(dataSet);
         }
-    });
+    },[]);
 
 
     const send = useCallback(() => {

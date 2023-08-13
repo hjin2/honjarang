@@ -10,8 +10,8 @@ export default function ArticleList() {
   const URL = import.meta.env.VITE_APP_API
   const token = localStorage.getItem("access_token")
   const headers = {"Authorization" : `Bearer ${token}`}
-  const [pageSize, setPageSize] = useState(0)
-  const [currentPage, setCurrentPage] = useState(0)
+  const [pageSize, setPageSize] = useState(1)
+  const [currentPage, setCurrentPage] = useState(1)
   const [articles, setArticles] = useState([])
   useEffect(() => {
     axios.get(`${URL}/api/v1/users/page-post`,{params:{size:10}, headers})
