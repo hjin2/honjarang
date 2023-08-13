@@ -81,4 +81,10 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostsPageCount(size));
     }
 
+    @PutMapping("/{id}/notice")
+    public ResponseEntity<Void> noticePost(@RequestParam Long id, @CurrentUser User user) {
+        postService.noticePost(id, user);
+        return ResponseEntity.ok().build();
+    }
+
 }
