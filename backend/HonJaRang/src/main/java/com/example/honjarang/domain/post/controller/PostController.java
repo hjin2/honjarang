@@ -77,8 +77,8 @@ public class PostController {
     }
 
     @GetMapping("/page")
-    public ResponseEntity<Integer> getPostsPageCount(@RequestParam Integer size) {
-        return ResponseEntity.ok(postService.getPostsPageCount(size));
+    public ResponseEntity<Integer> getPostsPageCount(@RequestParam Integer size, @RequestParam(value="keyword", defaultValue = "")String keyword) {
+        return ResponseEntity.ok(postService.getPostsPageCount(size,keyword));
     }
 
     @PutMapping("/{id}/notice")
