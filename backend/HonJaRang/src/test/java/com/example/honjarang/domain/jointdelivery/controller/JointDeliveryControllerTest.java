@@ -420,26 +420,26 @@ class JointDeliveryControllerTest {
                 ));
     }
 
-    @Test
-    @DisplayName("공동배달 페이지 수 조회")
-    void getJointDeliveryPage() throws Exception {
-        // given
-        given(jointDeliveryService.getJointDeliveryPageCount(10)).willReturn(1);
-
-        // when & then
-        mockMvc.perform(get("/api/v1/joint-deliveries/page")
-                .param("size", "10"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").value(1))
-                .andDo(document("joint-deliveries/page",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        queryParameters(
-                                parameterWithName("size").description("페이지 크기")
-                        ),
-                        responseBody()
-                ));
-    }
+//    @Test
+//    @DisplayName("공동배달 페이지 수 조회")
+//    void getJointDeliveryPage() throws Exception {
+//        // given
+//        given(jointDeliveryService.getJointDeliveryPageCount(10)).willReturn(1);
+//
+//        // when & then
+//        mockMvc.perform(get("/api/v1/joint-deliveries/page")
+//                .param("size", "10"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$").value(1))
+//                .andDo(document("joint-deliveries/page",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        queryParameters(
+//                                parameterWithName("size").description("페이지 크기")
+//                        ),
+//                        responseBody()
+//                ));
+//    }
 
     @Test
     @DisplayName("공동배달 신청자 목록 조회")

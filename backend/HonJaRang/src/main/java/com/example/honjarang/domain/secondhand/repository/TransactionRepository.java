@@ -23,4 +23,6 @@ public interface TransactionRepository extends JpaRepository<Transaction,Long> {
 
      long count();
 
+     Integer countAllByTitleContainingIgnoreCase(String keyword);
+
 }

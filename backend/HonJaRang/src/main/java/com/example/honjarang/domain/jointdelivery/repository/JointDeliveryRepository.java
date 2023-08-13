@@ -27,5 +27,7 @@ public interface JointDeliveryRepository extends JpaRepository<JointDelivery, Lo
 
     Integer countByIsCanceledFalseAndDeadlineAfter(LocalDateTime now);
 
+    Integer countByIsCanceledFalseAndDeadlineAfterAndContentContainingIgnoreCase(LocalDateTime now, String keyword);
+
     Integer countAllByUserId(Long userId);
 }

@@ -67,8 +67,8 @@ public class JointPurchaseController {
     }
 
     @GetMapping("/page")
-    public ResponseEntity<Integer> getJointPurchasePage(@RequestParam Integer size) {
-        Integer jointPurchasePage = jointPurchaseService.getJointPurchasePageCount(size);
+    public ResponseEntity<Integer> getJointPurchasePage(@RequestParam Integer size, @RequestParam(value="keyword", defaultValue = "")String keyword) {
+        Integer jointPurchasePage = jointPurchaseService.getJointPurchasePageCount(size, keyword);
         return ResponseEntity.ok(jointPurchasePage);
     }
 }
