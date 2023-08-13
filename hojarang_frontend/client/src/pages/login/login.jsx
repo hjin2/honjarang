@@ -38,7 +38,8 @@ export default function Login() {
 
 
   return (
-    <div className="container flex flex-col items-center justify-center mx-auto mt-10">
+    <div className="flex flex-col items-center justify-center h-screen" >
+      <div className='text-2xl font-bold text-main1 mb-10'>혼자랑</div>
       <form className="space-y-4 md:space-y-6" onSubmit={login}>
         <div>
           <label htmlFor="email" className="block mb-1 font-semibold text-lg text-main2">
@@ -60,12 +61,12 @@ export default function Login() {
         </div>
         <button
           type="submit"
-          className="w-72 h-10 main1-button my-10"
+          className="w-72 h-10 main1-full-button my-10 text-base"
         >
           로그인
         </button>
       </form>
-      <div className="w-72 flex justify-around text-base p-1 text-gray4">
+      <div className="w-72 flex justify-around p-1 text-gray4 mt-4">
         <Link to="/signup">회원가입</Link>
         <Link to="/findpassword">비밀번호 찾기</Link> 
       </div>
