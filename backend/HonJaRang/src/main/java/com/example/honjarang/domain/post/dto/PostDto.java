@@ -26,10 +26,10 @@ public class PostDto {
     private Boolean isNotice;
     private String createdAt;
     private String postImage;
-    private Integer likeCnt;
+    private Boolean likeCnt;
 
 
-    public PostDto(Post post, Integer likeCnt){
+    public PostDto(Post post, Boolean likeCnt){
         this.id = post.getId();
         this.userId = post.getUser().getId();
         this.title = post.getTitle();
