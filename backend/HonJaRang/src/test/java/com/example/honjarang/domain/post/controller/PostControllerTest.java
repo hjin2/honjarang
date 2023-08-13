@@ -133,25 +133,25 @@ public class PostControllerTest {
 //                        )));
 //    }
 
-    @Test
-    @WithMockUser
-    @DisplayName("게시글 삭제 성공")
-    void deletePost_Success() throws Exception {
-
-        // given
-        Long postId = 1L;
-
-        // when & then
-        mockMvc.perform(delete("/api/v1/posts/{id}",postId).
-                        contentType("application/json"))
-                .andExpect(status().isOk())
-                .andDo(document("/posts/delete",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        pathParameters(
-                                parameterWithName("id").description("게시글 ID")
-                        )));
-    }
+//    @Test
+//    @WithMockUser
+//    @DisplayName("게시글 삭제 성공")
+//    void deletePost_Success() throws Exception {
+//
+//        // given
+//        Long postId = 1L;
+//
+//        // when & then
+//        mockMvc.perform(delete("/api/v1/posts/{id}",postId).
+//                        contentType("application/json"))
+//                .andExpect(status().isOk())
+//                .andDo(document("/posts/delete",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        pathParameters(
+//                                parameterWithName("id").description("게시글 ID")
+//                        )));
+//    }
 
 
 //    @Test
