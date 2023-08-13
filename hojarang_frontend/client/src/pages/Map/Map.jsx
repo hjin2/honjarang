@@ -5,7 +5,7 @@ import axios from "axios";
 const {kakao} = window;
 
 
-function Map2() {
+function Map1() {
   const [info, setInfo] = useState()
   const [markers, setMarkers] = useState([])
   const [map, setMap] = useState()
@@ -159,4 +159,4 @@ function Map2() {
   )
 }
 
-export default Map2
+export default Map1
