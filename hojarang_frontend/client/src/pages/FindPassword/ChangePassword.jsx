@@ -51,7 +51,7 @@ export default function ChangePassword() {
   }
 
   const Password_Change = () => {
-    axios.put('http://honjarang.kro.kr:30000/api/v1/users/change-password',{
+    axios.put(`${import.meta.env.VITE_APP_API}/api/v1/users/change-password`,{
       password: password,
       new_password: password
     })

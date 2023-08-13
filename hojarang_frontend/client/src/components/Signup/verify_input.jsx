@@ -11,7 +11,7 @@ export default function Verify_check({email, ChangeEmailValid}) {
 
   // 인증번호 확인 절차
   const NumberCheck = () => {
-    axios.post('http://honjarang.kro.kr:30000/api/v1/users/verify-code', {
+    axios.post(`${import.meta.env.VITE_APP_API}/api/v1/users/verify-code`, {
       email: email,
       code: VerifyNum
     })

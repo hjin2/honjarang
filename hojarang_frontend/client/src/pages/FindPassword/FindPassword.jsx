@@ -24,7 +24,7 @@ export default function FindPassword() {
   const email = Id + '@' + Address;
 
   const check_number = () => {
-    axios.post('http://honjarang.kro.kr:30000/api/v1/users/verify-code',
+    axios.post(`${import.meta.env.VITE_APP_API}/api/v1/users/verify-code`,
     {
       email: email,
       code: Number
