@@ -46,6 +46,8 @@ public class PostService {
 
     private final S3Client s3Client;
 
+
+
     @Transactional
     public Long createPost(PostCreateDto postCreateDto, MultipartFile postImage, User user) throws IOException {
 
@@ -164,8 +166,11 @@ public class PostService {
 
         List<Post> posts = postRepository.findAllByTitleContainingIgnoreCaseOrderByIsNoticeDescIdDesc(keyword, pageable).toList();
         List<PostListDto> postListDtos = new ArrayList<>();
+
         for(Post post : posts){
-            postListDtos.add(new PostListDto(post));
+            Integer likeCnt = likePostRepository.countByPostId(post.getId());
+            Integer commentCnt = commentRepository.countByPostId(post.getId());
+            postListDtos.add(new PostListDto(post , likeCnt, commentCnt));
         }
         return  postListDtos;
     }
