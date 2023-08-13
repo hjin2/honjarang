@@ -30,7 +30,7 @@ public class VideoChatController {
 
     // 화상 채팅 방 생성
     @PostMapping("")
-    public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params, @RequestParam(value = "thumbnail_image", required = false) MultipartFile thumbnailImage)
+    public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params, @RequestPart(value = "thumbnail_image", required = false) MultipartFile thumbnailImage)
             throws OpenViduJavaClientException, OpenViduHttpException, IOException {
         return new ResponseEntity<>(videoChatService.initializeSession(params, thumbnailImage), HttpStatus.OK);
     }
