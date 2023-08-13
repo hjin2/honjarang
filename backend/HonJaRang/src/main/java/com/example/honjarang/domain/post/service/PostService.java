@@ -11,6 +11,7 @@ import com.example.honjarang.domain.post.exception.*;
 import com.example.honjarang.domain.post.repository.CommentRepository;
 import com.example.honjarang.domain.post.repository.LikePostRepository;
 import com.example.honjarang.domain.post.repository.PostRepository;
+import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -44,6 +45,8 @@ public class PostService {
     private final LikePostRepository likePostRepository;
 
     private final S3Client s3Client;
+
+
 
     @Transactional
     public Long createPost(PostCreateDto postCreateDto, MultipartFile postImage, User user) throws IOException {
@@ -163,8 +166,11 @@ public class PostService {
 
         List<Post> posts = postRepository.findAllByTitleContainingIgnoreCaseOrderByIsNoticeDescIdDesc(keyword, pageable).toList();
         List<PostListDto> postListDtos = new ArrayList<>();
+
         for(Post post : posts){
-            postListDtos.add(new PostListDto(post));
+            Integer likeCnt = likePostRepository.countByPostId(post.getId());
+            Integer commentCnt = commentRepository.countByPostId(post.getId());
+            postListDtos.add(new PostListDto(post , likeCnt, commentCnt));
         }
         return  postListDtos;
     }
@@ -223,4 +229,13 @@ public class PostService {
         return (int) Math.ceil((double) postRepository.count() / size) ;
     }
 
+    @Transactional
+    public void noticePost(Long id, User user){
+        Post post = postRepository.findById(id).orElseThrow(()-> new PostNotFoundException("존재하지 않는 게시글입니다."));
+        if(user.getRole()== Role.ROLE_ADMIN) {
+            post.updateNotice();
+        }else{
+            throw new InvalidUserException("관리자만 공지사항을 설정 및 해제할 수 있습니다.");
+        }
+    }
 }

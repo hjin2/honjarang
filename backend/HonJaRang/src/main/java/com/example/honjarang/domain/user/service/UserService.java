@@ -19,6 +19,8 @@ import com.example.honjarang.domain.jointpurchase.repository.JointPurchaseReposi
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.exception.PaymentException;
+import com.example.honjarang.domain.post.repository.CommentRepository;
+import com.example.honjarang.domain.post.repository.LikePostRepository;
 import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.post.service.PostService;
 import com.example.honjarang.domain.secondhand.dto.TransactionListDto;
@@ -89,6 +91,11 @@ public class UserService {
     private final JointPurchaseRepository jointPurchaseRepository;
 
     private final JointPurchaseApplicantRepository jointPurchaseApplicantRepository;
+
+
+    private final LikePostRepository likePostRepository;
+    private final CommentRepository commentRepository;
+
 
 
     private final MenuRepository menuRepository;
@@ -252,7 +259,9 @@ public class UserService {
 
         List<PostListDto> postListDtos = new ArrayList<>();
         for(Post post : posts){
-            postListDtos.add(new PostListDto(post));
+            Integer likeCnt = likePostRepository.countByPostId(post.getId());
+            Integer commentCnt = commentRepository.countByPostId(post.getId());
+            postListDtos.add(new PostListDto(post, likeCnt, commentCnt));
         }
 
         return postListDtos;
