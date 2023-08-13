@@ -21,4 +21,6 @@ public interface TransactionRepository extends JpaRepository<Transaction,Long> {
 
      Integer countAllByBuyerId(Long id);
 
+     long count();
+
 }
