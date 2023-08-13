@@ -40,18 +40,20 @@ export default function WebRTCCreate() {
   }
   const createWebRTC = () =>{
     const formData = new FormData()
-    // formData.append("webrtc_image", image)
-    // formData.append("sessionId", title)
+    formData.append("thumbnail_image", image)
+    formData.append("customSessionId", uuid)
+    formData.append("title", title)
     // formData.append("numPeople", numPeople)
-    // formData.append("Category", category)
-    const data = {
-      category : category,
-      customSessionId : uuid,
-      title : title,
-      onlyVoice : voiceSelect,
-    }
-    console.log(data)
-    axios.post(`${URL}/api/v1/video-room/sessions`, data)
+    formData.append("category", category)
+    formData.append("onlyVoice", voiceSelect)
+    // const data = {
+    //   category : category,
+    //   customSessionId : uuid,
+    //   title : title,
+    //   onlyVoice : voiceSelect,
+    // }
+    // console.log(data)
+    axios.post(`${URL}/api/v1/video-room/sessions`, formData,{"Content-Type" : "multipart/fomed-data"})
       .then((res) => {
         console.log(res.data)
         navigate(`/webrtc`, {replace:true})

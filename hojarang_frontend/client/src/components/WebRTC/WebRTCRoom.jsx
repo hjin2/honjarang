@@ -1,9 +1,9 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import defaultImage from '@/assets/noimage.png'
 
 export default function WebRTCRoom(roomData) {
   const navigate = useNavigate()
-  const { sessionId, category } = roomData;
+  const { id, sessionId, category, thumbnail, count, title  } = roomData;
   const onClick = () =>{
     console.log(roomData)
     navigate(`/webrtc/${sessionId}`)
@@ -14,12 +14,17 @@ export default function WebRTCRoom(roomData) {
         {/* 이미지와 그 위 텍스트 */}
           <div className="flex justify-center">
             <div className="h-32">
-              <img alt="썸네일" className="w-full h-full" />
+              {thumbnail ? (
+                <img alt="썸네일" className="w-full" src={thumbnail
+                }/>
+              ):(
+                <img alt="썸네일" className="w-full" src={defaultImage}/>
+              )}
             </div>
           </div>
           <div>
-            <div>[카테고리] 제목</div>
-            <div>1명/6명</div>
+            <div>[{category}] {title}</div>
+            <div>{count}명/6명</div>
           </div>
           <button className='main1-full-button w-24' onClick={onClick}>참여하기</button>
         </div>

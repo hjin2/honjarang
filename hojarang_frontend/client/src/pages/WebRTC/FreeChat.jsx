@@ -67,7 +67,7 @@ export default function FreeChat() {
     // Push the new message to the chatMessages state
     setChatMessages((prevMessages) => [...prevMessages, newMessage]);
     console.log(chatMessages)
-  
+    
     // Broadcast the message to all subscribers
     session.signal({
       type: 'chat',
@@ -152,7 +152,7 @@ export default function FreeChat() {
             resolution: '640x480',
             frameRate: 30,
             insertMode: 'APPEND',
-            mirror: false,
+            mirror: true,
           });
 
           session.publish(publisher);
@@ -195,9 +195,17 @@ export default function FreeChat() {
     };
   }, [leaveSession]);
 
+  const containerRef = useRef(null)
+
+  const handleScroll = () =>{
+    setChatMessages((prevMessages) => [...prevMessages]);
+  }
+
+
   return (
-    <div id="session">
-      <div className="flex space-x-5">
+    <div id="session" className="h-screen p-6">
+      <div className="text-center text-5xl text-main1 font-bold" style={{height : "10%"}}>혼자랑</div>
+      <div className="flex space-x-5" style={{height : "80%"}}>
       <div id="video-container" className="grid grid-cols-4 gap-4">
         {publisher !== undefined ? (
           <div className="">
@@ -213,18 +221,28 @@ export default function FreeChat() {
         ))}
       </div>
       {isChatOpen ? (
-        <div className="chat-container border-2 rounded-lg p-6">
-          <div className="chat-messages h-40">
+        <div 
+          className="chat-container p-6 w-6/12 h-full border-2 rounded-lg"
+        >
+          <div className="chat-messages"
+            ref={containerRef}
+            onScroll={handleScroll}
+            style={{
+              height : "90%",
+              overflow : "auto",
+            }}
+          >
             {chatMessages.map((message, index) => (
               <div key={index} className="chat-message">
                 <strong>{message.sender}:</strong> {message.text}
               </div>
             ))}
           </div>
-          <div className="chat-input">
+          <div className="chat-input mt-5">
             <input
+              className="border-none"
               type="text"
-              placeholder="Type your message..."
+              placeholder="채팅..."
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   sendChatMessage(e.target.value);
@@ -236,8 +254,8 @@ export default function FreeChat() {
         </div>
       ):(null)}
       </div>
-    <div className="flex justify-center space-x-5">
-      <button className="flex h-8 w-20 bg-main3 rounded-lg text-white justify-center items-center" onClick={toggleAudio}>
+    <div className="flex justify-center space-x-5 mt-5">
+      <button className="flex h-8 w-20 bg-main1 rounded-lg text-white justify-center items-center" onClick={toggleAudio}>
         {publishAudio === true ? (
           <div className="flex">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -263,7 +281,7 @@ export default function FreeChat() {
           </div>
         )}
       </button>
-      <button onClick={handleChatting}>
+      <button onClick={handleChatting} className="bg-main1 text-white w-10 rounded-lg flex justify-center items-center">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
         </svg>

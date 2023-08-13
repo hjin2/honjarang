@@ -68,9 +68,9 @@ function App() {
             ></Route>
             <Route path="/board/article/:id" element={<ArticleDetail />} />
             <Route path="/board/articleupdate/:id" element={<ArticleUpdate/>}></Route>
-            <Route path="/webrtc/:sessionid" element={<FreeChat/>}/>
             <Route path="/*" element={<Notfound />} />
           </Route>
+          <Route path="/webrtc/:sessionid" element={<FreeChat/>}/>
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/checkout/fail" element={<Fail />} />
           <Route path="/checkout/success" element={<Success />} />

@@ -17,6 +17,8 @@ export const ArticleDetail = () => {
   const [comment, setComment] = useState('')
   const [user, setUser] = useState({})
   const [isWriter, setIsWriter] = useState(false)
+  const [isLiked, setIsLiked] = useState(false)
+  const [likedCnt, setLikedCnt] = useState(0)
   const handleClick = () =>{
     setIsClick(!isClick)
   }
@@ -68,8 +70,10 @@ export const ArticleDetail = () => {
       }else{
         setIsWriter(false)
       }
-      fetchUser(res.data.user_id)
+      fetchUser(userId)
       setIsNotice(res.data.is_notice)
+      setIsLiked(res.data.is_liked)
+      setLikedCnt(res.data.like_cnt)
     })
     .catch((err) => {
       console.log(err)
@@ -118,6 +122,12 @@ export const ArticleDetail = () => {
     axios.post(`${URL}/api/v1/posts/${id}/like`,[],{headers})
       .then((res) =>{
         console.log(res)
+        setIsLiked(!isLiked)
+        if(isLiked){
+          setLikedCnt(likedCnt-1)
+        }else{
+          setLikedCnt(likedCnt+1)
+        }
       })
       .catch((err) =>{
         console.log(err)
@@ -131,11 +141,16 @@ export const ArticleDetail = () => {
         <div className='text-xl font-semibold mb-5'>
           [{detail.category}] {detail.title}
         </div>
-        {isNotice ? (
-          <button className="main5-full-button w-24" onClick={notice}>공지취소</button>
-        ):(
-          <button className="main1-full-button w-24" onClick={notice}>공지등록</button>
-        )}
+        {user.role==="ROLE_ADMIN" ? (
+          <>
+            {isNotice ? (
+              <button className="main5-full-button w-24" onClick={notice}>공지취소</button>
+            ):(
+              <button className="main1-full-button w-24" onClick={notice}>공지등록</button>
+            )}
+          </>
+        ):(null)}
+
       </div>
       <div className="flex justify-between px-2 my-3">
         <div className='flex'>
@@ -177,7 +192,7 @@ export const ArticleDetail = () => {
         </div>
         <div className='flex justify-center mt-10' onClick={handleLike}>
           <button className='mr-3'><FontAwesomeIcon icon={faThumbsUp} size="2xl" style={{color: "#008b57",}} /></button>
-          <div className='mt-2 text-lg font-semibold'>{detail.like_cnt}</div>
+          <div className='mt-2 text-lg font-semibold'>{likedCnt}</div>
         </div>
       </div>
       <hr />
