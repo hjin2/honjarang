@@ -22,9 +22,11 @@ public class PostListDto {
     private Integer views;
     private Boolean isNotice;
     private String createdAt;
+    private Integer likeCnt;
+    private Integer commentCnt;
 
 
-    public PostListDto(Post post) {
+    public PostListDto(Post post, Integer likeCnt, Integer commentCnt) {
         this.id = post.getId();
         this.userId = post.getUser().getId();
         this.userNickname = post.getUser().getNickname();
@@ -34,5 +36,7 @@ public class PostListDto {
         this.views = post.getViews();
         this.isNotice = post.getIsNotice();
         this.createdAt = DateTimeUtils.formatLocalDateTime(post.getCreatedAt());
+        this.likeCnt = likeCnt;
+        this.commentCnt = commentCnt;
     }
 }

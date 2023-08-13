@@ -71,6 +71,10 @@ public class Post extends BaseTimeEntity {
         this.postImage = postImage;
     }
 
+    public void updateNotice(){
+        this.isNotice = !this.isNotice;
+    }
+
     public void setIdForTest(Long id){
         this.id = id;
     }
