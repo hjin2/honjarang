@@ -69,4 +69,9 @@ public class TransactionController {
         transactionService.checkSecondHandTransaction(transactionId,user);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/page")
+    public ResponseEntity<Integer> getTransactionPageCount(@RequestParam Integer size) {
+        return ResponseEntity.ok(transactionService.getTransactionsPageCount(size));
+    }
 }

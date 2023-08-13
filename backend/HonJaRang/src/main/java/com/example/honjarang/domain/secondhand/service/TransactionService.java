@@ -169,6 +169,11 @@ public class TransactionService {
         transaction.receive();
         User seller = userRepository.findById(transaction.getSeller().getId()).orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다."));
         seller.addPoint(transaction.getPrice());
-
     }
+
+    @Transactional(readOnly = true)
+    public Integer getTransactionsPageCount(Integer size) {
+        return (int) Math.ceil((double) transactionRepository.count() / size) ;
+    }
+
 }
