@@ -4,6 +4,7 @@ import com.example.honjarang.domain.videochat.entity.Category;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -14,12 +15,12 @@ public class VideoChatRoomCreateDto {
     private Category category;
     private String customSessionId;
 
-    public Map<String, Object> convertToMap () {
-        return Map.of(
-                "onlyVoice", onlyVoice,
-                "title", title,
-                "category", category,
-                "customSessionId", customSessionId
-        );
+    public Map<String, Object> convertToMap() {
+        Map<String, Object> map = new HashMap<>();
+        if (onlyVoice != null) map.put("onlyVoice", onlyVoice);
+        if (title != null) map.put("title", title);
+        if (category != null) map.put("category", category);
+        if (customSessionId != null) map.put("customSessionId", customSessionId);
+        return map;
     }
 }
