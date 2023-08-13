@@ -71,7 +71,7 @@ function App() {
             <Route path="/*" element={<Notfound />} />
           </Route>
           <Route path="/webrtc/:sessionid" element={<FreeChat/>}/>
-          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/checkout/:price" element={<Checkout />} />
           <Route path="/checkout/fail" element={<Fail />} />
           <Route path="/checkout/success" element={<Success />} />
           <Route path="/map2" element={<Map2 />} />
