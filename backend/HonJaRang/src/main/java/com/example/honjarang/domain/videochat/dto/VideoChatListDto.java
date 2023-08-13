@@ -10,8 +10,9 @@ public class VideoChatListDto {
     private Long id;
     private String sessionId;
     private Category category;
-    private Boolean isScreen;
+    private Boolean onlyVoice;
     private String createdAt;
+    private String title;
     private Integer count;
     private String thumbnail;
 
@@ -19,7 +20,8 @@ public class VideoChatListDto {
         this.id = videoChatRoom.getId();
         this.sessionId = videoChatRoom.getSessionId();
         this.category = videoChatRoom.getCategory();
-        this.isScreen = videoChatRoom.getOnlyVoice();
+        this.onlyVoice = videoChatRoom.getOnlyVoice();
+        this.title = videoChatRoom.getTitle();
         this.createdAt = DateTimeUtils.formatLocalDateTime(videoChatRoom.getCreatedAt());
         this.count = count;
         this.thumbnail = videoChatRoom.getThumbnail();
