@@ -109,7 +109,12 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
                     />
                 <button onClick={handleIncrement} className="border px-2 font-semibold hover:border-main2 w-8 rounded-r-sm">+</button>
               </div>
-              <p className="mt-1">현재 가격 {selectedMenu.price * quantity}원</p>
+              <div className="w-44">
+                <div className="flex justify-between">
+                  <p className="mt-1">현재 가격</p>
+                  <p className="mt-1">{selectedMenu.price * quantity}원</p>
+                </div>
+              </div>
             </div>
             {/* 포인트 */}
             <div className="w-52">
