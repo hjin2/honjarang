@@ -47,7 +47,7 @@ export default function Signup() {
   }
   
   const onClick = () => {
-    axios.post('http://honjarang.kro.kr:30000/api/v1/users/signup',
+    axios.post(`${import.meta.env.VITE_APP_API}/api/v1/users/signup`,
     {
       email: Email,
       password: Pwd,
