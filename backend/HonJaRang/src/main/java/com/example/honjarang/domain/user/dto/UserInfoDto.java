@@ -1,5 +1,6 @@
 package com.example.honjarang.domain.user.dto;
 
+import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -19,6 +20,7 @@ public class UserInfoDto {
     private String address;
     private Double latitude;
     private Double longitude;
+    private Role role;
 
 
     public UserInfoDto(User user) {
@@ -29,5 +31,6 @@ public class UserInfoDto {
         this.address = user.getAddress();
         this.latitude = user.getLatitude();
         this.longitude = user.getLongitude();
+        this.role = user.getRole();
     }
 }
