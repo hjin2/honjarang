@@ -86,11 +86,11 @@ public class VideoChatService {
             throw new RuntimeException(e);
         }
 
-        VideoChatParticipant videoChatParticipant = VideoChatParticipant.builder()
-                        .videoChatRoom(videoChatRoomRepository.findBySessionId(sessionId))
-                        .build();
-
-        videoChatParticipantRepository.save(videoChatParticipant);
+//        VideoChatParticipant videoChatParticipant = VideoChatParticipant.builder()
+//                        .videoChatRoom(videoChatRoomRepository.findBySessionId(sessionId))
+//                        .build();
+//
+//        videoChatParticipantRepository.save(videoChatParticipant);
         return connection.getToken();
     }
 
