@@ -235,8 +235,8 @@ public class JointPurchaseService {
     }
 
     @Transactional(readOnly = true)
-    public Integer getJointPurchasePageCount(Integer size) {
-        Integer jointPurchaseCount = jointPurchaseRepository.countByIsCanceledFalseAndDeadlineAfter(LocalDateTime.now());
+    public Integer getJointPurchasePageCount(Integer size, String keyword) {
+        Integer jointPurchaseCount = jointPurchaseRepository.countByIsCanceledFalseAndDeadlineAfterAndContentContainingIgnoreCase(LocalDateTime.now(), keyword);
         return (int) Math.ceil((double) jointPurchaseCount / size);
     }
 }
