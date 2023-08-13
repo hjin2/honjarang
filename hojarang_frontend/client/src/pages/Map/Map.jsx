@@ -56,7 +56,7 @@ function Map2() {
     
     const id = localStorage.getItem('user_id')
     const token = localStorage.getItem('access_token')
-    axios.get('http://honjarang.kro.kr:30000/api/v1/users/info',
+    axios.get(`${import.meta.env.VITE_APP_API}/api/v1/users/info`,
     {
       params: {id: id},
       headers: {
