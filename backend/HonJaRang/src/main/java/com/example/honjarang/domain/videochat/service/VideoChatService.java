@@ -3,6 +3,7 @@ package com.example.honjarang.domain.videochat.service;
 import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.videochat.dto.VideoChatListDto;
+import com.example.honjarang.domain.videochat.dto.VideoChatRoomCreateDto;
 import com.example.honjarang.domain.videochat.entity.Category;
 import com.example.honjarang.domain.videochat.entity.VideoChatParticipant;
 import com.example.honjarang.domain.videochat.entity.VideoChatRoom;
@@ -53,39 +54,29 @@ public class VideoChatService {
     }
 
     @Transactional
-    public String initializeSession(Map<String, Object> params, MultipartFile multipartFile)
+    public String initializeSession(VideoChatRoomCreateDto params, MultipartFile multipartFile)
             throws OpenViduJavaClientException, OpenViduHttpException, IOException {
 
-        SessionProperties properties = SessionProperties.fromJson(params).build();
+        SessionProperties properties = SessionProperties.fromJson(params.convertToMap()).build();
 
-        VideoChatRoom check = videoChatRoomRepository.findBySessionId((String)params.get("customSessionId"));
+        VideoChatRoom check = videoChatRoomRepository.findBySessionId(params.getCustomSessionId());
 
         if (check == null) {
-            Category option = Category.FREE;
-            switch((String)params.get("category")) {
-                case "FREE": option = Category.FREE; break;
-                case "MUKBANG": option = Category.MUKBANG; break;
-                case "GAME": option = Category.GAME; break;
-                case "HELP": option = Category.HELP; break;
-            }
 
             String thumbnail = "";
             if(multipartFile==null) {
-                switch (option) {
-                    case FREE:
-                        thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/free.png";
-                        break;
-                    case MUKBANG:
-                        thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/mukbang.png";
-                        break;
-                    case GAME:
-                        thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/game.png";
-                        break;
-                    case HELP:
-                        thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/help.png";
-                        break;
+                switch (params.getCategory()) {
+                    case FREE ->
+                            thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/free.png";
+                    case MUKBANG ->
+                            thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/mukbang.png";
+                    case GAME ->
+                            thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/game.png";
+                    case HELP ->
+                            thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/help.png";
                 }
             }else{
+                System.out.println("왜....");
                 // 사진 s3에 저장하기
                 String uuid = UUID.randomUUID().toString();
                 s3Client.putObject(PutObjectRequest.builder()
@@ -102,9 +93,9 @@ public class VideoChatService {
 
             VideoChatRoom videoChatRoom = VideoChatRoom.builder()
                     .sessionId(properties.customSessionId())
-                    .category(option)
-                    .title((String)params.get("title"))
-                    .onlyVoice((Boolean)params.get("onlyVoice"))
+                    .category(params.getCategory())
+                    .title(params.getTitle())
+                    .onlyVoice(params.getOnlyVoice())
                     .thumbnail(thumbnail)
                     .build();
             videoChatRoomRepository.save(videoChatRoom);
@@ -166,9 +157,6 @@ public class VideoChatService {
         List<VideoChatListDto> videoChatRoomList = new ArrayList<>();
         for(VideoChatRoom videoChatRoom  : videoChatRooms) {
             Integer count = videoChatParticipantRepository.countByVideoChatRoom(videoChatRoom);
-            if (count >= 8) {
-                continue;
-            }
             videoChatRoomList.add(new VideoChatListDto(videoChatRoom, count));
         }
         return videoChatRoomList;
