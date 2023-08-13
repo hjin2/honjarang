@@ -11,7 +11,7 @@ const ArticleCreate = () => {
   const token = localStorage.getItem("access_token")
   const headers = {
     "Authorization" : `Bearer ${token}`,
-    "Content-Type" : "multipart/formed-data"
+    "Content-Type" : "multipart/form-data"
   }
   const navigate = useNavigate();
   const [category, setCategory] = useState("")
