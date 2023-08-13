@@ -337,13 +337,14 @@ class JointPurchaseServiceTest {
     @DisplayName("공동구매 신청 실패 - 포인트가 부족한 경우")
     void applyJointPurchase_InsufficientPointException() {
         // given
+        User testUser = User.builder().point(0).build();
+        testUser.setIdForTest(2L);
         JointPurchaseApplyDto jointPurchaseApplyDto = new JointPurchaseApplyDto(1L, 1);
-        user.subtractPoint(10000);
         given(jointPurchaseRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(jointPurchase));
-        given(userRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(user));
+        given(userRepository.findById(2L)).willReturn(java.util.Optional.of(testUser));
 
         // when & then
-        assertThrows(InsufficientPointsException.class, () -> jointPurchaseService.applyJointPurchase(jointPurchaseApplyDto, user));
+        assertThrows(InsufficientPointsException.class, () -> jointPurchaseService.applyJointPurchase(jointPurchaseApplyDto, testUser));
 
     }
 

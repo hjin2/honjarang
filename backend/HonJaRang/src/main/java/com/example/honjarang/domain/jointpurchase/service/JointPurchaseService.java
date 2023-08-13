@@ -168,11 +168,15 @@ public class JointPurchaseService {
             throw new JointPurchaseAlreadyAppliedException("이미 신청한 공동구매입니다.");
         }
         User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
-        if(user.getPoint() < jointPurchase.getPrice() * jointPurchaseApplyDto.getQuantity() + jointPurchase.getDeliveryCharge() / jointPurchase.getTargetPersonCount()) {
-            throw new InsufficientPointsException("포인트가 부족합니다.");
+
+        // 공동구매 주최자가 아닌 경우 포인트 차감
+        if(!jointPurchase.getUser().getId().equals(user.getId())) {
+            if(user.getPoint() < jointPurchase.getPrice() * jointPurchaseApplyDto.getQuantity() + jointPurchase.getDeliveryCharge() / jointPurchase.getTargetPersonCount()) {
+                throw new InsufficientPointsException("포인트가 부족합니다.");
+            }
+            user.subtractPoint(jointPurchase.getPrice() * jointPurchaseApplyDto.getQuantity());
+            user.subtractPoint(jointPurchase.getDeliveryCharge() / jointPurchase.getTargetPersonCount());
         }
-        user.subtractPoint(jointPurchase.getPrice() * jointPurchaseApplyDto.getQuantity());
-        user.subtractPoint(jointPurchase.getDeliveryCharge() / jointPurchase.getTargetPersonCount());
 
         JointPurchaseApplicant jointPurchaseApplicant = JointPurchaseApplicant.builder()
                 .jointPurchase(jointPurchase)
@@ -205,7 +209,12 @@ public class JointPurchaseService {
         }
 
         User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
-        user.addPoint(jointPurchaseApplicant.getJointPurchase().getPrice() * jointPurchaseApplicant.getQuantity());
+
+        // 공동구매 주최자가 아닌 경우 포인트 환불
+        if(!jointPurchaseApplicant.getJointPurchase().getUser().getId().equals(user.getId())) {
+            user.addPoint(jointPurchaseApplicant.getJointPurchase().getPrice() * jointPurchaseApplicant.getQuantity());
+            user.addPoint(jointPurchaseApplicant.getJointPurchase().getDeliveryCharge() / jointPurchaseApplicant.getJointPurchase().getTargetPersonCount());
+        }
 
         jointPurchaseApplicantRepository.delete(jointPurchaseApplicant);
 
@@ -230,6 +239,12 @@ public class JointPurchaseService {
 
         jointPurchaseApplicant.confirmReceived();
 
+        // 공동배달 주최자인 경우 패스
+        if(jointPurchaseApplicant.getJointPurchase().getUser().getId().equals(loginUser.getId())) {
+            return;
+        }
+
+        // 공동배달 주최자에게 포인트 지급
         jointPurchaseApplicant.getJointPurchase().getUser().addPoint(jointPurchaseApplicant.getJointPurchase().getPrice() * jointPurchaseApplicant.getQuantity());
         jointPurchaseApplicant.getJointPurchase().getUser().addPoint(jointPurchaseApplicant.getJointPurchase().getDeliveryCharge() / jointPurchaseApplicant.getJointPurchase().getTargetPersonCount());
     }
