@@ -49,9 +49,10 @@ public class VideoChatService {
 
         SessionProperties properties = SessionProperties.fromJson(params).build();
 
-        VideoChatRoom check = videoChatRoomRepository.findBySessionId((String)params.get("customSessionId"));
+        try {
+            VideoChatRoom check = videoChatRoomRepository.findBySessionId((String)params.get("customSessionId"));
 
-        if (check == null) {
+        } catch(NullPointerException e) {
             Category option = Category.FREE;
             switch((String)params.get("category")) {
                 case "FREE": option = Category.FREE; break;
@@ -68,6 +69,7 @@ public class VideoChatService {
                     .build();
             videoChatRoomRepository.save(videoChatRoom);
         }
+
         Session session = openvidu.createSession(properties);
         return session.getSessionId();
     }
