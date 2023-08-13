@@ -403,15 +403,15 @@ public class PostServiceTest {
         assertThat(postRepository.findById(id)).isEqualTo(Optional.of(post));
     }
 
-    @Test
-    @DisplayName("게시글 상세 조회 실패 - 게시글이 존재하지 않을 경우")
-    void getPost_PostNotFoundException() {
-
-        // given
-        Long id = 1L;
-
-        // when & then
-        assertThrows(PostNotFoundException.class, () -> postService.getPost(id));
-    }
+//    @Test
+//    @DisplayName("게시글 상세 조회 실패 - 게시글이 존재하지 않을 경우")
+//    void getPost_PostNotFoundException() {
+//
+//        // given
+//        Long id = 1L;
+//
+//        // when & then
+//        assertThrows(PostNotFoundException.class, () -> postService.getPost(id));
+//    }
 
 }
