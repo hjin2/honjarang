@@ -59,32 +59,21 @@ public class VideoChatService {
 
         SessionProperties properties = SessionProperties.fromJson(params.convertToMap()).build();
 
-        VideoChatRoom check = videoChatRoomRepository.findBySessionId((String)params.get("customSessionId"));
+        VideoChatRoom check = videoChatRoomRepository.findBySessionId(params.getCustomSessionId());
 
         if (check == null) {
-            Category option = Category.FREE;
-            switch((String)params.get("category")) {
-                case "FREE": option = Category.FREE; break;
-                case "MUKBANG": option = Category.MUKBANG; break;
-                case "GAME": option = Category.GAME; break;
-                case "HELP": option = Category.HELP; break;
-            }
 
             String thumbnail = "";
             if(multipartFile==null) {
-                switch (option) {
-                    case FREE:
-                        thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/free.png";
-                        break;
-                    case MUKBANG:
-                        thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/mukbang.png";
-                        break;
-                    case GAME:
-                        thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/game.png";
-                        break;
-                    case HELP:
-                        thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/help.png";
-                        break;
+                switch (params.getCategory()) {
+                    case FREE ->
+                            thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/free.png";
+                    case MUKBANG ->
+                            thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/mukbang.png";
+                    case GAME ->
+                            thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/game.png";
+                    case HELP ->
+                            thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/help.png";
                 }
             }else{
                 System.out.println("왜....");
@@ -104,9 +93,9 @@ public class VideoChatService {
 
             VideoChatRoom videoChatRoom = VideoChatRoom.builder()
                     .sessionId(properties.customSessionId())
-                    .category(option)
-                    .title((String)params.get("title"))
-                    .onlyVoice((Boolean)params.get("onlyVoice"))
+                    .category(params.getCategory())
+                    .title(params.getTitle())
+                    .onlyVoice(params.getOnlyVoice())
                     .thumbnail(thumbnail)
                     .build();
             videoChatRoomRepository.save(videoChatRoom);
