@@ -85,14 +85,22 @@ public class VideoChatService {
                 thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/" + uuid + multipartFile.getOriginalFilename();
 
             }
-
-            VideoChatRoom videoChatRoom = VideoChatRoom.builder()
-                    .sessionId(properties.customSessionId())
-                    .category(params.getCategory())
-                    .title(params.getTitle())
-                    .onlyVoice(params.getOnlyVoice())
-                    .thumbnail(thumbnail)
-                    .build();
+            VideoChatRoom videoChatRoom = null;
+            if(params.getCategory() == null)
+            {
+                videoChatRoom = VideoChatRoom.builder()
+                        .sessionId(params.getCustomSessionId())
+                        .build();
+            }
+            else {
+                videoChatRoom = VideoChatRoom.builder()
+                        .sessionId(properties.customSessionId())
+                        .category(params.getCategory())
+                        .title(params.getTitle())
+                        .onlyVoice(params.getOnlyVoice())
+                        .thumbnail(thumbnail)
+                        .build();
+            }
             videoChatRoomRepository.save(videoChatRoom);
         }
 
