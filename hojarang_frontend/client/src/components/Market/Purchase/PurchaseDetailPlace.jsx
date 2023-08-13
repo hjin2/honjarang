@@ -15,7 +15,8 @@ export default function PurchaseDetailPlace({ latitude, longitude, placeName }) 
           height: "350px",
         }}
         level={3}
-        // onCreate={setMap}  
+        // onCreate={setMap} 
+        className="z-0" 
       >
       <MapMarker 
         position={{lat:latitude,lng:longitude}}

@@ -164,6 +164,7 @@ export default function PurchaseDetail() {
                   modalState={modalState} 
                   setModalState={setModalState}
                   purchasers = {purchasers}
+                  
                 />
               </Modal>
             )}
