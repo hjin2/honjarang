@@ -43,28 +43,37 @@ export default function Stores({ modalState, setModalState, onStoreClick }) {
     }
   };
 
+  // 이미지 없을 때 대체 이미지 넣기
+  const defaultImage = '/src/assets/noimage.png';
+
   return (
-    <div className="relative border bg-white m-auto rounded-lg w-3/6">
-      <input
-        type="text"
-        value={keyword}
-        onChange={handleKeywordChange}
-        className="h-7 border-gray3 m-2 w-80"
-        placeholder="가게명을 정확하게 입력해 주세요"
-        onKeyDown={handleKeyDown}
-      />
-      <button className="main1-button w-20" onClick={search}>검색</button>
+    <div className="relative border bg-white m-auto rounded-lg w-3/6 p-3">
+      <div className="flex felx-row">
+        <input
+          type="text"
+          value={keyword}
+          onChange={handleKeywordChange}
+          className="h-8 w-80 border border-gray2 focus:outline-main2 p-2 mr-3"
+          placeholder="가게명을 정확하게 입력해 주세요"
+          onKeyDown={handleKeyDown}
+          />
+        <div>
+          <button className="main1-button w-20" onClick={search}>검색</button>
+        </div>
+      </div>
+          
       <div className="h-96 overflow-y-scroll">
         {searchStores.map((store) => (
           <div key={store.id} className="flex justify-between m-3">
             <div className="flex flex-row">
-            <img className="h-16 w-16 mr-4 rounded-md" src={store.image} alt={store.keyword} />
-              <div>
+            <img className="h-16 w-16 mr-4 rounded-md" 
+            src={store.image !== "null" ? store.image : defaultImage} alt={store.keyword} />
+              <div> 
                 <p className="font-semibold">{store.name}</p>
                 <p>{store.address}</p>
               </div>
             </div>
-            <button onClick={() => storeClick(store)}>
+            <button onClick={() => storeClick(store)} className="hover:text-main2">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
               </svg>
