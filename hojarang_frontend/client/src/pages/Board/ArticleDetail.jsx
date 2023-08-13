@@ -45,6 +45,7 @@ export const ArticleDetail = () => {
   const fetchUser = useCallback((userId) =>{
     axios.get(`${URL}/api/v1/users/info`,{params:{id:userId}, headers})
       .then((res)=>{
+        console.log(res.data)
         setUser(res.data)
       })
       .catch((err)=>{
@@ -68,6 +69,7 @@ export const ArticleDetail = () => {
         setIsWriter(false)
       }
       fetchUser(res.data.user_id)
+      setIsNotice(res.data.is_notice)
     })
     .catch((err) => {
       console.log(err)
@@ -104,7 +106,22 @@ export const ArticleDetail = () => {
     setIsNotice(!isNotice)
   }
   const notice = () =>{
-    
+    axios.put(`${URL}/api/v1/posts/${id}/notice`,[],{params:{id:id},headers})
+      .then((res) => {
+        console.log(res)
+        handleNotice()
+      })
+      .catch((err) => console.log(err))
+  }
+
+  const handleLike = () =>{
+    axios.post(`${URL}/api/v1/posts/${id}/like`,[],{headers})
+      .then((res) =>{
+        console.log(res)
+      })
+      .catch((err) =>{
+        console.log(err)
+      })
   }
 
   return (
@@ -114,11 +131,11 @@ export const ArticleDetail = () => {
         <div className='text-xl font-semibold mb-5'>
           [{detail.category}] {detail.title}
         </div>
-        <form onSubmit={notice}>
-          <label htmlFor="notice" className='mr-2'>공지
-          <input type="checkbox" onChange={handleNotice} checked={isNotice} />
-          </label>
-        </form>
+        {isNotice ? (
+          <button className="main5-full-button w-24" onClick={notice}>공지취소</button>
+        ):(
+          <button className="main1-full-button w-24" onClick={notice}>공지등록</button>
+        )}
       </div>
       <div className="flex justify-between px-2 my-3">
         <div className='flex'>
@@ -158,7 +175,7 @@ export const ArticleDetail = () => {
         <div>
           {detail.content}
         </div>
-        <div className='flex justify-center mt-10'>
+        <div className='flex justify-center mt-10' onClick={handleLike}>
           <button className='mr-3'><FontAwesomeIcon icon={faThumbsUp} size="2xl" style={{color: "#008b57",}} /></button>
           <div className='mt-2 text-lg font-semibold'>{detail.like_cnt}</div>
         </div>
