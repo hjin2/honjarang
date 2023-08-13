@@ -67,7 +67,6 @@ export default function Signup() {
   return (
     <div className="m-auto w-4/5 h-fit border border-solid border-black rounded
     flex flex-col items-start justify-around p-2">
-          <h1 className='text-3xl'>회원가입</h1>
           <Email_verify Email = {Email} setEmail = {setEmail} ChangeEmailValid = {ChangeEmailValid}/>
           <Nickname_check Nickname = {Nickname} setNickname = {setNickname} ChangeNicknameValid = {ChangeNicknameValid}/>
           <Password_check Pwd = {Pwd} setPwd = {setPwd} setPwdValid={setPwdValid}/>
