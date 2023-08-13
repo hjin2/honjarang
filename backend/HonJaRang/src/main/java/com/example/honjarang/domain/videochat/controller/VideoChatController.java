@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -28,9 +30,9 @@ public class VideoChatController {
 
     // 화상 채팅 방 생성
     @PostMapping("")
-    public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
-            throws OpenViduJavaClientException, OpenViduHttpException {
-        return new ResponseEntity<>(videoChatService.initializeSession(params), HttpStatus.OK);
+    public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params, @RequestParam(value = "profile_image", required = false) MultipartFile profileImage)
+            throws OpenViduJavaClientException, OpenViduHttpException, IOException {
+        return new ResponseEntity<>(videoChatService.initializeSession(params, profileImage), HttpStatus.OK);
     }
 
     // 화상 채팅 방 접속

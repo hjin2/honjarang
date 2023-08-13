@@ -27,12 +27,15 @@ public class VideoChatRoom extends BaseTimeEntity {
 
     private String title;
 
+    private String thumbnail;
+
     @Builder
-    public VideoChatRoom(String sessionId, Category category, Boolean onlyVoice, String title) {
+    public VideoChatRoom(String sessionId, Category category, Boolean onlyVoice, String title, String thumbnail) {
         this.sessionId = sessionId;
         this.category = category;
         this.onlyVoice = onlyVoice;
         this.title = title;
+        this.thumbnail = thumbnail;
     }
 
 

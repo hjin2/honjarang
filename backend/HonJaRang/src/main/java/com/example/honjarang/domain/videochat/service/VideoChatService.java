@@ -16,11 +16,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -38,14 +45,16 @@ public class VideoChatService {
 
     private final VideoChatParticipantRepository videoChatParticipantRepository;
 
+    private final S3Client s3Client;
+
     @PostConstruct
     public void init() {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
     @Transactional
-    public String initializeSession(Map<String, Object> params)
-            throws OpenViduJavaClientException, OpenViduHttpException {
+    public String initializeSession(Map<String, Object> params, MultipartFile multipartFile)
+            throws OpenViduJavaClientException, OpenViduHttpException, IOException {
 
         SessionProperties properties = SessionProperties.fromJson(params).build();
 
@@ -57,7 +66,38 @@ public class VideoChatService {
                 case "FREE": option = Category.FREE; break;
                 case "MUKBANG": option = Category.MUKBANG; break;
                 case "GAME": option = Category.GAME; break;
-                case "STUDY": option = Category.STUDY; break;
+                case "HELP": option = Category.HELP; break;
+            }
+
+            String thumbnail = "";
+            if(multipartFile==null) {
+                switch (option) {
+                    case FREE:
+                        thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/free.png";
+                        break;
+                    case MUKBANG:
+                        thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/mukbang.png";
+                        break;
+                    case GAME:
+                        thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/game.png";
+                        break;
+                    case HELP:
+                        thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/help.png";
+                        break;
+                }
+            }else{
+                // 사진 s3에 저장하기
+                String uuid = UUID.randomUUID().toString();
+                s3Client.putObject(PutObjectRequest.builder()
+                        .bucket("honjarang-bucket")
+                        .key("thumbnail/" + uuid + multipartFile.getOriginalFilename())
+                        .acl(ObjectCannedACL.PUBLIC_READ)
+                        .contentType(multipartFile.getContentType())
+                        .build(), RequestBody.fromInputStream(multipartFile.getInputStream(), multipartFile.getSize()));
+
+                // thumbnail에 풀주소 저장하기
+                thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/" + uuid + multipartFile.getOriginalFilename();
+
             }
 
             VideoChatRoom videoChatRoom = VideoChatRoom.builder()
@@ -65,6 +105,7 @@ public class VideoChatService {
                     .category(option)
                     .title((String)params.get("title"))
                     .onlyVoice((Boolean)params.get("onlyVoice"))
+                    .thumbnail(thumbnail)
                     .build();
             videoChatRoomRepository.save(videoChatRoom);
         }
