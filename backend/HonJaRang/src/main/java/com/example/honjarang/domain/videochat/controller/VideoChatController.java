@@ -2,8 +2,11 @@ package com.example.honjarang.domain.videochat.controller;
 
 import javax.annotation.PostConstruct;
 
+import com.example.honjarang.domain.post.dto.PostCreateDto;
+import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.videochat.dto.VideoChatListDto;
+import com.example.honjarang.domain.videochat.dto.VideoChatRoomCreateDto;
 import com.example.honjarang.domain.videochat.entity.Category;
 import com.example.honjarang.domain.videochat.entity.VideoChatParticipant;
 import com.example.honjarang.domain.videochat.entity.VideoChatRoom;
@@ -30,7 +33,7 @@ public class VideoChatController {
 
     // 화상 채팅 방 생성
     @PostMapping("")
-    public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params, @RequestPart(value = "thumbnail_image", required = false) MultipartFile thumbnailImage)
+    public ResponseEntity<String> initializeSession(@ModelAttribute(name = "params")VideoChatRoomCreateDto params, @RequestPart(value = "thumbnail_image", required = false) MultipartFile thumbnailImage)
             throws OpenViduJavaClientException, OpenViduHttpException, IOException {
         return new ResponseEntity<>(videoChatService.initializeSession(params, thumbnailImage), HttpStatus.OK);
     }
@@ -55,6 +58,19 @@ public class VideoChatController {
     public List<VideoChatListDto> getSessionList(@PathVariable("category") String category) {
         return videoChatService.getSessionList(category);
     }
+//
+//    @GetMapping("/page")
+//    public ResponseEntity<Integer> getPostsPageCount(@RequestParam Integer size, @RequestParam(value="keyword", defaultValue = "")String keyword) {
+//        return ResponseEntity.ok(postService.getPostsPageCount(size,keyword));
+//    }
+//
+//    @GetMapping("")
+//    public List<PostListDto> getPosts(@RequestParam(value = "page", defaultValue = "1") int page,
+//                                      @RequestParam(value = "keyword", defaultValue = "") String keyword) {
+//        return postService.getPostList(page, keyword);
+//    }
+//
+
 
 
 }
