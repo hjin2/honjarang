@@ -22,7 +22,7 @@ export default function WebRTCCreate() {
   const [title, setTitle] = useState('')
   const [numPeople, setNumPeople] = useState(0)
   const [image, setImage] = useState()
-  const [category, setCategory] = useState("")
+  const [category, setCategory] = useState("FREE")
   const handleTitle = (e) =>{
     setTitle(e.target.value)
   }

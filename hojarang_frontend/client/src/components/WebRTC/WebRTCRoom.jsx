@@ -15,10 +15,10 @@ export default function WebRTCRoom(roomData) {
           <div className="flex justify-center">
             <div className="h-32">
               {thumbnail ? (
-                <img alt="썸네일" className="w-full" src={thumbnail
+                <img alt="썸네일" className="h-32" src={thumbnail
                 }/>
               ):(
-                <img alt="썸네일" className="w-full" src={defaultImage}/>
+                <img alt="썸네일" className="h-32" src={defaultImage}/>
               )}
             </div>
           </div>
