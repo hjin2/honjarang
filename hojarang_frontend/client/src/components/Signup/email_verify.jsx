@@ -28,7 +28,7 @@ function Email_verify({Email, setEmail, ChangeEmailValid}) {
       setemailMsg('이메일을 선택해주세요')
     }
     else {
-      axios.post('http://honjarang.kro.kr:30000/api/v1/users/send-verification-code',
+      axios.post(`${import.meta.env.VITE_APP_API}/api/v1/users/send-verification-code`,
       {
         email: email
       })
