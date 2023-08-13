@@ -18,6 +18,7 @@ export default function AricleList() {
   const [keyword, setKeyworkd] = useState('')
   const handleKeyword = (e) =>{
     setKeyworkd(e.target.value)
+
   }
   const fetchArticles = useCallback(() =>{
     axios.get(`${URL}/api/v1/posts`,{params:{page:currentPage, keyword:keyword}, headers})
@@ -35,15 +36,14 @@ export default function AricleList() {
     }
   }
   useEffect(()=>{
-    axios.get(`${URL}/api/v1/posts/page`,{params:{size:15}, headers})
+    axios.get(`${URL}/api/v1/posts/page`,{params:{size:15, keyword:keyword}, headers})
       .then((res)=>{
-        console.log(res.data)
         setPageSize(res.data)
       })
       .catch((err)=>{
         console.log(err)
       })
-    },[])
+    },[keyword])
 
   useEffect(()=>{
       fetchArticles()

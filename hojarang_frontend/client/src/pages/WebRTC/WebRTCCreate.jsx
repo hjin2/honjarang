@@ -3,9 +3,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSquareCheck } from "@fortawesome/free-solid-svg-icons"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import { v4 as uuidv4 } from 'uuid';
 
 
 export default function WebRTCCreate() {
+  const uuid = uuidv4()
   const navigate = useNavigate()
   const URL = import.meta.env.VITE_APP_API
   const token = localStorage.getItem("access_token")
@@ -44,7 +46,8 @@ export default function WebRTCCreate() {
     // formData.append("Category", category)
     const data = {
       category : category,
-      customSessionId : title,
+      customSessionId : uuid,
+      title : title,
       onlyVoice : voiceSelect,
     }
     console.log(data)
