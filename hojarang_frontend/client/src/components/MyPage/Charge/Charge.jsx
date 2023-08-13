@@ -14,7 +14,7 @@ export default function Charge({ modalState, setModalState }) {
   };
 
   const newTabClick = () => {
-    window.open(`https://honjarang.kro.kr/checkout/${activeRadio}`, '결제팝업', 'width=700px,height=800px,scrollbars=yes');
+    window.open(`/checkout/${activeRadio}`, '결제팝업', 'width=700px,height=800px,scrollbars=yes');
     setModalState(!modalState)
   }
 
