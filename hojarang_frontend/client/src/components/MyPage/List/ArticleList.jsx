@@ -3,6 +3,7 @@ import axios from "axios";
 import Pagination from "react-js-pagination";
 import Article from "@/components/MyPage/List/Article";
 import { useNavigate } from "react-router-dom";
+import { activetabStyles } from "@/components/MyPage/MypageCss"
 
 export default function ArticleList() {
   const navigate = useNavigate()
@@ -10,13 +11,14 @@ export default function ArticleList() {
   const token = localStorage.getItem("access_token")
   const headers = {"Authorization" : `Bearer ${token}`}
   const [pageSize, setPageSize] = useState(0)
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(0)
   const [articles, setArticles] = useState([])
   useEffect(() => {
     axios.get(`${URL}/api/v1/users/page-post`,{params:{size:10}, headers})
       .then((res)=>{
         console.log(res.data)
         setPageSize(res.data)
+        setCurrentPage(1)
       })
       .catch((err)=>console.log(err))
   },[])
@@ -35,13 +37,14 @@ export default function ArticleList() {
   }
 
   return (
-    <div className="p-10 h-full">
+    <div className="p-6 h-full">
       <div>
         {articles.length === 0 ?(
           <div>작성한 글이 없습니다.</div>
         ):(
           <>
             <div className="w-full">
+              <div className="mb-5 w-24" style={activetabStyles}>작성한 글</div>
               {articles?.map((article)=>(
                 <div 
                   key={article.id} 
