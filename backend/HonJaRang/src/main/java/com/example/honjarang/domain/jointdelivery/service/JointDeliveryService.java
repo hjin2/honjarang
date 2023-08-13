@@ -469,7 +469,6 @@ public class JointDeliveryService {
 
         jointDeliveryApplicant.confirmReceived();
 
-        // 공동배달 주최자에게 포인트 지급
         List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryIdAndUserId(jointDeliveryId, loginUser.getId());
 
         // 공동배달 주최자인 경우 패스
@@ -477,6 +476,7 @@ public class JointDeliveryService {
             return;
         }
 
+        // 공동배달 주최자에게 포인트 지급
         Integer totalPrice = 0;
         for (JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
             Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
