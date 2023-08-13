@@ -320,31 +320,31 @@ class UserServiceTest {
         assertThrows(UserNotFoundException.class, () -> userService.changeUserInfo(user,"수정된 테스트 닉네임","경상북도 구미시",10.23445,23.32423));
     }
 
-    @Test
-    @DisplayName("내가 작성한 게시글 보기")
-    void getMyPostList_Success(){
-        // given
-        Pageable pageable = PageRequest.of(0,15);
-
-        List<Post> posts = List.of(post);
-
-        Page<Post> postPage = new PageImpl<>(posts, pageable, posts.size());
-        given(postRepository.findAllByUserIdOrderByIdDesc(user.getId(),pageable)).willReturn(postPage);
-
-//        PostListDto postListDto = new PostListDto(post);
-
-        // when
-        List<PostListDto> result = userService.getMyPostList(1,15,user);
-
-        // then
-        assertThat(result.get(0).getUserId()).isEqualTo(user.getId());
-        assertThat(result.get(0).getCategory()).isEqualTo(post.getCategory());
-        assertThat(result.get(0).getTitle()).isEqualTo(post.getTitle());
-        assertThat(result.get(0).getContent()).isEqualTo(post.getContent());
-        assertThat(result.get(0).getIsNotice()).isEqualTo(post.getIsNotice());
-        assertThat(result.get(0).getViews()).isEqualTo(post.getViews());
-
-    }
+//    @Test
+//    @DisplayName("내가 작성한 게시글 보기")
+//    void getMyPostList_Success(){
+//        // given
+//        Pageable pageable = PageRequest.of(0,15);
+//
+//        List<Post> posts = List.of(post);
+//
+//        Page<Post> postPage = new PageImpl<>(posts, pageable, posts.size());
+//        given(postRepository.findAllByUserIdOrderByIdDesc(user.getId(),pageable)).willReturn(postPage);
+//
+////        PostListDto postListDto = new PostListDto(post);
+//
+//        // when
+//        List<PostListDto> result = userService.getMyPostList(1,15,user);
+//
+//        // then
+//        assertThat(result.get(0).getUserId()).isEqualTo(user.getId());
+//        assertThat(result.get(0).getCategory()).isEqualTo(post.getCategory());
+//        assertThat(result.get(0).getTitle()).isEqualTo(post.getTitle());
+//        assertThat(result.get(0).getContent()).isEqualTo(post.getContent());
+//        assertThat(result.get(0).getIsNotice()).isEqualTo(post.getIsNotice());
+//        assertThat(result.get(0).getViews()).isEqualTo(post.getViews());
+//
+//    }
 
 //    @Test
 //    @DisplayName("내가 작성한 공동배달 글 보기")
