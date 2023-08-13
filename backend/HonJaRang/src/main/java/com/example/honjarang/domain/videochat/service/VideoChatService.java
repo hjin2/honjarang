@@ -3,6 +3,7 @@ package com.example.honjarang.domain.videochat.service;
 import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.videochat.dto.VideoChatListDto;
+import com.example.honjarang.domain.videochat.dto.VideoChatRoomCreateDto;
 import com.example.honjarang.domain.videochat.entity.Category;
 import com.example.honjarang.domain.videochat.entity.VideoChatParticipant;
 import com.example.honjarang.domain.videochat.entity.VideoChatRoom;
@@ -53,10 +54,10 @@ public class VideoChatService {
     }
 
     @Transactional
-    public String initializeSession(Map<String, Object> params, MultipartFile multipartFile)
+    public String initializeSession(VideoChatRoomCreateDto params, MultipartFile multipartFile)
             throws OpenViduJavaClientException, OpenViduHttpException, IOException {
 
-        SessionProperties properties = SessionProperties.fromJson(params).build();
+        SessionProperties properties = SessionProperties.fromJson(params.convertToMap()).build();
 
         VideoChatRoom check = videoChatRoomRepository.findBySessionId((String)params.get("customSessionId"));
 
@@ -86,6 +87,7 @@ public class VideoChatService {
                         break;
                 }
             }else{
+                System.out.println("왜....");
                 // 사진 s3에 저장하기
                 String uuid = UUID.randomUUID().toString();
                 s3Client.putObject(PutObjectRequest.builder()
@@ -154,9 +156,6 @@ public class VideoChatService {
         List<VideoChatListDto> videoChatRoomList = new ArrayList<>();
         for(VideoChatRoom videoChatRoom  : videoChatRooms) {
             Integer count = videoChatParticipantRepository.countByVideoChatRoom(videoChatRoom);
-            if (count >= 8) {
-                continue;
-            }
             videoChatRoomList.add(new VideoChatListDto(videoChatRoom, count));
         }
         return videoChatRoomList;
