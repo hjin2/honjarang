@@ -15,7 +15,7 @@ export default function Nickname({setNicknameValid, handleNickname, nicknameInpu
 			console.log(nickname)
 			console.log(nicknameInput)
 			if(nickname!==nicknameInput){
-				if (nicknameCheck.test(nickname) && nickname !== '탈퇴한 사용자') {
+				if (nicknameCheck.test(nicknameInput) && nicknameInput !== '탈퇴한 사용자') {
 					axios.get(`${import.meta.env.VITE_APP_API}/api/v1/users/check-nickname`,
 						{
 							params: {nickname : nicknameInput},				
