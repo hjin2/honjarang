@@ -3,8 +3,6 @@ import axios from 'axios';
 import Modal from '../../components/Common/Modal';
 import Stores from '../../components/Market/Delivery/Stores';
 import { useNavigate } from 'react-router-dom';
-import TextArea from '@/components/Board/TextArea';
-
 
 export default function DeliveryCreate() {
 
