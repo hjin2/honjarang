@@ -9,13 +9,17 @@ function Map1() {
   const [info, setInfo] = useState()
   const [markers, setMarkers] = useState([])
   const [map, setMap] = useState()
-  const [Keyword, setKeyword] = useState('')
+  const [keyword, setKeyword] = useState('')
   const [extractedText, setextractedText] = useState('')
 
-
+  const [selectedItem, setSelectedItem] = useState(null)
 
   const onClick = (e) => {
     setKeyword(e.currentTarget.id)
+
+    const itemId = e.currentTarget.id
+    setSelectedItem(itemId === selectedItem ? null : itemId)
+
     console.log(extractedText + ' ' + e.currentTarget.id)
     if (!map) return
     const ps = new kakao.maps.services.Places()
@@ -70,6 +74,8 @@ function Map1() {
     })
   },[])
 
+  
+
 
 
   // useEffect(() => {
@@ -108,16 +114,62 @@ function Map1() {
   // }, [map])
   
   return (
-    <div>
+    <div className="flex flex-col items-center">
+      <div className="m-5">
+        <ul id="category" className="flex z-2">
+          <li id="은행" data-order="0" 
+          className={`w-16 cursor-pointer text-left font-semibold transform hover:scale-105 origin-top ${
+            selectedItem === '은행' ? 'text-main1' : 'hover:text-main2'
+          }`}
+          onClick={onClick}>
+            <span className="category_bg bank"></span>
+            은행
+          </li>
+          <li id="마트" data-order="1" 
+          className={`w-16 cursor-pointer text-left font-semibold transform hover:scale-105 origin-top ${
+            selectedItem === '마트' ? 'text-main1' : 'hover:text-main2 '
+          }`}
+          onClick={onClick}>
+            <span className="category_bg mart"></span>
+            마트
+          </li>
+          <li id="약국" data-order="2" 
+          className={`w-16 cursor-pointer text-left font-semibold transform hover:scale-105 origin-top ${
+            selectedItem === '약국' ? 'text-main1' : 'hover:text-main2'
+          }`}
+          onClick={onClick}>
+            <span className="category_bg pharmacy"></span>
+            약국
+          </li>
+          <li id="카페" data-order="4" 
+          className={`w-16 cursor-pointer text-left font-semibold transform hover:scale-105 origin-top ${
+            selectedItem === '카페' ? 'text-main1' : 'hover:text-main2'
+          }`}
+          onClick={onClick}>
+            <span className="category_bg cafe"></span>
+            카페
+          </li>
+          <li id="편의점" data-order="5" 
+          // className={`w-16 cursor-pointer text-left font-semibold transform hover:scale-105 origin-top`}
+          className={`w-16 cursor-pointer text-left font-semibold transform hover:scale-105 origin-top ${
+            selectedItem === '편의점' ? 'text-main1' : 'hover:text-main2'
+          }`}
+          onClick={onClick}>
+            <span className="category_bg store"></span>
+            편의점
+          </li>
+        </ul>
+      </div>
     <Map // 로드뷰를 표시할 Container
     center={{
       lat: 37.566826,
       lng: 126.9786567,
       }}
-      style={{
-        width: "100%",
-        height: "350px",
-      }}
+      // style={{
+      //   width: "100%",
+      //   height: "350px",
+      // }}
+      className="w-9/12 h-96 mt-5 flex flex-col justify-center"
       level={3}
       onCreate={setMap}
       >
@@ -133,28 +185,8 @@ function Map1() {
         </MapMarker>
       ))}
     </Map>
-    <ul id="category" className="flex relative w-4/5 top-10 left-10 border-1 border-solid border-gray-400 rounded-5 shadow-md bg-white overflow-hidden z-2">
-      <li id="은행" data-order="0" className="float-left w-50px px-6 py-0 text-center cursor-pointer" onClick={onClick}>
-        <span className="category_bg bank"></span>
-        은행
-      </li>
-      <li id="마트" data-order="1" className="float-left w-50px px-6 py-0 text-center cursor-pointer" onClick={onClick}>
-        <span className="category_bg mart"></span>
-        마트
-      </li>
-      <li id="약국" data-order="2" className="float-left w-50px px-6 py-0 text-center cursor-pointer" onClick={onClick}>
-        <span className="category_bg pharmacy"></span>
-        약국
-      </li>
-      <li id="카페" data-order="4" className="float-left w-50px px-6 py-0 text-center cursor-pointer" onClick={onClick}>
-        <span className="category_bg cafe"></span>
-        카페
-      </li>
-      <li id="편의점" data-order="5" className="float-left w-50px px-6 py-0 text-center cursor-pointer" onClick={onClick}>
-        <span className="category_bg store"></span>
-        편의점
-      </li>
-    </ul>
+    <p className="text-gray3 text-sm mt-2">회원가입 시 입력한 주소 기반으로 편의시설이 표시됩니다.</p>
+
     </div>
   )
 }
