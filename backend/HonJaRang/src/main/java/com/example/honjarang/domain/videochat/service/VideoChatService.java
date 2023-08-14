@@ -141,10 +141,13 @@ public class VideoChatService {
     }
 
     @Transactional
-    public void closeConnection(String sessionId, Long userId)
+    public void closeConnection(String sessionId, User user)
         throws OpenViduJavaClientException, OpenViduHttpException {
         VideoChatRoom videoChatRoom = videoChatRoomRepository.findBySessionId(sessionId);
-        videoChatParticipantRepository.deleteByUserId(userId);
+        videoChatParticipantRepository.deleteByUserIdAndVideoChatRoom(user.getId(), videoChatRoom);
+
+        if (videoChatParticipantRepository.countByVideoChatRoom(videoChatRoom) == 0)
+            videoChatRoomRepository.deleteById(videoChatRoom.getId());
     }
 
     @Transactional(readOnly = true)
