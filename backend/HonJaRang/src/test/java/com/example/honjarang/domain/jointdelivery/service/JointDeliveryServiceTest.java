@@ -1,6 +1,7 @@
 package com.example.honjarang.domain.jointdelivery.service;
 
 import com.example.honjarang.domain.DateTimeUtils;
+import com.example.honjarang.domain.chat.entity.ChatRoom;
 import com.example.honjarang.domain.chat.repository.ChatParticipantRepository;
 import com.example.honjarang.domain.chat.repository.ChatRoomRepository;
 import com.example.honjarang.domain.jointdelivery.document.Menu;
@@ -41,6 +42,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,6 +84,7 @@ class JointDeliveryServiceTest {
     private Store store;
     private User user;
     private Menu menu;
+    private ChatRoom chatRoom;
     private JointDelivery jointDelivery;
     private JointDeliveryCart jointDeliveryCart;
     private JointDeliveryApplicant jointDeliveryApplicant;
@@ -108,6 +111,10 @@ class JointDeliveryServiceTest {
                 .longitude(127.123456)
                 .build();
         store.setIdForTest(1L);
+        chatRoom = ChatRoom.builder()
+                .name("테스트 채팅방")
+                .build();
+        chatRoom.setIdForTest(1L);
         jointDelivery = JointDelivery.builder()
                 .content("테스트 공동배달")
                 .deliveryCharge(3000)
@@ -115,6 +122,7 @@ class JointDeliveryServiceTest {
                 .deadline(DateTimeUtils.parseLocalDateTime("2030-01-01 00:00:00"))
                 .store(store)
                 .user(user)
+                .chatRoom(chatRoom)
                 .build();
         jointDelivery.setIdForTest(1L);
         jointDelivery.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
@@ -307,6 +315,7 @@ class JointDeliveryServiceTest {
         assertThat(jointDeliveryDto.getStoreImage()).isEqualTo("test.jpg");
         assertThat(jointDeliveryDto.getUserId()).isEqualTo(1L);
         assertThat(jointDeliveryDto.getNickname()).isEqualTo("테스트");
+        assertThat(jointDeliveryDto.getChatRoomId()).isEqualTo(1L);
     }
 
     @Test
@@ -674,25 +683,26 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
         assertThrows(JointDeliveryAlreadyReceivedException.class, () -> jointDeliveryService.confirmReceived(1L, user));
     }
 
-//    @Test
-//    @DisplayName("공동배달 페이지 수 조회 성공")
-//    void getJointDeliveryPageCount_Success() {
-//        // given
-//        given(jointDeliveryRepository.countByIsCanceledFalseAndDeadlineAfter(any(LocalDateTime.class))).willReturn(1);
-//
-//        // when
-//        Integer jointDeliveryPageCount = jointDeliveryService.getJointDeliveryPageCount(10);
-//
-//        // then
-//        assertThat(jointDeliveryPageCount).isEqualTo(1);
-//    }
+    @Test
+    @DisplayName("공동배달 페이지 수 조회 성공")
+    void getJointDeliveryPageCount_Success() {
+        // given
+        given(jointDeliveryRepository.countByIsCanceledFalseAndDeadlineAfterAndContentContainingIgnoreCase(any(LocalDateTime.class), eq("테스트"))).willReturn(1);
+
+        // when
+        Integer jointDeliveryPageCount = jointDeliveryService.getJointDeliveryPageCount(10, "테스트");
+
+        // then
+        assertThat(jointDeliveryPageCount).isEqualTo(1);
+    }
 
     @Test
     @DisplayName("공동배달 신청자 목록 조회 성공")
     void getJointDeliveryApplicantList_Success() {
         // given
-        List<JointDeliveryApplicant> jointDeliveryApplicantList = List.of(jointDeliveryApplicant);
-        given(jointDeliveryApplicantRepository.findAllByJointDeliveryId(1L)).willReturn(jointDeliveryApplicantList);
+        Object[] objects = {jointDeliveryApplicant, jointDeliveryCart};
+        given(jointDeliveryApplicantRepository.findAllByJointDeliveryId(1L)).willReturn(Collections.singletonList(objects));
+        given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
 
         // when
         List<JointDeliveryApplicantListDto> jointDeliveryApplicantListDtoList = jointDeliveryService.getJointDeliveryApplicantList(1L);

@@ -1,6 +1,7 @@
 package com.example.honjarang.domain.jointpurchase.controller;
 
 import com.example.honjarang.domain.DateTimeUtils;
+import com.example.honjarang.domain.chat.entity.ChatRoom;
 import com.example.honjarang.domain.jointpurchase.dto.*;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchase;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchaseApplicant;
@@ -37,6 +38,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,6 +53,7 @@ class JointPurchaseControllerTest {
     @MockBean
     private JointPurchaseService jointPurchaseService;
     private User user;
+    private ChatRoom chatRoom;
     private JointPurchase jointPurchase;
     private JointPurchaseApplicant jointPurchaseApplicant;
 
@@ -75,6 +78,10 @@ class JointPurchaseControllerTest {
                 .role(Role.ROLE_USER)
                 .build();
         user.setIdForTest(1L);
+        chatRoom = ChatRoom.builder()
+                .name("테스트 채팅방")
+                .build();
+        chatRoom.setIdForTest(1L);
         jointPurchase = JointPurchase.builder()
                 .productName("테스트 상품")
                 .content("테스트 내용")
@@ -87,6 +94,7 @@ class JointPurchaseControllerTest {
                 .latitude(37.123456)
                 .longitude(127.123456)
                 .user(user)
+                .chatRoom(chatRoom)
                 .build();
         jointPurchase.setIdForTest(1L);
         jointPurchase.setCanceledForTest(false);
@@ -214,6 +222,7 @@ class JointPurchaseControllerTest {
                 .andExpect(jsonPath("$.nickname").value("테스트"))
                 .andExpect(jsonPath("$.my_point").value(10000))
                 .andExpect(jsonPath("$.current_person_count").value(1))
+                .andExpect(jsonPath("$.chat_room_id").value(1L))
                 .andDo(document("joint-purchases/detail",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
@@ -236,7 +245,8 @@ class JointPurchaseControllerTest {
                                 fieldWithPath("user_id").description("공동구매 생성자 ID"),
                                 fieldWithPath("nickname").description("공동구매 생성자 닉네임"),
                                 fieldWithPath("my_point").description("내 포인트"),
-                                fieldWithPath("current_person_count").description("공동구매 현재 인원")
+                                fieldWithPath("current_person_count").description("공동구매 현재 인원"),
+                                fieldWithPath("chat_room_id").description("공동구매 채팅방 ID")
                         )
                 ));
     }
@@ -332,24 +342,26 @@ class JointPurchaseControllerTest {
                 ));
     }
 
-//    @Test
-//    @DisplayName("공동구매 페이지 수 조회")
-//    void getJointPurchasePage() throws Exception{
-//        // given
-//        given(jointPurchaseService.getJointPurchasePageCount(10)).willReturn(1);
-//
-//        // when & then
-//        mockMvc.perform(get("/api/v1/joint-purchases/page")
-//                        .param("size", "10"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$").value(1))
-//                .andDo(document("joint-purchases/page",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(prettyPrint()),
-//                        queryParameters(
-//                                parameterWithName("size").description("페이지 크기")
-//                        ),
-//                        responseBody()
-//                ));
-//    }
+    @Test
+    @DisplayName("공동구매 페이지 수 조회")
+    void getJointPurchasePage() throws Exception{
+        // given
+        given(jointPurchaseService.getJointPurchasePageCount(10, "테스트")).willReturn(1);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/joint-purchases/page")
+                        .param("size", "10")
+                        .param("keyword", "테스트"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(1))
+                .andDo(document("joint-purchases/page",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("size").description("페이지 크기"),
+                                parameterWithName("keyword").description("검색 키워드")
+                        ),
+                        responseBody()
+                ));
+    }
 }

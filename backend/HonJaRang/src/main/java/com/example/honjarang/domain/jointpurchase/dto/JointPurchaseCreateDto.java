@@ -1,6 +1,7 @@
 package com.example.honjarang.domain.jointpurchase.dto;
 
 import com.example.honjarang.domain.DateTimeUtils;
+import com.example.honjarang.domain.chat.entity.ChatRoom;
 import com.example.honjarang.domain.jointpurchase.entity.JointPurchase;
 import com.example.honjarang.domain.user.entity.User;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -22,7 +23,7 @@ public class JointPurchaseCreateDto {
     private Double latitude;
     private Double longitude;
 
-    public JointPurchase toEntity(User user, String image) {
+    public JointPurchase toEntity(User user, String image, ChatRoom chatRoom) {
         return JointPurchase.builder()
                 .content(content)
                 .deadline(DateTimeUtils.parseLocalDateTime(deadline))
@@ -35,6 +36,7 @@ public class JointPurchaseCreateDto {
                 .latitude(latitude)
                 .longitude(longitude)
                 .user(user)
+                .chatRoom(chatRoom)
                 .build();
     }
 }

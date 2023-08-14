@@ -66,7 +66,7 @@ public class ChatService {
     }
 
     public void sendChatMessageToQueue(Long roomId, ChatMessageSendDto chatMessageSendDto, String sessionId) {
-        ChatMessageCreateDto chatMessageCreateDto = new ChatMessageCreateDto(chatMessageSendDto.getContent(), roomId, sessionId);
+        ChatMessageCreateDto chatMessageCreateDto = new ChatMessageCreateDto(chatMessageSendDto.getContent(), roomId, sessionId, chatMessageSendDto.getNickname());
         rabbitTemplate.convertAndSend("amq.topic", "room." + roomId, chatMessageCreateDto);
     }
 
@@ -135,7 +135,8 @@ public class ChatService {
             String lastMessageContent = lastMessageOptional.map(ChatMessage::getContent).orElse("메시지 없음");
             Instant lastMessageCreatedAt = lastMessageOptional.map(ChatMessage::getCreatedAt).orElse(null);
             Integer unreadMessageCount = chatParticipant.getLastReadMessageId() != null ? chatMessageRepository.countAllByChatRoomIdAndIdGreaterThan(chatRoom.getId(), new ObjectId(chatParticipant.getLastReadMessageId())) : 0;
-            chatRoomListDtoList.add(new ChatRoomListDto(chatRoom, lastMessageContent, lastMessageCreatedAt, unreadMessageCount));
+            Integer participantCount = chatParticipantRepository.countAllByChatRoomIdAndIsDeletedIsFalse(chatRoom.getId());
+            chatRoomListDtoList.add(new ChatRoomListDto(chatRoom, lastMessageContent, lastMessageCreatedAt, unreadMessageCount, participantCount));
         }
 
         // 채팅방 정렬
@@ -165,7 +166,7 @@ public class ChatService {
     }
 
     @Transactional
-    public void createOneToOneChatRoom(User loginUser, Long targetUserId) {
+    public Long createOneToOneChatRoom(User loginUser, Long targetUserId) {
         User targetUser = userRepository.findById(targetUserId).orElseThrow(() -> new UserNotFoundException("존재하지 않는 유저입니다."));
         ChatRoom chatRoom = ChatRoom.builder()
                 .name(loginUser.getNickname() + " & " + targetUser.getNickname() + " 1:1 채팅방")
@@ -181,6 +182,7 @@ public class ChatService {
                 .build();
         chatParticipantRepository.save(loginUserChatParticipant);
         chatParticipantRepository.save(targetUserChatParticipant);
+        return savedChatRoom.getId();
     }
 
     private void sendPushNotification(String token, String title, String body) {

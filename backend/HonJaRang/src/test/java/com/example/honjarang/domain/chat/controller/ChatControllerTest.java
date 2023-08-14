@@ -98,7 +98,7 @@ class ChatControllerTest {
     @DisplayName("채팅방 목록 조회")
     void getChatRoomList() throws Exception{
         // given
-        ChatRoomListDto chatRoomListDto = new ChatRoomListDto(chatRoom, chatMessage.getContent(), chatMessage.getCreatedAt(), 1);
+        ChatRoomListDto chatRoomListDto = new ChatRoomListDto(chatRoom, chatMessage.getContent(), chatMessage.getCreatedAt(), 1, 1);
 
         given(chatService.getChatRoomList(user)).willReturn(List.of(chatRoomListDto));
 
@@ -110,6 +110,7 @@ class ChatControllerTest {
                 .andExpect(jsonPath("$[0].last_message").value("테스트 메시지"))
                 .andExpect(jsonPath("$[0].last_message_created_at").exists())
                 .andExpect(jsonPath("$[0].unread_message_count").value(1))
+                .andExpect(jsonPath("$[0].participant_count").value(1))
                 .andDo(document("chat/getChatRoomList",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
@@ -118,7 +119,8 @@ class ChatControllerTest {
                                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("채팅방 이름"),
                                 fieldWithPath("[].last_message").type(JsonFieldType.STRING).description("채팅방 마지막 메시지"),
                                 fieldWithPath("[].last_message_created_at").type(JsonFieldType.STRING).description("채팅방 마지막 메시지 작성 시간"),
-                                fieldWithPath("[].unread_message_count").type(JsonFieldType.NUMBER).description("채팅방 안 읽은 메시지 수")
+                                fieldWithPath("[].unread_message_count").type(JsonFieldType.NUMBER).description("채팅방 안 읽은 메시지 수"),
+                                fieldWithPath("[].participant_count").type(JsonFieldType.NUMBER).description("채팅방 참여자 수")
                         )
                 ));
     }
@@ -192,17 +194,21 @@ class ChatControllerTest {
         Map<String, Object> body = new HashMap<>();
         body.put("target_id", 2L);
 
+        given(chatService.createOneToOneChatRoom(user, 2L)).willReturn(1L);
+
         // when & then
         mockMvc.perform(post("/api/v1/chats/one-to-one")
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(body)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(1L))
                 .andDo(document("chat/createOneToOneChatRoom",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
                                 fieldWithPath("target_id").type(JsonFieldType.NUMBER).description("상대방 ID")
-                        )
+                        ),
+                        responseBody()
                 ));
     }
 }

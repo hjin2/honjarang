@@ -65,15 +65,16 @@ public class JointPurchaseService {
     @Transactional
     public Long createJointPurchase(JointPurchaseCreateDto jointPurchaseCreateDto, User loginUser) {
         String productImage = getProductImage(jointPurchaseCreateDto.getProductName());
-        JointPurchase jointPurchase = jointPurchaseRepository.save(jointPurchaseCreateDto.toEntity(loginUser, productImage));
+//        String productImage = getProductImageForTest(jointPurchaseCreateDto.getProductName());
         ChatRoom chatRoom = ChatRoom.builder()
-                .name(jointPurchase.getId().toString() + "번 공동구매 채팅방")
+                .name(jointPurchaseCreateDto.getProductName() + " 공동구매 채팅방")
                 .build();
         chatRoomRepository.save(chatRoom);
         chatParticipantRepository.save(ChatParticipant.builder()
                 .chatRoom(chatRoom)
                 .user(loginUser)
                 .build());
+        JointPurchase jointPurchase = jointPurchaseRepository.save(jointPurchaseCreateDto.toEntity(loginUser, productImage, chatRoom));
         return jointPurchaseRepository.save(jointPurchase).getId();
     }
 
@@ -102,6 +103,10 @@ public class JointPurchaseService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String getProductImageForTest(String productName) {
+        return "tsst.jpg";
     }
 
     @Transactional
@@ -185,11 +190,10 @@ public class JointPurchaseService {
                 .build();
         jointPurchaseApplicantRepository.save(jointPurchaseApplicant);
 
-        ChatRoom chatRoom = chatRoomRepository.findByName(jointPurchase.getId().toString() + "번 공동구매 채팅방").orElseThrow(() -> new ChatRoomNotFoundException("채팅방을 찾을 수 없습니다."));
-        ChatParticipant chatParticipant = chatParticipantRepository.findByChatRoomIdAndUserId(chatRoom.getId(), user.getId()).orElse(null);
+        ChatParticipant chatParticipant = chatParticipantRepository.findByChatRoomIdAndUserId(jointPurchase.getChatRoom().getId(), user.getId()).orElse(null);
         if(chatParticipant == null) {
             chatParticipantRepository.save(ChatParticipant.builder()
-                    .chatRoom(chatRoom)
+                    .chatRoom(jointPurchase.getChatRoom())
                     .user(user)
                     .build());
         } else {
@@ -218,8 +222,7 @@ public class JointPurchaseService {
 
         jointPurchaseApplicantRepository.delete(jointPurchaseApplicant);
 
-        ChatRoom chatRoom = chatRoomRepository.findByName(jointPurchaseId.toString() + "번 공동구매 채팅방").orElseThrow(() -> new ChatRoomNotFoundException("채팅방을 찾을 수 없습니다."));
-        ChatParticipant chatParticipant = chatParticipantRepository.findByChatRoomIdAndUserId(chatRoom.getId(), user.getId()).orElseThrow(() -> new ChatParticipantNotFoundException("채팅방 참가자를 찾을 수 없습니다."));
+        ChatParticipant chatParticipant = chatParticipantRepository.findByChatRoomIdAndUserId(jointPurchaseApplicant.getJointPurchase().getChatRoom().getId(), user.getId()).orElseThrow(() -> new ChatParticipantNotFoundException("채팅방 참가자를 찾을 수 없습니다."));
         chatParticipant.exit();
     }
 

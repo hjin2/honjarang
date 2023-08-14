@@ -146,7 +146,7 @@ class ChatServiceTest {
     @DisplayName("채팅 메시지 메시지 큐에 전송 성공")
     void sendChatMessageToQueue_Success() {
         // given
-        ChatMessageSendDto chatMessageSendDto = new ChatMessageSendDto("테스트", 1L);
+        ChatMessageSendDto chatMessageSendDto = new ChatMessageSendDto("테스트", 1L, "테스트");
 
         // when
         chatService.sendChatMessageToQueue(1L, chatMessageSendDto, "sessionId");
@@ -158,7 +158,7 @@ class ChatServiceTest {
     @DisplayName("채팅 메시지 생성 성공")
     void createChatMessage_Success() {
         // given
-        ChatMessageCreateDto chatMessageCreateDto = new ChatMessageCreateDto("테스트", 1L, "sessionId");
+        ChatMessageCreateDto chatMessageCreateDto = new ChatMessageCreateDto("테스트", 1L, "sessionId", "테스트");
         given(redisTemplate.opsForValue()).willReturn(valueOperations);
         given(redisTemplate.opsForSet()).willReturn(setOperations);
         given(valueOperations.get(SESSION_USER_PREFIX + "sessionId")).willReturn("1");
@@ -212,6 +212,7 @@ class ChatServiceTest {
         // given
         given(chatParticipantRepository.findAllByUserIdAndIsDeletedIsFalse(1L)).willReturn(List.of(chatParticipant));
         given(chatMessageRepository.findFirstByChatRoomIdOrderByCreatedAtDesc(1L)).willReturn(Optional.of(chatMessage));
+        given(chatParticipantRepository.countAllByChatRoomIdAndIsDeletedIsFalse(1L)).willReturn(1);
 
         // when
         List<ChatRoomListDto> chatRoomList = chatService.getChatRoomList(user);
@@ -268,11 +269,13 @@ class ChatServiceTest {
         target.setIdForTest(2L);
 
         given(userRepository.findById(2L)).willReturn(Optional.of(target));
+        given(chatRoomRepository.save(any(ChatRoom.class))).willReturn(chatRoom);
 
         // when
-        chatService.createOneToOneChatRoom(user, 2L);
+        Long id = chatService.createOneToOneChatRoom(user, 2L);
 
         // then
+        assertThat(id).isEqualTo(1L);
     }
 
     @Test

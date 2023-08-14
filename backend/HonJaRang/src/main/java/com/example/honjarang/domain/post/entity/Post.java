@@ -78,4 +78,8 @@ public class Post extends BaseTimeEntity {
     public void setIdForTest(Long id){
         this.id = id;
     }
+
+    public void setImageForTest(String postImage){
+        this.postImage = postImage;
+    }
 }

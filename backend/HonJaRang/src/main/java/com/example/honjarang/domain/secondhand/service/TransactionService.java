@@ -24,10 +24,7 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -147,7 +144,8 @@ public class TransactionService {
     @Transactional(readOnly = true)
     public TransactionDto getSecondHandTransaction(Long transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new TransactionException("존재하지 않는 거래입니다."));
-        TransactionDto transactionDto = new TransactionDto(transaction);
+        Long buyerId = transaction.getBuyer().getId();
+        TransactionDto transactionDto = new TransactionDto(transaction, buyerId);
         return transactionDto;
     }
 
