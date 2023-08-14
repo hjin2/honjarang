@@ -24,7 +24,7 @@ const Chat = () => {
     const socket = new SockJS(serverAddress);
     const stompClient = Stomp.over(socket);
 
-    stompClient.connect('guest', 'guest', (frame) => {
+    stompClient.connect('admin', 'honjarang1234', (frame) => {
       stompClient.subscribe(`/topic/room.${Key}`, (message) => {
         console.log(message);
         showMessage(JSON.parse(message.body));
