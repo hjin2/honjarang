@@ -146,7 +146,7 @@ class ChatServiceTest {
     @DisplayName("채팅 메시지 메시지 큐에 전송 성공")
     void sendChatMessageToQueue_Success() {
         // given
-        ChatMessageSendDto chatMessageSendDto = new ChatMessageSendDto("테스트", 1L);
+        ChatMessageSendDto chatMessageSendDto = new ChatMessageSendDto("테스트", 1L, "테스트");
 
         // when
         chatService.sendChatMessageToQueue(1L, chatMessageSendDto, "sessionId");
