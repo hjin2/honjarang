@@ -36,7 +36,6 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route element={<DefaultLayout />}>
-            <Route exact path="/" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/webrtc" element={<WebRTC />} />
             <Route path="/webrtc/create" element={<WebRTCCreate/>}/>
@@ -68,6 +67,7 @@ function App() {
             <Route path="/board/articleupdate/:id" element={<ArticleUpdate/>}></Route>
             <Route path="/*" element={<Notfound />} />
           </Route>
+          <Route exact path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/webrtc/:sessionid" element={<FreeChat/>}/>
           <Route path="/checkout/:price" element={<Checkout />} />
