@@ -39,18 +39,24 @@ export default function DeliveryList() {
   };
   return (
     <div>
-      <Rooms roomsData={deliveryData} component={DeliveryRoom}/>
-      <div className="flex justify-center">
-        <Pagination
-          activePage={currentPage}
-          itemsCountPerPage={12}
-          totalItemsCount={12 * pageSize}
-          pageRangeDisplayed={10}
-          prevPageText={"<"}
-          nextPageText={">"}
-          onChange={setPage}
-          />
-      </div>
+      {deliveryData.length > 0 ? (
+        <>
+          <Rooms roomsData={deliveryData} component={DeliveryRoom}/>
+          <div className="flex justify-center">
+            <Pagination
+              activePage={currentPage}
+              itemsCountPerPage={12}
+              totalItemsCount={12 * pageSize}
+              pageRangeDisplayed={10}
+              prevPageText={"<"}
+              nextPageText={">"}
+              onChange={setPage}
+              />
+          </div>
+        </>
+      ):(
+        <div>배달 목록이 없습니다.</div>
+      )}
     </div>
   )
 }

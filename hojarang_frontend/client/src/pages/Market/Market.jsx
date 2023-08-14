@@ -8,7 +8,6 @@ import { Link } from 'react-router-dom';
 
 
 
-
 export default function Market() {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
 
