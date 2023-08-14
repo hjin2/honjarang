@@ -269,11 +269,13 @@ class ChatServiceTest {
         target.setIdForTest(2L);
 
         given(userRepository.findById(2L)).willReturn(Optional.of(target));
+        given(chatRoomRepository.save(any(ChatRoom.class))).willReturn(chatRoom);
 
         // when
-        chatService.createOneToOneChatRoom(user, 2L);
+        Long id = chatService.createOneToOneChatRoom(user, 2L);
 
         // then
+        assertThat(id).isEqualTo(1L);
     }
 
     @Test
