@@ -44,10 +44,10 @@ export default function PurchaseCreate() {
 
   }
 
-  // 목표 인원 100명까지
+  // 목표 인원 10명까지
   const handleTargetPersonCount= (e) => {
     const count = e.target.value
-    const newCount = Math.min(count, 100)
+    const newCount = Math.min(count, 10)
     setTargetPersonCount(newCount)
   }
 
@@ -77,7 +77,7 @@ export default function PurchaseCreate() {
       <div>
         <div className="flex flex-row mb-1">
           <p className="text-lg">목표 인원</p>
-          <p className="ml-1 text-gray4 text-sm flex items-end mb-1">(최대 100명까지 입력 가능)</p>
+          <p className="ml-1 text-gray4 text-sm flex items-end mb-1">(최대 10명까지 입력 가능)</p>
         </div>
         <input type="number"
         value={targetPersonCount}

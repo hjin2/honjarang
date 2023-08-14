@@ -110,7 +110,7 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
                 <div className="w-44">
                   <div className="flex justify-between">
                     <p className="mt-1">현재 가격</p>
-                    <p className="mt-1">{selectedMenu.price * quantity}원</p>
+                    <p className="mt-1">{(selectedMenu.price * quantity).toLocaleString()}원</p>
                   </div>
                 </div>
               </div>
@@ -118,11 +118,11 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
               <div className="w-52">
                 <div className="flex justify-between">
                   <p>보유 포인트</p> 
-                  <p>{detail.my_point} P</p> 
+                  <p>{(detail.my_point).toLocaleString()} P</p> 
                 </div>
                 <div className="flex justify-between">
                   <p>차감 후 포인트</p>
-                  <p>{detail.my_point - (selectedMenu.price * quantity)} P</p>
+                  <p>{(detail.my_point - (selectedMenu.price * quantity)).toLocaleString()} P</p>
                 </div>
               </div>
             </div>
