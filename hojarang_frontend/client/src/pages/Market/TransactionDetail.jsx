@@ -15,6 +15,7 @@ export default function TransactionDetail() {
   const [isFinish, setIsFinish] = useState(false)
   const [isClick, setIsClick] = useState(false)
   const navigate = useNavigate()
+  const [isBuyer, setIsBuyer] = useState(false)
   const handleClick = () => {
     setIsClick(!isClick)
   }
@@ -68,6 +69,16 @@ export default function TransactionDetail() {
           setIsSell(true)
         }else{
           setIsSell(false)
+        }
+        if(res.data.buyer_id == LoginId){
+          setIsBuyer(true)
+        }else{
+          setIsBuyer(false)
+        }
+        if(res.data.is_received){
+          setIsFinish(true)
+        }else{
+          setIsFinish(false)
         }
       })
       .catch((err) => console.log(err))
@@ -128,7 +139,15 @@ export default function TransactionDetail() {
         {!isWriter ? (
           <div>
             {isSell ? (
-              <button className="main1-full-button w-full" onClick={check}>수령확인</button>
+              <>
+              {isBuyer ? (
+                <>
+                  {isFinish ? (null):(
+                    <button className="main1-full-button w-full" onClick={check}>수령확인</button>
+                  )}
+                </>
+                ):(null)}
+              </>
             ):(
               <button className="main1-full-button w-full" onClick={buy}>구매</button>
             )}
