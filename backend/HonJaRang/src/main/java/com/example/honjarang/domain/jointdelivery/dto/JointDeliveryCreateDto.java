@@ -1,6 +1,7 @@
 package com.example.honjarang.domain.jointdelivery.dto;
 
 import com.example.honjarang.domain.DateTimeUtils;
+import com.example.honjarang.domain.chat.entity.ChatRoom;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
 import com.example.honjarang.domain.jointdelivery.entity.Store;
 import com.example.honjarang.domain.user.entity.User;
@@ -21,7 +22,7 @@ public class JointDeliveryCreateDto {
     private Integer targetMinPrice;
     private String deadline;
 
-    public JointDelivery toEntity(Store store, User user) {
+    public JointDelivery toEntity(Store store, User user, ChatRoom chatRoom) {
         return JointDelivery.builder()
                 .content(content)
                 .deliveryCharge(deliveryCharge)
@@ -29,6 +30,7 @@ public class JointDeliveryCreateDto {
                 .deadline(DateTimeUtils.parseLocalDateTime(deadline))
                 .store(store)
                 .user(user)
+                .chatRoom(chatRoom)
                 .build();
     }
 }

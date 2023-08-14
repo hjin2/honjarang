@@ -1,6 +1,7 @@
 package com.example.honjarang.domain.jointdelivery.controller;
 
 import com.example.honjarang.domain.DateTimeUtils;
+import com.example.honjarang.domain.chat.entity.ChatRoom;
 import com.example.honjarang.domain.jointdelivery.document.Menu;
 import com.example.honjarang.domain.jointdelivery.dto.*;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
@@ -57,6 +58,7 @@ class JointDeliveryControllerTest {
     private User user;
     private Store store;
     private Menu menu;
+    private ChatRoom chatRoom;
     private JointDelivery jointDelivery;
     private JointDeliveryCart jointDeliveryCart;
     private JointDeliveryApplicant jointDeliveryApplicant;
@@ -89,6 +91,10 @@ class JointDeliveryControllerTest {
                 .longitude(127.123456)
                 .build();
         store.setIdForTest(1L);
+        chatRoom = ChatRoom.builder()
+                .name("테스트 채팅방")
+                .build();
+        chatRoom.setIdForTest(1L);
         jointDelivery = JointDelivery.builder()
                 .content("테스트 공동배달")
                 .deliveryCharge(3000)
@@ -96,6 +102,7 @@ class JointDeliveryControllerTest {
                 .deadline(DateTimeUtils.parseLocalDateTime("2030-01-01 00:00:00"))
                 .store(store)
                 .user(user)
+                .chatRoom(chatRoom)
                 .build();
         jointDelivery.setIdForTest(1L);
         jointDelivery.setCreatedAtForTest(LocalDateTime.now());
@@ -280,6 +287,7 @@ class JointDeliveryControllerTest {
                 .andExpect(jsonPath("$.nickname").value("테스트"))
                 .andExpect(jsonPath("$.my_point").value(10000))
                 .andExpect(jsonPath("$.created_at").exists())
+                .andExpect(jsonPath("$.chat_room_id").value(1L))
                 .andDo(document("joint-deliveries/detail",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
@@ -299,7 +307,8 @@ class JointDeliveryControllerTest {
                                 fieldWithPath("user_id").type(JsonFieldType.NUMBER).description("유저 ID"),
                                 fieldWithPath("nickname").type(JsonFieldType.STRING).description("유저 닉네임"),
                                 fieldWithPath("my_point").type(JsonFieldType.NUMBER).description("내 포인트"),
-                                fieldWithPath("created_at").type(JsonFieldType.STRING).description("생성 시간")
+                                fieldWithPath("created_at").type(JsonFieldType.STRING).description("생성 시간"),
+                                fieldWithPath("chat_room_id").type(JsonFieldType.NUMBER).description("채팅방 ID")
                         )
                 ));
     }

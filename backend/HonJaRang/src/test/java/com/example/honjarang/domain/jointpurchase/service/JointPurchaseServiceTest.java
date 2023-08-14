@@ -87,6 +87,15 @@ class JointPurchaseServiceTest {
                 .role(Role.ROLE_USER)
                 .build();
         user.setIdForTest(1L);
+        chatRoom = ChatRoom.builder()
+                .name("테스트 채팅방")
+                .build();
+        chatRoom.setIdForTest(1L);
+        chatParticipant = ChatParticipant.builder()
+                .chatRoom(chatRoom)
+                .user(user)
+                .build();
+        chatParticipant.setLastReadMessageIdForTest("60f0b0b9e8b9a91c7c7b0b0b");
         jointPurchase = JointPurchase.builder()
                 .productName("테스트 상품")
                 .content("테스트 내용")
@@ -99,6 +108,7 @@ class JointPurchaseServiceTest {
                 .latitude(37.123456)
                 .longitude(127.123456)
                 .user(user)
+                .chatRoom(chatRoom)
                 .build();
         jointPurchase.setIdForTest(1L);
         jointPurchase.setCanceledForTest(false);
@@ -110,15 +120,6 @@ class JointPurchaseServiceTest {
                 .isReceived(false)
                 .build();
         jointPurchaseApplicant.setIdForTest(1L);
-        chatRoom = ChatRoom.builder()
-                .name("1번 공동구매 채팅방")
-                .build();
-        chatRoom.setIdForTest(1L);
-        chatParticipant = ChatParticipant.builder()
-                .chatRoom(chatRoom)
-                .user(user)
-                .build();
-        chatParticipant.setLastReadMessageIdForTest("60f0b0b9e8b9a91c7c7b0b0b");
     }
 
     @Test
@@ -237,6 +238,7 @@ class JointPurchaseServiceTest {
         assertThat(jointPurchaseDto.getCreatedAt()).isEqualTo("2000-01-01 00:00:00");
         assertThat(jointPurchaseDto.getUserId()).isEqualTo(1L);
         assertThat(jointPurchaseDto.getNickname()).isEqualTo("테스트");
+        assertThat(jointPurchaseDto.getChatRoomId()).isEqualTo(1L);
     }
 
     @Test
@@ -277,7 +279,6 @@ class JointPurchaseServiceTest {
         JointPurchaseApplyDto jointPurchaseApplyDto = new JointPurchaseApplyDto(1L, 1);
         given(jointPurchaseRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(jointPurchase));
         given(userRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(user));
-        given(chatRoomRepository.findByName("1번 공동구매 채팅방")).willReturn(java.util.Optional.ofNullable(chatRoom));
         given(chatParticipantRepository.findByChatRoomIdAndUserId(1L, 1L)).willReturn(Optional.of(chatParticipant));
 
         // when
@@ -354,7 +355,6 @@ class JointPurchaseServiceTest {
         // given
         given(jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(1L, 1L)).willReturn(java.util.Optional.ofNullable(jointPurchaseApplicant));
         given(userRepository.findById(1L)).willReturn(java.util.Optional.ofNullable(user));
-        given(chatRoomRepository.findByName("1번 공동구매 채팅방")).willReturn(java.util.Optional.ofNullable(chatRoom));
         given(chatParticipantRepository.findByChatRoomIdAndUserId(1L, 1L)).willReturn(Optional.of(chatParticipant));
 
         // when

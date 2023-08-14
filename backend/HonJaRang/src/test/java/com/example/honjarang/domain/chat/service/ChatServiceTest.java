@@ -212,6 +212,7 @@ class ChatServiceTest {
         // given
         given(chatParticipantRepository.findAllByUserIdAndIsDeletedIsFalse(1L)).willReturn(List.of(chatParticipant));
         given(chatMessageRepository.findFirstByChatRoomIdOrderByCreatedAtDesc(1L)).willReturn(Optional.of(chatMessage));
+        given(chatParticipantRepository.countAllByChatRoomIdAndIsDeletedIsFalse(1L)).willReturn(1);
 
         // when
         List<ChatRoomListDto> chatRoomList = chatService.getChatRoomList(user);
