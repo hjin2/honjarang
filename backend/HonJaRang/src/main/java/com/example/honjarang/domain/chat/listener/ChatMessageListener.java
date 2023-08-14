@@ -21,7 +21,6 @@ public class ChatMessageListener {
 
     private final ChatService chatService;
 
-
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
        chatService.disconnectChatRoom(event.getSessionId());
