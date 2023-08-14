@@ -392,15 +392,15 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Integer getMyPostsPageCount(Integer size, User user) {
-        return (int) Math.ceil((double) postRepository.countAllByUserId(user.getId()) / size) ;
+    public Integer getMyPostsPageCount(Integer size, Long userId) {
+        return (int) Math.ceil((double) postRepository.countAllByUserId(userId) / size) ;
     }
 
 
 
     @Transactional(readOnly = true)
-    public Integer getMyWrittenJointDeliveriesPageCount(Integer size, User user) {
-        return (int) Math.ceil((double) jointDeliveryRepository.countAllByUserId(user.getId()) / size) ;
+    public Integer getMyWrittenJointDeliveriesPageCount(Integer size, Long userId) {
+        return (int) Math.ceil((double) jointDeliveryRepository.countAllByUserId(userId) / size) ;
     }
 
     @Transactional(readOnly = true)
@@ -409,8 +409,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Integer getMyTransactionPageCount(Integer size, User user) {
-        return (int) Math.ceil((double) transactionRepository.countAllBySellerId(user.getId()) / size) ;
+    public Integer getMyTransactionPageCount(Integer size, Long userId) {
+        return (int) Math.ceil((double) transactionRepository.countAllBySellerId(userId) / size) ;
     }
 
     @Transactional(readOnly = true)
@@ -419,8 +419,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Integer getMyJointPurchasePageCount(Integer size, User user) {
-        return (int) Math.ceil((double) jointPurchaseRepository.countAllByUserId(user.getId()) / size) ;
+    public Integer getMyJointPurchasePageCount(Integer size, Long userId) {
+        return (int) Math.ceil((double) jointPurchaseRepository.countAllByUserId(userId) / size) ;
     }
 
     @Transactional(readOnly = true)
