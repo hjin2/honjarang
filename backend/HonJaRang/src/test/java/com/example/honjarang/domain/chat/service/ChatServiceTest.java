@@ -158,7 +158,7 @@ class ChatServiceTest {
     @DisplayName("채팅 메시지 생성 성공")
     void createChatMessage_Success() {
         // given
-        ChatMessageCreateDto chatMessageCreateDto = new ChatMessageCreateDto("테스트", 1L, "sessionId");
+        ChatMessageCreateDto chatMessageCreateDto = new ChatMessageCreateDto("테스트", 1L, "sessionId", "테스트");
         given(redisTemplate.opsForValue()).willReturn(valueOperations);
         given(redisTemplate.opsForSet()).willReturn(setOperations);
         given(valueOperations.get(SESSION_USER_PREFIX + "sessionId")).willReturn("1");
