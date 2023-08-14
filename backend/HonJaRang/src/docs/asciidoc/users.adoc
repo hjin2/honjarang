@@ -1,0 +1,61 @@
+== 회원
+
+=== 로그인
+operation::users/login[snippets='http-request,request-fields,response-fields']
+
+=== 회원가입
+operation::users/signup[snippets='http-request,request-fields']
+
+=== 이메일 중복 확인
+operation::users/check-email[snippets='http-request,query-parameters']
+
+=== 인증번호 전송
+operation::users/send-verification-code[snippets='http-request,request-fields']
+
+=== 인증번호 확인
+operation::users/verify-code[snippets='http-request,request-fields']
+
+=== 닉네임 중복 확인
+operation::users/check-nickname[snippets='http-request,query-parameters']
+
+=== 로그아웃
+operation::users/logout[snippets='http-request,request-fields']
+
+=== 토큰 갱신
+operation::users/refresh[snippets='http-request,request-fields,response-fields']
+
+=== FCM 토큰 등록
+operation::users/fcm-token[snippets='http-request,request-fields']
+
+=== 새 비밀번호 설정
+operation::users/set-new-password[snippets='http-request,request-fields']
+
+=== 비밀번호 변경
+operation::users/change-password[snippets='http-request,request-fields']
+
+=== 회원 정보 수정
+operation::users/change-user-info[snippets='http-request,request-fields']
+
+=== 프로필 이미지 변경
+operation::users/profile-image[snippets='http-request,request-parts']
+
+=== 포인트 환급
+operation::users/withdraw[snippets='http-request,request-fields']
+
+=== 탈퇴하기
+operation::users/deleteUser[snippets='http-request,path-parameters']
+
+=== 회원 정보 조회
+operation::users/info[snippets='http-request,query-parameters,response-fields']
+
+=== 내가 작성한 공동배달 글 조회
+operation::joint-deliveries-writer[snippets='http-request,query-parameters,response-fields']
+
+=== 내가 참여한 공동배달 글 조회
+operation::joint-deliveries-participating[snippets='http-request,query-parameters,response-fields']
+
+=== 게시판에 작성한 글 조회
+operation::users/posts[snippets='http-request,query-parameters,response-fields']
+
+=== 결제 정보
+operation::users/payment[snippets='http-request,request-fields']
