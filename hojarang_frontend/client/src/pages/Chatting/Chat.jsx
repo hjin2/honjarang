@@ -5,8 +5,10 @@ import Stomp from 'stompjs';
 import { useNavigate } from 'react-router';
 import axios from 'axios';
 import Talks from '@/components/Chatting/Talks';
+import { useSelector } from 'react-redux';
 
 const Chat = () => {
+  const nickname = useSelector((state) => state.userinfo.nickname)
   const params = useParams();
   const Key = params["id"];
   const navigate = useNavigate();
@@ -50,7 +52,8 @@ const Chat = () => {
   const sendMessage = () => {
     const messageToSend = {
       room_id: Key,
-      content: message
+      content: message,
+      id: nickname
     };
 
     stomp.send(`/app/chat/message.${Key}`, {}, JSON.stringify(messageToSend));
