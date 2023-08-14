@@ -96,6 +96,7 @@ public class PostControllerTest {
                 .build();
         post.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2023-07-29 04:23:23"));
         post.setIdForTest(1L);
+        post.setImageForTest("image.jpg");
         commentListDto = CommentListDto.builder()
                 .id(1L)
                 .content("test")
@@ -104,145 +105,150 @@ public class PostControllerTest {
                 .createdAt("2030-01-01 00:00:00")
                 .build();
     }
-//    @Test
-//    @WithMockUser
-//    @DisplayName("게시글 작성")
-//    void createPost_Success() throws Exception {
-//        // given
-//        MockMultipartFile file = new MockMultipartFile("profile_image", "test.jpg", "image/jpeg", "test".getBytes());
-//        PostCreateDto postCreateDto = new PostCreateDto("title",Category.FREE,"content");
-//
-//
-//        // when & then
-//        mockMvc.perform(multipart("/api/v1/posts")
-//                        .file("post_image", file.getBytes())
-//                        .param("title",postCreateDto.getTitle())
-//                        .param("category",postCreateDto.getCategory().toString())
-//                        .param("content", postCreateDto.getContent()))
-//                .andExpect(status().isCreated())
-//                .andDo(document("/posts/create",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(prettyPrint()),
-//                        requestParts(
-//                                 partWithName("post_image").description("이미지 첨부").optional()
-//                        ),
-//                        queryParameters(
-//                                parameterWithName("postCreateDto.title").description("제목"),
-//                                parameterWithName("category").description("카테고리"),
-//                                parameterWithName("content").description("컨텐트")
-//                        )));
-//    }
-
-//    @Test
-//    @WithMockUser
-//    @DisplayName("게시글 삭제 성공")
-//    void deletePost_Success() throws Exception {
-//
-//        // given
-//        Long postId = 1L;
-//
-//        // when & then
-//        mockMvc.perform(delete("/api/v1/posts/{id}",postId).
-//                        contentType("application/json"))
-//                .andExpect(status().isOk())
-//                .andDo(document("/posts/delete",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(prettyPrint()),
-//                        pathParameters(
-//                                parameterWithName("id").description("게시글 ID")
-//                        )));
-//    }
+    @Test
+    @WithMockUser
+    @DisplayName("게시글 작성")
+    void createPost_Success() throws Exception {
+        // given
+        MockMultipartFile file = new MockMultipartFile("profile_image", "test.jpg", "image/jpeg", "test".getBytes());
+        PostCreateDto postCreateDto = new PostCreateDto("title",Category.FREE,"content");
 
 
-//    @Test
-//    @WithMockUser
-//    @DisplayName("게시글 수정 성공")
-//    void updatePost_Success() throws Exception {
-//        // given
-//
-//        MockMultipartFile file = new MockMultipartFile("post_image","test.jpg","image/jpeg","test".getBytes());
-//        PostUpdateDto postUpdateDto = new PostUpdateDto(1L, "글제목", "글내용", Category.FREE, false);
-//
-//
-//        // when & then
-//        mockMvc.perform(MockMvcRequestBuilders
-//                        .multipart(PUT, "/api/v1/posts/{id}",1L)
-//                        .file("post_image",file.getBytes())
-//                .param("id", String.valueOf(postUpdateDto.getId()))
-//                .param("title",postUpdateDto.getTitle())
-//                .param("content",postUpdateDto.getContent())
-//                .param("category", String.valueOf(postUpdateDto.getCategory()))
-//                .param("isNotice", String.valueOf(postUpdateDto.getIsNotice())))
-//                .andDo(print())
-//                .andExpect(status().isOk());
-//
-//    }
+        // when & then
+        mockMvc.perform(multipart("/api/v1/posts")
+                        .file("post_image", file.getBytes())
+                        .part(new MockPart("title","title".getBytes(StandardCharsets.UTF_8)))
+                        .part(new MockPart("category","FREE".getBytes(StandardCharsets.UTF_8)))
+                        .part(new MockPart("content","content".getBytes(StandardCharsets.UTF_8))))
+                .andExpect(status().isCreated())
+                .andDo(document("/posts/create",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestParts(
+                                 partWithName("post_image").description("이미지 첨부"),
+                                partWithName("title").description("제목"),
+                                partWithName("category").description("카테고리"),
+                                partWithName("content").description("컨텐트")
+                        )));
+    }
 
-//    @Test
-//    @DisplayName("게시글 목록 조회 성공")
-//    void getPostList_Success() throws Exception {
-//
-//        // given
-//        List<PostListDto> postListdto = List.of(new PostListDto(post));
-//
-//        given(postService.getPostList(1,"테스트")).willReturn(postListdto);
-//
-//        // when & then
-//        mockMvc.perform(get("/api/v1/posts")
-//                .param("page","1")
-//                .param("keyword","테스트"))
-//                .andExpect(status().isOk())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$[0].id").value(1L))
-//                .andExpect(jsonPath("$[0].title").value("테스트"))
-//                .andExpect(jsonPath("$[0].content").value("콘텐츠"))
-//                .andExpect(jsonPath("$[0].views").value(0))
-//                .andExpect(jsonPath("$[0].is_notice").value(false))
-//                .andExpect(jsonPath("$[0].category").value("FREE"))
-//                .andExpect(jsonPath("$[0].user_id").value(1L))
-//                .andExpect(jsonPath("$[0].created_at").value("2023-07-29 04:23:23"))
-//                .andDo(document("/posts/list",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(prettyPrint()),
-//                        queryParameters(
-//                                parameterWithName("page").description("페이지"),
-//                                parameterWithName("keyword").description("키워드")
-//                        ),
-//                        responseFields(
-//                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("게시글 ID"),
-//                                fieldWithPath("[].title").type(JsonFieldType.STRING).description("게시글 제목"),
-//                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용"),
-//                                fieldWithPath("[].views").type(JsonFieldType.NUMBER).description("조회수"),
-//                                fieldWithPath("[].is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
-//                                fieldWithPath("[].category").type(JsonFieldType.STRING).description("카테고리"),
-//                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("작성자 ID"),
-//                                fieldWithPath("[].created_at").type(JsonFieldType.STRING).description("작성일")
-//                        )
-//                        ));
-//    }
+    @Test
+    @WithMockUser
+    @DisplayName("게시글 삭제 성공")
+    void deletePost_Success() throws Exception {
+
+        // given
+        Long postId = 1L;
+
+        // when & then
+        mockMvc.perform(delete("/api/v1/posts/{id}",postId).
+                        contentType("application/json"))
+                .andExpect(status().isOk())
+                .andDo(document("/posts/delete",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("id").description("게시글 ID")
+                        )));
+    }
+
+
+    @Test
+    @WithMockUser
+    @DisplayName("게시글 수정 성공")
+    void updatePost_Success() throws Exception {
+        // given
+
+        MockMultipartFile file = new MockMultipartFile("post_image","test.jpg","image/jpeg","test".getBytes());
+        PostUpdateDto postUpdateDto = new PostUpdateDto( "글제목", "글내용", Category.FREE, false);
+
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders
+                        .multipart(PUT, "/api/v1/posts/{id}",1L)
+                        .file("post_image",file.getBytes())
+                .param("title",postUpdateDto.getTitle())
+                .param("content",postUpdateDto.getContent())
+                .param("category", String.valueOf(postUpdateDto.getCategory()))
+                .param("isNotice", String.valueOf(postUpdateDto.getIsNotice())))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    @DisplayName("게시글 목록 조회 성공")
+    void getPostList_Success() throws Exception {
+
+        // given
+        List<PostListDto> postListdto = List.of(new PostListDto(post, 10, 10));
+
+        given(postService.getPostList(1,"테스트")).willReturn(postListdto);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/posts")
+                .param("page","1")
+                .param("keyword","테스트"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].user_id").value(1L))
+                .andExpect(jsonPath("$[0].user_nickname").value("테스트"))
+                .andExpect(jsonPath("$[0].title").value("테스트"))
+                .andExpect(jsonPath("$[0].category").value("FREE"))
+                .andExpect(jsonPath("$[0].content").value("콘텐츠"))
+                .andExpect(jsonPath("$[0].views").value(0))
+                .andExpect(jsonPath("$[0].is_notice").value(false))
+                .andExpect(jsonPath("$[0].created_at").value("2023-07-29 04:23:23"))
+                .andExpect(jsonPath("$[0].like_cnt").value(10))
+                .andExpect(jsonPath("$[0].comment_cnt").value(10))
+                .andDo(document("/posts/list",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("page").description("페이지"),
+                                parameterWithName("keyword").description("키워드")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("게시글 ID"),
+                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("작성자 ID"),
+                                fieldWithPath("[].user_nickname").type(JsonFieldType.STRING).description("작성자 닉네임"),
+                                fieldWithPath("[].title").type(JsonFieldType.STRING).description("게시글 제목"),
+                                fieldWithPath("[].category").type(JsonFieldType.STRING).description("게시글 카테고리"),
+                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용"),
+                                fieldWithPath("[].views").type(JsonFieldType.NUMBER).description("조회수"),
+                                fieldWithPath("[].is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
+                                fieldWithPath("[].created_at").type(JsonFieldType.STRING).description("작성일"),
+                                fieldWithPath("[].like_cnt").type(JsonFieldType.NUMBER).description("좋아요수"),
+                                fieldWithPath("[].comment_cnt").type(JsonFieldType.NUMBER).description("댓글 수")
+                        )
+                        ));
+    }
 
 //    @Test
 //    @DisplayName("게시글 조회 성공")
 //    void getPost_Success() throws Exception {
 //
 //        //given
-//        PostDto postdto = new PostDto(post);
+//        PostDto postdto = new PostDto(post, 10, true);
 //
-//        given(postService.getPost(1L)).willReturn(postdto);
+//        given(postService.getPost(1L, user)).willReturn(postdto);
 //
 //        // when & then
 //        mockMvc.perform(get("/api/v1/posts/{id}",1L))
 //                .andExpect(status().isOk())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
 //                .andExpect(jsonPath("$.id").value(1L))
+//                .andExpect(jsonPath("$.user_id").value(1L))
 //                .andExpect(jsonPath("$.title").value("테스트"))
+//                .andExpect(jsonPath("$.category").value("FREE"))
 //                .andExpect(jsonPath("$.content").value("콘텐츠"))
+//                .andExpect(jsonPath("$.nickname").value("테스트"))
 //                .andExpect(jsonPath("$.views").value(0))
 //                .andExpect(jsonPath("$.is_notice").value(false))
-//                .andExpect(jsonPath("$.category").value("FREE"))
-//                .andExpect(jsonPath("$.user_id").value(1L))
-//                .andExpect(jsonPath("$.nickname").value("테스트"))
 //                .andExpect(jsonPath("$.created_at").value("2023-07-29 04:23:23"))
+//                .andExpect(jsonPath("$.post_image").value("https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/postImage/image.jpg"))
+//                .andExpect(jsonPath("$.is_liked").value(true))
+//                .andExpect(jsonPath("$.like_cnt").value(10))
 //                .andDo(document("/posts/detail",
 //                        preprocessRequest(prettyPrint()),
 //                        preprocessResponse(prettyPrint()),
@@ -258,7 +264,10 @@ public class PostControllerTest {
 //                                fieldWithPath("nickname").type(JsonFieldType.STRING).description("사용자 닉네임"),
 //                                fieldWithPath("views").type(JsonFieldType.NUMBER).description("조회수"),
 //                                fieldWithPath("is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
-//                                fieldWithPath("created_at").type(JsonFieldType.STRING).description("작성일")
+//                                fieldWithPath("created_at").type(JsonFieldType.STRING).description("작성일"),
+//                                fieldWithPath("post_image").type(JsonFieldType.STRING).description("이미지 주소"),
+//                                fieldWithPath("is_liked").type(JsonFieldType.BOOLEAN).description("좋아요 유무"),
+//                                fieldWithPath("like_cnt").type(JsonFieldType.NUMBER).description("좋아요 수")
 //                        )));
 //    }
 
