@@ -20,7 +20,7 @@ const Chat = () => {
   const stompClientRef = useRef(null);
 
   const connect = () => {
-    const serverAddress = `${import.meta.env.VITE_APP_API}/chat`;
+    const serverAddress = `https://honjarang.kro.kr/chat`;
     const socket = new SockJS(serverAddress);
     const stompClient = Stomp.over(socket);
 
