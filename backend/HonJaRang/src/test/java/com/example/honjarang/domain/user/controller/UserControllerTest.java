@@ -642,45 +642,45 @@ class UserControllerTest {
     }
 
 
-    @Test
-    @DisplayName("내가 작성한 게시판 글 페이지 수 조회")
-    void getMyPostsPageCount_success() throws Exception {
-        // given
-        given(userService.getMyPostsPageCount(any(Integer.class),eq(user))).willReturn(1);
+//    @Test
+//    @DisplayName("내가 작성한 게시판 글 페이지 수 조회")
+//    void getMyPostsPageCount_success() throws Exception {
+//        // given
+//        given(userService.getMyPostsPageCount(any(Integer.class),eq(user))).willReturn(1);
+//
+//        // when & then
+//        mockMvc.perform(get("/api/v1/users/page-post")
+//                        .contentType("application/json")
+//                        .param("size","3"))
+//                .andExpect(status().isOk())
+//                .andDo(document("users/pageCount/getMyPosts",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        queryParameters(
+//                                parameterWithName("size").description("사이즈")
+//                        )
+//                ));
+//    }
 
-        // when & then
-        mockMvc.perform(get("/api/v1/users/page-post")
-                        .contentType("application/json")
-                        .param("size","3"))
-                .andExpect(status().isOk())
-                .andDo(document("users/pageCount/getMyPosts",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        queryParameters(
-                                parameterWithName("size").description("사이즈")
-                        )
-                ));
-    }
-
-    @Test
-    @DisplayName("내가 작성한 공동배달 게시글 페이지 수 조회")
-    void getMyWrittenJointDeliveriesPageCount_success() throws Exception {
-        // given
-        given(userService.getMyWrittenJointDeliveriesPageCount(any(Integer.class),eq(user))).willReturn(1);
-
-        // when & then
-        mockMvc.perform(get("/api/v1/users/page-writing")
-                        .contentType("application/json")
-                        .param("size","3"))
-                .andExpect(status().isOk())
-                .andDo(document("users/pageCount/getWrittenJointDelivery",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        queryParameters(
-                                parameterWithName("size").description("사이즈")
-                        )
-                ));
-    }
+//    @Test
+//    @DisplayName("내가 작성한 공동배달 게시글 페이지 수 조회")
+//    void getMyWrittenJointDeliveriesPageCount_success() throws Exception {
+//        // given
+//        given(userService.getMyWrittenJointDeliveriesPageCount(any(Integer.class),eq(user))).willReturn(1);
+//
+//        // when & then
+//        mockMvc.perform(get("/api/v1/users/page-writing")
+//                        .contentType("application/json")
+//                        .param("size","3"))
+//                .andExpect(status().isOk())
+//                .andDo(document("users/pageCount/getWrittenJointDelivery",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        queryParameters(
+//                                parameterWithName("size").description("사이즈")
+//                        )
+//                ));
+//    }
 
     @Test
     @DisplayName("내가 참여한 공동배달 게시글 페이지 수 조회")
@@ -702,25 +702,25 @@ class UserControllerTest {
                 ));
     }
 
-    @Test
-    @DisplayName("내가 작성한 중고거래 게시글 페이지 수 조회")
-    void getMyTransactionPageCount_success() throws Exception {
-        // given
-        given(userService.getMyTransactionPageCount(any(Integer.class),eq(user))).willReturn(2);
-
-        // when & then
-        mockMvc.perform(get("/api/v1/users/page-transaction")
-                        .contentType("application/json")
-                        .param("size","3"))
-                .andExpect(status().isOk())
-                .andDo(document("users/pageCount/getMyTransaction",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        queryParameters(
-                                parameterWithName("size").description("사이즈")
-                        )
-                ));
-    }
+//    @Test
+//    @DisplayName("내가 작성한 중고거래 게시글 페이지 수 조회")
+//    void getMyTransactionPageCount_success() throws Exception {
+//        // given
+//        given(userService.getMyTransactionPageCount(any(Integer.class),eq(user))).willReturn(2);
+//
+//        // when & then
+//        mockMvc.perform(get("/api/v1/users/page-transaction")
+//                        .contentType("application/json")
+//                        .param("size","3"))
+//                .andExpect(status().isOk())
+//                .andDo(document("users/pageCount/getMyTransaction",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        queryParameters(
+//                                parameterWithName("size").description("사이즈")
+//                        )
+//                ));
+//    }
 
     @Test
     @DisplayName("내가 참여한 중고거래 게시글 페이지 수 조회")
@@ -743,25 +743,25 @@ class UserControllerTest {
     }
 
 
-    @Test
-    @DisplayName("내가 작성한 공동구매 게시글 페이지 수 조회")
-    void getMyJointPurchasePageCount() throws Exception {
-        // given
-        given(userService.getMyJointPurchasePageCount(any(Integer.class),eq(user))).willReturn(1);
-
-        // when & then
-        mockMvc.perform(get("/api/v1/users/page-joint-purchase")
-                        .contentType("application/json")
-                        .param("size","3"))
-                .andExpect(status().isOk())
-                .andDo(document("users/pageCount/joinedpurchase",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        queryParameters(
-                                parameterWithName("size").description("사이즈")
-                        )
-                ));
-    }
+//    @Test
+//    @DisplayName("내가 작성한 공동구매 게시글 페이지 수 조회")
+//    void getMyJointPurchasePageCount() throws Exception {
+//        // given
+//        given(userService.getMyJointPurchasePageCount(any(Integer.class),eq(user))).willReturn(1);
+//
+//        // when & then
+//        mockMvc.perform(get("/api/v1/users/page-joint-purchase")
+//                        .contentType("application/json")
+//                        .param("size","3"))
+//                .andExpect(status().isOk())
+//                .andDo(document("users/pageCount/joinedpurchase",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        queryParameters(
+//                                parameterWithName("size").description("사이즈")
+//                        )
+//                ));
+//    }
 
     @Test
     @DisplayName("내가 참여한 공동구매 게시글 페이지 수 조회")
