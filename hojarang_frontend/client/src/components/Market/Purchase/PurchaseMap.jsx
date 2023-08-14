@@ -84,8 +84,9 @@ export default function PurchaseMap({placeName, setPlaceName, position, setPosit
   return (
     <div>
       <form onSubmit={onSubmit}>
-        <input type="text" onChange={onChange}/>
-        <button>검색</button>
+        <input type="text" onChange={onChange}
+        className="border border-gray2 focus:outline-main2 h-8 p-1 w-60 mb-2"/>
+        <button className="ml-2">검색</button>
       </form>
       <Map // 로드뷰를 표시할 Container
         center={{
@@ -132,7 +133,7 @@ export default function PurchaseMap({placeName, setPlaceName, position, setPosit
         }}
       />}
     </Map>
-    {position && <p>{'클릭한 위치의 위도는 ' + position.lat + ' 이고, 경도는 ' + position.lng + ' 입니다'}</p>}
+    {/* {position && <p>{'클릭한 위치의 위도는 ' + position.lat + ' 이고, 경도는 ' + position.lng + ' 입니다'}</p>} */}
     </div>
   )
 }

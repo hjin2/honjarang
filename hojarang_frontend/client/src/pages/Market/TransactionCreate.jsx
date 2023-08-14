@@ -51,24 +51,29 @@ export default function TransactionCreate() {
   return (
     <div className="border rounded-lg max-w-2xl mx-auto mt-10 pb-3 p-5 space-y-5 ">
       <div>
-        <div>상품명</div>
-        <input type="text" onChange={handleTitle} />
+        <div className="text-lg mb-1">상품명</div>
+        <input type="text" onChange={handleTitle} 
+        className="border border-gray2 focus:outline-main2 h-8 p-1 w-60"/>
       </div>
       <div>
-        <div>상품 가격</div>
-        <input type="number" onChange={handlePrice} />
+        <div className="text-lg mb-1">상품 가격</div>
+        <input type="number" onChange={handlePrice} 
+        className="border border-gray2 focus:outline-main2 h-8 p-1 w-60"/>
       </div>
       <div>
-        <div>상품 소개</div>
-        <textarea className="resize-none border border-black h-48 w-full " onChange={handleContent}></textarea>
+        <div className="text-lg mb-1">상품 소개</div>
+        <textarea 
+        className="border border-gray2 rounded p-2 w-full resize-none h-48 focus:outline-main2"
+        onChange={handleContent}></textarea>
       </div>
       <div>
-        <div>상품사진 첨부</div>
+        <div className="text-lg mb-1">상품사진 첨부</div>
         <input 
           type="file"
           accept="image/jpg,image/png,image/jpeg"
           name="Transaction_image"
           onChange={handleImage}  
+          className="border border-gray2 focus:outline-main2 h-8 p-1 w-60"
         />
       </div>
       <div>
