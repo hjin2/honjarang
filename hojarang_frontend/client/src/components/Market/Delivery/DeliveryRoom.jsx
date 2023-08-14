@@ -32,7 +32,7 @@ export default function DeliveryRoom(roomData) {
         <div className="flex justify-between my-1">
           <div className='font-bold text-base'>{adjustedStoreName}</div>
         </div>
-        <div className="text-sm text-main5 my-1">목표까지 {(target_min_price - current_total_price) > 0 ? (target_min_price - current_total_price) : 0 }원</div>
+        <div className="text-sm text-main5 my-1">목표까지 {(target_min_price - current_total_price) > 0 ? (target_min_price - current_total_price).toLocaleString() : 0 }원</div>
         <div className="flex justify-end">
           <Link to={{ pathname: `/market/deliverydetail/${id}` }}>
             <button type="button" className="main1-full-button w-20">참여하기</button>
