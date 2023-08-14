@@ -1,27 +1,9 @@
 import SideTab from "@/components/Common/SideTab";
-import Content from "@/components/Common/Content";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import RTC from "@/components/WebRTC/RTC"
-import { useSelector } from "react-redux";
-import { handleSession } from "@/redux/slice/sessionSlice";
 import ChatList from "@/components/WebRTC/ChatList";
 
 export default function WebRTC() {
-  const session = useSelector((state) => state.session.session)
-  const leaveSession = useCallback(() => {
-    // Leave the session
-    if (session) {
-      session.disconnect();
-    }
-  })
-  useEffect(()=>{
-    console.log(session)
-    if(session){
-      leaveSession()
-      handleSession(undefined)
-    }
-  },[session])
   
   const [category, setCategory] = useState("free")
   const [activeTabIndex, setActiveTabIndex] = useState(0)
