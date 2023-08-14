@@ -32,13 +32,13 @@ import { useEffect } from 'react';
 
 function App() {
 
-  useEffect(() =>{
-    const currentURL = window.location.href
-    if (currentURL === 'https://i9d202.p.ssafy.io/') {
-    // 원하는 도메인으로 리다이렉트합니다.
-    window.location.href = 'https://honjarang.kro.kr/';
+  useEffect(() => {
+    if (window.location.href === "https://i9d202.p.ssafy.io/") {
+      setTimeout(() => {
+        window.location.href = "https://honjarang.kro.kr/";
+      }, 1000);
     }
-  }, []);
+  }, [window.location.href]);
 
   return (
     <div className="app">
