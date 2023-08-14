@@ -5,11 +5,11 @@ import axios from "axios"
 import "@/components/Market/pagination.css"
 import WebRTCRoom from "@/components/WebRTC/WebRTCRoom"
 
-export default function FreeChatList() {
+export default function FreeChatList({category}) {
   const URL = import.meta.env.VITE_APP_API
   const token = localStorage.getItem('access_token')
   const headers = {"Authorization" : `Bearer ${token}`}
-  const [freeChatData, setFreeChatData] = useState([])
+  const [chatData, setChatData] = useState([])
   const [pageSize, setPageSize] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   useEffect(() => {
@@ -24,21 +24,21 @@ export default function FreeChatList() {
   },[])
 
   useEffect(() => {
-    axios.get(`${URL}/api/v1/video-room/sessions/free`,)
+    axios.get(`${URL}/api/v1/video-room/sessions/${category}`,)
     .then((res) =>{
       console.log(res.data)
-      setFreeChatData(res.data)
+      setChatData(res.data)
     })
     .catch((err) => console.log(err))
-  },[])
+  },[category])
   const setPage = (error) => {
     setCurrentPage(error);
   };
   return (
     <div>
-      {freeChatData.length>0 ? (
+      {chatData.length>0 ? (
         <div>
-          <Rooms roomsData={freeChatData} component={WebRTCRoom}/>
+          <Rooms roomsData={chatData} component={WebRTCRoom}/>
           <div className="flex justify-center">
             <Pagination
               activePage={currentPage}
