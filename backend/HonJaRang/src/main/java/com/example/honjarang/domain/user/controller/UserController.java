@@ -148,9 +148,9 @@ public class UserController {
         return ResponseEntity.ok(transactionListDtoList);
     }
 
-    @GetMapping("/jointpurchase-writer")
-    public ResponseEntity<List<JointPurchaseListDto>> getMyJointPurchase(@RequestParam(defaultValue = "1") int size, @RequestParam(defaultValue = "1") int page, @CurrentUser User user){
-        List<JointPurchaseListDto> myJointPurchaseListDtos = userService.getMyJointPurchase(page,size,user);
+    @GetMapping("/jointpurchase-writer/{userId}")
+    public ResponseEntity<List<JointPurchaseListDto>> getMyJointPurchase(@RequestParam(defaultValue = "1") int size, @RequestParam(defaultValue = "1") int page, @PathVariable Long userId){
+        List<JointPurchaseListDto> myJointPurchaseListDtos = userService.getMyJointPurchase(page,size,userId);
         return ResponseEntity.ok(myJointPurchaseListDtos);
     }
 

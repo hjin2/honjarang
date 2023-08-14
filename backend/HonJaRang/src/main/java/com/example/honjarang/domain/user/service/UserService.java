@@ -330,10 +330,10 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<JointPurchaseListDto> getMyJointPurchase(Integer page, Integer size, User user){
+    public List<JointPurchaseListDto> getMyJointPurchase(Integer page, Integer size, Long userId){
         Pageable pageable = Pageable.ofSize(size).withPage(page-1);
         List<JointPurchaseListDto> myJointPurchaseListDtos = new ArrayList<>();
-        List<JointPurchase> myJointPurchaseList = jointPurchaseRepository.findAllByUserId(user.getId(),pageable).toList();
+        List<JointPurchase> myJointPurchaseList = jointPurchaseRepository.findAllByUserId(userId,pageable).toList();
         for(JointPurchase jointPurchase : myJointPurchaseList){
             Integer currentPersonCnt = jointPurchaseApplicantRepository.countByJointPurchaseId(jointPurchase.getId());
             JointPurchaseListDto myJointPurchaseListDto = new JointPurchaseListDto(jointPurchase,currentPersonCnt);
