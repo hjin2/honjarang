@@ -70,10 +70,10 @@ export default function MyPage() {
   };
 
   useEffect(() => {
-    PushTest
+    PushTest()
   },[])
 
-  
+
   const PushTest = () => {
     const token = localStorage.getItem('fcm_token')
     const access_token = localStorage.getItem('access_token')
