@@ -38,6 +38,7 @@ export default function MyPage() {
         if (currentToken) {
           localStorage.setItem('fcm_token', currentToken)
           console.log(currentToken);
+          axios.post(``)
         } else {
           console.log('No registration token available. Request permission to generate one.');
         }
@@ -68,6 +69,11 @@ export default function MyPage() {
     });
   };
 
+  useEffect(() => {
+    PushTest
+  },[])
+
+  
   const PushTest = () => {
     const token = localStorage.getItem('fcm_token')
     const access_token = localStorage.getItem('access_token')
