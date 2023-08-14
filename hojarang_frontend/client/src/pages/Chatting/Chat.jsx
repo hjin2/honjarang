@@ -42,8 +42,8 @@ const Chat = () => {
   const showMessage = (message) => {
     console.log(message);
     setMessages((prevMessages) => {
-      if (!prevMessages.includes(`${message.nickname}: ${message.content}`)) {
-        return [...prevMessages, `${message.nickname}: ${message.content}`];
+      if (!prevMessages.includes(`${message.id}: ${message.content}`)) {
+        return [...prevMessages, `${message.id}: ${message.content}`];
       }
       return prevMessages;
     });
@@ -53,7 +53,7 @@ const Chat = () => {
     const messageToSend = {
       room_id: Key,
       content: message,
-      nickname: nickname
+      id: nickname
     };
 
     stomp.send(`/app/chat/message.${Key}`, {}, JSON.stringify(messageToSend));
