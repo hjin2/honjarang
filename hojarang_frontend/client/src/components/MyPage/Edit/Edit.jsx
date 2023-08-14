@@ -8,8 +8,10 @@ import { useSelector } from 'react-redux';
 import { setUserInfo, imageUpload } from '@/redux/slice/UserInfoSlice';
 import { useDispatch } from 'react-redux';
 import image from '@/assets/DefaultImage.png'
+import { useNavigate } from 'react-router-dom';
 
 export default function Edit({ modalState, setModalState }) {
+  const navigate = useNavigate()
   const nickname = useSelector((state) => state.userinfo.nickname)
   const email = useSelector((state) => state.userinfo.email)
   const address = useSelector((state) => state.userinfo.address)
@@ -24,6 +26,7 @@ export default function Edit({ modalState, setModalState }) {
   const [latitude, setLatitude] = useState(useSelector((state) => state.userinfo.latitude))
   const [longitude, setLongitude] = useState(useSelector((state) => state.userinfo.longitude))
   const [imageInput, setImageInput] = useState(profile_image)
+  const userId = localStorage.getItem("user_id")
   
   const token = localStorage.getItem("access_token")
 
@@ -89,7 +92,13 @@ export default function Edit({ modalState, setModalState }) {
     setModalState(!modalState);
   });
   const onClickWithdrawal = (() => {
-    axios.delete(`${URL}/api/v1/users`)
+    axios.delete(`${URL}/api/v1/users/${userId}`,{headers : {"Authorization" : `Bearer ${token}`}})
+      .then((res) => {
+        console.log(res)
+        window.alert("회원탈퇴 되었습니다.")
+        navigate("/")
+      })
+      .catch((err) => console.log(err))
   })
 
   return (
@@ -189,7 +198,7 @@ export default function Edit({ modalState, setModalState }) {
               비밀번호 변경
             </Link>
           </div>
-          <div className="cursor-pointer text-xs text-main5">회원 탈퇴</div>
+          <div className="cursor-pointer text-xs text-main5" onClick={onClickWithdrawal}>회원 탈퇴</div>
         </div>
       </div>
     </div>
