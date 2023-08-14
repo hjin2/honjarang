@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { handleSession } from "@/redux/slice/sessionSlice";
+import { faWineBottle } from "@fortawesome/free-solid-svg-icons";
 
 export default function FreeChat() {
   const [session, setSession] = useState(undefined)
@@ -184,16 +185,16 @@ export default function FreeChat() {
     });
   }, []);
 
-  useEffect(() => {
-    const handleBeforeUnload = (event) => {
-      leaveSession();
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
+  const leaveSessionRef = useRef(leaveSession);
 
-    return () => {
-        window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [leaveSession]);
+  useEffect(() => {
+    window.addEventListener("popstate", () => {
+      leaveSessionRef.current();
+    });
+    window.addEventListener("beforeunload", () => {
+      leaveSessionRef.current();
+    });
+  }, []);
 
   const containerRef = useRef(null)
 
