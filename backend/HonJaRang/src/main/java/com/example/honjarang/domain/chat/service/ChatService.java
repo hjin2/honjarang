@@ -166,7 +166,7 @@ public class ChatService {
     }
 
     @Transactional
-    public void createOneToOneChatRoom(User loginUser, Long targetUserId) {
+    public Long createOneToOneChatRoom(User loginUser, Long targetUserId) {
         User targetUser = userRepository.findById(targetUserId).orElseThrow(() -> new UserNotFoundException("존재하지 않는 유저입니다."));
         ChatRoom chatRoom = ChatRoom.builder()
                 .name(loginUser.getNickname() + " & " + targetUser.getNickname() + " 1:1 채팅방")
@@ -182,6 +182,7 @@ public class ChatService {
                 .build();
         chatParticipantRepository.save(loginUserChatParticipant);
         chatParticipantRepository.save(targetUserChatParticipant);
+        return savedChatRoom.getId();
     }
 
     private void sendPushNotification(String token, String title, String body) {
