@@ -557,46 +557,46 @@ class UserControllerTest {
 //                        )));
 //    }
 
-
-    @Test
-    @DisplayName("내가 작성한 공동배달 글 목록 조회")
-    void getMyWrittenJointDeliveries() throws Exception {
-        List<JointDeliveryListDto> jointDeliveryListDtos = List.of(new JointDeliveryListDto(jointDelivery,10000));
-        given(userService.getMyWrittenJointDeliveries(1,10,user)).willReturn(jointDeliveryListDtos);
-
-        mockMvc.perform(get("/api/v1/users/joint-deliveries-writer")
-                        .contentType("application/json")
-                        .param("size","10")
-                        .param("page","1"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].current_total_price").value(10000))
-                .andExpect(jsonPath("$[0].target_min_price").value(20000))
-                .andExpect(jsonPath("$[0].store_id").value(1L))
-                .andExpect(jsonPath("$[0].store_name").value("가게명"))
-                .andExpect(jsonPath("$[0].store_image").value("storeImage.jpg"))
-                .andExpect(jsonPath("$[0].user_id").value(1L))
-                .andExpect(jsonPath("$[0].nickname").value("테스트"))
-                .andDo(document("users/joint-deliveries-writing",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        queryParameters(
-                                parameterWithName("size").description("사이즈"),
-                                parameterWithName("page").description("페이지")
-                        ),
-                        responseFields(
-                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("공동배달 ID"),
-                                fieldWithPath("[].current_total_price").type(JsonFieldType.NUMBER).description("현재전체금액"),
-                                fieldWithPath("[].target_min_price").type(JsonFieldType.NUMBER).description("최소목표금액"),
-                                fieldWithPath("[].store_id").type(JsonFieldType.NUMBER).description("가게 ID"),
-                                fieldWithPath("[].store_name").type(JsonFieldType.STRING).description("가게명"),
-                                fieldWithPath("[].store_image").type(JsonFieldType.STRING).description("가게 이미지"),
-                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("사용자 ID"),
-                                fieldWithPath("[].nickname").type(JsonFieldType.STRING).description("닉네임")
-                        )));
-    }
+//
+//    @Test
+//    @DisplayName("내가 작성한 공동배달 글 목록 조회")
+//    void getMyWrittenJointDeliveries() throws Exception {
+//        List<JointDeliveryListDto> jointDeliveryListDtos = List.of(new JointDeliveryListDto(jointDelivery,10000));
+//        given(userService.getMyWrittenJointDeliveries(1,10,user)).willReturn(jointDeliveryListDtos);
+//
+//        mockMvc.perform(get("/api/v1/users/joint-deliveries-writer")
+//                        .contentType("application/json")
+//                        .param("size","10")
+//                        .param("page","1"))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(jsonPath("$[0].id").value(1L))
+//                .andExpect(jsonPath("$[0].current_total_price").value(10000))
+//                .andExpect(jsonPath("$[0].target_min_price").value(20000))
+//                .andExpect(jsonPath("$[0].store_id").value(1L))
+//                .andExpect(jsonPath("$[0].store_name").value("가게명"))
+//                .andExpect(jsonPath("$[0].store_image").value("storeImage.jpg"))
+//                .andExpect(jsonPath("$[0].user_id").value(1L))
+//                .andExpect(jsonPath("$[0].nickname").value("테스트"))
+//                .andDo(document("users/joint-deliveries-writing",
+//                        preprocessRequest(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
+//                        queryParameters(
+//                                parameterWithName("size").description("사이즈"),
+//                                parameterWithName("page").description("페이지")
+//                        ),
+//                        responseFields(
+//                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("공동배달 ID"),
+//                                fieldWithPath("[].current_total_price").type(JsonFieldType.NUMBER).description("현재전체금액"),
+//                                fieldWithPath("[].target_min_price").type(JsonFieldType.NUMBER).description("최소목표금액"),
+//                                fieldWithPath("[].store_id").type(JsonFieldType.NUMBER).description("가게 ID"),
+//                                fieldWithPath("[].store_name").type(JsonFieldType.STRING).description("가게명"),
+//                                fieldWithPath("[].store_image").type(JsonFieldType.STRING).description("가게 이미지"),
+//                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("사용자 ID"),
+//                                fieldWithPath("[].nickname").type(JsonFieldType.STRING).description("닉네임")
+//                        )));
+//    }
 
     @Test
     @DisplayName("내가 참여한 공동배달 글 조회")

@@ -253,9 +253,9 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostListDto> getMyPostList(Integer page, Integer size, User user){
+    public List<PostListDto> getMyPostList(Integer page, Integer size, Long userId){
         Pageable pageable = Pageable.ofSize(size).withPage(page-1);
-        List<Post> posts = postRepository.findAllByUserIdOrderByIdDesc(user.getId(), pageable).toList();
+        List<Post> posts = postRepository.findAllByUserIdOrderByIdDesc(userId, pageable).toList();
 
         List<PostListDto> postListDtos = new ArrayList<>();
         for(Post post : posts){
@@ -268,9 +268,9 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<JointDeliveryListDto> getMyWrittenJointDeliveries(int page, int size, User user){
+    public List<JointDeliveryListDto> getMyWrittenJointDeliveries(int page, int size, Long userId){
         Pageable pageable = Pageable.ofSize(size).withPage(page-1);
-        List<JointDelivery> myWrittenJointDeliveryList = jointDeliveryRepository.findAllByUserId(user.getId(), pageable).toList();
+        List<JointDelivery> myWrittenJointDeliveryList = jointDeliveryRepository.findAllByUserId(userId, pageable).toList();
         List<JointDeliveryListDto> myWrittenJointDeliveryListDtoList = new ArrayList<>();
         for(JointDelivery jointDelivery : myWrittenJointDeliveryList){
             // 총 가격 계산
@@ -306,10 +306,10 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<TransactionListDto> getMyTransactions(Integer page, Integer size, User user){
+    public List<TransactionListDto> getMyTransactions(Integer page, Integer size, Long userId){
         Pageable pageable = Pageable.ofSize(size).withPage(page-1);
         List<TransactionListDto> myTransactionListDtoList = new ArrayList<>();
-        List<Transaction> myTransaction = transactionRepository.findAllBySellerId(user.getId(),pageable).toList();
+        List<Transaction> myTransaction = transactionRepository.findAllBySellerId(userId,pageable).toList();
         for(Transaction transaction : myTransaction){
             TransactionListDto myTransactionListDto = new TransactionListDto(transaction);
             myTransactionListDtoList.add(myTransactionListDto);
