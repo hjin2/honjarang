@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLoginStatus } from '../../redux/slice/loginSlice';
+import image2 from '@/assets/2.png'
+import image5 from '@/assets/5.png'
 
 export default function Login() {
   const [Email, setEmail] = useState('')
@@ -39,7 +41,7 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen" >
-      <div className='text-2xl font-bold text-main1 mb-10'>혼자랑</div>
+      <img src={image2} alt="" className='mx-auto w-2/12' />
       <form className="space-y-4 md:space-y-6" onSubmit={login}>
         <div>
           <label htmlFor="email" className="block mb-1 font-semibold text-lg text-main2">

@@ -29,6 +29,7 @@ import TransactionDetail from '@/pages/Market/TransactionDetail';
 import FreeChat from '@/pages/WebRTC/FreeChat';
 import FirebaseMessaging from '@/pages/PushTest/PushTest';
 import { useEffect } from 'react';
+import Main from './pages/Main/Main';
 
 function App() {
 
@@ -76,7 +77,7 @@ function App() {
             <Route path="/board/articleupdate/:id" element={<ArticleUpdate/>}></Route>
             <Route path="/*" element={<Notfound />} />
           </Route>
-          <Route exact path="/" element={<Login />} />
+          <Route exact path="/" element={<Main />} />
           <Route path="/login" element={<Login />} />
           <Route path="/webrtc/:sessionid" element={<FreeChat/>}/>
           <Route path="/checkout/:price" element={<Checkout />} />
