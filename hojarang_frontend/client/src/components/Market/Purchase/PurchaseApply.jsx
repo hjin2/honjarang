@@ -77,12 +77,12 @@ export default function PurchaseApply({
         <aside
           className={`${
             isAsideOpen
-              ? 'fixed bottom-0 left-1/2 transform -translate-x-1/2 h-52 w-5/12 bg-white p-2 border-2'
+              ? 'fixed bottom-0 left-1/2 transform -translate-x-1/2 h-64 w-6/12 bg-white p-2 border-2'
               : 'hidden'
           }`}
         >
           <div className="flex flex-col items-center">
-            <button onClick={handleToggleAside} className="my-3 hover:text-main2">
+            <button onClick={handleToggleAside} className="my-2 hover:text-main2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -106,15 +106,20 @@ export default function PurchaseApply({
               <button onClick={handleIncrement} className="border px-2 font-semibold hover:border-main2 w-8 rounded-r-sm">+</button>
             </div>
             <div className="my-3 w-6/12">
+              <div className="flex justify-between mb-2">
+                <p className="">현재 가격</p>
+                <p className="">{(quantity * price).toLocaleString()}P</p>
+              </div>
               <div className="flex justify-between">
                 <p className="">보유 포인트</p>
-                <p className="">{point}P</p>
+                <p className="">{(point).toLocaleString()}P</p>
               </div>
                 {/* <p className="">차감 포인트 : {price * quantity + deliveryCharge}P</p> */}
               <div className="flex justify-between">
                 <p className="">차감 후 포인트</p>
-                <p className="">{afterPoint}P</p>
+                <p className="">{(afterPoint).toLocaleString()}P</p>
               </div>
+              <p className="text-gray2 text-sm mt-2">(배송비/목표인원) 만큼의 포인트가 함께 차감됩니다.</p>
             </div>
             <button type="button" className="main1-full-button w-32 mb-3" onClick={purchase}>
               구매하기
