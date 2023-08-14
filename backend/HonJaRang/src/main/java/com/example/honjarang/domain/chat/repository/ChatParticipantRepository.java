@@ -19,4 +19,5 @@ public interface ChatParticipantRepository extends JpaRepository<ChatParticipant
 
     @Modifying
     void deleteByChatRoomIdAndUserId(Long chatRoomId, Long userId);
+    Integer countAllByChatRoomIdAndIsDeletedIsFalse(Long id);
 }

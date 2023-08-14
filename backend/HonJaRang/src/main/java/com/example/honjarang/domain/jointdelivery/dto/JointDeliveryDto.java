@@ -25,6 +25,8 @@ public class JointDeliveryDto {
     private String nickname;
     private Integer myPoint;
 
+    private Long chatRoomId;
+
     public JointDeliveryDto(JointDelivery jointDelivery, Integer currentTotalPrice, Integer myPoint) {
         this.id = jointDelivery.getId();
         this.content = jointDelivery.getContent();
@@ -39,5 +41,6 @@ public class JointDeliveryDto {
         this.userId = jointDelivery.getUser().getId();
         this.nickname = jointDelivery.getUser().getNickname();
         this.myPoint = myPoint;
+        this.chatRoomId = jointDelivery.getChatRoom().getId();
     }
 }

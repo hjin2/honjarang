@@ -1,6 +1,7 @@
 package com.example.honjarang.domain.jointdelivery.entity;
 
 import com.example.honjarang.domain.BaseTimeEntity;
+import com.example.honjarang.domain.chat.entity.ChatRoom;
 import com.example.honjarang.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -28,6 +29,10 @@ public class JointDelivery extends BaseTimeEntity {
     @ManyToOne
     private User user;
 
+    @JoinColumn(name = "chat_room_id")
+    @OneToOne
+    private ChatRoom chatRoom;
+
     @Column(nullable = false)
     private String content;
 
@@ -45,13 +50,14 @@ public class JointDelivery extends BaseTimeEntity {
     private Boolean isCanceled;
 
     @Builder
-    public JointDelivery(String content, Integer deliveryCharge, Integer targetMinPrice, LocalDateTime deadline, Store store, User user) {
+    public JointDelivery(String content, Integer deliveryCharge, Integer targetMinPrice, LocalDateTime deadline, Store store, User user, ChatRoom chatRoom) {
         this.content = content;
         this.deliveryCharge = deliveryCharge;
         this.targetMinPrice = targetMinPrice;
         this.deadline = deadline;
         this.store = store;
         this.user = user;
+        this.chatRoom = chatRoom;
     }
 
     public void cancel() {

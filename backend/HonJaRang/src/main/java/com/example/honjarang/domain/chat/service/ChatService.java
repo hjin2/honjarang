@@ -135,7 +135,8 @@ public class ChatService {
             String lastMessageContent = lastMessageOptional.map(ChatMessage::getContent).orElse("메시지 없음");
             Instant lastMessageCreatedAt = lastMessageOptional.map(ChatMessage::getCreatedAt).orElse(null);
             Integer unreadMessageCount = chatParticipant.getLastReadMessageId() != null ? chatMessageRepository.countAllByChatRoomIdAndIdGreaterThan(chatRoom.getId(), new ObjectId(chatParticipant.getLastReadMessageId())) : 0;
-            chatRoomListDtoList.add(new ChatRoomListDto(chatRoom, lastMessageContent, lastMessageCreatedAt, unreadMessageCount));
+            Integer participantCount = chatParticipantRepository.countAllByChatRoomIdAndIsDeletedIsFalse(chatRoom.getId());
+            chatRoomListDtoList.add(new ChatRoomListDto(chatRoom, lastMessageContent, lastMessageCreatedAt, unreadMessageCount, participantCount));
         }
 
         // 채팅방 정렬

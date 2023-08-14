@@ -229,14 +229,8 @@ public class JointDeliveryService {
             storeRepository.save(store);
         }
 
-        JointDelivery jointDelivery = jointDeliveryRepository.save(jointDeliveryCreateDto.toEntity(store, user));
-        List<Menu> menuList = getMenuListByApi(jointDeliveryCreateDto.getStoreId(), jointDelivery.getId());
-
-        // storeId의 메뉴를 가지고 있으면 삭제
-        menuRepository.saveAll(menuList);
-
         ChatRoom chatRoom = ChatRoom.builder()
-                .name(jointDelivery.getId().toString() + "번 공동배달 채팅방")
+                .name(store.getStoreName() + " 공동배달 채팅방")
                 .build();
         chatRoomRepository.save(chatRoom);
         ChatParticipant chatParticipant = ChatParticipant.builder()
@@ -244,6 +238,12 @@ public class JointDeliveryService {
                 .user(user)
                 .build();
         chatParticipantRepository.save(chatParticipant);
+
+        JointDelivery jointDelivery = jointDeliveryRepository.save(jointDeliveryCreateDto.toEntity(store, user, chatRoom));
+        List<Menu> menuList = getMenuListByApi(jointDeliveryCreateDto.getStoreId(), jointDelivery.getId());
+
+        // storeId의 메뉴를 가지고 있으면 삭제
+        menuRepository.saveAll(menuList);
         return jointDelivery.getId();
     }
 
@@ -374,12 +374,11 @@ public class JointDeliveryService {
         }
         if (!jointDelivery.getUser().getId().equals(loginUser.getId()) && !jointDeliveryCartRepository.existsByJointDeliveryIdAndUserId(jointDelivery.getId(), user.getId())) {
             user.subtractPoint(1000);
-            ChatRoom chatRoom = chatRoomRepository.findByName(jointDelivery.getId().toString() + "번 공동배달 채팅방").orElseThrow(() -> new ChatRoomNotFoundException("채팅방을 찾을 수 없습니다."));
-            ChatParticipant chatParticipant = chatParticipantRepository.findByChatRoomIdAndUserId(chatRoom.getId(), user.getId()).orElse(null);
+            ChatParticipant chatParticipant = chatParticipantRepository.findByChatRoomIdAndUserId(jointDelivery.getChatRoom().getId(), user.getId()).orElse(null);
             // 최초 입장인 경우
             if (chatParticipant == null) {
                 chatParticipant = ChatParticipant.builder()
-                        .chatRoom(chatRoom)
+                        .chatRoom(jointDelivery.getChatRoom())
                         .user(user)
                         .build();
                 chatParticipantRepository.save(chatParticipant);
@@ -436,8 +435,7 @@ public class JointDeliveryService {
             // 주최자가 아닌 경우
             if (!jointDeliveryCart.getJointDelivery().getUser().getId().equals(loginUser.getId())) {
                 user.addPoint(1000);
-                ChatRoom chatRoom = chatRoomRepository.findByName(jointDeliveryCart.getJointDelivery().getId().toString() + "번 공동배달 채팅방").orElseThrow(() -> new ChatRoomNotFoundException("채팅방을 찾을 수 없습니다."));
-                ChatParticipant chatParticipant = chatParticipantRepository.findByChatRoomIdAndUserId(chatRoom.getId(), user.getId()).orElseThrow(() -> new ChatParticipantNotFoundException("채팅방 참여자를 찾을 수 없습니다."));
+                ChatParticipant chatParticipant = chatParticipantRepository.findByChatRoomIdAndUserId(jointDeliveryCart.getJointDelivery().getChatRoom().getId(), user.getId()).orElseThrow(() -> new ChatParticipantNotFoundException("채팅방 참여자를 찾을 수 없습니다."));
                 chatParticipant.exit();
             }
         }

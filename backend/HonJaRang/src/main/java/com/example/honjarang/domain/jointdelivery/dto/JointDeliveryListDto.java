@@ -33,7 +33,4 @@ public class JointDeliveryListDto {
         this.userId = jointDelivery.getUser().getId();
         this.nickname = jointDelivery.getUser().getNickname();
     }
-
-
-
 }

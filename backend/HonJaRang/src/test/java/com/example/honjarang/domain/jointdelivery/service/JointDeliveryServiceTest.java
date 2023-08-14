@@ -1,6 +1,7 @@
 package com.example.honjarang.domain.jointdelivery.service;
 
 import com.example.honjarang.domain.DateTimeUtils;
+import com.example.honjarang.domain.chat.entity.ChatRoom;
 import com.example.honjarang.domain.chat.repository.ChatParticipantRepository;
 import com.example.honjarang.domain.chat.repository.ChatRoomRepository;
 import com.example.honjarang.domain.jointdelivery.document.Menu;
@@ -83,6 +84,7 @@ class JointDeliveryServiceTest {
     private Store store;
     private User user;
     private Menu menu;
+    private ChatRoom chatRoom;
     private JointDelivery jointDelivery;
     private JointDeliveryCart jointDeliveryCart;
     private JointDeliveryApplicant jointDeliveryApplicant;
@@ -109,6 +111,10 @@ class JointDeliveryServiceTest {
                 .longitude(127.123456)
                 .build();
         store.setIdForTest(1L);
+        chatRoom = ChatRoom.builder()
+                .name("테스트 채팅방")
+                .build();
+        chatRoom.setIdForTest(1L);
         jointDelivery = JointDelivery.builder()
                 .content("테스트 공동배달")
                 .deliveryCharge(3000)
@@ -116,6 +122,7 @@ class JointDeliveryServiceTest {
                 .deadline(DateTimeUtils.parseLocalDateTime("2030-01-01 00:00:00"))
                 .store(store)
                 .user(user)
+                .chatRoom(chatRoom)
                 .build();
         jointDelivery.setIdForTest(1L);
         jointDelivery.setCreatedAtForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
@@ -308,6 +315,7 @@ class JointDeliveryServiceTest {
         assertThat(jointDeliveryDto.getStoreImage()).isEqualTo("test.jpg");
         assertThat(jointDeliveryDto.getUserId()).isEqualTo(1L);
         assertThat(jointDeliveryDto.getNickname()).isEqualTo("테스트");
+        assertThat(jointDeliveryDto.getChatRoomId()).isEqualTo(1L);
     }
 
     @Test
