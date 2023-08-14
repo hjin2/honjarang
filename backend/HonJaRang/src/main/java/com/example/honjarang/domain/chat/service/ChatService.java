@@ -66,7 +66,7 @@ public class ChatService {
     }
 
     public void sendChatMessageToQueue(Long roomId, ChatMessageSendDto chatMessageSendDto, String sessionId) {
-        ChatMessageCreateDto chatMessageCreateDto = new ChatMessageCreateDto(chatMessageSendDto.getContent(), roomId, sessionId);
+        ChatMessageCreateDto chatMessageCreateDto = new ChatMessageCreateDto(chatMessageSendDto.getContent(), roomId, sessionId, chatMessageSendDto.getNickname());
         rabbitTemplate.convertAndSend("amq.topic", "room." + roomId, chatMessageCreateDto);
     }
 

@@ -15,6 +15,7 @@ public class ChatMessageCreateDto {
     private String content;
     private Long roomId;
     private String sessionId;
+    private String nickname;
 
     public ChatMessage toEntity(Long userId) {
         return ChatMessage.builder()
