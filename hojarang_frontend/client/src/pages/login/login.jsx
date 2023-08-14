@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLoginStatus } from '../../redux/slice/loginSlice';
 import image2 from '@/assets/2.png'
-import image5 from '@/assets/5.png'
 
 export default function Login() {
   const [Email, setEmail] = useState('')
