@@ -194,17 +194,21 @@ class ChatControllerTest {
         Map<String, Object> body = new HashMap<>();
         body.put("target_id", 2L);
 
+        given(chatService.createOneToOneChatRoom(user, 2L)).willReturn(1L);
+
         // when & then
         mockMvc.perform(post("/api/v1/chats/one-to-one")
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(body)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(1L))
                 .andDo(document("chat/createOneToOneChatRoom",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
                                 fieldWithPath("target_id").type(JsonFieldType.NUMBER).description("상대방 ID")
-                        )
+                        ),
+                        responseBody()
                 ));
     }
 }

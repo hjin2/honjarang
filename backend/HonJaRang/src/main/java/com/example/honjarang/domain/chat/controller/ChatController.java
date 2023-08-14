@@ -56,7 +56,6 @@ public class ChatController {
 
     @PostMapping("/one-to-one")
     public ResponseEntity<Long> createOneToOneChatRoom(@RequestBody Map<String, Object> body, @CurrentUser User user) {
-        chatService.createOneToOneChatRoom(user, Long.valueOf((Integer)body.get("target_id")));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(chatService.createOneToOneChatRoom(user, Long.valueOf((Integer)body.get("target_id"))));
     }
 }
