@@ -6,6 +6,7 @@ import Pagination from 'react-js-pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { useCallback } from 'react';
+import { activetabStyles } from '@/components/MyPage/MypageCss';
 
 
 export default function AricleList() {
@@ -61,16 +62,15 @@ export default function AricleList() {
   return (
     <div>
       <div className="w-3/5 mx-auto">
-        <div className='flex justify-between mb-5'>
-          <form action="" className="space-x-2" onSubmit={search}>
-            <input type="text" placeholder="검색어" onChange={handleKeyword}/>
-            <button>
-              <FontAwesomeIcon icon={faMagnifyingGlass} style={{color: "#008b28",}} />
-            </button>
-          </form>
-          <button className="main1-button w-24" onClick={handleButton}>작성하기</button>
+        <div className='text-lg mb-5 font-bold w-28' style={activetabStyles}>자유게시판</div>
+        <div className="flex mb-5">
+          <div className="w-3/6 font-bold text-center">제목</div>
+          <div className='w-1/6 font-bold'>작성자</div>
+          <div className='w-1/6 font-bold'>작성일</div>
+          <div className='w-1/6 font-bold'>조회수</div>
         </div>
-        <div className="space-y-4">
+        <hr />
+        <div className="space-y-4 mt-2">
           {articles?.map((article)=>(
             <div 
               key={article.id} 
@@ -80,10 +80,20 @@ export default function AricleList() {
               <MemorizedArticle
                 article={article}
                 />
+              <hr />
             </div>
           ))}
         </div>
         <footer>
+        <div className='flex justify-between mt-5'>
+          <form action="" className="space-x-2" onSubmit={search}>
+            <input type="text" placeholder="검색어" onChange={handleKeyword}/>
+            <button>
+              <FontAwesomeIcon icon={faMagnifyingGlass} style={{color: "#008b28",}} />
+            </button>
+          </form>
+          <button className="main1-button w-24" onClick={handleButton}>작성하기</button>
+        </div>
           <Pagination
             activePage={currentPage}
             itemsCountPerPage={15}
