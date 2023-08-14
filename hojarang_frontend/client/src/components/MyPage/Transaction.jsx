@@ -3,11 +3,11 @@ import TransacationList from "@/components/MyPage/List/TransacationList"
 import axios from "axios"
 import { activetabStyles, tabStyles } from "@/components/MyPage/MypageCss"
 
-export default function Transaction() {
+export default function Transaction({id, isMe}) {
 	const URL = import.meta.env.VITE_APP_API
   const token = localStorage.getItem("access_token")
   const headers = {"Authorization" : `Bearer ${token}`}
-	const [activeTab, setActiveTab] = useState('join-transaction')
+	const [activeTab, setActiveTab] = useState('write-transaction')
 	const [joinPageSize, setJoinPageSize] = useState(1)
 	const [writePageSize, setWritePageSize] = useState(1)
 	const [joinCurrentPage, setJoinCurrentPage] = useState(1)
@@ -36,7 +36,7 @@ export default function Transaction() {
   },[joinCurrentPage])
 
   useEffect(() => {
-    axios.get(`${URL}/api/v1/users/page-transaction`,{params:{size:4},headers})
+    axios.get(`${URL}/api/v1/users/page-transaction/${id}`,{params:{size:4},headers})
       .then((res) =>{
         console.log(res.data)
         setWritePageSize(res.data)
@@ -47,7 +47,7 @@ export default function Transaction() {
   },[])
 
 	useEffect(() => {
-    axios.get(`${URL}/api/v1/users/transaction-writer`,{params:{size:4,page:writeCurrentPage},headers})
+    axios.get(`${URL}/api/v1/users/transaction-writer/${id}`,{params:{size:4,page:writeCurrentPage},headers})
       .then((res) => {
         console.log(res.data)
         setWriteTransacationData(res.data)
@@ -60,42 +60,50 @@ export default function Transaction() {
   return (
     <div className="p-6">
 			<div className="space-x-5 mb-5">
-				<button 
-					onClick={() => handleTabClick("join-transaction")}
-					className={`${activeTab === "join-transaction" ? "font-semibold" : "font-normal"}`}
-          style={
-            activeTab === "join-transaction"
-            ? activetabStyles
-            : tabStyles
-          }
-					>참여 중고</button>
-				<button 
-					onClick={() => handleTabClick("write-transaction")}
-					className={`${activeTab === "write-transaction" ? "font-semibold" : "font-normal"}`}
+        <button 
+          onClick={() => handleTabClick("write-transaction")}
+          className={`${activeTab === "write-transaction" ? "font-semibold" : "font-normal"}`}
           style={
             activeTab === "write-transaction"
             ? activetabStyles
             : tabStyles
           }
-					>작성 중고</button>
+          >작성 중고</button>
+        {isMe ? (
+            <button 
+              onClick={() => handleTabClick("join-transaction")}
+              className={`${activeTab === "join-transaction" ? "font-semibold" : "font-normal"}`}
+              style={
+                activeTab === "join-transaction"
+                ? activetabStyles
+                : tabStyles
+            }
+            >참여 중고</button>
+        ):(null)}
+
 			</div>
 			<div className="">
-				{activeTab === `join-transaction`&&(
-					<TransacationList
-						pageSize={joinPageSize}
-						transactionData={joinTransacationData}
-						setCurrentPage={setJoinCurrentPage}
-						currentPage={joinCurrentPage}
-					/>
-				)}
+
 				{activeTab === "write-transaction"&&(
-					<TransacationList
-						pageSize={writePageSize}
-						transactionData={writeTransacationData}
-						setCurrentPage={setWriteCurrentPage}
-						currentPage={writeCurrentPage}
+          <TransacationList
+          pageSize={writePageSize}
+          transactionData={writeTransacationData}
+          setCurrentPage={setWriteCurrentPage}
+          currentPage={writeCurrentPage}
 					/>
-				)}
+          )}
+        {isMe ? (
+          <>
+            {activeTab === `join-transaction`&&(
+              <TransacationList
+              pageSize={joinPageSize}
+              transactionData={joinTransacationData}
+              setCurrentPage={setJoinCurrentPage}
+              currentPage={joinCurrentPage}
+              />
+            )}
+          </>
+        ):(null)}
 			</div>
     </div>
   )

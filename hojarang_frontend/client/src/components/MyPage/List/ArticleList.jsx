@@ -5,7 +5,7 @@ import Article from "@/components/MyPage/List/Article";
 import { useNavigate } from "react-router-dom";
 import { activetabStyles } from "@/components/MyPage/MypageCss"
 
-export default function ArticleList() {
+export default function ArticleList({id}) {
   const navigate = useNavigate()
   const URL = import.meta.env.VITE_APP_API
   const token = localStorage.getItem("access_token")
@@ -14,7 +14,7 @@ export default function ArticleList() {
   const [currentPage, setCurrentPage] = useState(1)
   const [articles, setArticles] = useState([])
   useEffect(() => {
-    axios.get(`${URL}/api/v1/users/page-post`,{params:{size:10}, headers})
+    axios.get(`${URL}/api/v1/users/page-post/${id}`,{params:{size:10}, headers})
       .then((res)=>{
         console.log(res.data)
         setPageSize(res.data)
@@ -24,7 +24,7 @@ export default function ArticleList() {
   },[])
 
   useEffect(()=>{
-    axios.get(`${URL}/api/v1/users/posts`,{params:{size:10, page:currentPage},headers})
+    axios.get(`${URL}/api/v1/users/posts/${id}`,{params:{size:10, page:currentPage},headers})
       .then((res)=>{
         console.log(res.data)
         setArticles(res.data)
