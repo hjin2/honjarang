@@ -44,40 +44,59 @@ export default function PurchaseCreate() {
 
   }
 
+  // 목표 인원 100명까지
+  const handleTargetPersonCount= (e) => {
+    const count = e.target.value
+    const newCount = Math.min(count, 100)
+    setTargetPersonCount(newCount)
+  }
+
   return (
     <div className="border rounded-lg max-w-2xl mx-auto mt-10 pb-3 p-5 space-y-5 ">
       <div>
-        <div>상품명</div>
+        <div className="text-lg mb-1">상품명</div>
         <input type="text" 
         value={productName} 
-        onChange={(e) => setProductName(e.target.value)}/>
+        onChange={(e) => setProductName(e.target.value)}
+        className="border border-gray2 focus:outline-main2 h-8 p-1 w-60"/>
       </div>
       <div>
-        <div>상품 가격</div>
+        <div className="text-lg mb-1">상품 가격</div>
         <input type="number"
         value={price}
-        onChange={(e) => setPrice(e.target.value)} />
+        onChange={(e) => setPrice(e.target.value)} 
+        className="border border-gray2 focus:outline-main2 h-8 p-1 w-60"/>
       </div>
       <div>
-        <div>배송비</div>
+        <div className="text-lg mb-1">배송비</div>
         <input type="number"
           value={deliveryCharge}
-          onChange={(e) => setDeliveryCharge(e.target.value)} />
+          onChange={(e) => setDeliveryCharge(e.target.value)} 
+          className="border border-gray2 focus:outline-main2 h-8 p-1 w-60"/>
       </div>
       <div>
-        <div>목표 인원 (최대 00명까지 입력 가능)</div>
+        <div className="flex flex-row mb-1">
+          <p className="text-lg">목표 인원</p>
+          <p className="ml-1 text-gray4 text-sm flex items-end mb-1">(최대 100명까지 입력 가능)</p>
+        </div>
         <input type="number"
         value={targetPersonCount}
-        onChange={(e) => setTargetPersonCount(e.target.value)} />
+        // onChange={(e) => setTargetPersonCount(e.target.value)} 
+        onChange={handleTargetPersonCount}
+        className="border border-gray2 focus:outline-main2 h-8 p-1 w-60"/>
       </div>
       <div>
-        <div>마감기한 (최대 30일까지 가능)</div>
+        <div className="flex flex-row mb-1">
+          <p className="text-lg">마감 기한</p>
+          <p className="ml-1 text-gray4 text-sm flex items-end mb-1">(최대 30일)</p>
+        </div>
         <input type="datetime-local"
         value={deadline}
-        onChange={(e) => setDeadline(e.target.value)} />
+        onChange={(e) => setDeadline(e.target.value)} 
+        className="border border-gray2 focus:outline-main2 h-8 p-1 w-60"/>
       </div>
       <div>
-        <div>만남의 장소 (상품 수령지)</div>
+        <div className="text-lg mb-1">만남의 장소 (상품 수령지)</div>
         <PurchaseMap
           placeName={placeName}
           setPlaceName = {setPlaceName}
@@ -90,8 +109,9 @@ export default function PurchaseCreate() {
         <button type="button" className="main2-button w-20  ml-2">주소검색</button> */}
       </div>
       <div>
-        <div>상품소개</div>
-        <textarea className="resize-none border border-black h-48 w-full "
+        <div className="text-lg mb-1">상품소개</div>
+        <textarea  
+        className="border border-gray2 rounded p-2 w-full resize-none h-48 focus:outline-main2"
         value={content}
         onChange={(e) => setContent(e.target.value)}
         ></textarea>
