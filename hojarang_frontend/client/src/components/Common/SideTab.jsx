@@ -28,7 +28,7 @@ const tabStyles = {
 export default function SideTab({ tabs, activeTabIndex, setActiveTabIndex }){
 
   return (
-    <div className='flex space-x-14 mx-auto'>
+    <div className='space-x-14 mx-auto'>
       <ul className="space-y-10 my-10 mx-auto">
         {tabs.map((tab, index) => (
           <li
