@@ -28,6 +28,8 @@ public class JointPurchaseDto {
     private String nickname;
     private Integer myPoint;
 
+    private Long chatRoomId;
+
     public JointPurchaseDto(JointPurchase jointPurchase, Integer currentPersonCount, Integer myPoint) {
         this.id = jointPurchase.getId();
         this.productName = jointPurchase.getProductName();
@@ -45,5 +47,6 @@ public class JointPurchaseDto {
         this.userId = jointPurchase.getUser().getId();
         this.nickname = jointPurchase.getUser().getNickname();
         this.myPoint = myPoint;
+        this.chatRoomId = jointPurchase.getChatRoom().getId();
     }
 }

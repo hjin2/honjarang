@@ -16,12 +16,14 @@ public class ChatRoomListDto {
     private String lastMessage;
     private String lastMessageCreatedAt;
     private Integer unreadMessageCount;
+    private Integer participantCount;
 
-    public ChatRoomListDto(ChatRoom chatRoom, String lastMessage, Instant lastMessageCreatedAt, Integer unreadMessageCount) {
+    public ChatRoomListDto(ChatRoom chatRoom, String lastMessage, Instant lastMessageCreatedAt, Integer unreadMessageCount, Integer participantCount) {
         this.id = chatRoom.getId();
         this.name = chatRoom.getName();
         this.lastMessage = lastMessage;
         this.lastMessageCreatedAt = lastMessageCreatedAt != null ? DateTimeUtils.formatInstant(lastMessageCreatedAt) : null;
         this.unreadMessageCount = unreadMessageCount;
+        this.participantCount = participantCount;
     }
 }
