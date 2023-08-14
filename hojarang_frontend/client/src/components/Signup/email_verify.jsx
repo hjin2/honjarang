@@ -37,7 +37,7 @@ function Email_verify({Email, setEmail, ChangeEmailValid}) {
     }})
     .then((res) => {
       console.log(res.data)
-      let result = confirm('해당 이메일을 사용하시겠습니까?')
+      let result = confirm('사용가능한 이메일 입니다. \n해당 이메일을 사용하시겠습니까?')
       if (result) {
         setEmailDisalbed(true)
         setemailMsg('')
@@ -46,24 +46,6 @@ function Email_verify({Email, setEmail, ChangeEmailValid}) {
       else {
         setemailMsg('')
       }
-    })
-    .catch((err) => {
-      console.log(err)
-      setemailMsg('사용할 수 없는 이메일입니다.')
-
-    })
-  }
-
-
-
-  const email = id + '@' + address
-
-  // 인증번호 전송 처리
-  const email_code = () => {
-    if (address === '' || address === 'default') {
-      setemailMsg('이메일을 선택해주세요')
-    }
-    else {
       axios.post(`${import.meta.env.VITE_APP_API}/api/v1/users/send-verification-code`,
       {
         email: email
@@ -81,7 +63,19 @@ function Email_verify({Email, setEmail, ChangeEmailValid}) {
         console.log(error)
       })
     }    
+    )
+    .catch((err) => {
+      console.log(err)
+      setemailMsg('사용할 수 없는 이메일입니다.')
+
+    })
   }
+
+
+
+  const email = id + '@' + address
+
+  
   
 return (
     <div>
@@ -100,10 +94,7 @@ return (
             <option value="manual"><input type="text" />직접 입력</option>
           </select>}
             <button className='border-solid border border-black rounded bg-gray2 ml-2'
-            onClick={EmailDuplicate}>이메일 중복 확인</button>
-            <button className='border-solid border border-black rounded bg-gray2 ml-2'
-            onClick = {email_code} disabled={VerifyDisalbed}
-            >인증번호 전송</button>
+            onClick={EmailDuplicate} disabled={EmailDisalbed}>이메일 중복 확인</button>
             <br />
             <span>{emailMsg}</span>
             {emailCheck && <Verify_check email={email} ChangeEmailValid = {ChangeEmailValid}/>}
