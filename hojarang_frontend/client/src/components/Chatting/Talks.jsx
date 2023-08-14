@@ -51,7 +51,9 @@ function Talks({messages, id}) {
       setMsg(res.data);
       if (res.data.length < 30) {
         console.log(pages)
-        loadMoreChat2(p)
+        if (p >1) {
+          loadMoreChat2(p)
+        }
       }
       
       if (isInitialLoad.current) {
