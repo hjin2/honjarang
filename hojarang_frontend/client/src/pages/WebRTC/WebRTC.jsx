@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import RTC from "@/components/WebRTC/RTC"
 import { useSelector } from "react-redux";
 import { handleSession } from "@/redux/slice/sessionSlice";
-import FreeChatList from "@/components/WebRTC/FreeChatList";
+import ChatList from "@/components/WebRTC/ChatList";
 
 export default function WebRTC() {
   const session = useSelector((state) => state.session.session)
@@ -22,24 +22,36 @@ export default function WebRTC() {
       handleSession(undefined)
     }
   },[session])
+  
+  const [category, setCategory] = useState("free")
   const [activeTabIndex, setActiveTabIndex] = useState(0)
+
+  useEffect(()=>{
+    setCategory(tabs[activeTabIndex].category)
+    console.log(tabs[activeTabIndex].category)
+  },[activeTabIndex])
+
   const tabs = [
     {
       title : "자유",
-      content : <FreeChatList/>
+      category : "free"
     },
     {
       title : "도와주세요",
-      content : <RTC/>
+      category : "help"
     },
     {
       title : "혼밥/혼술",
-      content : "g"
+      category : "honbobsul"
     },
 
     {
       title : "게임",
-      content:"hi"
+      category : "game"
+    },
+    {
+      title : "스터디",
+      category : "study"
     }
   ]
   return(
@@ -57,11 +69,7 @@ export default function WebRTC() {
         </button>
       </div>
       <div className="basis-5/6">
-        <Content
-          tabs = {tabs}
-          activeTabIndex = {activeTabIndex}
-          setActiveTabIndex = {setActiveTabIndex}
-          />
+        <ChatList category={category}/>
       </div>
     </div>
   );

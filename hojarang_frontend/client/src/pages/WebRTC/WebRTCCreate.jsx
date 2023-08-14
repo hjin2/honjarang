@@ -103,7 +103,8 @@ export default function WebRTCCreate() {
         <form action="" value="카테고리">
           <select value={category} className="border" onChange={handleCategory}>
             <option value="FREE">자유</option>
-            <option value="MUKBANG">혼밥/혼술</option>
+            <option value="HONBABSUL">혼밥/혼술</option>
+            <option value="STUDY">스터디</option>
             <option value="HELP">도와주세요</option>
             <option value="GAME">게임</option>
           </select>
