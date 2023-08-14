@@ -24,10 +24,11 @@ public class TransactionDto {
     private String createdAt;
     private String transactionImage;
     private Boolean isReceived;
+    private Long buyerId;
 
 
 
-    public TransactionDto(Transaction transaction){
+    public TransactionDto(Transaction transaction, Long buyerId){
         this.id = transaction.getId();
         this.sellerId = transaction.getSeller().getId();
         this.sellerNickname = transaction.getSeller().getNickname();
@@ -43,6 +44,7 @@ public class TransactionDto {
         }else{
             this.transactionImage = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/transactionImage/" + transaction.getTransactionImage();
         }
+        this.buyerId = buyerId;
     }
 
 
