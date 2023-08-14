@@ -116,17 +116,17 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/posts")
-    public ResponseEntity<List<PostListDto>> getMyPostList(@RequestParam(value = "size", defaultValue = "1") Integer size, @RequestParam(value="page", defaultValue = "1") int page, @CurrentUser User user){
-        List<PostListDto> postList = userService.getMyPostList(page,size, user);
+    @GetMapping("/posts/{userId}")
+    public ResponseEntity<List<PostListDto>> getMyPostList(@RequestParam(value = "size", defaultValue = "1") Integer size, @RequestParam(value="page", defaultValue = "1") int page, @PathVariable Long userId){
+        List<PostListDto> postList = userService.getMyPostList(page,size, userId);
         return ResponseEntity.ok(postList);
     }
 
 
-    @GetMapping("/joint-deliveries-writer")
-    public ResponseEntity<List<JointDeliveryListDto>> getMyWrittenJointDeliveries(@RequestParam(value = "size", defaultValue = "1") int size, @RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
+    @GetMapping("/joint-deliveries-writer/{userId}")
+    public ResponseEntity<List<JointDeliveryListDto>> getMyWrittenJointDeliveries(@RequestParam(value = "size", defaultValue = "1") int size, @RequestParam(value = "page", defaultValue = "1") int page, @PathVariable Long userId){
         
-        List<JointDeliveryListDto> myWrittenJointDeliveryListDtoList = userService.getMyWrittenJointDeliveries(page,size,user);
+        List<JointDeliveryListDto> myWrittenJointDeliveryListDtoList = userService.getMyWrittenJointDeliveries(page,size,userId);
         return ResponseEntity.ok(myWrittenJointDeliveryListDtoList);
     }
 
@@ -136,9 +136,9 @@ public class UserController {
         return ResponseEntity.ok(myJoinedJointDeliveryListDtoList);
     }
 
-    @GetMapping("/transaction-writer")
-    public ResponseEntity<List<TransactionListDto>> getMyTransactions(@RequestParam(value = "size", defaultValue = "1") int size, @RequestParam(value = "page", defaultValue = "1") int page, @CurrentUser User user){
-        List<TransactionListDto> transactionListDtoList = userService.getMyTransactions(page,size,user);
+    @GetMapping("/transaction-writer/{userId}")
+    public ResponseEntity<List<TransactionListDto>> getMyTransactions(@RequestParam(value = "size", defaultValue = "1") int size, @RequestParam(value = "page", defaultValue = "1") int page, @PathVariable Long userId){
+        List<TransactionListDto> transactionListDtoList = userService.getMyTransactions(page,size,userId);
         return ResponseEntity.ok(transactionListDtoList);
     }
 

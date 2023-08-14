@@ -124,10 +124,10 @@ public class PostControllerTest {
 //                        preprocessRequest(prettyPrint()),
 //                        preprocessResponse(prettyPrint()),
 //                        requestParts(
-//                                 partWithName("post_image").description("이미지 첨부")
+//                                 partWithName("post_image").description("이미지 첨부").optional()
 //                        ),
-//                        formParameters(
-//                                parameterWithName("title").description("제목"),
+//                        queryParameters(
+//                                parameterWithName("postCreateDto.title").description("제목"),
 //                                parameterWithName("category").description("카테고리"),
 //                                parameterWithName("content").description("컨텐트")
 //                        )));
