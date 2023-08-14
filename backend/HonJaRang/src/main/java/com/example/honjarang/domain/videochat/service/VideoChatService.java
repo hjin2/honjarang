@@ -109,7 +109,7 @@ public class VideoChatService {
     }
 
     @Transactional
-    public String createConnection(String sessionId, Map<String, Object> params) {
+    public String createConnection(String sessionId, Map<String, Object> params, User user) {
 
         Session session = openvidu.getActiveSession(sessionId);
         if (session == null) {
@@ -127,6 +127,7 @@ public class VideoChatService {
         }
 
         VideoChatParticipant videoChatParticipant = VideoChatParticipant.builder()
+                        .user(user)
                         .videoChatRoom(videoChatRoomRepository.findBySessionId(sessionId))
                         .build();
 
