@@ -2,7 +2,7 @@
 import { useParams } from 'react-router-dom';
 import UserInfo from '@/components/MyPage/UserInfo';
 import SideBar from '@/components/MyPage/SideBar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { Userinfo } from '@/redux/slice/UserInfoSlice';
@@ -27,10 +27,15 @@ export default function MyPage() {
   };
   const app = initializeApp(firebaseConfig);
   const messaging = getMessaging(app);
-
+  const LoginId = localStorage.getItem("user_id")
+  const [isMe, setIsMe] = useState(false)
   useEffect(() => {
     requestPermission();
-
+    if(LoginId == id){
+      setIsMe(true)
+    }else{
+      setIsMe(false)
+    }
     getToken(messaging, {
       vapidKey: 'BKA1sedlFM56zEjILf13NHe4a-ovGw9B4z7VH3mSKulo-QnELaPWD8Uei_Y8b9yi_H4UfVSIE50DgM2ydgfcKd8',
     })
@@ -114,9 +119,9 @@ export default function MyPage() {
 
   return (
     <div className="my-page space-y-5">
-      <UserInfo />
+      <UserInfo id={id} isMe={isMe}/>
       <div>
-       <SideBar />
+       <SideBar id={id} isMe={isMe}/>
       </div>
     </div>
   );
