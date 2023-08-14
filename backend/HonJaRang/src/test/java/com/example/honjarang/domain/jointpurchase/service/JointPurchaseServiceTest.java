@@ -451,16 +451,16 @@ class JointPurchaseServiceTest {
         assertThrows(JointPurchaseAlreadyReceivedException.class, () -> jointPurchaseService.confirmReceived(1L, user));
     }
 
-//    @Test
-//    @DisplayName("공동구매 페이지 수 조회 성공")
-//    void getJointPurchasePageCount_Success() {
-//        // given
-//        given(jointPurchaseRepository.countByIsCanceledFalseAndDeadlineAfter(any(LocalDateTime.class))).willReturn(1);
-//
-//        // when
-//        Integer jointPurchasePageCount = jointPurchaseService.getJointPurchasePageCount(10);
-//
-//        // then
-//        assertThat(jointPurchasePageCount).isEqualTo(1);
-//    }
+    @Test
+    @DisplayName("공동구매 페이지 수 조회 성공")
+    void getJointPurchasePageCount_Success() {
+        // given
+        given(jointPurchaseRepository.countByIsCanceledFalseAndDeadlineAfterAndContentContainingIgnoreCase(any(LocalDateTime.class), eq("테스트"))).willReturn(1);
+
+        // when
+        Integer jointPurchasePageCount = jointPurchaseService.getJointPurchasePageCount(10, "테스트");
+
+        // then
+        assertThat(jointPurchasePageCount).isEqualTo(1);
+    }
 }
