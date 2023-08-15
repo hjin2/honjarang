@@ -104,8 +104,9 @@ export default function ArticleUpdate() {
         name="post_image"
         onChange={handleImage}
       />
-      <div className="py-3">
-        <button onClick={editArticle} className="main1-button w-24">수정하기</button>
+      <div className="py-3 flex justify-between">
+        <button onClick={editArticle} className="main1-full-button w-24">수정하기</button>
+        <button onClick={()=>{navigate(`/board/article/${id}`)}} className="main5-full-button w-24">취소</button>
       </div>
     </div>
   );

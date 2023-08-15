@@ -164,10 +164,10 @@ export const ArticleDetail = () => {
           </div>
         </div>
         <div className="flex space-x-2">
-          <div className="text-xs mt-3">댓글 개수 : {comments.length}</div>
+          <div className="text-xs mr-3 mt-1.5">댓글 {comments.length}</div>
 
           {isWriter ? (
-            <div>
+            <div >
               <button onClick={handleClick}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />

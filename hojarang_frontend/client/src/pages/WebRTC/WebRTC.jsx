@@ -26,11 +26,6 @@ export default function WebRTC() {
   },[])
   
   useEffect(()=>{
-    console.log(session)
-    if(session){
-      session.disconnect()
-      deleteSession()
-    }
     setCategory(tabs[activeTabIndex].category)
     console.log(tabs[activeTabIndex].category)
   },[activeTabIndex])

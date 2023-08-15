@@ -22,7 +22,7 @@ export default function Article({article}) {
         <div className="flex justify-center">
           <FontAwesomeIcon icon={faThumbsUp} size="lg" style={{color: "#008b57",}} />
         </div>
-        <div className="text-xs">{article.like_cnt}</div>
+        <div className="text-xs text-center font-bold">{article.like_cnt}</div>
       </div>
       <div className="flex space-x-1">
         {article.is_notice ? (
