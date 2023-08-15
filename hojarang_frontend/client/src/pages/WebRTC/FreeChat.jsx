@@ -5,18 +5,17 @@ import { createSession, createToken } from "@/components/WebRTC/Util";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import Chat from "@/components/WebRTC/Chat";
+import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVideo } from "@fortawesome/free-solid-svg-icons";
 import { faVideoSlash } from "@fortawesome/free-solid-svg-icons";
 import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import { faMicrophoneSlash } from "@fortawesome/free-solid-svg-icons";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
-import logoImage from "@/assets/2.png"
 import { useSelector } from "react-redux";
 
 export default function FreeChat() {
   const [session, setSession] = useState(undefined)
-  const containerRef = useRef(null)
   const [subscribers, setSubscribers] = useState([])
   const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
   const [mySessionId, setMySessionId] = useState(useParams().sessionid)
@@ -104,10 +103,6 @@ export default function FreeChat() {
     setSession(mySession);
   }, []);
 
-  useEffect(() => {
-    joinSession()
-    console.log(nickname)
-  },[])
 
   useEffect(() => {
     if (session) {
@@ -140,7 +135,6 @@ export default function FreeChat() {
           console.log('There was an error connecting to the session:', error.code, error.message);
         }
       });
-
     }
   }, [session, nickname]);
 
@@ -157,11 +151,23 @@ export default function FreeChat() {
     });
   }, []);
 
-  
+  const leaveSessionRef = useRef(leaveSession);
+
+  useEffect(() => {
+    window.addEventListener("popstate", () => {
+      leaveSessionRef.current();
+      window.alert("뒤로가기 누르셨습니다.")
+    });
+    window.addEventListener("beforeunload", () => {
+      leaveSessionRef.current();
+      window.alert("창닫기를 누르셨습니다.")
+    });
+  }, []);
+
 
   return (
     <div id="session" className="h-screen p-6">
-      <img src={logoImage} className="w-1/12 mx-auto" />
+      <div className="text-center text-5xl text-main1 font-bold" style={{height : "10%"}}>혼자랑</div>
       <div className="flex space-x-5" style={{height : "80%"}}>
         <div id="video-container" className="grid grid-cols-4 gap-4">
           {publisher !== undefined ? (
