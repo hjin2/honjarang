@@ -18,6 +18,9 @@ export default function DeliveryDetail() {
   const [detail, setDetail] = useState({}); // 가게 상세
   const [menuList, setMenuList] = useState([]); // 메뉴 리스트
   const [isAdd, setIsAdd] = useState(false)
+  const [cart, setCart] = useState([])
+
+
   useEffect(() => {
     // 공동 배달 상세
     axios.get(`${URL}/api/v1/joint-deliveries/${id}`,  {headers})
@@ -102,6 +105,7 @@ export default function DeliveryDetail() {
   const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
+
   return (
     <div>
       <div className="border rounded-lg max-w-2xl mx-auto mt-10 pb-3 p-5 space-y-5 ">
@@ -146,6 +150,8 @@ export default function DeliveryDetail() {
                 detail={detail}
                 modalState={modalState} setModalState={setModalState}
                 setIsAdd = {setIsAdd}
+                cart = {cart}
+                isWriter={isWriter}
                 />
             </Modal>
           )}
@@ -169,7 +175,7 @@ export default function DeliveryDetail() {
           </div>
         )}
         {/* 메뉴를 담으면 장바구니 버튼 활성화 */}
-        <CartList id={id} loginId={loginId} />
+        <CartList id={id} loginId={loginId} cart={cart} setCart={setCart} />
         {isWriter && timeDiff>0 ? (
           <button className="main5-full-button w-40 mt-3" onClick={deleteDelivery}>모집 취소</button>
           ):null}    
