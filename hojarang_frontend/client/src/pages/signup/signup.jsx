@@ -6,6 +6,7 @@ import Nickname_check from '../../components/Signup/nickname_check'
 import Address_check from '../../components/Signup/address_check'
 import Password_check from '../../components/Signup/Password_check'
 import { useNavigate } from 'react-router-dom'
+import image2 from '@/assets/2.png'
 
 
 export default function Signup() {
@@ -67,7 +68,7 @@ export default function Signup() {
   return (
     <div className="m-auto w-4/5 h-fit border border-solid border-black rounded
     flex flex-col items-start justify-around p-2">
-          <h1 className='text-3xl'>회원가입</h1>
+          <img src={image2} alt="" className='mx-auto w-2/12'/>
           <Email_verify Email = {Email} setEmail = {setEmail} ChangeEmailValid = {ChangeEmailValid}/>
           <Nickname_check Nickname = {Nickname} setNickname = {setNickname} ChangeNicknameValid = {ChangeNicknameValid}/>
           <Password_check Pwd = {Pwd} setPwd = {setPwd} setPwdValid={setPwdValid}/>

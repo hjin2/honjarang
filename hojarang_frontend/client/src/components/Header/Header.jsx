@@ -37,11 +37,11 @@ export default function Header() {
   return (
     <div className="Header">
       <nav className="py-6">
-        <div className="flex items-center justify-between">
-          <Link to={`/mypage/${id}`} className="text-2xl text-main2 hover:text-main1 font-extrabold">
+        <div className="flex items-center justify-between text-lg">
+          <Link to={`/mypage/${id}`} className="font-ImcreSoojin text-3xl text-main2 hover:text-main1">
             혼자랑
           </Link>
-          <div className="flex space-x-12">
+          <div className="flex space-x-12 font-ImcreSoojin">
             <NavLink
               to="/board"
               className={({ isActive }) =>
