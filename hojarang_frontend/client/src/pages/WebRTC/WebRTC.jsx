@@ -2,13 +2,21 @@ import SideTab from "@/components/Common/SideTab";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ChatList from "@/components/WebRTC/ChatList";
+import { useSelector } from "react-redux";
+import { deleteSession } from "@/redux/slice/SessionSlices";
 
 export default function WebRTC() {
   
   const [category, setCategory] = useState("free")
   const [activeTabIndex, setActiveTabIndex] = useState(0)
-
+  const session = useSelector((state) => state.session.session)
+  
   useEffect(()=>{
+    console.log(session)
+    if(session){
+      session.disconnect()
+      deleteSession()
+    }
     setCategory(tabs[activeTabIndex].category)
     console.log(tabs[activeTabIndex].category)
   },[activeTabIndex])
