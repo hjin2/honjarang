@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
-export default function Cart({ selectedMenu, detail, modalState, setModalState, setIsAdd }) {
+export default function Cart({ selectedMenu, detail, modalState, setModalState, setIsAdd}) {
   
   const [quantity, setQuantity] = useState(1)
   const [afterPoint, setAfterPoint] = useState(0);
@@ -17,12 +17,10 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
     if(calculatedPoint >= 0){
       setAfterPoint(calculatedPoint)
       setQuantity(prevQuantity => prevQuantity + 1)
-      console.log('플')
     } 
   }  
   const handleDecrement = () => {
     if(quantity > 1){
-      console.log('마')
       setAfterPoint(afterPoint + selectedMenu.price)
       setQuantity(prevQuantity => prevQuantity - 1);
     }
@@ -30,12 +28,12 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
 
   const handleChange = (e) => {
     const inputQuantity = parseInt(e.target.value);
-    if (!isNaN(inputQuantity) && inputQuantity >= 1) {
+    if (!isNaN(inputQuantity) ) {
       const calculatedPoint = detail.my_point - (selectedMenu.price * inputQuantity)
-      const newQuantity = calculatedPoint >= 0 ? inputQuantity : Math.floor((detail.my_point) / selectedMenu.pric)
+      const newQuantity = calculatedPoint >= 0 ? inputQuantity : Math.floor((detail.my_point) / selectedMenu.price)
       const newAfterPoint = calculatedPoint >= 0 ? calculatedPoint : 0;
       setAfterPoint(newAfterPoint)
-      setQuantity(newQuantity);
+      setQuantity(newQuantity >= 1 ? newQuantity : 1);
     }
     else {
       setQuantity(1)
@@ -57,7 +55,7 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
   const URL = import.meta.env.VITE_APP_API
 
   const createCart = () => {
-    const headers = {'Authorization': `Bearer ${token}`}
+    // const headers = {'Authorization': `Bearer ${token}`}
     const data = {
       joint_delivery_id: detail.id,
       menu_id: selectedMenu.id,
@@ -65,7 +63,12 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
     }
     if((detail.my_point - (selectedMenu.price * quantity)) >= 0){
       // 장바구니 추가
-      axios.post(`${URL}/api/v1/joint-deliveries/${detail.id}/carts`, data, {headers})
+      axios.post(`${URL}/api/v1/joint-deliveries/${detail.id}/carts`, data, 
+        {headers : {
+            "Authorization" : `Bearer ${token}`,
+            "Content-Type" : "application/json"
+          }
+        })
       .then((res) => {
         console.log(res)
         console.log(res.data)
@@ -122,7 +125,7 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
                 </div>
                 <div className="flex justify-between">
                   <p>차감 후 포인트</p>
-                  <p>{(detail.my_point - (selectedMenu.price * quantity)).toLocaleString()} P</p>
+                  <p>{(detail.my_point - (selectedMenu.price * quantity) - 1000).toLocaleString()} P</p>
                 </div>
               </div>
             </div>
@@ -131,6 +134,8 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
         <div className="mt-5">
           <button onClick={createCart} className="main1-full-button w-36">장바구니에 담기</button>
         </div>
+        <p className="text-gray3 text-xs mt-2">첫 메뉴를 담을 때 선배달비 1,000원이 차감됩니다.</p>
+        <p className="text-gray3 text-xs">배달비의 차액은 수령확인 후 돌려드립니다.</p>
       </div>
     </div>
   );
