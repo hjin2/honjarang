@@ -8,7 +8,7 @@ import Talks from '@/components/Chatting/Talks';
 import { useSelector } from 'react-redux';
 
 const Chat = () => {
-  const nickname = useSelector((state) => state.userinfo.nickname)
+  const [Nickname, setNickname] = useState('')
   const params = useParams();
   const Key = params["id"];
   const navigate = useNavigate();
@@ -96,6 +96,25 @@ const Chat = () => {
   };
 
   useEffect(() => {
+    const id = localStorage.getItem('user_id')
+    const token = localStorage.getItem('access_token')
+    axios.get(`${import.meta.env.VITE_APP_API}/api/v1/users/info`,
+      {
+        params : {id : id},
+        headers : {'Authorization' : `Bearer ${token}`}
+      },
+      )
+      .then(function(response){
+        console.log(response.data)
+        setNickname(response.data.nickname)
+      })
+      .catch(function(error){
+        console.log(error)
+      })
+  },[id, token]);
+
+
+  useEffect(() => {
     connect();
   }, []);
 
@@ -105,15 +124,6 @@ const Chat = () => {
     }
   };
 
-  const back = () => {
-    const serverAddress = 'https://honjarang.kro.kr/chat';
-    const socket = new SockJS(serverAddress);
-    const stompClient = Stomp.over(socket);
-
-    stompClient.unsubscribe()
-    socket.close()
-
- }
   return (
     <div className="h-screen flex flex-col">
       <Talks messages={messages} id={Key} />
@@ -121,7 +131,7 @@ const Chat = () => {
         <input type="text" id="message" value={message} onChange={(e) => setMessage(e.target.value)} className="border rounded p-2 w-full" onKeyDown={onKeyEnter} />
         <button onClick={sendMessage} className="mt-2 bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600">전송</button>
       </div>
-      <button onClick={back} className="bg-red-500 text-white rounded px-4 py-2 mt-2 mx-4 self-center hover:bg-red-600">뒤로가기</button>
+      <button onClick={handleBack} className="bg-red-500 text-white rounded px-4 py-2 mt-2 mx-4 self-center hover:bg-red-600">뒤로가기</button>
     </div>
   );
 };
