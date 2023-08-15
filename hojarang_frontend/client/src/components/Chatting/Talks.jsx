@@ -193,7 +193,23 @@ return(
        </div>
           )))}
           {messages.map((msg, index) => (
-                <div key={index}>{msg}</div>
+                (msg.nickname === Nickname?
+                  <div key={index}>
+                <div className = "float-right text-right inline-block border rounded-lg bg-main3 bg-opacity-50 px-2 py-1 m-3" >
+                   {msg.content}
+               </div>
+         
+                </div>
+             : 
+             <div key={index} className="m-2">
+               <span>{msg.nickname}</span>
+               <br />
+             <div className = "inline-block text-left border rounded-lg bg-main4 bg-opacity-50 px-2 py-1 m-1" >
+                {msg.content}
+            </div>
+      
+             </div>
+                )
               ))}
   </div>
 )
