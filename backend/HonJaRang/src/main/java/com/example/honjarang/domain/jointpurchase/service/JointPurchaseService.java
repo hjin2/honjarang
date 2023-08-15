@@ -239,6 +239,9 @@ public class JointPurchaseService {
         if(jointPurchaseApplicant.getIsReceived()) {
             throw new JointPurchaseAlreadyReceivedException("이미 수령확인한 공동구매입니다.");
         }
+        if(jointPurchaseApplicant.getJointPurchase().getTargetPersonCount() > jointPurchaseApplicantRepository.countByJointPurchaseId(jointPurchaseId)) {
+            throw new InsufficientPersonCountException("목표인원을 채우지 못한 공동구매입니다.");
+        }
 
         jointPurchaseApplicant.confirmReceived();
 
