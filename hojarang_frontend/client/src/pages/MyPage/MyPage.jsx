@@ -43,7 +43,7 @@ export default function MyPage() {
         if (currentToken) {
           localStorage.setItem('fcm_token', currentToken)
           console.log(currentToken);
-          axios.post(``)
+          // axios.post(``)
         } else {
           console.log('No registration token available. Request permission to generate one.');
         }
