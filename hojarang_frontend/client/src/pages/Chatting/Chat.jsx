@@ -53,7 +53,7 @@ const Chat = () => {
     const messageToSend = {
       room_id: Key,
       content: message,
-      nickname: nickname
+      nickname: Nickname
     };
 
     stomp.send(`/app/chat/message.${Key}`, {}, JSON.stringify(messageToSend));
@@ -111,7 +111,7 @@ const Chat = () => {
       .catch(function(error){
         console.log(error)
       })
-  },[id, token]);
+  },[]);
 
 
   useEffect(() => {
