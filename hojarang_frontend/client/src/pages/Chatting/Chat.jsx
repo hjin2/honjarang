@@ -138,6 +138,24 @@ const Chat = () => {
     }
   };
 
+  useEffect(() => {
+    const URL = import.meta.env.VITE_APP_API
+    const id = localStorage.getItem('user_id')
+    axios.get(`${URL}/api/v1/users/info`,
+      {
+        params : {id : id},
+        headers : {'Authorization' : `Bearer ${token}`}
+      },
+      )
+      .then(function(response){
+        console.log(response.data)
+        setNickname(response.data.nickname)
+      })
+      .catch(function(error){
+        console.log(error)
+      })
+  },[]);
+
   return (
     <div className="w-3/5 h-screen flex flex-col m-auto">
       <Talks messages={messages} id={Key} Nickname = {Nickname}/>

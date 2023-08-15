@@ -3,7 +3,6 @@ import React, {useState, useRef, useEffect} from "react";
 
 
 function Talks({messages, id, Nickname}) {
-
   const [isLoading, setIsLoading] = useState(false);
   const [pages, setPages] = useState(1);
   const [msg, setMsg] = useState([]);
@@ -14,11 +13,13 @@ function Talks({messages, id, Nickname}) {
   const Key = id
 
   
+  
   useEffect(() => {
     getChats()
   },[])
  
   const getChats = () => {
+    getNickname()
     axios.get(`${import.meta.env.VITE_APP_API}/api/v1/chats/${Key}/page`, {
       params: {
         size: 30
@@ -28,7 +29,7 @@ function Talks({messages, id, Nickname}) {
       }
     })
     .then((res) => {
-      console.log(res.data);
+      console.log(res.data)
       setPages(res.data);
       loadChats(res.data);
     });
@@ -175,7 +176,7 @@ return(
           </div>
         </div> */}
         {msg.map((ms, idx) => (
-          (ms.nickname === 'kbfl2201' ?
+          (ms.nickname === Nickname?
             <div key={idx}>
           <div className = "float-right text-right inline-block border rounded-lg bg-main3 bg-opacity-50 px-2 py-1 m-3" >
              {ms.content}
