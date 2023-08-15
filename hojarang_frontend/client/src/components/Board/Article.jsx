@@ -1,7 +1,20 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbsUp } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from "react-router-dom";
 
 export default function Article({article}) {
+  const navigate = useNavigate()
+  const clickUser = (event) =>{
+    event.stopPropagation()
+    navigate(`/mypage/${article.user_id}`)
+  }
+
+  const MAX_ARTICLE_NAME_LENGTH = 14; 
+  let adjustedArticleName = article.title;
+  if (article.title.length > MAX_ARTICLE_NAME_LENGTH) {
+    adjustedArticleName = article.title.substring(0, MAX_ARTICLE_NAME_LENGTH) + '...';
+  }
+
   return (
   <div className="flex space-x-2">
     <div className="flex w-3/6">
@@ -17,11 +30,11 @@ export default function Article({article}) {
         ):(
           <div className="font-semibold text-gray3">{article.category}</div>
         )}
-        <div className="">{article.title}</div>
+        <div className="">{adjustedArticleName}</div>
         <div className="text-main1">[{article.comment_cnt}]</div>
       </div>
     </div>
-    <div className="w-1/6">{article.user_nickname}</div>
+    <div className="w-1/6" onClick={clickUser }>{article.user_nickname}</div>
     <div className="w-1/6">{article.created_at?.slice(0,10)}</div>
     <div className="w-1/6">{article.views}</div>
   </div>
