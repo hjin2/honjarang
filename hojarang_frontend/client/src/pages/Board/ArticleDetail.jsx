@@ -19,11 +19,16 @@ export const ArticleDetail = () => {
   const [isWriter, setIsWriter] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
   const [likedCnt, setLikedCnt] = useState(0)
+  const [isNotice, setIsNotice] = useState(false)
+  const userId = localStorage.getItem("user_id")
   const handleClick = () =>{
     setIsClick(!isClick)
   }
 
-
+  const clickUser = () =>{
+    console.log(user)
+    navigate(`/mypage/${detail.user_id}`)
+  }
   const addComment = () =>{
     const data = {
       "content" : comment
@@ -49,12 +54,12 @@ export const ArticleDetail = () => {
       .then((res)=>{
         console.log(res.data)
         setUser(res.data)
+
       })
       .catch((err)=>{
         console.log(err)
       })
   },[])
-  const userId = localStorage.getItem("user_id")
   useEffect(()=>{
       fetchDetail()
       fetchComments()
@@ -105,7 +110,6 @@ export const ArticleDetail = () => {
     setComments((prevComments) => prevComments.filter(comment => comment.id !== deletedCommentId));
   };
 
-  const [isNotice, setIsNotice] = useState(false)
   const handleNotice = () =>{
     setIsNotice(!isNotice)
   }
@@ -155,7 +159,7 @@ export const ArticleDetail = () => {
       <div className="flex justify-between px-2 my-3">
         <div className='flex'>
           <div> 
-            <div className='text-xs font-semibold'>{detail.nickname}</div>
+            <div className='text-xs font-semibold cursor-pointer' onClick={clickUser}>{detail.nickname}</div>
             <div className='text-xs'>{detail.created_at?.slice(0,16)}</div>
           </div>
         </div>
