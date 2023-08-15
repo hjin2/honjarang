@@ -1,18 +1,18 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 
-export default function CartList({id, loginId, isAdd}) {
+export default function CartList({id, loginId, isAdd, cart, setCart}) {
 
   const token = localStorage.getItem("access_token")
   const URL = import.meta.env.VITE_APP_API
   const headers = {'Authorization': `Bearer ${token}`};
 
-  const [cart, setCart] = useState([])
   const [showCartList, setShowCartList] = useState(false)
 
   useEffect(() => {
     axios.get(`${URL}/api/v1/joint-deliveries/${id}/carts`, { headers })
       .then((res) => {
+        console.log(res.data)
         setCart(res.data);
       })
       .catch((err) => {
@@ -54,10 +54,10 @@ export default function CartList({id, loginId, isAdd}) {
 
   return (
     <div className="flex items-center flex-col">
-      {cart.length > 0 && hasMyMenu && (
+      {hasMyMenu && (
         <button className="main2-button w-40 mt-3" onClick={onClick}>장바구니 목록</button>
       )}
-      {showCartList && (
+      {showCartList && hasMyMenu && (
         <div className="flex flex-col text-start">
           {/* 사용자 별로 메뉴 보여주기*/}
           {groupedCart.map(([nickname,  menus]) => (
