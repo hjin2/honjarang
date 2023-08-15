@@ -104,7 +104,7 @@ export default function FreeChat() {
   }, []);
 
   useEffect(() =>{
-    joinSession
+    joinSession()
   },[])
 
 
