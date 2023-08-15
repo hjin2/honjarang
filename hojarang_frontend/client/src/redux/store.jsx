@@ -2,7 +2,6 @@ import { configureStore } from '@reduxjs/toolkit';
 import loginSlice from '@/redux/slice/loginSlice';
 import articleSlice from '@/redux/slice/articleSlice';
 import UserinfoSlice from '@/redux/slice/UserInfoSlice';
-import SessionSlice from '@/redux/slice/SessionSlices';
 
 // 스토어 생성
 const store = configureStore({
@@ -10,7 +9,6 @@ const store = configureStore({
     login: loginSlice,
     articles: articleSlice.reducer,
     userinfo : UserinfoSlice.reducer,
-    session : SessionSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }),
