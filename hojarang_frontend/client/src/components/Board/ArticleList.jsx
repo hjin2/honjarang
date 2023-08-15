@@ -61,8 +61,9 @@ export default function AricleList() {
 
   return (
     <div>
-      <div className="w-3/5 mx-auto">
-        <div className='text-lg mb-5 font-bold w-28' style={activetabStyles}>자유게시판</div>
+      {articles.length > 0 ? (
+        <div className="w-3/5 mx-auto">
+        <div className='text-xl mb-5 font-bold w-32' style={activetabStyles}>자유게시판</div>
         <div className="flex mb-5">
           <div className="w-3/6 font-bold text-center">제목</div>
           <div className='w-1/6 font-bold'>작성자</div>
@@ -70,12 +71,12 @@ export default function AricleList() {
           <div className='w-1/6 font-bold'>조회수</div>
         </div>
         <hr />
-        <div className="space-y-4 mt-2">
+        <div className="space-y-4 mt-1">
           {articles?.map((article)=>(
             <div 
-              key={article.id} 
-              onClick={()=>{navigate(`/board/article/${article.id}`)}}
-              className="cursor-pointer"
+            key={article.id} 
+            onClick={()=>{navigate(`/board/article/${article.id}`)}}
+            className="cursor-pointer"
             >
               <MemorizedArticle
                 article={article}
@@ -84,27 +85,32 @@ export default function AricleList() {
             </div>
           ))}
         </div>
-        <footer>
-        <div className='flex justify-between mt-5'>
-          <form action="" className="space-x-2" onSubmit={search}>
-            <input type="text" placeholder="검색어" onChange={handleKeyword}/>
-            <button>
-              <FontAwesomeIcon icon={faMagnifyingGlass} style={{color: "#008b28",}} />
-            </button>
-          </form>
-          <button className="main1-button w-24" onClick={handleButton}>작성하기</button>
-        </div>
-          <Pagination
-            activePage={currentPage}
-            itemsCountPerPage={15}
-            totalItemsCount={15*pageSize}
-            pageRangeDisplayed={10}
-            prevPageText={"<"}
-            nextPageText={">"}
-            onChange={setPage}
-          />
-        </footer>
       </div>
+    ) : (
+      <div className="text-center text-lg">작성된 게시글이 없습니다</div>
+    )}
+    <footer className='w-3/5 mx-auto'>
+    <div className='flex justify-between mt-5'>
+      <form action="" className="space-x-2" onSubmit={search}>
+        <input type="text" placeholder="검색어" onChange={handleKeyword}/>
+        <button>
+          <FontAwesomeIcon icon={faMagnifyingGlass} style={{color: "#008b28",}} />
+        </button>
+      </form>
+      <button className="main1-full-button w-24" onClick={handleButton}>작성하기</button>
+    </div>
+    {articles.length > 0 ? (
+      <Pagination
+      activePage={currentPage}
+      itemsCountPerPage={15}
+      totalItemsCount={15*pageSize}
+      pageRangeDisplayed={10}
+      prevPageText={"<"}
+      nextPageText={">"}
+      onChange={setPage}
+      />
+    ):(null)}
+    </footer>
     </div>
   );
 }
