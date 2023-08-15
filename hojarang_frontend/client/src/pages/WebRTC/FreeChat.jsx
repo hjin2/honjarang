@@ -27,6 +27,8 @@ export default function FreeChat() {
   const [chatMessages, setChatMessages] = useState([]);
   const [isChatOpen, setIsChatOpen] = useState(false)
   const nickname = useSelector((state) => state.userinfo.nickname)
+  const URL = import.meta.env.VITE_APP_API
+  const token = localStorage.getItem("access_token")
 
   const handleChatting = () =>{
     setIsChatOpen(!isChatOpen)
@@ -43,6 +45,9 @@ export default function FreeChat() {
     setSession(undefined);
     setSubscribers([]);
     setPublisher(undefined);
+    axios.delete(`${URL}/api/v1/video-room/${mySessionId}/connections`,{headers : {"Authorization" : `Bearer ${token}`}})
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err))
     navigate('/webrtc')
   }, [session]);
 
@@ -140,6 +145,11 @@ export default function FreeChat() {
         }
       });
     }
+    return () =>{
+      if(session){
+        leaveSession()
+      }
+    }
   }, [session, nickname]);
 
   const deleteSubscriber = useCallback((streamManager) => {
@@ -152,19 +162,6 @@ export default function FreeChat() {
       } else {
         return prevSubscribers;
       }
-    });
-  }, []);
-
-  const leaveSessionRef = useRef(leaveSession);
-
-  useEffect(() => {
-    window.addEventListener("popstate", () => {
-      leaveSessionRef.current();
-      window.alert("뒤로가기 누르셨습니다.")
-    });
-    window.addEventListener("beforeunload", () => {
-      leaveSessionRef.current();
-      window.alert("창닫기를 누르셨습니다.")
     });
   }, []);
 
