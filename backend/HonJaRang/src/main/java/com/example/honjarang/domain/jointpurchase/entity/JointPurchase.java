@@ -94,4 +94,5 @@ public class JointPurchase extends BaseTimeEntity {
     public void setDeadlineForTest(LocalDateTime deadline) {
         this.deadline = deadline;
     }
+
 }

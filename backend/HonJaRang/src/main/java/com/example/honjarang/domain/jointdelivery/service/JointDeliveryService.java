@@ -456,9 +456,19 @@ public class JointDeliveryService {
             throw new JointDeliveryAlreadyReceivedException("이미 수령확인을 하였습니다.");
         }
 
-        jointDeliveryApplicant.confirmReceived();
-
+        // 목표 금액을 못 채운 경우
+        Integer totalPrice = 0;
         List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryIdAndUserId(jointDeliveryId, loginUser.getId());
+        for (JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
+            Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
+                    .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
+            totalPrice += menu.getPrice() * jointDeliveryCart.getQuantity();
+        }
+        if (jointDeliveryApplicant.getJointDelivery().getTargetMinPrice() > totalPrice) {
+            throw new InsufficientPriceException("목표 금액을 채우지 못하였습니다.");
+        }
+
+        jointDeliveryApplicant.confirmReceived();
 
         // 공동배달 주최자인 경우 패스
         if (jointDeliveryApplicant.getJointDelivery().getUser().getId().equals(loginUser.getId())) {
@@ -466,12 +476,6 @@ public class JointDeliveryService {
         }
 
         // 공동배달 주최자에게 포인트 지급
-        Integer totalPrice = 0;
-        for (JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
-            Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
-                    .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
-            totalPrice += menu.getPrice() * jointDeliveryCart.getQuantity();
-        }
         jointDeliveryApplicant.getJointDelivery().getUser().addPoint(totalPrice);
 
         // 배달비 차액 환급

@@ -24,7 +24,7 @@ public class JointDeliveryControllerAdvice {
     }
 
     // 400 Bad Request
-    @ExceptionHandler({JointDeliveryExpiredException.class})
+    @ExceptionHandler({JointDeliveryExpiredException.class, InsufficientPriceException.class})
     public ResponseEntity<Void> handleBadRequestException(RuntimeException e) {
         log.info("{}", e.getMessage());
         return ResponseEntity.badRequest().build();

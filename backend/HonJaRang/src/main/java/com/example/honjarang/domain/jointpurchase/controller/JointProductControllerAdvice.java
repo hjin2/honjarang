@@ -24,7 +24,7 @@ public class JointProductControllerAdvice {
     }
 
     // 400 Bad Request
-    @ExceptionHandler({JointPurchaseExpiredException.class})
+    @ExceptionHandler({JointPurchaseExpiredException.class, InsufficientPersonCountException.class})
     public ResponseEntity<Void> handleBadRequestException(RuntimeException e) {
         log.info("{}", e.getMessage());
         return ResponseEntity.badRequest().build();
