@@ -42,8 +42,8 @@ const Chat = () => {
   const showMessage = (message) => {
     console.log(message);
     setMessages((prevMessages) => {
-      if (!prevMessages.includes(`${message.nickname} : ${message.content}`)) {
-        return [...prevMessages, `${message.nickname} : ${message.content}`];
+      if (!prevMessages.includes(message)) {
+        return [...prevMessages, message];
       }
       return prevMessages;
     });
