@@ -40,7 +40,7 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen" >
-      <img src={image2} alt="" className='mx-auto w-2/12' />
+      <img src={image2} alt="" className='mx-auto w-2/12'/>
       <form className="space-y-4 md:space-y-6" onSubmit={login}>
         <div>
           <label htmlFor="email" className="block mb-1 font-semibold text-lg text-main2">

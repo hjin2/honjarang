@@ -15,6 +15,12 @@ export default function Article({article}) {
     adjustedArticleName = article.title.substring(0, MAX_ARTICLE_NAME_LENGTH) + '...';
   }
 
+  const MAX_USER_NICKNAME_LENGTH = 5;
+  let adjustedUserName = article.user_nickname;
+  if (article.user_nickname.length > MAX_USER_NICKNAME_LENGTH) {
+    adjustedUserName = article.user_nickname.substring(0, MAX_USER_NICKNAME_LENGTH) + '...';
+  }
+
   return (
   <div className="flex space-x-2">
     <div className="flex w-3/6">
@@ -34,7 +40,7 @@ export default function Article({article}) {
         <div className="text-main1">[{article.comment_cnt}]</div>
       </div>
     </div>
-    <div className="w-1/6" onClick={clickUser }>{article.user_nickname}</div>
+    <div className="w-1/6" onClick={clickUser }>{adjustedUserName}</div>
     <div className="w-1/6">{article.created_at?.slice(0,10)}</div>
     <div className="w-1/6">{article.views}</div>
   </div>
