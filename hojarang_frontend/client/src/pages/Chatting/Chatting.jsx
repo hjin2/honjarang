@@ -23,7 +23,7 @@ export default function Chatting() {
 
 
   return (
-    <div className="absolute w-3/5 h-3/5 border border-solid border-black rounded-md">
+    <div className="absolute w-3/5 border border-solid border-black rounded-md">
         {Lists.length ? Lists.map(list => (
           <ChatList list={list} key={list.id} /> // ChatList에서 setKey 대신 handleChat2Open 호출
         )) : <div>아직 생성된 채팅방이 없습니다.</div>}
