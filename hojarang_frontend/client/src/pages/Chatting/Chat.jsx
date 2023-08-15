@@ -42,8 +42,8 @@ const Chat = () => {
   const showMessage = (message) => {
     console.log(message);
     setMessages((prevMessages) => {
-      if (!prevMessages.includes(`${message.nickname}: ${message.content}`)) {
-        return [...prevMessages, `${message.nickname}: ${message.content}`];
+      if (!prevMessages.includes(`${message.nickname} : ${message.content}`)) {
+        return [...prevMessages, `${message.nickname} : ${message.content}`];
       }
       return prevMessages;
     });
@@ -105,6 +105,15 @@ const Chat = () => {
     }
   };
 
+  const back = () => {
+    const serverAddress = 'https://honjarang.kro.kr/chat';
+    const socket = new SockJS(serverAddress);
+    const stompClient = Stomp.over(socket);
+
+    stompClient.unsubscribe()
+    socket.close()
+
+ }
   return (
     <div className="h-screen flex flex-col">
       <Talks messages={messages} id={Key} />
@@ -112,7 +121,7 @@ const Chat = () => {
         <input type="text" id="message" value={message} onChange={(e) => setMessage(e.target.value)} className="border rounded p-2 w-full" onKeyDown={onKeyEnter} />
         <button onClick={sendMessage} className="mt-2 bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600">전송</button>
       </div>
-      <button onClick={handleBack} className="bg-red-500 text-white rounded px-4 py-2 mt-2 mx-4 self-center hover:bg-red-600">뒤로가기</button>
+      <button onClick={back} className="bg-red-500 text-white rounded px-4 py-2 mt-2 mx-4 self-center hover:bg-red-600">뒤로가기</button>
     </div>
   );
 };
