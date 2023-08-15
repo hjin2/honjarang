@@ -10,7 +10,8 @@ function ChatList({list}) {
   const onClick = () => {
     navigate(`./${list.id}`)
   }
-
+  const splitTitle = list.name?.split('&')[1]
+  const isContain = list.name.includes("공동")
   
   const Diff_cal = () => {
   let today = new Date();   
@@ -62,23 +63,27 @@ useEffect(() => {
 },[])
 
   
-  return (
-    <div  className="border-b border-solid border-gray-300 cursor-pointer m-2" onClick={onClick}>
-      <div className='grid-raw-10'>
-      <span>{list.name}</span> 
-      {list.participant_count === 2 ? null : <span className='text-xs mb-2 text-gray2 ml-2'>{list.participant_count}</span>}
-      <br />
-      {list.last_message_created_at===null ? <span className='text-sm text-gray1'>아직 작성된 대화가 없습니다.</span> :
-      <span className='text-sm'>{list.last_message}</span>
-      }
-      {list.last_message_created_at===null ? null :
-      <span className='text-xs ml-2 text-gray1'>{Diff}{msg}</span>
-      }
-      {list.unread_message_count === 0 ? null : <div className='w-5 h-5 text-center bg-red-400 mr-auto float-right text-white rounded'>{list.unread_message_count}</div>}
-      
-      </div>
+return (
+  <div  className="border-b border-solid border-gray-300 cursor-pointer m-2" onClick={onClick}>
+    <div className='grid-raw-10'>
+    {!isContain ? (
+      <span>{splitTitle?.split("1")[0]}</span> 
+      ):(
+      <span>{list.name}</span>
+    )}
+    {list.participant_count === 2 ? null : <span className='text-xs mb-2 text-gray2 ml-2'>{list.participant_count}</span>}
+    <br />
+    {list.last_message_created_at===null ? <span className='text-sm text-gray1'>아직 작성된 대화가 없습니다.</span> :
+    <span className='text-sm'>{list.last_message}</span>
+    }
+    {list.last_message_created_at===null ? null :
+    <span className='text-xs ml-2 text-gray1'>{Diff}{msg}</span>
+    }
+    {list.unread_message_count === 0 ? null : <div className='w-5 h-5 text-center bg-red-400 mr-auto float-right text-white rounded'>{list.unread_message_count}</div>}
+    
     </div>
-  )
+  </div>
+)
 }
 
 export default ChatList
