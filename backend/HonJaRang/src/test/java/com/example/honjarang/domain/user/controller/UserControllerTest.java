@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.honjarang.domain.user.entity.Role.ROLE_USER;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -92,7 +93,7 @@ class UserControllerTest {
                 .address("서울특별시 강남구")
                 .latitude(37.123456)
                 .longitude(127.123456)
-                .role(Role.ROLE_USER)
+                .role(ROLE_USER)
                 .build();
         user.changeProfileImage("test.jpg");
         user.setIdForTest(1L);
@@ -135,7 +136,7 @@ class UserControllerTest {
         TokenDto tokenDto = new TokenDto(1L, "access_token", "refresh_token");
 
         given(userService.login(any(LoginDto.class))).willReturn(user);
-        given(tokenService.generateToken(1L, "test@test.com", Role.ROLE_USER)).willReturn(tokenDto);
+        given(tokenService.generateToken(1L, "test@test.com", ROLE_USER)).willReturn(tokenDto);
 
         // when & then
         mockMvc.perform(post("/api/v1/users/login")
@@ -352,42 +353,44 @@ class UserControllerTest {
                 ));
         }
 
-//    @Test
-//    @DisplayName("회원정보 조회")
-//    void getUserInfo_success() throws Exception {
-//        // given
-//        UserInfoDto userInfoDto = new UserInfoDto(user);
-//        given(userService.getUserInfo(1L)).willReturn(userInfoDto);
-//
-//        // when & then
-//        mockMvc.perform(get("/api/v1/users/info")
-//                        .param("id", "1"))
-//                .andExpect(status().isOk())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$.nickname").value("테스트"))
-//                .andExpect(jsonPath("$.email").value("test@test.com"))
-//                .andExpect(jsonPath("$.profile_image").value("https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/profileImage/test.jpg"))
-//                .andExpect(jsonPath("$.point").value(10000))
-//                .andExpect(jsonPath("$.address").value("서울특별시 강남구"))
-//                .andExpect(jsonPath("$.latitude").value(37.123456))
-//                .andExpect(jsonPath("$.longitude").value(127.123456))
-//                .andDo(document("/users/info",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(prettyPrint()),
-//                        queryParameters(
-//                                parameterWithName("id").description("사용자 ID")
-//                        ),
-//                        responseFields(
-//                                fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
-//                                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
-//                                fieldWithPath("profile_image").type(JsonFieldType.STRING).description("프로필 이미지"),
-//                                fieldWithPath("point").type(JsonFieldType.NUMBER).description("포인트"),
-//                                fieldWithPath("address").type(JsonFieldType.STRING).description("주소"),
-//                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
-//                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도")
-//                        )
-//                ));
-//    }
+    @Test
+    @DisplayName("회원정보 조회")
+    void getUserInfo_success() throws Exception {
+        // given
+        UserInfoDto userInfoDto = new UserInfoDto(user);
+        given(userService.getUserInfo(1L)).willReturn(userInfoDto);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/users/info")
+                        .param("id", "1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.nickname").value("테스트"))
+                .andExpect(jsonPath("$.email").value("test@test.com"))
+                .andExpect(jsonPath("$.profile_image").value("test.jpg"))
+                .andExpect(jsonPath("$.point").value(10000))
+                .andExpect(jsonPath("$.address").value("서울특별시 강남구"))
+                .andExpect(jsonPath("$.latitude").value(37.123456))
+                .andExpect(jsonPath("$.longitude").value(127.123456))
+                .andExpect(jsonPath("$.role").value("ROLE_USER"))
+                .andDo(document("/users/info",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("id").description("사용자 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
+                                fieldWithPath("profile_image").type(JsonFieldType.STRING).description("프로필 이미지"),
+                                fieldWithPath("point").type(JsonFieldType.NUMBER).description("포인트"),
+                                fieldWithPath("address").type(JsonFieldType.STRING).description("주소"),
+                                fieldWithPath("latitude").type(JsonFieldType.NUMBER).description("위도"),
+                                fieldWithPath("longitude").type(JsonFieldType.NUMBER).description("경도"),
+                                fieldWithPath("role").type(JsonFieldType.STRING).description("역할")
+                        )
+                ));
+    }
 
     @Test
     @DisplayName("FCM 토큰 등록")
@@ -409,21 +412,21 @@ class UserControllerTest {
                 ));
     }
 
-//    @Test
-//    @DisplayName("회원 탈퇴")
-//    void deleteUser_suceess() throws Exception {
-//        Long userId = 1L;
-//
-//        mockMvc.perform(delete("/api/v1/users/{userId}",1L))
-//                .andExpect(status().isOk())
-//                .andDo(document("/users/deleteUser",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(prettyPrint()),
-//                        pathParameters(
-//                                parameterWithName("userId").description("사용자 ID")
-//                        ))
-//                );
-//    }
+    @Test
+    @DisplayName("회원 탈퇴")
+    void deleteUser_suceess() throws Exception {
+        Long userId = 1L;
+
+        mockMvc.perform(delete("/api/v1/users/{userId}",1L))
+                .andExpect(status().isOk())
+                .andDo(document("/users/deleteUser",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("userId").description("사용자 ID")
+                        ))
+                );
+    }
 
     @Test
     @DisplayName("로그아웃")
@@ -471,7 +474,7 @@ class UserControllerTest {
         Map<String, String> body = Map.of("refresh_token", "refresh_token");
         TokenDto tokenDto = new TokenDto(1L, "access_token", "refresh_token");
 
-        given(tokenService.generateToken(1L, "test@test.com", Role.ROLE_USER)).willReturn(tokenDto);
+        given(tokenService.generateToken(1L, "test@test.com", ROLE_USER)).willReturn(tokenDto);
 
         // when & then
         mockMvc.perform(post("/api/v1/users/refresh")
