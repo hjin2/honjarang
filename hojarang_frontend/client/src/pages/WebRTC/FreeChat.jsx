@@ -103,6 +103,10 @@ export default function FreeChat() {
     setSession(mySession);
   }, []);
 
+  useEffect(() =>{
+    joinSession()
+  },[])
+
 
   useEffect(() => {
     if (session) {
