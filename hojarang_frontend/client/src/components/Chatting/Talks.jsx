@@ -19,7 +19,6 @@ function Talks({messages, id, Nickname}) {
   },[])
  
   const getChats = () => {
-    getNickname()
     axios.get(`${import.meta.env.VITE_APP_API}/api/v1/chats/${Key}/page`, {
       params: {
         size: 30
