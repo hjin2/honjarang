@@ -27,9 +27,9 @@ export default function Checkout() {
 
   return (
     <div>
-      <h1>주문서</h1>
       <div id="payment-widget" />
       <button
+        className='main1-full-button w-20 m-5'
         onClick={async () => {
           const paymentWidget = paymentWidgetRef.current;
 
