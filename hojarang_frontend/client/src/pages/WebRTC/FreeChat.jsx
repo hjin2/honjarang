@@ -5,7 +5,6 @@ import { createSession, createToken } from "@/components/WebRTC/Util";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import Chat from "@/components/WebRTC/Chat";
-import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVideo } from "@fortawesome/free-solid-svg-icons";
 import { faVideoSlash } from "@fortawesome/free-solid-svg-icons";
@@ -13,7 +12,7 @@ import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import { faMicrophoneSlash } from "@fortawesome/free-solid-svg-icons";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import logoImage from "@/assets/2.png"
-import { updateSession, deleteSession } from "@/redux/slice/SessionSlices";
+import { useSelector } from "react-redux";
 
 export default function FreeChat() {
   const [session, setSession] = useState(undefined)
@@ -28,7 +27,7 @@ export default function FreeChat() {
   const [publishAudio, setPublishAudio] = useState(true)
   const [chatMessages, setChatMessages] = useState([]);
   const [isChatOpen, setIsChatOpen] = useState(false)
-  const [nickname, setNickname] = useState("")
+  const nickname = useSelector((state) => state.userinfo.nickname)
 
   const handleChatting = () =>{
     setIsChatOpen(!isChatOpen)
@@ -37,7 +36,6 @@ export default function FreeChat() {
   const leaveSession = useCallback(() => {
     // Leave the session
     if (session) {
-      deleteSession()
       session.disconnect();
     }
 
@@ -107,22 +105,8 @@ export default function FreeChat() {
   }, []);
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_APP_API}/api/v1/users/info`, 
-      {
-        params : {id : localStorage.getItem("user_id")},
-        headers : {Authorization : `Bearer ${localStorage.getItem("access_token")}`}
-      }
-    )
-      .then((res) =>{
-        setNickname(res.data.nickname)
-        joinSession()
-      })
-      .catch((err)=>{
-        console.log(err)
-      })
-    return () =>{
-      console.log("언마운트됨")
-    }
+    joinSession()
+    console.log(nickname)
   },[])
 
   useEffect(() => {
@@ -156,8 +140,7 @@ export default function FreeChat() {
           console.log('There was an error connecting to the session:', error.code, error.message);
         }
       });
-      console.log(1,session)
-      updateSession(session)
+
     }
   }, [session, nickname]);
 

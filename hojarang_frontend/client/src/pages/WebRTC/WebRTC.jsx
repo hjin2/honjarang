@@ -4,12 +4,29 @@ import { Link } from "react-router-dom";
 import ChatList from "@/components/WebRTC/ChatList";
 import { useSelector } from "react-redux";
 import { deleteSession } from "@/redux/slice/SessionSlices";
+import axios from "axios";
+import { setUserNickname } from "@/redux/slice/UserInfoSlice";
+import { useDispatch } from "react-redux";
 
 export default function WebRTC() {
-  
+  const dispatch = useDispatch()
   const [category, setCategory] = useState("free")
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const session = useSelector((state) => state.session.session)
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_APP_API}/api/v1/users/info`, 
+      {
+        params : {id : localStorage.getItem("user_id")},
+        headers : {Authorization : `Bearer ${localStorage.getItem("access_token")}`}
+      }
+    )
+      .then((res) =>{
+        dispatch(setUserNickname(res.data.nickname))
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+  },[])
   
   useEffect(()=>{
     console.log(session)
