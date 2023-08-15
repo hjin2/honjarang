@@ -2,7 +2,7 @@ import axios from "axios";
 import React, {useState, useRef, useEffect} from "react";
 
 
-function Talks({messages, id}) {
+function Talks({messages, id, Nickname}) {
 
   const [isLoading, setIsLoading] = useState(false);
   const [pages, setPages] = useState(1);
@@ -16,7 +16,6 @@ function Talks({messages, id}) {
   
   useEffect(() => {
     getChats()
-    
   },[])
  
   const getChats = () => {
@@ -162,10 +161,37 @@ const loadMoreChat = () => {
 
 
 return(
-  <div id="ChatArea" ref={chatAreaRef} className="overflow-y-auto flex-grow border border-gray-300 p-4">
+  <div id="ChatArea" ref={chatAreaRef} className="flex flex-col overflow-y-auto flex-grow border border-gray-300 p-4">
+        {/* <div className="float-right">
+          <span>닉네임 들어감</span>
+          <div>
+            메시지 들어감
+          </div>
+        </div>
+        <div className="left">
+          <span>닉네임 들어감</span>
+          <div>
+            메시지 들어감
+          </div>
+        </div> */}
         {msg.map((ms, idx) => (
-          <div key={idx}>{ms.nickname} : {ms.content}</div>
-          ))}
+          (ms.nickname === 'kbfl2201' ?
+            <div key={idx}>
+          <div className = "float-right text-right inline-block border rounded-lg bg-main3 bg-opacity-50 px-2 py-1 m-3" >
+             {ms.content}
+         </div>
+   
+          </div>
+       : 
+       <div key={idx} className="m-2">
+         <span>{ms.nickname}</span>
+         <br />
+       <div className = "inline-block text-left border rounded-lg bg-main4 bg-opacity-50 px-2 py-1 m-1" >
+          {ms.content}
+      </div>
+
+       </div>
+          )))}
           {messages.map((msg, index) => (
                 <div key={index}>{msg}</div>
               ))}
