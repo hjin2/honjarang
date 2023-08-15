@@ -401,6 +401,7 @@ class JointPurchaseServiceTest {
         // given
         jointPurchase.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
         given(jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(1L, 1L)).willReturn(java.util.Optional.ofNullable(jointPurchaseApplicant));
+        given(jointPurchaseApplicantRepository.countByJointPurchaseId(1L)).willReturn(10);
 
         // when
         jointPurchaseService.confirmReceived(1L, user);
@@ -449,6 +450,18 @@ class JointPurchaseServiceTest {
 
         // when & then
         assertThrows(JointPurchaseAlreadyReceivedException.class, () -> jointPurchaseService.confirmReceived(1L, user));
+    }
+
+    @Test
+    @DisplayName("공동구매 수령 확인 실패 - 목표 인원이 모집되지 않은 경우")
+    void confirmReceived_InsufficientPersonCountException() {
+        // given
+        jointPurchase.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
+        given(jointPurchaseApplicantRepository.findByJointPurchaseIdAndUserId(1L, 1L)).willReturn(java.util.Optional.ofNullable(jointPurchaseApplicant));
+        given(jointPurchaseApplicantRepository.countByJointPurchaseId(1L)).willReturn(9);
+
+        // when & then
+        assertThrows(InsufficientPersonCountException.class, () -> jointPurchaseService.confirmReceived(1L, user));
     }
 
     @Test
