@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
-export default function Cart({ selectedMenu, detail, modalState, setModalState, setIsAdd}) {
+export default function Cart({ selectedMenu, detail, modalState, setModalState, setIsAdd, cart, isWriter}) {
+
   
   const [quantity, setQuantity] = useState(1)
   const [afterPoint, setAfterPoint] = useState(0);
@@ -87,6 +88,8 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
   // 이미지 없을 때 대체 이미지 넣기
   const defaultImage = '/src/assets/noimage.png';
 
+
+
   return (
     <div className="relative bg-white m-auto border rounded-lg space-y-5 w-6/12 p-9">
       <div className="flex flex-col items-center ">
@@ -117,17 +120,37 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
                   </div>
                 </div>
               </div>
-              {/* 포인트 */}
-              <div className="w-52">
-                <div className="flex justify-between">
-                  <p>보유 포인트</p> 
-                  <p>{(detail.my_point).toLocaleString()} P</p> 
+              {/* 작성자면 포인트 차감 안 됨 */}
+              {isWriter ? ('') : (
+                <div>
+                  {/* 포인트 */}
+                  {cart.length > 0 ? (
+    
+                  <div className="w-52">
+                    <div className="flex justify-between">
+                      <p>보유 포인트</p> 
+                      <p>{(detail.my_point).toLocaleString()} P</p> 
+                    </div>
+                    <div className="flex justify-between">
+                      <p>차감 후 포인트</p>
+                      <p>{(detail.my_point - (selectedMenu.price * quantity)).toLocaleString()} P</p>
+                    </div>
+                  </div>
+                  ):(
+                    <div className="w-52">
+                      <div className="flex justify-between">
+                        <p>보유 포인트</p> 
+                        <p>{(detail.my_point).toLocaleString()} P</p> 
+                      </div>
+                      <div className="flex justify-between">
+                        <p>차감 후 포인트</p>
+                        <p>{(detail.my_point - (selectedMenu.price * quantity) - 1000).toLocaleString()} P</p>
+                      </div>
+                    </div>
+                  )} 
                 </div>
-                <div className="flex justify-between">
-                  <p>차감 후 포인트</p>
-                  <p>{(detail.my_point - (selectedMenu.price * quantity) - 1000).toLocaleString()} P</p>
-                </div>
-              </div>
+              )}
+      
             </div>
           </div>
         </div>
