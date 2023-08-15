@@ -82,8 +82,9 @@ const ArticleCreate = () => {
         name="post_image"
         onChange={handleImage}
       />
-      <div className="py-3">
-        <button onClick={saveArticle} className="main1-button w-24">작성 완료</button>
+      <div className="py-3 flex justify-between">
+        <button onClick={saveArticle} className="main1-full-button w-24">작성 완료</button>
+        <button onClick={()=>{navigate("/board")}} className="main5-full-button w-24">목록</button>
       </div>
     </div>
   );
