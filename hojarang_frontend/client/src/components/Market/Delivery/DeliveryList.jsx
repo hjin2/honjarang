@@ -60,7 +60,7 @@ export default function DeliveryList() {
         <div className="h-full">
           <div className="flex justify-end mb-5">
             <form action="" className="space-x-2" onSubmit={search}>
-              <input type="text"  placeholder="검색어" onChange={handleKeyword}/>
+              <input className="border border-gray2 focus:outline-main2 h-10 p-2" type="text"  placeholder="검색어" onChange={handleKeyword}/>
               <button>
                 <FontAwesomeIcon icon={faMagnifyingGlass} style={{color: "#008b28",}} />
               </button>
