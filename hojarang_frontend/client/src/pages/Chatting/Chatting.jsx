@@ -1,16 +1,11 @@
 import ChatList from "../../components/Chatting/ChatList"
 import { useState, useEffect } from "react";
 import axios from 'axios'
-import { useNavigate } from "react-router";
+
 
 export default function Chatting() {
   const [Lists, setLists] = useState([]);
-  const [socket, setSocket] = useState(null);
-  const [stomp, setStomp] = useState(null)
 
-  const navigate = useNavigate()
-
-  const access_token = localStorage.getItem('access_token')
 
   useEffect(() => {
     const access_token = localStorage.getItem('access_token');
