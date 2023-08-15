@@ -3,8 +3,10 @@ import Edit from '@/components/MyPage/Edit/Edit';
 import Modal from '@/components/Common/Modal';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function UserInfo({id, isMe}) {
+  const navigate = useNavigate()
   const [modalState, setModalState] = useState(false);
   const URL = import.meta.env.VITE_APP_API
   const token = localStorage.getItem("access_token")
@@ -17,7 +19,10 @@ export default function UserInfo({id, isMe}) {
   const startChat = () => {
     const data = {target_id : Number(id)}
     axios.post(`${URL}/api/v1/chats/one-to-one`,data,{ headers:{'Authorization': `Bearer ${token}`, "Content-Type":"Application/json"}})
-      .then((res) => console.log(res))
+      .then((res) => {
+        console.log(res)
+        navigate(`/chatting/${res.data}`)
+      })
       .catch((err) => console.log(err))
   }
 

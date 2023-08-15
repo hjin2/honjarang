@@ -4,6 +4,7 @@ import { useParams } from 'react-router'
 import { useNavigate } from 'react-router-dom'
 
 export default function TransactionDetail() {
+  const navigate = useNavigate()
   const URL = import.meta.env.VITE_APP_API
   const [ detail, setDetail ] = useState({})
   const token = localStorage.getItem('access_token')
@@ -14,8 +15,18 @@ export default function TransactionDetail() {
   const [isSell, setIsSell] = useState(false)
   const [isFinish, setIsFinish] = useState(false)
   const [isClick, setIsClick] = useState(false)
-  const navigate = useNavigate()
   const [isBuyer, setIsBuyer] = useState(false)
+
+  const startChat = () => {
+    const data = {target_id : Number(detail.seller_id)}
+    axios.post(`${URL}/api/v1/chats/one-to-one`,data,{ headers:{'Authorization': `Bearer ${token}`, "Content-Type":"Application/json"}})
+      .then((res) => {
+        console.log(res)
+        navigate(`/chatting/${res.data}`)
+      })
+      .catch((err) => console.log(err))
+  }
+
   const handleClick = () => {
     setIsClick(!isClick)
   }
@@ -122,7 +133,7 @@ export default function TransactionDetail() {
             )}
           </>
         )}
-        <button className="main1-full-button w-24">1:1 채팅</button>
+        <button className="main1-full-button w-24" onClick={startChat}>1:1 채팅</button>
       </div>
       <hr />
       <div className="my-3">
