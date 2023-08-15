@@ -28,7 +28,7 @@ export default function Header() {
     <div className="Header">
       <nav className="py-6">
         <div className="flex items-center justify-between">
-          <Link to={`/mypage/${id}`} className="text-2xl text-main2 hover:text-main1">
+          <Link to={`/mypage/${id}`} className="text-2xl text-main2 hover:text-main1 font-extrabold">
             혼자랑
           </Link>
           <div className="flex space-x-12">
