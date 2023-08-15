@@ -138,6 +138,17 @@ const loadMoreChat = () => {
       loadMoreChat();
     }
   };
+
+  useEffect(() => {
+    scrollToBottomOnInitialLoad();
+  }, []);
+
+  const scrollToBottomOnInitialLoad = () => {
+    if (chatAreaRef.current) {
+      chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
+    }
+  };
+
   
   useEffect(() => {
     scrollToBottom();
