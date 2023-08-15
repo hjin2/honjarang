@@ -12,6 +12,8 @@ import { faVideoSlash } from "@fortawesome/free-solid-svg-icons";
 import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import { faMicrophoneSlash } from "@fortawesome/free-solid-svg-icons";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
+import logoImage from "@/assets/2.png"
+import { updateSession, deleteSession } from "@/redux/slice/SessionSlices";
 
 export default function FreeChat() {
   const [session, setSession] = useState(undefined)
@@ -28,7 +30,6 @@ export default function FreeChat() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [nickname, setNickname] = useState("")
 
-
   const handleChatting = () =>{
     setIsChatOpen(!isChatOpen)
   }
@@ -36,6 +37,7 @@ export default function FreeChat() {
   const leaveSession = useCallback(() => {
     // Leave the session
     if (session) {
+      deleteSession()
       session.disconnect();
     }
 
@@ -105,16 +107,23 @@ export default function FreeChat() {
   }, []);
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_APP_API}/api/v1/users/info`, {headers:`Bearer ${localStorage.getItem("access_token")}`})
+    axios.get(`${import.meta.env.VITE_APP_API}/api/v1/users/info`, 
+      {
+        params : {id : localStorage.getItem("user_id")},
+        headers : {Authorization : `Bearer ${localStorage.getItem("access_token")}`}
+      }
+    )
       .then((res) =>{
         setNickname(res.data.nickname)
+        joinSession()
       })
       .catch((err)=>{
         console.log(err)
       })
-    joinSession()
+    return () =>{
+      console.log("언마운트됨")
+    }
   },[])
-
 
   useEffect(() => {
     if (session) {
@@ -147,6 +156,8 @@ export default function FreeChat() {
           console.log('There was an error connecting to the session:', error.code, error.message);
         }
       });
+      console.log(1,session)
+      updateSession(session)
     }
   }, [session, nickname]);
 
@@ -163,23 +174,11 @@ export default function FreeChat() {
     });
   }, []);
 
-  const leaveSessionRef = useRef(leaveSession);
-
-  useEffect(() => {
-    window.addEventListener("popstate", () => {
-      leaveSessionRef.current();
-      window.alert("뒤로가기 누르셨습니다.")
-    });
-    window.addEventListener("beforeunload", () => {
-      leaveSessionRef.current();
-      window.alert("창닫기를 누르셨습니다.")
-    });
-  }, []);
-
+  
 
   return (
     <div id="session" className="h-screen p-6">
-      <div className="text-center text-5xl text-main1 font-bold" style={{height : "10%"}}>혼자랑</div>
+      <img src={logoImage} className="w-1/12 mx-auto" />
       <div className="flex space-x-5" style={{height : "80%"}}>
         <div id="video-container" className="grid grid-cols-4 gap-4">
           {publisher !== undefined ? (
