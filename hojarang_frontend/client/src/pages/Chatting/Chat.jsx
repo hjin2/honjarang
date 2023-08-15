@@ -96,22 +96,36 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    const id = localStorage.getItem('user_id')
-    const token = localStorage.getItem('access_token')
-    axios.get(`${import.meta.env.VITE_APP_API}/api/v1/users/info`,
-      {
-        params : {id : id},
-        headers : {'Authorization' : `Bearer ${token}`}
-      },
-      )
-      .then(function(response){
-        console.log(response.data)
-        setNickname(response.data.nickname)
-      })
-      .catch(function(error){
-        console.log(error)
-      })
-  },[]);
+    const cleanup = () => {
+      if (stompClientRef.current) {
+        console.log('Attempting to disconnect Stomp...');
+        stompClientRef.current.disconnect(() => {
+          console.log('Stomp disconnected.');
+          if (socket) {
+            socket.onclose = (event) => {
+              console.log('Socket closed.', event);
+              // 원하는 함수 실행
+            };
+            socket.close();
+          } else {
+            // 원하는 함수 실행
+          }
+        });
+      } else if (socket) {
+        console.log('Closing socket...');
+        socket.onclose = (event) => {
+          console.log('Socket closed.', event);
+          // 원하는 함수 실행
+        };
+        socket.close();
+      } else {
+        // 원하는 함수 실행
+      }
+    };
+
+    // 컴포넌트가 언마운트될 때 실행될 함수 등록
+    return cleanup;
+  }, []);
 
 
   useEffect(() => {
