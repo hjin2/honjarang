@@ -17,26 +17,24 @@ export default function DeliveryRoom(roomData) {
   const defaultImage = '/src/assets/noimage.png';
   const imageToShow = store_image.includes('blogfiles') ? defaultImage : store_image;
 
+  const onClick = () =>{
+    navigate(`/market/deliverydetail/${id}`)
+  }
 
   return (
     <div >
       <div className="border-2 border-gray1 p-2 rounded-lg">
         <div className="flex justify-center">
           <div className="w-32 h-32">
-            <img src={imageToShow} alt="가게 이미지" className="w-full h-full" />
+            <img src={imageToShow} alt="가게 이미지" className="h-32" />
           </div>
-          {/* <div className="absolute inset-0 flex items-end justify-end">
-            <p className="text-sm font-bold">{current_total_price}/{target_min_price}</p>
-          </div> */}
         </div>
         <div className="flex justify-between my-1">
-          <div className='font-bold text-base'>{adjustedStoreName}</div>
+          <div className='font-bold text-lg'>{adjustedStoreName}</div>
         </div>
         <div className="text-sm text-main5 my-1">목표까지 {(target_min_price - current_total_price) > 0 ? (target_min_price - current_total_price).toLocaleString() : 0 }원</div>
         <div className="flex justify-end">
-          <Link to={{ pathname: `/market/deliverydetail/${id}` }}>
-            <button type="button" className="main1-full-button w-20">참여하기</button>
-          </Link>
+          <button type="button" className="main1-full-button w-20" onClick={onClick}>참여하기</button>
         </div>
       </div>
     </div>

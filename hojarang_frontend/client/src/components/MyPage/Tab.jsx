@@ -29,7 +29,7 @@ const Tab = ({ tabs, activeTabIndex, setActiveTabIndex }) => {
 
 
   return (
-    <div className="flex space-x-14 mx-auto">
+    <div className="flex space-x-14 mx-auto ">
       <ul className=" basis-1/6 grid" style={{ height: '400px' }}>
         {tabs.map((tab, index) => (
           <li
@@ -40,6 +40,7 @@ const Tab = ({ tabs, activeTabIndex, setActiveTabIndex }) => {
                 ? { ...activetabStyles, fontWeight: 'bold' }
                 : tabStyles
             }
+            className="text-lg"
           >
             {tab.title}
           </li>

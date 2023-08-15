@@ -20,6 +20,11 @@ export default {
       },
       animation:{
         'pulse' : 'pulse 5s cubic-bezier(0.25, 0.25, 0.75, 0.75)'
+      },
+      fontFamily:{
+        ImcreSoojin : ["ImcreSoojin"],
+        omyu_pretty : ["omyu_pretty"]
+
       }
     },
   },
