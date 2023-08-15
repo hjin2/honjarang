@@ -8,15 +8,19 @@ function ChatList({list}) {
   const onClick = () => {
     navigate(`./${list.id}`)
   }
+
+
   
   return (
-    <div  className="border border-solid border-black " onClick={onClick}>
-      <img src="" alt="" />
-      <span>{list.name}</span>
+    <div  className="border-b border-solid border-black" onClick={onClick}>
+      <div className='grid-raw-10'>
+      <span>{list.name}</span> <span>{list.participant_count}</span>
       <br />
-      <span>{list.last_message}</span>
-      <br />
-      <span>{list.unread_message_count}</span>
+      {list.last_message==='메시지 없음' ? <span>아직 작성된 대화가 없습니다.</span> :
+      <span>{list.last_message}</span> 
+      }
+      </div>
+      <div className='grid-raw-2'>{list.unread_message_count}</div>
     </div>
   )
 }

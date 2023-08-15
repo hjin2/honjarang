@@ -139,11 +139,11 @@ const Chat = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col">
-      <Talks messages={messages} id={Key} />
-      <div className="py-2 px-4 border-t border-gray-300">
-        <input type="text" id="message" value={message} onChange={(e) => setMessage(e.target.value)} className="border rounded p-2 w-full" onKeyDown={onKeyEnter} />
-        <button onClick={sendMessage} className="mt-2 bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600">전송</button>
+    <div className="w-3/5 h-screen flex flex-col m-auto">
+      <Talks messages={messages} id={Key} Nickname = {Nickname}/>
+      <div className="py-2 px-4 border-t border-gray-300 flex justify-around">
+        <input type="text" id="message" value={message} onChange={(e) => setMessage(e.target.value)} className="border rounded p-2 w-10/12 focus:outline-main2" onKeyDown={onKeyEnter} />
+        <button onClick={sendMessage} className="w-1/12 bg-main1 text-white rounded px-4 py-2 hover:bg-main1">전송</button>
       </div>
       <button onClick={handleBack} className="bg-red-500 text-white rounded px-4 py-2 mt-2 mx-4 self-center hover:bg-red-600">뒤로가기</button>
     </div>

@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 export default function Header() {
   const IsLogged = useSelector((state) => state.login.isLogged)
   const dispatch = useDispatch()
+  const fcm = localStorage.getItem('fcm_token')
 
   useEffect(() => {
     if (localStorage.length >= 3) {
@@ -18,9 +19,18 @@ export default function Header() {
   })
 
   const Clear = () => {
-    localStorage.clear()
-    dispatch(setLoginStatus(false))
-    alert('로그아웃 되었습니다.')
+    axios.post(`${import.meta.env.VITE_APP_API}/api/users/logout`,
+    {
+      params: {
+        fcm_token : fcm
+      }
+    })
+    .then((res) => {
+      localStorage.clear()
+      dispatch(setLoginStatus(false))
+      alert('로그아웃 되었습니다.')
+    })
+
   }
   const id = localStorage.getItem("user_id")
 
