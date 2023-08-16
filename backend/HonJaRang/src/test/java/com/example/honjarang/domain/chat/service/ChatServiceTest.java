@@ -146,7 +146,7 @@ class ChatServiceTest {
     @DisplayName("채팅 메시지 메시지 큐에 전송 성공")
     void sendChatMessageToQueue_Success() {
         // given
-        ChatMessageSendDto chatMessageSendDto = new ChatMessageSendDto("테스트", 1L, "테스트");
+        ChatMessageSendDto chatMessageSendDto = new ChatMessageSendDto("테스트", 1L, "테스트", "test.jpg");
 
         // when
         chatService.sendChatMessageToQueue(1L, chatMessageSendDto, "sessionId");
@@ -158,7 +158,7 @@ class ChatServiceTest {
     @DisplayName("채팅 메시지 생성 성공")
     void createChatMessage_Success() {
         // given
-        ChatMessageCreateDto chatMessageCreateDto = new ChatMessageCreateDto("테스트", 1L, "sessionId", "테스트");
+        ChatMessageCreateDto chatMessageCreateDto = new ChatMessageCreateDto("테스트", 1L, "sessionId", "테스트", "test.jpg");
         given(redisTemplate.opsForValue()).willReturn(valueOperations);
         given(redisTemplate.opsForSet()).willReturn(setOperations);
         given(valueOperations.get(SESSION_USER_PREFIX + "sessionId")).willReturn("1");

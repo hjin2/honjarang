@@ -105,7 +105,7 @@ public class EmailService {
                                 .build())
                         .subject(Content.builder()
                                 .charset("UTF-8")
-                                .data("회원가입 인증번호")
+                                .data("인증번호 발급")
                                 .build())
                         .build())
                 .build();
