@@ -6,6 +6,8 @@ function Talks({messages, id, Nickname, chatKey, setChatId}) {
   const [isLoading, setIsLoading] = useState(false);
   const [pages, setPages] = useState(1);
   const [msg, setMsg] = useState([]);
+  const [hour, setHour] = useState('')
+  const [minute, setMinute] = useState('')
 
   const token = localStorage.getItem('access_token');
   const chatAreaRef = useRef(null);
@@ -13,6 +15,15 @@ function Talks({messages, id, Nickname, chatKey, setChatId}) {
   const Key = id
   const [isChat, setIsChat] = useState(false)
 
+  useEffect(() => {
+    timeline()
+  })
+  const timeline = () => {
+    let time = new Date()
+    setHour(time.getHours())
+    setMinute(time.getMinutes())
+    console.log(timeline)
+  }
   
   
   useEffect(() => {
@@ -229,7 +240,7 @@ return(
                     <div className = "whitespace-pre-line inline-block text-left border rounded-lg bg-main4 bg-opacity-50 px-2 py-1 m-1" >
                       {msg.content}
                     </div>
-                    <div className="flex items-end py-1 text-gray3 text-sm">{msg.created_at?.slice(11,16)}</div>
+                    <div className="flex items-end py-1 text-gray3 text-sm">{hour}:{minute}</div>
                   </div>
                 </div>
               </div>
