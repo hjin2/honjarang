@@ -9,6 +9,7 @@ import com.example.honjarang.domain.post.service.PostService;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.json.Json;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,8 @@ import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -38,6 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -46,6 +50,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 @ExtendWith(RestDocumentationExtension.class)
@@ -104,6 +109,8 @@ public class PostControllerTest {
                 .nickname("테스트닉네임")
                 .createdAt("2030-01-01 00:00:00")
                 .build();
+
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null));
     }
     @Test
     @WithMockUser
@@ -225,51 +232,51 @@ public class PostControllerTest {
                         ));
     }
 
-//    @Test
-//    @DisplayName("게시글 조회 성공")
-//    void getPost_Success() throws Exception {
-//
-//        //given
-//        PostDto postdto = new PostDto(post, 10, true);
-//
-//        given(postService.getPost(1L, user)).willReturn(postdto);
-//
-//        // when & then
-//        mockMvc.perform(get("/api/v1/posts/{id}",1L))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.id").value(1L))
-//                .andExpect(jsonPath("$.user_id").value(1L))
-//                .andExpect(jsonPath("$.title").value("테스트"))
-//                .andExpect(jsonPath("$.category").value("FREE"))
-//                .andExpect(jsonPath("$.content").value("콘텐츠"))
-//                .andExpect(jsonPath("$.nickname").value("테스트"))
-//                .andExpect(jsonPath("$.views").value(0))
-//                .andExpect(jsonPath("$.is_notice").value(false))
-//                .andExpect(jsonPath("$.created_at").value("2023-07-29 04:23:23"))
-//                .andExpect(jsonPath("$.post_image").value("https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/postImage/image.jpg"))
-//                .andExpect(jsonPath("$.is_liked").value(true))
-//                .andExpect(jsonPath("$.like_cnt").value(10))
-//                .andDo(document("/posts/detail",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(prettyPrint()),
-//                        pathParameters(
-//                                parameterWithName("id").description("게시글 ID")
-//                        ),
-//                        responseFields(
-//                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("게시글 ID"),
-//                                fieldWithPath("user_id").type(JsonFieldType.NUMBER).description("사용자 ID"),
-//                                fieldWithPath("title").type(JsonFieldType.STRING).description("게시글 제목"),
-//                                fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리"),
-//                                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
-//                                fieldWithPath("nickname").type(JsonFieldType.STRING).description("사용자 닉네임"),
-//                                fieldWithPath("views").type(JsonFieldType.NUMBER).description("조회수"),
-//                                fieldWithPath("is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
-//                                fieldWithPath("created_at").type(JsonFieldType.STRING).description("작성일"),
-//                                fieldWithPath("post_image").type(JsonFieldType.STRING).description("이미지 주소"),
-//                                fieldWithPath("is_liked").type(JsonFieldType.BOOLEAN).description("좋아요 유무"),
-//                                fieldWithPath("like_cnt").type(JsonFieldType.NUMBER).description("좋아요 수")
-//                        )));
-//    }
+    @Test
+    @DisplayName("게시글 조회 성공")
+    void getPost_Success() throws Exception {
+
+        //given
+        PostDto postdto = new PostDto(post, 10, true);
+
+        given(postService.getPost(eq(1L), any(User.class))).willReturn(postdto);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/posts/{id}",1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.user_id").value(1L))
+                .andExpect(jsonPath("$.title").value("테스트"))
+                .andExpect(jsonPath("$.category").value("FREE"))
+                .andExpect(jsonPath("$.content").value("콘텐츠"))
+                .andExpect(jsonPath("$.nickname").value("테스트"))
+                .andExpect(jsonPath("$.views").value(0))
+                .andExpect(jsonPath("$.is_notice").value(false))
+                .andExpect(jsonPath("$.created_at").value("2023-07-29 04:23:23"))
+                .andExpect(jsonPath("$.post_image").value("https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/postImage/image.jpg"))
+                .andExpect(jsonPath("$.is_liked").value(true))
+                .andExpect(jsonPath("$.like_cnt").value(10))
+                .andDo(document("/posts/detail",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("id").description("게시글 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("게시글 ID"),
+                                fieldWithPath("user_id").type(JsonFieldType.NUMBER).description("사용자 ID"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("게시글 제목"),
+                                fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("글 내용"),
+                                fieldWithPath("nickname").type(JsonFieldType.STRING).description("사용자 닉네임"),
+                                fieldWithPath("views").type(JsonFieldType.NUMBER).description("조회수"),
+                                fieldWithPath("is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
+                                fieldWithPath("created_at").type(JsonFieldType.STRING).description("작성일"),
+                                fieldWithPath("post_image").type(JsonFieldType.STRING).description("이미지 주소"),
+                                fieldWithPath("is_liked").type(JsonFieldType.BOOLEAN).description("좋아요 유무"),
+                                fieldWithPath("like_cnt").type(JsonFieldType.NUMBER).description("좋아요 수")
+                        )));
+    }
 
     @Test
     @WithMockUser
@@ -363,4 +370,41 @@ public class PostControllerTest {
                 ));
     }
 
-}
+    @Test
+    @DisplayName("페이지 수")
+    void getPostsPageCount_Success() throws Exception {
+        // given
+        given(postService.getPostsPageCount(3,"")).willReturn(10);
+
+        //when & then
+        mockMvc.perform(get("/api/v1/posts/page")
+                        .param("size","3")
+                        .param("keyword",""))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(10))
+                .andDo(document("posts/pageCount",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("size").description("사이즈"),
+                                parameterWithName("keyword").description("키워드")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("공지 설정하기")
+    void noticePost_success() throws Exception {
+        mockMvc.perform(put("/api/v1/posts/{id}/notice", 1))
+                .andExpect(status().isOk())
+                .andDo(document("posts/notice",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("id").description("게시글 ID")
+                        )
+                ));
+    }
+
+
+    }

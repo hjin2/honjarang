@@ -25,7 +25,7 @@ public class TransactionController {
 
     @PostMapping("")
     public ResponseEntity<Long> createSecondHandTransaction(@RequestPart(value = "transaction_image", required = false) MultipartFile transactionImage, @ModelAttribute(name="transactionCreateDto") TransactionCreateDto transactionCreateDto, @CurrentUser User user) {
-        Long result = transactionService.createSecondHandTransaction(transactionCreateDto, transactionImage, user);
+       Long result = transactionService.createSecondHandTransaction(transactionCreateDto, transactionImage, user);
         return ResponseEntity.status(201).body(result);
     }
 
