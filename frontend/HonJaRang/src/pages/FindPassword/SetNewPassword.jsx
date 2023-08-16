@@ -30,7 +30,6 @@ export default function SetNewPassword() {
     else if (pwd_cfm !== password) {
       setpwdcfmMsg('비밀번호가 일치하지 않습니다.')
       setValid(true)
-
     }
     else if(pwd_cfm.length >= 8 && pwd_cfm === password){
       setValid(false)
@@ -53,7 +52,8 @@ export default function SetNewPassword() {
 
   const Password_Change = () => {
     axios.post(`${API.USER}/set-new-password`,{
-      new_password: password
+      new_password: password,
+      email: email
     })
     .then((res) => {
       console.log(res.data)
