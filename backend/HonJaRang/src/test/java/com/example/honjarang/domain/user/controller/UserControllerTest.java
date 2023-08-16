@@ -4,9 +4,13 @@ import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.jointdelivery.dto.JointDeliveryListDto;
 import com.example.honjarang.domain.jointdelivery.entity.JointDelivery;
 import com.example.honjarang.domain.jointdelivery.entity.Store;
+import com.example.honjarang.domain.jointpurchase.dto.JointPurchaseListDto;
+import com.example.honjarang.domain.jointpurchase.entity.JointPurchase;
 import com.example.honjarang.domain.post.dto.PostListDto;
 import com.example.honjarang.domain.post.entity.Category;
 import com.example.honjarang.domain.post.entity.Post;
+import com.example.honjarang.domain.secondhand.dto.TransactionListDto;
+import com.example.honjarang.domain.secondhand.entity.Transaction;
 import com.example.honjarang.domain.user.dto.*;
 import com.example.honjarang.domain.user.entity.Role;
 import com.example.honjarang.domain.user.entity.User;
@@ -28,10 +32,12 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
@@ -70,10 +76,13 @@ class UserControllerTest {
     @MockBean
     private EmailService emailService;
     private User user;
+    private User user2;
     private Post post;
     private PostListDto postListDto;
     private JointDeliveryListDto jointDeliveryListDto;
     private JointDelivery jointDelivery;
+    private Transaction transaction;
+    private JointPurchase jointPurchase;
     private Store store;
 
     @BeforeEach
@@ -123,6 +132,43 @@ class UserControllerTest {
                 .user(user)
                 .build();
         jointDelivery.setIdForTest(1L);
+        user2 = User.builder()
+                .email("test2@test.com")
+                .password("test12342")
+                .nickname("테스트2")
+                .point(20000)
+                .address("서울특별시 강남구")
+                .latitude(37.123456)
+                .longitude(127.123456)
+                .role(ROLE_USER)
+                .build();
+        user2.changeProfileImage("test.jpg");
+        user2.setIdForTest(2L);
+        transaction = Transaction.builder()
+                .seller(user)
+                .buyer(user2)
+                .title("중고거래 제목")
+                .content("중고거래 게시글")
+                .price(20000)
+                .isCompleted(true)
+                .isReceived(true)
+                .transactionImage("transaction.jpg")
+                .build();
+        transaction.setIdForTest(2L);
+        jointPurchase = JointPurchase.builder()
+                .user(user)
+                .content("공동구매 내용")
+                .deadline(DateTimeUtils.parseLocalDateTime("2023-08-02 12:23:34"))
+                .targetPersonCount(5)
+                .productName("귤")
+                .image("jointpurchase.jpg")
+                .price(30000)
+                .deliveryCharge(3000)
+                .placeName("구미시 인동")
+                .latitude(34.567)
+                .longitude(45.678)
+                .build();
+        jointPurchase.setIdForTest(1L);
 
 
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null));
@@ -208,7 +254,7 @@ class UserControllerTest {
         // given
 
         // when & then
-        mockMvc.perform(get("/api/v1/users/check-nickname")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/check-nickname")
                         .param("nickname", "닉네임"))
                 .andExpect(status().isOk())
                 .andDo(document("users/check-nickname",
@@ -226,7 +272,7 @@ class UserControllerTest {
         // given
 
         // when & then
-        mockMvc.perform(get("/api/v1/users/check-email")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/check-email")
                         .param("email", "test@test.com"))
                 .andExpect(status().isOk())
                 .andDo(document("users/check-email",
@@ -361,7 +407,7 @@ class UserControllerTest {
         given(userService.getUserInfo(1L)).willReturn(userInfoDto);
 
         // when & then
-        mockMvc.perform(get("/api/v1/users/info")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/info")
                         .param("id", "1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -519,87 +565,165 @@ class UserControllerTest {
                 ));
     }
 
-//    @Test
-//    @DisplayName("내가 작성한 게시판 글 목록 조회")
-//    void getMyPostList() throws Exception {
-//        List<PostListDto> postList = List.of(new PostListDto(post));
-//        given(userService.getMyPostList(1,10,user)).willReturn(postList);
-//
-//        mockMvc.perform(get("/api/v1/users/posts")
-//                .contentType("application/json")
-//                .param("size","10")
-//                .param("page","1"))
-//                .andExpect(status().isOk())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$[0].id").value(1L))
-//                .andExpect(jsonPath("$[0].user_id").value(1L))
-//                .andExpect(jsonPath("$[0].user_nickname").value("테스트"))
-//                .andExpect(jsonPath("$[0].title").value("타이틀"))
-//                .andExpect(jsonPath("$[0].category").value("FREE"))
-//                .andExpect(jsonPath("$[0].content").value("내용"))
-//                .andExpect(jsonPath("$[0].views").value(1))
-//                .andExpect(jsonPath("$[0].is_notice").value(false))
-//                .andExpect(jsonPath("$[0].created_at").value("2023-08-02 12:00:00"))
-//                .andDo(document("users/my-written-post-list",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(prettyPrint()),
-//                        queryParameters(
-//                                parameterWithName("size").description("사이즈"),
-//                                parameterWithName("page").description("페이지")
-//                        ),
-//                        responseFields(
-//                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("게시글 아이디"),
-//                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("사용자 아이디"),
-//                                fieldWithPath("[].user_nickname").type(JsonFieldType.STRING).description("사용자 닉네임"),
-//                                fieldWithPath("[].title").type(JsonFieldType.STRING).description("게시글 제목"),
-//                                fieldWithPath("[].category").type(JsonFieldType.STRING).description("게시글 카테고리"),
-//                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용"),
-//                                fieldWithPath("[].views").type(JsonFieldType.NUMBER).description("조회수"),
-//                                fieldWithPath("[].is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
-//                                fieldWithPath("[].created_at").type(JsonFieldType.STRING).description("작성일")
-//                        )));
-//    }
+    @Test
+    @DisplayName("내가 작성한 게시판 글 목록 조회")
+    void getMyPostList() throws Exception {
+        List<PostListDto> postList = List.of(new PostListDto(post,2,2));
+        given(userService.getMyPostList(1,10,1L)).willReturn(postList);
 
-//
-//    @Test
-//    @DisplayName("내가 작성한 공동배달 글 목록 조회")
-//    void getMyWrittenJointDeliveries() throws Exception {
-//        List<JointDeliveryListDto> jointDeliveryListDtos = List.of(new JointDeliveryListDto(jointDelivery,10000));
-//        given(userService.getMyWrittenJointDeliveries(1,10,user)).willReturn(jointDeliveryListDtos);
-//
-//        mockMvc.perform(get("/api/v1/users/joint-deliveries-writer")
-//                        .contentType("application/json")
-//                        .param("size","10")
-//                        .param("page","1"))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$[0].id").value(1L))
-//                .andExpect(jsonPath("$[0].current_total_price").value(10000))
-//                .andExpect(jsonPath("$[0].target_min_price").value(20000))
-//                .andExpect(jsonPath("$[0].store_id").value(1L))
-//                .andExpect(jsonPath("$[0].store_name").value("가게명"))
-//                .andExpect(jsonPath("$[0].store_image").value("storeImage.jpg"))
-//                .andExpect(jsonPath("$[0].user_id").value(1L))
-//                .andExpect(jsonPath("$[0].nickname").value("테스트"))
-//                .andDo(document("users/joint-deliveries-writing",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(prettyPrint()),
-//                        queryParameters(
-//                                parameterWithName("size").description("사이즈"),
-//                                parameterWithName("page").description("페이지")
-//                        ),
-//                        responseFields(
-//                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("공동배달 ID"),
-//                                fieldWithPath("[].current_total_price").type(JsonFieldType.NUMBER).description("현재전체금액"),
-//                                fieldWithPath("[].target_min_price").type(JsonFieldType.NUMBER).description("최소목표금액"),
-//                                fieldWithPath("[].store_id").type(JsonFieldType.NUMBER).description("가게 ID"),
-//                                fieldWithPath("[].store_name").type(JsonFieldType.STRING).description("가게명"),
-//                                fieldWithPath("[].store_image").type(JsonFieldType.STRING).description("가게 이미지"),
-//                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("사용자 ID"),
-//                                fieldWithPath("[].nickname").type(JsonFieldType.STRING).description("닉네임")
-//                        )));
-//    }
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/posts/{userId}",1L)
+                .contentType("application/json")
+                .param("size","10")
+                .param("page","1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].user_id").value(1L))
+                .andExpect(jsonPath("$[0].user_nickname").value("테스트"))
+                .andExpect(jsonPath("$[0].title").value("타이틀"))
+                .andExpect(jsonPath("$[0].category").value("FREE"))
+                .andExpect(jsonPath("$[0].content").value("내용"))
+                .andExpect(jsonPath("$[0].views").value(1))
+                .andExpect(jsonPath("$[0].is_notice").value(false))
+                .andExpect(jsonPath("$[0].created_at").value("2023-08-02 12:00:00"))
+                .andExpect(jsonPath("$[0].like_cnt").value(2))
+                .andExpect(jsonPath("$[0].comment_cnt").value(2))
+                .andDo(document("users/my-written-post-list",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("size").description("사이즈"),
+                                parameterWithName("page").description("페이지")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("게시글 아이디"),
+                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("사용자 아이디"),
+                                fieldWithPath("[].user_nickname").type(JsonFieldType.STRING).description("사용자 닉네임"),
+                                fieldWithPath("[].title").type(JsonFieldType.STRING).description("게시글 제목"),
+                                fieldWithPath("[].category").type(JsonFieldType.STRING).description("게시글 카테고리"),
+                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용"),
+                                fieldWithPath("[].views").type(JsonFieldType.NUMBER).description("조회수"),
+                                fieldWithPath("[].is_notice").type(JsonFieldType.BOOLEAN).description("공지 유무"),
+                                fieldWithPath("[].created_at").type(JsonFieldType.STRING).description("작성일"),
+                                fieldWithPath("[].like_cnt").type(JsonFieldType.NUMBER).description("좋아요 수"),
+                                fieldWithPath("[].comment_cnt").type(JsonFieldType.NUMBER).description("댓글 수")
+                        )));
+    }
+
+
+    @Test
+    @DisplayName("내가 작성한 공동배달 글 목록 조회")
+    void getMyWrittenJointDeliveries() throws Exception {
+        List<JointDeliveryListDto> jointDeliveryListDtos = List.of(new JointDeliveryListDto(jointDelivery,10000));
+        given(userService.getMyWrittenJointDeliveries(1,10,1L)).willReturn(jointDeliveryListDtos);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/joint-deliveries-writer/{userId}",1L)
+                        .contentType("application/json")
+                        .param("size","10")
+                        .param("page","1"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].current_total_price").value(10000))
+                .andExpect(jsonPath("$[0].target_min_price").value(20000))
+                .andExpect(jsonPath("$[0].store_id").value(1L))
+                .andExpect(jsonPath("$[0].store_name").value("가게명"))
+                .andExpect(jsonPath("$[0].store_image").value("storeImage.jpg"))
+                .andExpect(jsonPath("$[0].user_id").value(1L))
+                .andExpect(jsonPath("$[0].nickname").value("테스트"))
+                .andDo(document("users/joint-deliveries-writing",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("size").description("사이즈"),
+                                parameterWithName("page").description("페이지")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("공동배달 ID"),
+                                fieldWithPath("[].current_total_price").type(JsonFieldType.NUMBER).description("현재전체금액"),
+                                fieldWithPath("[].target_min_price").type(JsonFieldType.NUMBER).description("최소목표금액"),
+                                fieldWithPath("[].store_id").type(JsonFieldType.NUMBER).description("가게 ID"),
+                                fieldWithPath("[].store_name").type(JsonFieldType.STRING).description("가게명"),
+                                fieldWithPath("[].store_image").type(JsonFieldType.STRING).description("가게 이미지"),
+                                fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("사용자 ID"),
+                                fieldWithPath("[].nickname").type(JsonFieldType.STRING).description("닉네임")
+                        )));
+    }
+
+    @Test
+    @DisplayName("내가 작성한 중고거래 글 목록 조회")
+    void getMyTransactions() throws Exception {
+        // given
+        List<TransactionListDto> transactionListDtoList = List.of(new TransactionListDto(transaction));
+        given(userService.getMyTransactions(1,10,1L)).willReturn(transactionListDtoList);
+
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/transaction-writer/{userId}",1L)
+                        .param("size","10")
+                        .param("page","1"))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(2L))
+                .andExpect(jsonPath("$[0].title").value("중고거래 제목"))
+                .andExpect(jsonPath("$[0].is_complete").value(true))
+                .andExpect(jsonPath("$[0].price").value(20000))
+                .andExpect(jsonPath("$[0].transaction_image").value("transaction.jpg"))
+                .andDo(document("users/joint-deliveries-participating",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("page").description("페이지 번호"),
+                                parameterWithName("size").description("페이지 크기")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("중고거래 ID"),
+                                fieldWithPath("[].title").type(JsonFieldType.STRING).description("중고거래 게시글 제목"),
+                                fieldWithPath("[].is_complete").type(JsonFieldType.BOOLEAN).description("중고거래 판매 완료여부"),
+                                fieldWithPath("[].price").type(JsonFieldType.NUMBER).description("가격"),
+                                fieldWithPath("[].transaction_image").type(JsonFieldType.STRING).description("사진")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("내가 참여하는 중고거래 글 목록 조회")
+    void getMyJoinedTransactions() throws Exception {
+        // given
+        List<TransactionListDto> transactionListDtoList = List.of(new TransactionListDto(transaction));
+        given(userService.getMyJoinedTransactions(eq(1),eq(10),any(User.class))).willReturn(transactionListDtoList);
+
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/transaction-participating",1L)
+                        .param("size","10")
+                        .param("page","1"))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(2L))
+                .andExpect(jsonPath("$[0].title").value("중고거래 제목"))
+                .andExpect(jsonPath("$[0].is_complete").value(true))
+                .andExpect(jsonPath("$[0].price").value(20000))
+                .andExpect(jsonPath("$[0].transaction_image").value("transaction.jpg"))
+                .andDo(document("users/joint-deliveries-participating2",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("page").description("페이지 번호"),
+                                parameterWithName("size").description("페이지 크기")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("중고거래 ID"),
+                                fieldWithPath("[].title").type(JsonFieldType.STRING).description("중고거래 게시글 제목"),
+                                fieldWithPath("[].is_complete").type(JsonFieldType.BOOLEAN).description("중고거래 판매 완료여부"),
+                                fieldWithPath("[].price").type(JsonFieldType.NUMBER).description("가격"),
+                                fieldWithPath("[].transaction_image").type(JsonFieldType.STRING).description("사진")
+                        )
+                ));
+    }
 
     @Test
     @DisplayName("내가 참여한 공동배달 글 조회")
@@ -610,7 +734,7 @@ class UserControllerTest {
 
 
         // when & then
-        mockMvc.perform(get("/api/v1/users/joint-deliveries-participating")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/joint-deliveries-participating")
                         .param("size","10")
                         .param("page","1"))
                 .andExpect(status().isOk())
@@ -645,45 +769,128 @@ class UserControllerTest {
     }
 
 
-//    @Test
-//    @DisplayName("내가 작성한 게시판 글 페이지 수 조회")
-//    void getMyPostsPageCount_success() throws Exception {
-//        // given
-//        given(userService.getMyPostsPageCount(any(Integer.class),eq(user))).willReturn(1);
-//
-//        // when & then
-//        mockMvc.perform(get("/api/v1/users/page-post")
-//                        .contentType("application/json")
-//                        .param("size","3"))
-//                .andExpect(status().isOk())
-//                .andDo(document("users/pageCount/getMyPosts",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(prettyPrint()),
-//                        queryParameters(
-//                                parameterWithName("size").description("사이즈")
-//                        )
-//                ));
-//    }
 
-//    @Test
-//    @DisplayName("내가 작성한 공동배달 게시글 페이지 수 조회")
-//    void getMyWrittenJointDeliveriesPageCount_success() throws Exception {
-//        // given
-//        given(userService.getMyWrittenJointDeliveriesPageCount(any(Integer.class),eq(user))).willReturn(1);
-//
-//        // when & then
-//        mockMvc.perform(get("/api/v1/users/page-writing")
-//                        .contentType("application/json")
-//                        .param("size","3"))
-//                .andExpect(status().isOk())
-//                .andDo(document("users/pageCount/getWrittenJointDelivery",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(prettyPrint()),
-//                        queryParameters(
-//                                parameterWithName("size").description("사이즈")
-//                        )
-//                ));
-//    }
+
+    @Test
+    @DisplayName("내가 작성한 공동구매 글 목록 조회")
+    void getMyJointPurchase() throws Exception {
+        // given
+        List<JointPurchaseListDto> jointPurchaseListDtoList = List.of(new JointPurchaseListDto(jointPurchase,2));
+        given(userService.getMyJointPurchase(1,10,1L)).willReturn(jointPurchaseListDtoList);
+
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/jointpurchase-writer/{userId}",1L)
+                        .param("size","10")
+                        .param("page","1"))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].product_name").value("귤"))
+                .andExpect(jsonPath("$[0].image").value("jointpurchase.jpg"))
+                .andExpect(jsonPath("$[0].price").value(30000))
+                .andExpect(jsonPath("$[0].current_person_count").value(2))
+                .andExpect(jsonPath("$[0].target_person_count").value(5))
+                .andDo(document("users/sd",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("page").description("페이지 번호"),
+                                parameterWithName("size").description("페이지 크기")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("공동구매 ID"),
+                                fieldWithPath("[].product_name").type(JsonFieldType.STRING).description("공동구매 품명"),
+                                fieldWithPath("[].image").type(JsonFieldType.STRING).description("이미지"),
+                                fieldWithPath("[].price").type(JsonFieldType.NUMBER).description("가격"),
+                                fieldWithPath("[].current_person_count").type(JsonFieldType.NUMBER).description("현재 모인 참가자 수"),
+                                fieldWithPath("[].target_person_count").type(JsonFieldType.NUMBER).description("목표 참가자 수")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("내가 참여하는 공동구매 글 목록 조회")
+    void getMyJoinedJointPurchase() throws Exception {
+        // given
+        List<JointPurchaseListDto> jointPurchaseListDtoList = List.of(new JointPurchaseListDto(jointPurchase,2));
+        given(userService.getMyJoinedJointPurchase(eq(1),eq(10),any(User.class))).willReturn(jointPurchaseListDtoList);
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/jointpurchase-participating", 1L)
+                        .param("size", "10")
+                        .param("page", "1"))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].product_name").value("귤"))
+                .andExpect(jsonPath("$[0].image").value("jointpurchase.jpg"))
+                .andExpect(jsonPath("$[0].price").value(30000))
+                .andExpect(jsonPath("$[0].current_person_count").value(2))
+                .andExpect(jsonPath("$[0].target_person_count").value(5))
+                .andDo(document("users/joint-deliveries-participating2",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("page").description("페이지 번호"),
+                                parameterWithName("size").description("페이지 크기")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("공동구매 ID"),
+                                fieldWithPath("[].product_name").type(JsonFieldType.STRING).description("공동구매 품명"),
+                                fieldWithPath("[].image").type(JsonFieldType.STRING).description("이미지"),
+                                fieldWithPath("[].price").type(JsonFieldType.NUMBER).description("가격"),
+                                fieldWithPath("[].current_person_count").type(JsonFieldType.NUMBER).description("현재 모인 참가자 수"),
+                                fieldWithPath("[].target_person_count").type(JsonFieldType.NUMBER).description("목표 참가자 수")
+                        )
+                ));
+    }
+
+
+    @Test
+    @DisplayName("내가 작성한 게시판 글 페이지 수 조회")
+    void getMyPostsPageCount_success() throws Exception {
+        // given
+        given(userService.getMyPostsPageCount(10,1L)).willReturn(1);
+
+        // when & then
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/users/page-post/{userId}",1L)
+                        .param("size","10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(1))
+                 .andDo(document("pagecnt/iwrite/board",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("userId").description("사용자 ID")
+                        ),
+                        queryParameters(
+                                parameterWithName("size").description("페이지 크기")
+                        ),
+                        responseBody()
+                ));
+    }
+
+    @Test
+    @DisplayName("내가 작성한 공동배달 게시글 페이지 수 조회")
+    void getMyWrittenJointDeliveriesPageCount_success() throws Exception {
+        // given
+        given(userService.getMyWrittenJointDeliveriesPageCount(10,1L)).willReturn(1);
+
+        // when & then
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/users/page-writing/{userId}",1L)
+                        .param("size","10"))
+                .andExpect(status().isOk())
+                .andDo(document("users/pageCount/getWrittenJointDelivery",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("size").description("사이즈")
+                        )
+                ));
+    }
 
     @Test
     @DisplayName("내가 참여한 공동배달 게시글 페이지 수 조회")
@@ -692,7 +899,7 @@ class UserControllerTest {
         given(userService.getMyJoinedJointDeliveriesPageCount(any(Integer.class),eq(user))).willReturn(0);
 
         // when & then
-        mockMvc.perform(get("/api/v1/users/page-join")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/page-join")
                         .contentType("application/json")
                         .param("size","3"))
                 .andExpect(status().isOk())
@@ -705,34 +912,34 @@ class UserControllerTest {
                 ));
     }
 
-//    @Test
-//    @DisplayName("내가 작성한 중고거래 게시글 페이지 수 조회")
-//    void getMyTransactionPageCount_success() throws Exception {
-//        // given
-//        given(userService.getMyTransactionPageCount(any(Integer.class),eq(user))).willReturn(2);
-//
-//        // when & then
-//        mockMvc.perform(get("/api/v1/users/page-transaction")
-//                        .contentType("application/json")
-//                        .param("size","3"))
-//                .andExpect(status().isOk())
-//                .andDo(document("users/pageCount/getMyTransaction",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(prettyPrint()),
-//                        queryParameters(
-//                                parameterWithName("size").description("사이즈")
-//                        )
-//                ));
-//    }
+    @Test
+    @DisplayName("내가 작성한 중고거래 게시글 페이지 수 조회")
+    void getMyTransactionPageCount_success() throws Exception {
+        // given
+        given(userService.getMyTransactionPageCount(10,1L)).willReturn(3);
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/page-transaction/{userId}",1L)
+                        .contentType("application/json")
+                        .param("size","3"))
+                .andExpect(status().isOk())
+                .andDo(document("users/pageCount/getMyTransaction",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("size").description("사이즈")
+                        )
+                ));
+    }
 
     @Test
     @DisplayName("내가 참여한 중고거래 게시글 페이지 수 조회")
     void getMyJoinedTransactionPageCount_success() throws Exception {
         // given
-        given(userService.getMyJoinedTransactionPageCount(any(Integer.class),eq(user))).willReturn(2);
+        given(userService.getMyJoinedTransactionPageCount(eq(10),any(User.class))).willReturn(2);
 
         // when & then
-        mockMvc.perform(get("/api/v1/users/page-joined-transaction")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/page-joined-transaction")
                         .contentType("application/json")
                         .param("size","3"))
                 .andExpect(status().isOk())
@@ -746,34 +953,34 @@ class UserControllerTest {
     }
 
 
-//    @Test
-//    @DisplayName("내가 작성한 공동구매 게시글 페이지 수 조회")
-//    void getMyJointPurchasePageCount() throws Exception {
-//        // given
-//        given(userService.getMyJointPurchasePageCount(any(Integer.class),eq(user))).willReturn(1);
-//
-//        // when & then
-//        mockMvc.perform(get("/api/v1/users/page-joint-purchase")
-//                        .contentType("application/json")
-//                        .param("size","3"))
-//                .andExpect(status().isOk())
-//                .andDo(document("users/pageCount/joinedpurchase",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(prettyPrint()),
-//                        queryParameters(
-//                                parameterWithName("size").description("사이즈")
-//                        )
-//                ));
-//    }
+    @Test
+    @DisplayName("내가 작성한 공동구매 게시글 페이지 수 조회")
+    void getMyJointPurchasePageCount() throws Exception {
+        // given
+        given(userService.getMyJointPurchasePageCount(10,1L)).willReturn(3);
+
+        // when & then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/page-joint-purchase/{userId}",1L)
+                        .contentType("application/json")
+                        .param("size","3"))
+                .andExpect(status().isOk())
+                .andDo(document("users/pageCount/joinedpurchase",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("size").description("사이즈")
+                        )
+                ));
+    }
 
     @Test
     @DisplayName("내가 참여한 공동구매 게시글 페이지 수 조회")
     void getMyJoinedJointPurchasePageCount() throws Exception {
         // given
-        given(userService.getMyJoinedJointPurchasePageCount(any(Integer.class),eq(user))).willReturn(1);
+        given(userService.getMyJoinedJointPurchasePageCount(eq(10),any(User.class))).willReturn(1);
 
         // when & then
-        mockMvc.perform(get("/api/v1/users/page-joined-purchase")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/page-joined-purchase")
                         .contentType("application/json")
                         .param("size","3"))
                 .andExpect(status().isOk())
