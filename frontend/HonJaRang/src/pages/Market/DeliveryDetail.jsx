@@ -5,6 +5,8 @@ import Modal from '../../components/Common/Modal';
 import axios from 'axios';
 import CartList from '../../components/Market/Delivery/CartList';
 import { API } from '@/apis/config';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faComments } from '@fortawesome/free-regular-svg-icons';
 
 export default function DeliveryDetail() {
 
@@ -19,6 +21,10 @@ export default function DeliveryDetail() {
   const [menuList, setMenuList] = useState([]); // 메뉴 리스트
   const [isAdd, setIsAdd] = useState(false)
   const [cart, setCart] = useState([])
+
+  const enter = () =>{
+    navigate(`/chatting/${detail.chat_room_id}`)
+  }
 
 
   useEffect(() => {
@@ -117,6 +123,10 @@ export default function DeliveryDetail() {
             <div className="font-semibold text-right">{detail.nickname}</div>
             <div className="text-right ">{detail.created_at?.slice(0,16)} </div>
           </div>
+        </div>
+        <div className='space-x-2 cursor-pointer w-fit flex' onClick={enter}>
+          <FontAwesomeIcon icon={faComments} style={{color: "#008b57",}} />
+          <div className='text-sm text-main1 font-bold'>채팅</div>
         </div>
         <hr />
         <div className="m-2 whitespace-pre-line">

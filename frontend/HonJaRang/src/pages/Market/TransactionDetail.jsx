@@ -147,24 +147,15 @@ export default function TransactionDetail() {
         <div className="my-3">
           {detail.content}
         </div>
-        {!isWriter ? (
+        {!isWriter && (
           <div>
-            {isSell ? (
-              <>
-              {isBuyer ? (
-                <>
-                  {isFinish ? (null):(
-                    <button className="main1-full-button w-full" onClick={check}>수령확인</button>
-                  )}
-                </>
-                ):(null)}
-              </>
-            ):(
+            {isSell && isBuyer && !isFinish && (
+              <button className="main1-full-button w-full" onClick={check}>수령확인</button>
+            )}
+            {!isSell && (
               <button className="main1-full-button w-full" onClick={buy}>구매</button>
             )}
           </div>
-        ):(
-          null
         )}
       </div>
     </div>

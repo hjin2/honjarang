@@ -8,21 +8,14 @@ import { useNavigate } from 'react-router-dom'
 import Modal from '@/components/Common/Modal';
 import PurchaserList from '@/components/Market/Purchase/PurchaserList';
 import { API } from '@/apis/config';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faComments } from '@fortawesome/free-regular-svg-icons';
 
 export default function PurchaseDetail() {
   const navigate = useNavigate()
   const [currentTime, setCurrentTime] = useState(new Date());
   const token = localStorage.getItem('access_token')
   const [point, setPoint] = useState(0)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000); // 1초마다 업데이트
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
   const [modalState, setModalState] = useState(false)
   const id = useParams().id;
   // const[detail, setDetail] = useState([])
@@ -32,6 +25,25 @@ export default function PurchaseDetail() {
   const loginId = localStorage.getItem("user_id")
   const headers = {"Authorization" : `Bearer ${token}`}
   const [purchasers, setPurchasers] = useState([]) 
+  
+  const deadline = new Date(detail.deadline)
+  const timeDiff = deadline - currentTime;
+  const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+  
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000); // 1초마다 업데이트
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
   useEffect(() => {
     axios.get(`${API.PURCHASES}/${id}`, {headers})
     .then((res) => {
@@ -127,13 +139,9 @@ export default function PurchaseDetail() {
       })  
       .catch((err) => console.log(err))
   }
-
-  const deadline = new Date(detail.deadline)
-  const timeDiff = deadline - currentTime;
-  const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+  const enter = () =>{
+    navigate(`/chatting/${detail.chat_room_id}`)
+  }
 
   return (
     <div className="w-6/12 mx-auto mt-5">
@@ -148,6 +156,12 @@ export default function PurchaseDetail() {
             <div className="text-right ">{detail.created_at?.slice(0,10)}</div>
           </div>
         </div>
+          {isPurchase&&(
+            <div className='space-x-2 cursor-pointer w-fit flex' onClick={enter}>
+              <FontAwesomeIcon icon={faComments} style={{color: "#008b57",}} />
+              <div className='text-sm text-main1 font-bold'>채팅</div>
+            </div>
+          )}
         <hr />
         <div className="space-y-2">
           <div className='flex justify-between'>
@@ -157,7 +171,7 @@ export default function PurchaseDetail() {
               <button onClick={() => handleTabClick('purchase_detail_place')}
               className={`${activeTab === 'purchase_detail_place' ? 'font-semibold' : 'font-normal'}`}>만남 장소</button>
             </div>
-            <button onClick={(()=>{setModalState(!modalState)})}>참여자 목록</button>
+            {isPurchase&&<button onClick={(()=>{setModalState(!modalState)})}>참여자 목록</button>}
             {modalState && (
               <Modal modalState={modalState} setModalState={setModalState}>
                 <PurchaserList 
