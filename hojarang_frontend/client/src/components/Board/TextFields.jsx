@@ -5,7 +5,7 @@ export const TextField = ({ label, handleTitle }) => {
     <div className="flex flex-col">
       <label className="mb-2 text-base text-black">{label}</label>
       <input
-        className="bg-white py-2 px-3 border-gray3 outline-none rounded-lg"
+        className="bg-white py-2 px-3 border border-gray2 focus:outline-main2 rounded-lg"
         onChange={handleTitle}
       />
     </div>
