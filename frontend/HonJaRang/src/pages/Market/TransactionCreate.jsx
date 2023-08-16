@@ -1,10 +1,10 @@
 import {useState} from 'react'
 import axios from 'axios'
 import {useNavigate} from 'react-router-dom'
+import { API } from '@/apis/config'
 
 export default function TransactionCreate() {
   const navigate = useNavigate()
-  const URL = import.meta.env.VITE_APP_API
   const token = localStorage.getItem("access_token")
   const headers = {
     "Authorization" : `Bearer ${token}`,
@@ -40,7 +40,7 @@ export default function TransactionCreate() {
     formData.append("content", content)
     formData.append("price", price)
     console.log(image,title,content,price)
-    axios.post(`${URL}/api/v1/secondhand-transactions`,formData,{headers})
+    axios.post(`${API.SECONDHAND}`,formData,{headers})
       .then((res) =>{
         console.log(res)
         navigate(`/market/transactiondetail/${res.data}`,{replace:true})
