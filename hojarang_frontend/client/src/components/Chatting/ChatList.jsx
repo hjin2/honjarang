@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 
 
 
-function ChatList({list}) {
+function ChatList({list, setChatId}) {
   const [Diff, setDiff] = useState('')
   const [msg, setmsg] = useState('')
   const navigate = useNavigate()
@@ -64,20 +64,20 @@ useEffect(() => {
 
   
 return (
-  <div  className="m-2" onClick={onClick}>
+  <div  className="border-b border-solid border-gray-300 cursor-pointer m-2" onClick={onClick}>
     <div className='grid-raw-10'>
     {!isContain ? (
-      <span className="font-bold">{splitTitle?.split("1")[0]}</span> 
+      <span>{splitTitle?.split("1")[0]}</span> 
       ):(
-      <span className="font-bold">{list.name}</span>
+      <span>{list.name}</span>
     )}
-    {list.participant_count === 2 ? null : <span className='text-xs mb-2 ml-2'>{list.participant_count}</span>}
+    {list.participant_count === 2 ? null : <span className='text-xs mb-2 text-gray2 ml-2'>{list.participant_count}</span>}
     <br />
-    {list.last_message_created_at===null ? <span className='text-sm '>아직 작성된 대화가 없습니다.</span> :
+    {list.last_message_created_at===null ? <span className='text-sm text-gray1'>아직 작성된 대화가 없습니다.</span> :
     <span className='text-sm'>{list.last_message}</span>
     }
     {list.last_message_created_at===null ? null :
-    <span className='text-xs ml-2'>{Diff}{msg}</span>
+    <span className='text-xs ml-2 text-gray1'>{Diff}{msg}</span>
     }
     {list.unread_message_count === 0 ? null : <div className='w-5 h-5 text-center bg-red-400 mr-auto float-right text-white rounded'>{list.unread_message_count}</div>}
     

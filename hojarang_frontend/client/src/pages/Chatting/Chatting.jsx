@@ -1,4 +1,5 @@
 import ChatList from "../../components/Chatting/ChatList"
+import Chat from "@/components/Chatting/ChatChat";
 import { useState, useEffect } from "react";
 import axios from 'axios'
 

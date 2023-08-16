@@ -5,12 +5,13 @@ import Stomp from 'stompjs';
 import { useNavigate } from 'react-router';
 import axios from 'axios';
 import Talks from '@/components/Chatting/Talks';
-import { useSelector } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 
-const Chat = () => {
+const Chat = ({chatId, setChatId, title}) => {
   const [Nickname, setNickname] = useState('')
   const params = useParams();
-  const Key = params["id"];
+  const Key = chatId;
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
@@ -130,7 +131,7 @@ const Chat = () => {
 
   useEffect(() => {
     connect();
-  }, []);
+  }, [chatId]);
 
   const onKeyEnter = (e) => {
     if (e.key === 'Enter') {
@@ -157,13 +158,19 @@ const Chat = () => {
   },[]);
 
   return (
-    <div className="w-3/5 h-screen flex flex-col m-auto">
-      <Talks messages={messages} id={Key} Nickname = {Nickname}/>
-      <div className="py-2 px-4 border-t border-gray-300 flex justify-around">
-        <input type="text" id="message" value={message} onChange={(e) => setMessage(e.target.value)} className="border rounded p-2 w-10/12 focus:outline-main2" onKeyDown={onKeyEnter} />
-        <button onClick={sendMessage} className="w-1/12 bg-main1 text-white rounded px-4 py-2 hover:bg-main1">전송</button>
+    <div className="w-3/5 h-12/12 flex flex-col border-2 rounded-lg bg-white">
+      <div className="p-2"style={{height:"10%"}}>{title}</div>
+      <hr />
+      <div style={{height:"80%"}}>
+        <Talks messages={messages} id={Key} Nickname = {Nickname} chatKey={Key} setChatId={setChatId}/>
       </div>
-      <button onClick={handleBack} className="bg-red-500 text-white rounded px-4 py-2 mt-2 mx-4 self-center hover:bg-red-600">뒤로가기</button>
+      <div className="border-t border-gray-300 flex justify-around h-1/12 items-center bg-main4" style={{height:"10%"}}>
+        <input type="text" id="message" value={message} onChange={(e) => setMessage(e.target.value)} className="h-10 border rounded-full p-2 w-10/12 focus:outline-main2" onKeyDown={onKeyEnter} />
+        <button onClick={sendMessage} className="bg-main1 rounded-full w-10 h-10 flex justify-center items-center">
+          <FontAwesomeIcon icon={faPaperPlane} style={{color: "#000000",}} />
+        </button>
+      </div>
+      {/* <button onClick={handleBack} className="bg-red-500 text-white rounded px-4 py-2 mt-2 mx-4 self-center hover:bg-red-600">뒤로가기</button> */}
     </div>
   );
 };
