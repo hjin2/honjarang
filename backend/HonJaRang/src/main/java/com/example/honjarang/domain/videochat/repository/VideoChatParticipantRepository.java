@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface VideoChatParticipantRepository extends JpaRepository <VideoChatParticipant, Long> {
 
-    void deleteByUserId(Long userId);
+    void deleteByUserIdAndVideoChatRoom(Long userId, VideoChatRoom videoChatRoom);
 
   //  @Query(value = "SELECT COUNT(*) FROM video_chat_participant WHERE room_id = :roomId", nativeQuery = true)
 
