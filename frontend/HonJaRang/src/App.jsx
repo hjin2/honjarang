@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
+import Chat from '@/pages/Chatting/Chat';
 import Chatting from '@/pages/Chatting/Chatting';
 import Login from '@/pages/login/login';
 import Signup from '@/pages/signup/signup';
@@ -77,6 +78,7 @@ function App() {
             <Route path="/board/articleupdate/:id" element={<ArticleUpdate/>}></Route>
             <Route path="/*" element={<Notfound />} />
           </Route>
+          <Route path="/chatting/:id" element={<Chat />} />
           <Route exact path="/" element={<Main />} />
           <Route path="/login" element={<Login />} />
           <Route path="/webrtc/:sessionid" element={<FreeChat/>}/>
