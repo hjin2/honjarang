@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
+import { API } from '@/apis/config';
 
 export default function Checkout() {
   const {price} = useParams()
@@ -50,7 +51,7 @@ export default function Checkout() {
               const amount = data.amount
               const paymenttype = data.paymentType
               
-              axios.post(`${import.meta.env.VITE_APP_API}/api/v1/users/success`,
+              axios.post(`${API.USER}/success`,
                 data = {
                   payment_key : paymentKey,
                   order_id : orderId,
