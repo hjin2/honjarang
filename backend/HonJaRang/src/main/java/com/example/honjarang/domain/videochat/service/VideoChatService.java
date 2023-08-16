@@ -143,7 +143,7 @@ public class VideoChatService {
     }
 
     @Transactional(readOnly = true)
-    public List<VideoChatListDto> getSessionList(String category, int page, String keyword) {
+    public List<VideoChatListDto> getSessionList(String category, int page) {
         Pageable pageable = PageRequest.of(page -1, 15);
 
         Category option = Category.FREE;
@@ -158,7 +158,7 @@ public class VideoChatService {
         }
 
 
-        List<VideoChatRoom> videoChatRooms = videoChatRoomRepository.findAllByCategoryAndTitleContainingIgnoreCaseOrderByCreatedAtDesc(option, keyword, pageable).toList();
+        List<VideoChatRoom> videoChatRooms = videoChatRoomRepository.findAllByCategoryOrderByCreatedAtDesc(option, pageable).toList();
         List<VideoChatListDto> videoChatRoomList = new ArrayList<>();
         for(VideoChatRoom videoChatRoom  : videoChatRooms) {
             Integer count = videoChatParticipantRepository.countByVideoChatRoom(videoChatRoom);
@@ -169,13 +169,14 @@ public class VideoChatService {
 
 
     @Transactional(readOnly = true)
-    public Integer getChatRoomPageCount(String category, Integer size, String keyword) {
+    public Integer getChatRoomPageCount(String category, Integer size) {
 
 
         Category option = Category.FREE;
 
         switch(category) {
-            case "free": option = Category.FREE; break;
+            case "free":
+                break;
             case "game": option = Category.GAME; break;
             case "study": option = Category.STUDY; break;
             case "mukbang": option = Category.MUKBANG; break;
@@ -183,6 +184,6 @@ public class VideoChatService {
             case "honsul": option = Category.HONSUL; break;
         }
 
-        return (int) Math.ceil((double) videoChatRoomRepository.findAllByCategoryAndTitleContainingIgnoreCase(option, keyword) / size);
+        return (int) Math.ceil((double) videoChatRoomRepository.countByCategoryOrderByCreatedAtDesc(option) / size);
     }
 }

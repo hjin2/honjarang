@@ -55,13 +55,12 @@ public class VideoChatController {
 
     // 화상 채팅 방 목록 조회
     @GetMapping("/{category}")
-    public List<VideoChatListDto> getSessionList(@PathVariable("category") String category, @RequestParam(value="page", defaultValue = "1") int page,
-                                                 @RequestParam(value="keyword", defaultValue = "") String keyword) {
-        return videoChatService.getSessionList(category, page, keyword);
+    public List<VideoChatListDto> getSessionList(@PathVariable("category") String category, @RequestParam(value="page", defaultValue = "1") int page) {
+        return videoChatService.getSessionList(category, page);
     }
 
     @GetMapping("/{category}/page")
-    public ResponseEntity<Integer> getVideoChatRoomPageCount(@PathVariable("category") String category, @RequestParam Integer size, @RequestParam(value="keyword", defaultValue = "")String keyword) {
-        return ResponseEntity.ok(videoChatService.getChatRoomPageCount(category, size,keyword));
+    public ResponseEntity<Integer> getVideoChatRoomPageCount(@PathVariable("category") String category, @RequestParam Integer size) {
+        return ResponseEntity.ok(videoChatService.getChatRoomPageCount(category, size));
     }
 }
