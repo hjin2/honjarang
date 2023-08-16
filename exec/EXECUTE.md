@@ -10,6 +10,14 @@
 ```shell
 kubectl apply -f honjarang.yml
 ```
+- 리버스 프록시 실행
+```shell
+docker run --name some-nginx -d -p 80:80 443:443 some-content-nginx
+```
+- opevidu 실행
+```shell
+./openvidu start
+```
 
 ### Prerequisites / 선행 조건
 - 아래의 내용을 참고하여 설치 및 구성이 완료되어 있어야 합니다.
