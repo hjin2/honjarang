@@ -48,8 +48,8 @@ public class VideoChatController {
     // 화상 채팅 방 퇴장
     @DeleteMapping("/{sessionId}/connections")
     public ResponseEntity<Long> closeConnection(@PathVariable("sessionId") String sessionId,
-                                                @RequestBody Map<String, Long> user) throws OpenViduJavaClientException, OpenViduHttpException {
-        videoChatService.closeConnection(sessionId, user.get("user_id"));
+                                                @CurrentUser User user) throws OpenViduJavaClientException, OpenViduHttpException {
+        videoChatService.closeConnection(sessionId, user);
         return ResponseEntity.ok().build();
     }
 
