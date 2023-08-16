@@ -50,7 +50,7 @@ export default function FindPassword() {
       })
       .then(function (response) {
         console.log(response);
-        alert('인증 완료 되었습니다.')
+        alert('인증 번호가 전송되었습니다.')
         setCheck(true)
       })
       .catch((err) => {
