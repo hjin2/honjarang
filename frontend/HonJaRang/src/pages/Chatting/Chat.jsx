@@ -46,7 +46,10 @@ const Chat = () => {
     setMessages((prevMessages) => {
       if (!prevMessages.includes(message)) {
         return [...prevMessages, message];
+        
       }
+      scrollToBottom();
+
       return prevMessages;
     });
   };
