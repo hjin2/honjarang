@@ -26,10 +26,7 @@ import com.example.honjarang.domain.post.service.PostService;
 import com.example.honjarang.domain.secondhand.dto.TransactionListDto;
 import com.example.honjarang.domain.secondhand.entity.Transaction;
 import com.example.honjarang.domain.secondhand.repository.TransactionRepository;
-import com.example.honjarang.domain.user.dto.LoginDto;
-import com.example.honjarang.domain.user.dto.PointChargeDto;
-import com.example.honjarang.domain.user.dto.UserCreateDto;
-import com.example.honjarang.domain.user.dto.UserInfoDto;
+import com.example.honjarang.domain.user.dto.*;
 import com.example.honjarang.domain.user.entity.EmailVerification;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.user.exception.*;
@@ -161,15 +158,15 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public void setNewPassword(String password, User loginUser)
+    public void setNewPassword(PasswordSetDto passwordSetDto)
     {
-        EmailVerification emailVerification = emailVerificationRepository.findByEmail(loginUser.getEmail()).orElseThrow(() -> new EmailNotVerifiedException("이메일 인증이 되지 않았습니다."));
+        EmailVerification emailVerification = emailVerificationRepository.findByEmail(passwordSetDto.getEmail()).orElseThrow(() -> new EmailNotVerifiedException("이메일 인증이 되지 않았습니다."));
         if(!emailVerification.getIsVerified()){
             throw new EmailNotVerifiedException("이메일 인증이 되지 않았습니다.");
         }
 
-        User user = userRepository.findById(loginUser.getId()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
-        user.changePassword(passwordEncoder.encode(password));
+        User user = userRepository.findByEmail(passwordSetDto.getEmail()).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        user.changePassword(passwordEncoder.encode(passwordSetDto.getNewPassword()));
         emailVerificationRepository.delete(emailVerification);
     }
 
