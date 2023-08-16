@@ -181,6 +181,8 @@ return(
             메시지 들어감
           </div>
         </div> */}
+
+        {/* 기존 메시지 데이터 : API로 들고옴 */}
         {msg.map((ms, idx) => (
           (ms.nickname === Nickname?
             <div key={idx} className="flex flex-row justify-end">
@@ -204,12 +206,38 @@ return(
                   </div>
                 </div>
               </div>
-         
+          </div>
+          )
+        ))}
+        {/* 새로운 메시지 데이터 : 웹소켓*/}
+        {messages.map((msg, idx) => (
+          (msg.nickname === Nickname?
+            <div key={idx} className="flex flex-row justify-end">
+              <div className="flex items-end py-3 text-gray3 text-sm">{msg.created_at?.slice(11,16)}</div>
+              <div className = "whitespace-pre-line float-right text-right inline-block border rounded-lg bg-main3 bg-opacity-50 px-2 py-1 m-2" >
+                {msg.content}
+              </div>
+              {/* <img src={ms.profile_image_url} alt="" className="h-10 w-10"/> */}
+            </div>
+            : 
+            <div key={idx} className="m-1">
+              <div className="flex felx-row">
+                <img src={msg.profile_image_url} alt="" className="h-10 w-10"/>
+                <div className="ml-1">
+                  <p className="text-sm">{msg.nickname}</p>
+                  <div className="flex">
+                    <div className = "whitespace-pre-line inline-block text-left border rounded-lg bg-main4 bg-opacity-50 px-2 py-1 m-1" >
+                      {msg.content}
+                    </div>
+                    <div className="flex items-end py-1 text-gray3 text-sm">{msg.created_at?.slice(11,16)}</div>
+                  </div>
+                </div>
+              </div>
+          </div>
+          )
+        ))}
 
-      <img src={msg.profile_image_url} alt="" />
-       </div>
-          )))}
-          {messages.map((msg, index) => (
+        {/* {messages.map((msg, index) => (
             (msg.nickname === Nickname?
               <div key={index}>
                 <div className = "float-right text-right inline-block border rounded-lg bg-main3 bg-opacity-50 px-2 py-1 m-3" >
@@ -227,7 +255,7 @@ return(
               <img src={msg.profile_image_url} alt="" />
              </div>
                 )
-                ))}
+                ))} */}
   </div>
 )
 }
