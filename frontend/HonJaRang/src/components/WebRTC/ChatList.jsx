@@ -14,9 +14,9 @@ export default function FreeChatList({category}) {
   const [pageSize, setPageSize] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   useEffect(() => {
-    axios.get(`${URL}/api/v1`)
+    axios.get(`${API.WEBRTC}/sessions/${category}`)
     .then((res) => {
-      console.log(res.data)
+      console.log(2,res.data)
       setPageSize(res.data)
     })
     .catch((err) => {
@@ -25,9 +25,9 @@ export default function FreeChatList({category}) {
   },[])
 
   useEffect(() => {
-    axios.get(`${API.WEBRTC}/sessions/${category}`,)
+    axios.get(`${API.WEBRTC}/sessions/${category}/${currentPage}`,)
     .then((res) =>{
-      console.log(res.data)
+      console.log(1,res.data)
       setChatData(res.data)
     })
     .catch((err) => console.log(err))

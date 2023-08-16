@@ -1,14 +1,19 @@
 import { useState,useEffect } from "react";
 import axios from "axios";
 import { API } from "@/apis/config";
+import { useLocation, useNavigate } from "react-router-dom";
+
 
 export default function SetNewPassword() {
+  const navigate = useNavigate()
   // 비밀번호, 비밀번호 확인, 오류메시지
   const [password, setPassword] = useState('')
   const [password_cfm, setPassword_cfm] = useState('')
   const [pwdMsg, setpwdMsg] = useState('')
   const [pwdcfmMsg, setpwdcfmMsg] = useState('')
   const [Valid, setValid] = useState(true)
+  const location = useLocation()
+  const email = location.state.email
   
   // 비밀번호 유효성 검사(8~15자, 한글/영어/숫자 포함 가능)
   let pwdCheck = /^[A-Za-z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{8,15}$/
@@ -51,12 +56,15 @@ export default function SetNewPassword() {
   }
 
   const Password_Change = () => {
-    axios.post(`${API.USER}/set-new-password`,{
-      new_password: password,
-      email: email
-    })
+    const data = {
+      new_password : password,
+      email : email
+    }
+    console.log(data)
+    axios.post(`${API.USER}/set-new-password`,data)
     .then((res) => {
       console.log(res.data)
+      navigate("/login")
     })
     .catch((err) => {
       console.log(err)
@@ -80,7 +88,6 @@ export default function SetNewPassword() {
         <br />
         <span>{pwdcfmMsg}</span>
       </div>
-      
       <button disabled={Valid} onClick={Password_Change}>비밀번호 변경</button>
     </div>
   )
