@@ -53,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/users/refresh").permitAll()
                         .requestMatchers("/api/v1/users/check-email").permitAll()
                         .requestMatchers("/api/v1/users/check-nickname").permitAll()
+                        .requestMatchers("/api/v1/users/set-new-password").permitAll()
                         .requestMatchers("/api/v1/users/send-verification-code").permitAll()
                         .requestMatchers("/api/v1/users/verify-code").permitAll()
                         .requestMatchers("/api/v1/maps/coordinates").permitAll()
