@@ -192,7 +192,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.user_id").value(1L))
                 .andExpect(jsonPath("$.access_token").value("access_token"))
                 .andExpect(jsonPath("$.refresh_token").value("refresh_token"))
-                .andDo(document("users/login",
+                .andDo(document("new/users/login",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
@@ -218,7 +218,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(body)))
                 .andExpect(status().isOk())
-                .andDo(document("users/send-verification-code",
+                .andDo(document("new/users/send-verification-code",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
@@ -238,7 +238,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(verifyCodeDto)))
                 .andExpect(status().isOk())
-                .andDo(document("users/verify-code",
+                .andDo(document("new/users/verify-code",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
@@ -257,7 +257,7 @@ class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/check-nickname")
                         .param("nickname", "닉네임"))
                 .andExpect(status().isOk())
-                .andDo(document("users/check-nickname",
+                .andDo(document("new/users/check-nickname",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -275,7 +275,7 @@ class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/users/check-email")
                         .param("email", "test@test.com"))
                 .andExpect(status().isOk())
-                .andDo(document("users/check-email",
+                .andDo(document("new/users/check-email",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -295,7 +295,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(userCreateDto)))
                 .andExpect(status().isOk())
-                .andDo(document("users/signup",
+                .andDo(document("new/users/signup",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
@@ -320,7 +320,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(passwordUpdateDto)))
                 .andExpect(status().isOk())
-                .andDo(document("users/change-password",
+                .andDo(document("new/users/change-password",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
@@ -342,7 +342,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(userInfoUpdateDto)))
                 .andExpect(status().isOk())
-                .andDo(document("users/change-user-info",
+                .andDo(document("new/users/change-user-info",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
@@ -363,7 +363,7 @@ class UserControllerTest {
                 .contentType("application/json")
                 .content(new ObjectMapper().writeValueAsString(pointChargeDto)))
                 .andExpect(status().isOk())
-                .andDo(document("users/payment",
+                .andDo(document("new/users/payment",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
@@ -387,7 +387,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(pointWithdrawDto)))
                 .andExpect(status().isOk())
-                .andDo(document("users/withdraw",
+                .andDo(document("new/users/withdraw",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
@@ -419,7 +419,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.latitude").value(37.123456))
                 .andExpect(jsonPath("$.longitude").value(127.123456))
                 .andExpect(jsonPath("$.role").value("ROLE_USER"))
-                .andDo(document("/users/info",
+                .andDo(document("new/users/info",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -449,7 +449,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(body)))
                 .andExpect(status().isOk())
-                .andDo(document("users/fcm-token",
+                .andDo(document("new/users/fcm-token",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
@@ -465,7 +465,7 @@ class UserControllerTest {
 
         mockMvc.perform(delete("/api/v1/users/{userId}",1L))
                 .andExpect(status().isOk())
-                .andDo(document("/users/deleteUser",
+                .andDo(document("new/users/deleteUser",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         pathParameters(
@@ -485,7 +485,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(body)))
                 .andExpect(status().isOk())
-                .andDo(document("users/logout",
+                .andDo(document("new/users/logout",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
@@ -504,7 +504,7 @@ class UserControllerTest {
         mockMvc.perform(multipart("/api/v1/users/profile-image")
                         .file(file))
                 .andExpect(status().isOk())
-                .andDo(document("users/profile-image",
+                .andDo(document("new/users/profile-image",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestParts(
@@ -530,7 +530,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.user_id").value(1L))
                 .andExpect(jsonPath("$.access_token").value("access_token"))
                 .andExpect(jsonPath("$.refresh_token").value("refresh_token"))
-                .andDo(document("users/refresh",
+                .andDo(document("new/users/refresh",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
@@ -556,7 +556,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .content(new ObjectMapper().writeValueAsString(body)))
                 .andExpect(status().isOk())
-                .andDo(document("users/set-new-password",
+                .andDo(document("new/users/set-new-password",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(
@@ -588,7 +588,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].created_at").value("2023-08-02 12:00:00"))
                 .andExpect(jsonPath("$[0].like_cnt").value(2))
                 .andExpect(jsonPath("$[0].comment_cnt").value(2))
-                .andDo(document("users/my-written-post-list",
+                .andDo(document("new/users/my-written-post-list",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -632,7 +632,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].store_image").value("storeImage.jpg"))
                 .andExpect(jsonPath("$[0].user_id").value(1L))
                 .andExpect(jsonPath("$[0].nickname").value("테스트"))
-                .andDo(document("users/joint-deliveries-writing",
+                .andDo(document("new/users/joint-deliveries-writing",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -671,7 +671,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].is_complete").value(true))
                 .andExpect(jsonPath("$[0].price").value(20000))
                 .andExpect(jsonPath("$[0].transaction_image").value("transaction.jpg"))
-                .andDo(document("users/joint-deliveries-participating",
+                .andDo(document("new/users/joint-deliveries-participating",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -708,7 +708,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].is_complete").value(true))
                 .andExpect(jsonPath("$[0].price").value(20000))
                 .andExpect(jsonPath("$[0].transaction_image").value("transaction.jpg"))
-                .andDo(document("users/joint-deliveries-participating2",
+                .andDo(document("new/users/joint-transaction-join",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -748,7 +748,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].store_image").value("storeImage.jpg"))
                 .andExpect(jsonPath("$[0].user_id").value(1L))
                 .andExpect(jsonPath("$[0].nickname").value("테스트"))
-                .andDo(document("users/joint-deliveries-participating",
+                .andDo(document("new/users/joint-deliveries-participating",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -792,7 +792,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].price").value(30000))
                 .andExpect(jsonPath("$[0].current_person_count").value(2))
                 .andExpect(jsonPath("$[0].target_person_count").value(5))
-                .andDo(document("users/sd",
+                .andDo(document("new/users/joint-purchase-writing",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -830,7 +830,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].price").value(30000))
                 .andExpect(jsonPath("$[0].current_person_count").value(2))
                 .andExpect(jsonPath("$[0].target_person_count").value(5))
-                .andDo(document("users/joint-deliveries-participating2",
+                .andDo(document("new/users/joint-purchase-participating",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -860,7 +860,7 @@ class UserControllerTest {
                         .param("size","10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(1))
-                 .andDo(document("pagecnt/iwrite/board",
+                 .andDo(document("new/pagecnt/iwrite/board",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         pathParameters(
@@ -883,7 +883,7 @@ class UserControllerTest {
         mockMvc.perform(RestDocumentationRequestBuilders.get("/api/v1/users/page-writing/{userId}",1L)
                         .param("size","10"))
                 .andExpect(status().isOk())
-                .andDo(document("users/pageCount/getWrittenJointDelivery",
+                .andDo(document("new/pagecnt/joint-delivery-write",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -903,7 +903,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .param("size","3"))
                 .andExpect(status().isOk())
-                .andDo(document("users/pageCount/MyJoinedJointDeliver",
+                .andDo(document("new/pagecnt/joint-delivery-join",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -923,7 +923,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .param("size","3"))
                 .andExpect(status().isOk())
-                .andDo(document("users/pageCount/getMyTransaction",
+                .andDo(document("new/pagecnt/transaction-write",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -943,7 +943,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .param("size","3"))
                 .andExpect(status().isOk())
-                .andDo(document("users/pageCount/joined-transaction",
+                .andDo(document("new/pagecnt/transaction-join",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -964,7 +964,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .param("size","3"))
                 .andExpect(status().isOk())
-                .andDo(document("new/pageCount/joint-purchase",
+                .andDo(document("new/pagecnt/joint-purchase-write",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -984,7 +984,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .param("size","3"))
                 .andExpect(status().isOk())
-                .andDo(document("new/pageCount/joined-joint-purchase",
+                .andDo(document("new/pagecnt/joint-purchase-join",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
