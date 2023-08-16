@@ -5,18 +5,19 @@ import Stomp from 'stompjs';
 import { useNavigate } from 'react-router';
 import axios from 'axios';
 import Talks from '@/components/Chatting/Talks';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
+import { useSelector } from 'react-redux';
 import { API } from '@/apis/config';
 
-const Chat = ({chatId, setChatId, title}) => {
+const Chat = () => {
   const [Nickname, setNickname] = useState('')
-  const Key = chatId;
+  const params = useParams();
+  const Key = params["id"];
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [socket, setSocket] = useState(null);
   const [stomp, setStomp] = useState(null);
+  const [image, setImage] = useState("")
 
   const token = localStorage.getItem('access_token');
 
@@ -27,7 +28,7 @@ const Chat = ({chatId, setChatId, title}) => {
     const socket = new SockJS(serverAddress);
     const stompClient = Stomp.over(socket);
 
-    stompClient.connect(import.meta.env.VITE_APP_STOMP_CLIENTID, import.meta.env.VITE_APP_STOMP_PASSWORDID, (frame) => {
+    stompClient.connect('guest', 'guest', (frame) => {
       stompClient.subscribe(`/topic/room.${Key}`, (message) => {
         console.log(message);
         showMessage(JSON.parse(message.body));
@@ -54,7 +55,8 @@ const Chat = ({chatId, setChatId, title}) => {
     const messageToSend = {
       room_id: Key,
       content: message,
-      nickname: Nickname
+      nickname: Nickname,
+      profile_image_url : image
     };
 
     stomp.send(`/app/chat/message.${Key}`, {}, JSON.stringify(messageToSend));
@@ -131,7 +133,7 @@ const Chat = ({chatId, setChatId, title}) => {
 
   useEffect(() => {
     connect();
-  }, [chatId]);
+  }, []);
 
   const onKeyEnter = (e) => {
     if (e.key === 'Enter') {
@@ -140,7 +142,6 @@ const Chat = ({chatId, setChatId, title}) => {
   };
 
   useEffect(() => {
-    const URL = import.meta.env.VITE_APP_API
     const id = localStorage.getItem('user_id')
     axios.get(`${API.USER}/info`,
       {
@@ -151,6 +152,7 @@ const Chat = ({chatId, setChatId, title}) => {
       .then(function(response){
         console.log(response.data)
         setNickname(response.data.nickname)
+        setImage(response.data.profile_image)
       })
       .catch(function(error){
         console.log(error)
@@ -158,19 +160,13 @@ const Chat = ({chatId, setChatId, title}) => {
   },[]);
 
   return (
-    <div className="w-3/5 h-12/12 flex flex-col border-2 rounded-md rounded-l-none bg-white">
-      <div className="p-2"style={{height:"10%"}}>{title}</div>
-      <hr />
-      <div style={{height:"80%"}}>
-        <Talks messages={messages} id={Key} Nickname = {Nickname} chatKey={Key} setChatId={setChatId}/>
+    <div className="w-3/5 h-screen flex flex-col m-auto">
+      <Talks messages={messages} id={Key} Nickname = {Nickname}/>
+      <div className="py-2 px-4 border-t border-gray-300 flex justify-around">
+        <input type="text" id="message" value={message} onChange={(e) => setMessage(e.target.value)} className="border rounded p-2 w-10/12 focus:outline-main2" onKeyDown={onKeyEnter} />
+        <button onClick={sendMessage} className="w-1/12 bg-main1 text-white rounded px-4 py-2 hover:bg-main1">전송</button>
       </div>
-      <div className="border-t border-gray-300 flex justify-around h-1/12 items-center bg-main4" style={{height:"10%"}}>
-        <input type="text" id="message" value={message} onChange={(e) => setMessage(e.target.value)} className="h-10 border rounded-full p-2 w-10/12 focus:outline-main2" onKeyDown={onKeyEnter} />
-        <button onClick={sendMessage} className="bg-main1 rounded-full w-10 h-10 flex justify-center items-center">
-          <FontAwesomeIcon icon={faPaperPlane} style={{color: "#000000",}} />
-        </button>
-      </div>
-      {/* <button onClick={handleBack} className="bg-red-500 text-white rounded px-4 py-2 mt-2 mx-4 self-center hover:bg-red-600">뒤로가기</button> */}
+      <button onClick={handleBack} className="bg-red-500 text-white rounded px-4 py-2 mt-2 mx-4 self-center hover:bg-red-600">뒤로가기</button>
     </div>
   );
 };

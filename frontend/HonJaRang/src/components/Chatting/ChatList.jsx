@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router';
 
 
 
-function ChatList({list, setChatId}) {
+function ChatList({list}) {
   const [Diff, setDiff] = useState('')
   const [msg, setmsg] = useState('')
   const navigate = useNavigate()
   const onClick = () => {
-    setChatId(list.id)
+    navigate(`./${list.id}`)
   }
   const splitTitle = list.name?.split('&')[1]
   const isContain = list.name.includes("공동")

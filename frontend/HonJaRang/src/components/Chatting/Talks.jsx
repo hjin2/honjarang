@@ -181,9 +181,6 @@ return(
             메시지 들어감
           </div>
         </div> */}
-        {isChat ? (
-
-          <>
         {msg.map((ms, idx) => (
           (ms.nickname === Nickname?
             <div key={idx}>
@@ -199,7 +196,7 @@ return(
        <div className = "inline-block text-left border rounded-lg bg-main4 bg-opacity-50 px-2 py-1 m-1" >
           {ms.content}
       </div>
-
+      <img src={msg.profile_image_url} alt="" />
        </div>
           )))}
           {messages.map((msg, index) => (
@@ -217,14 +214,10 @@ return(
              <div className = "inline-block text-left border rounded-lg bg-main4 bg-opacity-50 px-2 py-1 m-1" >
                 {msg.content}
             </div>
-      
+              <img src={msg.profile_image_url} alt="" />
              </div>
                 )
                 ))}
-    </>
-  ):(
-    <div>채팅이 없습니다.</div>
-  )}
   </div>
 )
 }
