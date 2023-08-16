@@ -158,7 +158,7 @@ const Chat = ({chatId, setChatId, title}) => {
   },[]);
 
   return (
-    <div className="w-3/5 h-12/12 flex flex-col border-2 rounded-lg bg-white">
+    <div className="w-3/5 h-12/12 flex flex-col border-2 rounded-md rounded-l-none bg-white">
       <div className="p-2"style={{height:"10%"}}>{title}</div>
       <hr />
       <div style={{height:"80%"}}>
