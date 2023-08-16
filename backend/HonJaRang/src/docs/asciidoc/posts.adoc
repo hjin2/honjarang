@@ -25,5 +25,12 @@ operation::posts/comments[snippets='http-request,path-parameters,request-fields'
 === 댓글 삭제
 operation::posts/comment/delete[snippets='http-request,path-parameters']
 
-==== 댓글 조회
+=== 댓글 조회
 operation::posts/comments/list[snippets='http-request,response-fields']
+
+=== 공지 설정하기
+operation::posts/notice[snippets='http-request,path-parameters']
+
+=== 페이지 수
+operation::posts/pageCount[snippets='http-request,query-parameters,response-body']
+

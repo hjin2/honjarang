@@ -20,3 +20,6 @@ operation::transaction/buy[snippets='http-request,path-parameters']
 
 === 중고거래 수령확인
 operation::transaction/receipt[snippets='http-request,path-parameters']
+
+=== 중고거래 페이지 수
+operation::transaction/pageCount[snippets='http-request,query-parameters,response-body']
