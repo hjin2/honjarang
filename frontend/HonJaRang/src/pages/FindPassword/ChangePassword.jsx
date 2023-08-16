@@ -1,9 +1,12 @@
 import { useState,useEffect } from "react";
 import axios from "axios";
 import { API } from "@/apis/config";
+import { useNavigate } from "react-router-dom";
 
 export default function ChangePassword() {
   // 비밀번호, 비밀번호 확인, 오류메시지
+  const navigate = useNavigate()
+  const [ordinary, setOrdinary] = useState('')
   const [password, setPassword] = useState('')
   const [password_cfm, setPassword_cfm] = useState('')
   const [pwdMsg, setpwdMsg] = useState('')
@@ -40,6 +43,10 @@ export default function ChangePassword() {
   useEffect(() => {
     pwd_cfm_check(password_cfm)
   })
+
+  const onChange_ordinaryPassword = (event) => {
+    setOrdinary(event.currentTarget.value)
+  }
     
   const onChange_password = (event) => {
     setPassword(event.currentTarget.value)
@@ -53,12 +60,12 @@ export default function ChangePassword() {
 
   const Password_Change = () => {
     axios.put(`${API.USER}/change-password`,{
-      password: password,
-      new_password: password
-    })
+      password : ordinary,
+      new_password: password,
+    },{headers:{"Authorization" : `Bearer ${localStorage.getItem("access_token")}`}})
     .then((res) => {
       console.log(res.data)
-
+      navigate(-1)
     })
     .catch((err) => {
       console.log(err)
@@ -71,12 +78,17 @@ export default function ChangePassword() {
       <div>
         비밀번호
         <br />
+        <input type="password" onChange={onChange_ordinaryPassword} maxLength="15"/>
+      </div>
+      <div>
+        새로운 비밀번호
+        <br />
         <input type="password" onChange = {onChange_password} maxLength="15"/>
         <br />
         <span>{pwdMsg}</span>
       </div>
       <div className="mt-4">
-        비밀번호 확인
+        새로운 비밀번호 확인
         <br />
         <input type="password" onChange = {onChange_password_cfm} maxLength="15"/>
         <br />
