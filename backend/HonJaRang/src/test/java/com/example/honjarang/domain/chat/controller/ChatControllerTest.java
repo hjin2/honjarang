@@ -77,6 +77,7 @@ class ChatControllerTest {
                 .address("서울특별시 강남구")
                 .latitude(37.123456)
                 .longitude(127.123456)
+                .profileImage("https://honjarang.kro.kr/profile/test.png")
                 .role(Role.ROLE_USER)
                 .build();
         user.setIdForTest(1L);
@@ -129,7 +130,7 @@ class ChatControllerTest {
     @DisplayName("채팅방 메시지 목록 조회")
     void getChatMessageList() throws Exception {
         // given
-        ChatMessageListDto chatMessageListDto = new ChatMessageListDto(chatMessage, user.getNickname());
+        ChatMessageListDto chatMessageListDto = new ChatMessageListDto(chatMessage, user);
 
         given(chatService.getChatMessageList(eq(1L), eq(1), eq(10), any(User.class))).willReturn(List.of(chatMessageListDto));
 
@@ -142,6 +143,7 @@ class ChatControllerTest {
                 .andExpect(jsonPath("$[0].content").value("테스트 메시지"))
                 .andExpect(jsonPath("$[0].user_id").value(1L))
                 .andExpect(jsonPath("$[0].nickname").value("테스트"))
+                .andExpect(jsonPath("$[0].profile_image_url").value("https://honjarang.kro.kr/profile/test.png"))
                 .andExpect(jsonPath("$[0].created_at").exists())
                 .andDo(document("chat/getChatMessageList",
                         preprocessRequest(prettyPrint()),
@@ -158,6 +160,7 @@ class ChatControllerTest {
                                 fieldWithPath("[].content").type(JsonFieldType.STRING).description("메시지 내용"),
                                 fieldWithPath("[].user_id").type(JsonFieldType.NUMBER).description("메시지 작성자 ID"),
                                 fieldWithPath("[].nickname").type(JsonFieldType.STRING).description("메시지 작성자 닉네임"),
+                                fieldWithPath("[].profile_image_url").type(JsonFieldType.STRING).description("메시지 작성자 프로필 이미지 URL"),
                                 fieldWithPath("[].created_at").type(JsonFieldType.STRING).description("메시지 작성 시간")
                         )
                 ));

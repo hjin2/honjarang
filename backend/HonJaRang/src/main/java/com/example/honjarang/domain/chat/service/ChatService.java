@@ -66,7 +66,7 @@ public class ChatService {
     }
 
     public void sendChatMessageToQueue(Long roomId, ChatMessageSendDto chatMessageSendDto, String sessionId) {
-        ChatMessageCreateDto chatMessageCreateDto = new ChatMessageCreateDto(chatMessageSendDto.getContent(), roomId, sessionId, chatMessageSendDto.getNickname());
+        ChatMessageCreateDto chatMessageCreateDto = new ChatMessageCreateDto(chatMessageSendDto.getContent(), roomId, sessionId, chatMessageSendDto.getNickname(), chatMessageSendDto.getProfileImageUrl());
         rabbitTemplate.convertAndSend("amq.topic", "room." + roomId, chatMessageCreateDto);
     }
 
@@ -114,7 +114,7 @@ public class ChatService {
         for(ChatMessage chatMessage : chatMessages) {
             User user = userRepository.findById(chatMessage.getUserId())
                     .orElseThrow(() -> new UserNotFoundException("존재하지 않는 유저입니다."));
-            chatMessageListDtoList.add(new ChatMessageListDto(chatMessage, user.getNickname()));
+            chatMessageListDtoList.add(new ChatMessageListDto(chatMessage, user));
         }
 
         // 마지막 읽은 메시지를 업데이트
