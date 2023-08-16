@@ -41,7 +41,7 @@ export default function Signup() {
   }
 
   const SignupValid =  (EmailValid&&NicknameValid&&PwdValid&&AddressValid ? false:true)
-  
+
   // 회원가입 성공 시 로그인 페이지로 이동하도록 구현
   const navigate = useNavigate()
   const SignupSuccess = () => {
@@ -67,7 +67,7 @@ export default function Signup() {
     })
   }
   return (
-    <div className="m-auto w-4/5 h-fit border border-solid border-black rounded
+    <div className="m-auto w-4/5 h-fit border border-solid border-gray2 rounded-md
     flex flex-col items-start justify-around p-2">
           <img src={image2} alt="" className='mx-auto w-2/12'/>
           <Email_verify Email = {Email} setEmail = {setEmail} ChangeEmailValid = {ChangeEmailValid}/>
@@ -77,8 +77,9 @@ export default function Signup() {
           Latitude = {Latitude} setLatitude = {setLatitude}
           Longitude = {Longitude} setLongitude = {setLongitude}
           ChangeAddressValid = {ChangeAddressValid}/>
-          <button disabled = {SignupValid} className='border-solid border border-black rounded bg-main4 mt-2 place-self-center' 
-          onClick={onClick} >회원가입</button>
+          {SignupValid ? <button disabled = {SignupValid} className="m-auto main3-full-button w-28 h-10 text-lg text-red-600" 
+          onClick={onClick} >회원가입</button> : <button disabled = {SignupValid} className="m-auto main3-full-button w-28 h-10 text-lg" 
+          onClick={onClick} >회원가입</button>}
     </div>
   )
 }

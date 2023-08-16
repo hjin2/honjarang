@@ -12,7 +12,6 @@ function Email_verify({Email, setEmail, ChangeEmailValid}) {
   const [emailMsg, setemailMsg] = useState('')
   const [emailCheck, setemailCheck] = useState(false)
   const [EmailDisalbed, setEmailDisalbed] = useState(false)
-  const [VerifyDisalbed, setVerifyDisalbed] = useState(false)
   const [Manual, setManual] = useState(false)
 
   const onSelect = (event) => {
@@ -32,44 +31,49 @@ function Email_verify({Email, setEmail, ChangeEmailValid}) {
   
 
   const EmailDuplicate = () => {
-    axios.get(`${API.USER}/check-email`,
-    {params: {
-      email : email
-    }})
-    .then((res) => {
-      console.log(res.data)
-      let result = confirm('사용가능한 이메일 입니다. \n해당 이메일을 사용하시겠습니까?')
-      if (result) {
-        setEmailDisalbed(true)
-        setemailMsg('')
+    if (address === 'default' || address === '') {
+      setemailMsg('이메일을 선택해주세요.')
+    }
+    else {
 
-      }
-      else {
-        setemailMsg('')
-      }
-      axios.post(`${API.USER}/send-verification-code`,
-      {
-        email: email
+      axios.get(`${API.USER}/check-email`,
+      {params: {
+        email : email
+      }})
+      .then((res) => {
+        console.log(res.data)
+        let result = confirm('사용가능한 이메일 입니다. \n해당 이메일을 사용하시겠습니까?')
+        if (result) {
+          setEmailDisalbed(true)
+          setemailMsg('')
+  
+        }
+        else {
+          setemailMsg('')
+        }
+        axios.post(`${API.USER}/send-verification-code`,
+        {
+          email: email
+        })
+        .then(function (response) {
+          console.log(response)
+          setemailMsg('')
+          setemailCheck(true)
+          setEmail(email)
+        alert('인증번호를 전송했습니다!')
       })
-      .then(function (response) {
-        console.log(response)
-        setemailMsg('')
-        setemailCheck(true)
-        setEmail(email)
-        setVerifyDisalbed(true)
-      alert('인증번호를 전송했습니다!')
-    })
-
-      .catch(function (error) {
-        console.log(error)
+  
+        .catch(function (error) {
+          console.log(error)
+        })
+      }    
+      )
+      .catch((err) => {
+        console.log(err)
+        setemailMsg('사용할 수 없는 이메일입니다.')
+  
       })
-    }    
-    )
-    .catch((err) => {
-      console.log(err)
-      setemailMsg('사용할 수 없는 이메일입니다.')
-
-    })
+    }
   }
 
 
@@ -79,25 +83,27 @@ function Email_verify({Email, setEmail, ChangeEmailValid}) {
   
   
 return (
-    <div>
+    <div className='mb-2'>
       <div>
-            이메일
-            <br />
-            <input type="text" name="id" onChange={onChange} value={id} disabled={EmailDisalbed}/>
-            @
-            {Manual ?  <input type="text" onChange={onAddress} disabled={EmailDisalbed}/>
-            : <select name="email" id="email" className="border-solid border border-black rounded" value={address} onChange={onSelect} disabled={EmailDisalbed}>
-            <option value="default">--이메일 선택--</option>
+      <label htmlFor="email" className="font-semibold text-lg text-main2 m-0">이메일</label>
+      <br />
+            <input type="text" name="id" onChange={onChange} value={id} disabled={EmailDisalbed}
+            className="inline-block border-gray2 rounded-lg block w-60 h-10 p-2 focus:outline-main2 m-0"/>
+            <span className='ml-2 mr-2 text-lg'>@</span>
+            {Manual ?  <input type="text" onChange={onAddress} disabled={EmailDisalbed} className="inline-block border-gray2 rounded-lg block w-60 h-10 text-base p-2 m-0 focus:outline-main2"/>
+            : <select name="email" id="email" className="inline-block border border-gray2 rounded-lg block w-60 h-10 p-2 m-0 focus:outline-main2" value={address} onChange={onSelect} disabled={EmailDisalbed}
+            >
+            <option value="default" >--이메일 선택--</option>
             <option value="naver.com">naver.com</option>
             <option value="gmail.com">gmail.com</option>
-            <option value="nate.com">nate.com</option>
-            <option value="hanmail.net">hanmail.net</option>
-            <option value="manual"><input type="text" />직접 입력</option>
+            <option value="nate.com"> nate.com</option>
+            <option value="hanmail.net" > hanmail.net</option>
+            <option value="manual">직접 입력</option>
           </select>}
-            <button className='border-solid border border-black rounded bg-gray2 ml-2'
+            <button className='w-32 h-10 main1-full-button my-10 text-base ml-2'
             onClick={EmailDuplicate} disabled={EmailDisalbed}>이메일 중복 확인</button>
             <br />
-            <span>{emailMsg}</span>
+            <span className="font-semibold text-lg text-red-600">{emailMsg}</span>
             {emailCheck && <Verify_check email={email} ChangeEmailValid = {ChangeEmailValid}/>}
           </div>
           
