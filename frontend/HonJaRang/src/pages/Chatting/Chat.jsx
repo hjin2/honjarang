@@ -48,7 +48,6 @@ const Chat = () => {
         return [...prevMessages, message];
         
       }
-      scrollToBottom();
 
       return prevMessages;
     });
