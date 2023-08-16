@@ -18,11 +18,11 @@ function Talks({messages, id, Nickname, chatKey, setChatId}) {
   useEffect(() => {
     timeline()
   })
+
   const timeline = () => {
     let time = new Date()
     setHour(time.getHours())
     setMinute(time.getMinutes())
-    console.log(timeline)
   }
   
   
@@ -224,7 +224,7 @@ return(
         {messages.map((msg, idx) => (
           (msg.nickname === Nickname?
             <div key={idx} className="flex flex-row justify-end">
-              <div className="flex items-end py-3 text-gray3 text-sm">{msg.created_at?.slice(11,16)}</div>
+              <div className="flex items-end py-3 text-gray3 text-sm">{hour}:{minute}</div>
               <div className = "whitespace-pre-line float-right text-right inline-block border rounded-lg bg-main3 bg-opacity-50 px-2 py-1 m-2" >
                 {msg.content}
               </div>
