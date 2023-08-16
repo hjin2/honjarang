@@ -2,7 +2,7 @@ import axios from "axios";
 import React, {useState, useRef, useEffect} from "react";
 
 
-function Talks({messages, id, Nickname}) {
+function Talks({messages, id, Nickname, chatKey, setChatId}) {
   const [isLoading, setIsLoading] = useState(false);
   const [pages, setPages] = useState(1);
   const [msg, setMsg] = useState([]);
@@ -11,12 +11,13 @@ function Talks({messages, id, Nickname}) {
   const chatAreaRef = useRef(null);
   const isInitialLoad = useRef(true);
   const Key = id
+  const [isChat, setIsChat] = useState(false)
 
   
   
   useEffect(() => {
     getChats()
-  },[])
+  },[chatKey])
  
   const getChats = () => {
     axios.get(`${import.meta.env.VITE_APP_API}/api/v1/chats/${Key}/page`, {
@@ -29,6 +30,11 @@ function Talks({messages, id, Nickname}) {
     })
     .then((res) => {
       console.log(res.data)
+      if(res.data >0){
+        setIsChat(true)
+      }else{
+        setIsChat(false)
+      }
       setPages(res.data);
       loadChats(res.data);
     });
@@ -48,6 +54,7 @@ function Talks({messages, id, Nickname}) {
     .then((res) => {
       console.log(res.data);
       setMsg(res.data);
+      console.log(res.data.length)
       if (res.data.length < 30) {
         console.log(pages)
         if (p >1) {
@@ -161,7 +168,7 @@ const loadMoreChat = () => {
 
 
 return(
-  <div id="ChatArea" ref={chatAreaRef} className="flex flex-col overflow-y-auto flex-grow border border-gray-300 p-4">
+  <div id="ChatArea" ref={chatAreaRef} className="flex flex-col overflow-y-auto flex-grow p-4">
         {/* <div className="float-right">
           <span>닉네임 들어감</span>
           <div>
@@ -174,6 +181,9 @@ return(
             메시지 들어감
           </div>
         </div> */}
+        {isChat ? (
+
+          <>
         {msg.map((ms, idx) => (
           (ms.nickname === Nickname?
             <div key={idx}>
@@ -193,15 +203,15 @@ return(
        </div>
           )))}
           {messages.map((msg, index) => (
-                (msg.nickname === Nickname?
-                  <div key={index}>
+            (msg.nickname === Nickname?
+              <div key={index}>
                 <div className = "float-right text-right inline-block border rounded-lg bg-main3 bg-opacity-50 px-2 py-1 m-3" >
                    {msg.content}
                </div>
          
                 </div>
              : 
-             <div key={index} className="m-2">
+             <div key={index} className="">
                <span>{msg.nickname}</span>
                <br />
              <div className = "inline-block text-left border rounded-lg bg-main4 bg-opacity-50 px-2 py-1 m-1" >
@@ -210,7 +220,11 @@ return(
       
              </div>
                 )
-              ))}
+                ))}
+    </>
+  ):(
+    <div>채팅이 없습니다.</div>
+  )}
   </div>
 )
 }
