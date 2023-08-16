@@ -13,6 +13,9 @@ export default function Password_check({Pwd, setPwd, setPwdValid}) {
     if (pwdCheck.test(pwd)) {
       setpwdMsg('')
     }
+    else if (pwd === '') {
+      setpwdMsg('')
+    }
     else {
       setpwdMsg('사용할 수 없는 비밀번호입니다.')
     }}
@@ -40,6 +43,7 @@ const PwdValidCheck = () => {
 
   useEffect(() => {
     pwd_cfm_check(password_cfm)
+    pwd_check(password)
   })
     
   const onChange_password = (event) => {
@@ -54,20 +58,22 @@ const PwdValidCheck = () => {
     
     
   return (
-    <div>
+    <div className="mb-3">
       <div>
-        비밀번호
+      <label className="font-semibold text-lg text-main2">비밀번호</label>
         <br />
-        <input type="password" onChange = {onChange_password} maxLength="15"/>
+        <input type="password" onChange = {onChange_password} maxLength="15"
+        className="inline-block border-gray2 rounded-lg block w-60 h-10 p-2 focus:outline-main2"/>
         <br />
-        <span>{pwdMsg}</span>
+        <span className="font-semibold text-lg text-red-600">{pwdMsg}</span>
       </div>
       <div className="mt-4">
-        비밀번호 확인
+        <label className="font-semibold text-lg text-main2">비밀번호 확인</label>
         <br />
-        <input type="password" onChange = {onChange_password_cfm} maxLength="15"/>
+        <input type="password" onChange = {onChange_password_cfm} maxLength="15"
+          className="inline-block border-gray2 rounded-lg block w-60 h-10 p-2 focus:outline-main2"/>
         <br />
-        <span>{pwdcfmMsg}</span>
+        <span className="font-semibold text-lg text-red-600">{pwdcfmMsg}</span>
       </div>
     </div>
   )
