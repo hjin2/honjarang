@@ -144,8 +144,14 @@ public class TransactionService {
     @Transactional(readOnly = true)
     public TransactionDto getSecondHandTransaction(Long transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new TransactionException("존재하지 않는 거래입니다."));
-        Long buyerId = transaction.getBuyer().getId();
-        TransactionDto transactionDto = new TransactionDto(transaction, buyerId);
+        TransactionDto transactionDto = null;
+        if (transaction.getBuyer() != null) {
+            Long buyerId = transaction.getBuyer().getId();
+            transactionDto = new TransactionDto(transaction, buyerId);
+        } else {
+            transactionDto = new TransactionDto(transaction);
+        }
+
         return transactionDto;
     }
 
