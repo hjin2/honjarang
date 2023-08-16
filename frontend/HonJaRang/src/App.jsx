@@ -28,12 +28,13 @@ import TransactionCreate from '@/pages/Market/TransactionCreate';
 import TransactionDetail from '@/pages/Market/TransactionDetail';
 import FreeChat from '@/pages/WebRTC/FreeChat';
 import FirebaseMessaging from '@/pages/PushTest/PushTest';
-import { useEffect } from 'react';
 import Main from './pages/Main/Main';
 import SetNewPassword from './pages/FindPassword/SetNewPassword';
+import { useSelector } from 'react-redux';
+import AuthRoute from '@/components/AuthRoute';
+
 
 function App() {
-
   // useEffect(() =>{
   //   const currentURL = window.location.href
   //   if (currentURL === 'https://i9d202.p.ssafy.io/') {
@@ -41,51 +42,51 @@ function App() {
   //   window.location.href = 'https://honjarang.kro.kr/';
   //   }
   // }, []);
-
+  const isLogged = useSelector((state) => state.login.isLogged)
   return (
     <div className="app">
       <BrowserRouter>
         <Routes>
           <Route element={<DefaultLayout />}>
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/webrtc" element={<WebRTC />} />
-            <Route path="/webrtc/create" element={<WebRTCCreate/>}/>
-            <Route path="/chatting" element={<Chatting />} />
-            <Route path="/market" element={<Market />} />
-            <Route path="/market/purchasedetail/:id" element={<PurchaseDetail />}></Route>
+            <Route path="/webrtc" element={<AuthRoute component={<WebRTC/>} isLogged={isLogged} />} />
+            <Route path="/webrtc/create" element={<AuthRoute component={<WebRTCCreate/>} isLogged={isLogged}/>}/>
+            <Route path="/chatting" element={<AuthRoute component={<Chatting/>} isLogged={isLogged} />} />
+            <Route path="/market" element={<AuthRoute component={<Market/>} isLogged={isLogged} />} />
+            <Route path="/market/purchasedetail/:id" element={<AuthRoute component={<PurchaseDetail/>} isLogged={isLogged} />}></Route>
             <Route
               path="/market/deliverydetail/:id"
-              element={<DeliveryDetail />}
+              element={<AuthRoute component={<DeliveryDetail/>} isLogged={isLogged} />}
             ></Route>
-            <Route path="/market/purchase/create" element={<PurchaseCreate/>}></Route>
-            <Route path="/market/delivery/create" element={<DeliveryCreate/>}></Route>
-            <Route path="/market/transaction/create" element={<TransactionCreate/>}></Route>
-            <Route path="/market/transactiondetail/:id" element={<TransactionDetail/>}></Route>
-            <Route path="/board" element={<Board />} />
-            <Route path="/map" element={<Map1 />} />
-            <Route path="/mypage/:id" element={<MyPage />} />
-            <Route path="/findpassword" element={<FindPassword />} />
+            <Route path="/market/purchase/create" element={<AuthRoute component={<PurchaseCreate/>} isLogged={isLogged}/>}></Route>
+            <Route path="/market/delivery/create" element={<AuthRoute component={<DeliveryCreate/>} isLogged={isLogged}/>}></Route>
+            <Route path="/market/transaction/create" element={<AuthRoute component={<TransactionCreate/>} isLogged={isLogged}/>}></Route>
+            <Route path="/market/transactiondetail/:id" element={<AuthRoute component={<TransactionDetail/>} isLogged={isLogged}/>}></Route>
+            <Route path="/board" element={<AuthRoute component={<Board/>} isLogged={isLogged} />} />
+            <Route path="/map" element={<AuthRoute component={<Map1/>} isLogged={isLogged} />} />
+            <Route path="/mypage/:id" element={<AuthRoute component={<MyPage/>} isLogged={isLogged} />} />
             <Route
               path="/findpassword/changepassword"
-              element={<ChangePassword />}
+              element={<AuthRoute component={<ChangePassword/>} isLogged={isLogged} />}
             ></Route>
-            <Route path="/setnewpassword" element={<SetNewPassword/>}></Route>
+            <Route path="/setnewpassword" element={<AuthRoute component={<SetNewPassword/>} isLogged={isLogged}/>}></Route>
             <Route
               path="/board/articlecreate"
-              element={<ArticleCreate />}
+              element={<AuthRoute component={<ArticleCreate/>} isLogged={isLogged} />}
             ></Route>
-            <Route path="/board/article/:id" element={<ArticleDetail />} />
-            <Route path="/board/articleupdate/:id" element={<ArticleUpdate/>}></Route>
+            <Route path="/board/article/:id" element={<AuthRoute component={<ArticleDetail/>} isLogged={isLogged} />} />
+            <Route path="/board/articleupdate/:id" element={<AuthRoute component={<ArticleUpdate/>} isLogged={isLogged}/>}></Route>
             <Route path="/*" element={<Notfound />} />
           </Route>
-          <Route path="/chatting/:id" element={<Chat />} />
+          <Route path="/chatting/:id" element={<AuthRoute component={<Chat/>} isLogged={isLogged} />} />
+          <Route path="/webrtc/:sessionid" element={<AuthRoute component={<FreeChat/>} isLogged={isLogged}/>}/>
+          <Route path="/checkout/:price" element={<AuthRoute component={<Checkout/>} isLogged={isLogged} />} />
+          <Route path="/checkout/fail" element={<AuthRoute component={<Fail/>} isLogged={isLogged} />} />
+          <Route path="/checkout/success" element={<AuthRoute component={<Success/>} isLogged={isLogged} />} />
+          <Route path="/push" element={<AuthRoute component={<FirebaseMessaging/>} isLogged={isLogged} />} />
           <Route exact path="/" element={<Main />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/webrtc/:sessionid" element={<FreeChat/>}/>
-          <Route path="/checkout/:price" element={<Checkout />} />
-          <Route path="/checkout/fail" element={<Fail />} />
-          <Route path="/checkout/success" element={<Success />} />
-          <Route path="/push" element={<FirebaseMessaging />} />
+          <Route path="/findpassword" element={<FindPassword />} />
+          <Route path="/signup" element={<Signup />} />
         </Routes>
       </BrowserRouter>
     </div>

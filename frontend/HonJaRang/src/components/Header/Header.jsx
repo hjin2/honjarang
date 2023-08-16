@@ -21,12 +21,7 @@ export default function Header() {
   })
 
   const Clear = () => {
-    axios.post(`${API.USER}/logout`,
-    {
-      params: {
-        fcm_token : fcm
-      }
-    })
+    axios.post(`${API.USER}/logout`,{fcm_token : fcm},{headers:{"Authorization" : `Bearer ${localStorage.getItem("access_token")}`}})
     .then((res) => {
       localStorage.clear()
       dispatch(setLoginStatus(false))
