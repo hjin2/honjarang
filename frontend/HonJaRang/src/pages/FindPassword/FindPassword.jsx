@@ -40,12 +40,12 @@ export default function FindPassword() {
   }
 
   function change_password() {
-    movePage('/FindPassword/ChangePassword');
+    movePage('/setnewpassword');
   }
   
   const email_code = () => {
     axios
-      .post(`${import.meta.env.VITE_APP_API}/users/send-verification-code`, {
+      .post(`${API.USER}/send-verification-code`, {
         email: email,
       })
       .then(function (response) {
