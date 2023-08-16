@@ -13,6 +13,7 @@ import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 import { faMicrophoneSlash } from "@fortawesome/free-solid-svg-icons";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { useSelector } from "react-redux";
+import logoImage from "@/assets/2.png"
 
 export default function FreeChat() {
   const [session, setSession] = useState(undefined)
@@ -45,7 +46,7 @@ export default function FreeChat() {
     setSession(undefined);
     setSubscribers([]);
     setPublisher(undefined);
-    axios.delete(`${URL}/api/v1/video-room/${mySessionId}/connections`,{headers : {"Authorization" : `Bearer ${token}`}})
+    axios.delete(`${URL}/api/v1/video-room/${localStorage.getItem("user_id")}/connections`,{headers : {"Authorization" : `Bearer ${token}`}})
       .then((res) => console.log(res))
       .catch((err) => console.log(err))
     navigate('/webrtc')
@@ -81,6 +82,7 @@ export default function FreeChat() {
     session.signal({
       type: 'chat',
       data: JSON.stringify(newMessage),
+      to:[]
     });
   };
 
@@ -102,7 +104,9 @@ export default function FreeChat() {
 
     mySession.on('signal:chat', (event) => {
       const newMessage = JSON.parse(event.data);
-      setChatMessages((prevMessages) => [...prevMessages, newMessage]);
+      if (newMessage.sender !== nickname) {
+        setChatMessages((prevMessages) => [...prevMessages, newMessage]);
+      }
     });
 
     setSession(mySession);
@@ -168,7 +172,7 @@ export default function FreeChat() {
 
   return (
     <div id="session" className="h-screen p-6">
-      <div className="text-center text-5xl text-main1 font-bold" style={{height : "10%"}}>혼자랑</div>
+      <img src={logoImage} className="w-2/12 mx-auto" style={{height:"10%"}}/>
       <div className="flex space-x-5" style={{height : "80%"}}>
         <div id="video-container" className="grid grid-cols-4 gap-4">
           {publisher !== undefined ? (
@@ -188,10 +192,10 @@ export default function FreeChat() {
           <Chat chatMessages={chatMessages} sendChatMessage={sendChatMessage}/>
         ):(null)}
       </div>
-    <div className="flex justify-center space-x-5 mt-5">
+    <div className="flex justify-center space-x-5 mt-10">
       <button className="flex h-8 w-24 bg-main1 rounded-lg text-white justify-center items-center" onClick={toggleAudio}>
         {publishAudio === true ? (
-          <div className="flex space-x-2 items-center">
+          <div className="flex space-x-2 items-center" style={{height:"40%"}}>
             <FontAwesomeIcon icon={faMicrophoneSlash} style={{color : '#ffffff'}}/>
             <div>
               Mute

@@ -45,10 +45,11 @@ export default function Chatting() {
 
 
   return (
-    <div className="flex w-4/5 mx-auto h-sreen bg-main4 rounded-md">
-      <div className="w-2/5 border border-solid border-black  border-r-0 rounded-md h-full">
+    <div className="flex w-4/5 mx-auto h-sreen bg-main4 rounded-md border-2">
+      <div className="w-2/5 rounded-md  h-full">
+        <div className="bg-white p-4">채팅목록</div>
           {Lists.length ? Lists.map(list => (
-            <div key={list.id} className="hover:bg-main1 active:bg-main1 border-b border-solid border-gray-300 cursor-pointer">
+            <div key={list.id} className="hover:bg-main1 active:bg-main1 border border-gray1 rounded-md cursor-pointer">
               <ChatList list={list}  setChatId={setChatId}/>
             </div>
             )) : <div>아직 생성된 채팅방이 없습니다.</div>}
@@ -56,7 +57,7 @@ export default function Chatting() {
       {chatId !== 0 ? (
         <Chat chatId={chatId} setChatId={setChatId} title={title}/>
       ):(
-        <div className="w-3/5 h-12/12 flex flex-col border-2 rounded-lg bg-white"></div>
+        <div className="w-3/5 h-12/12 flex flex-col border-2 rounded-md rounded-l-none bg-white"></div>
       )}
     </div>
   )
