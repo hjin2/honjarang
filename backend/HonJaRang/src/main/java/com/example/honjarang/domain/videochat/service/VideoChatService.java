@@ -1,20 +1,18 @@
 package com.example.honjarang.domain.videochat.service;
 
-import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.videochat.dto.VideoChatListDto;
 import com.example.honjarang.domain.videochat.dto.VideoChatRoomCreateDto;
 import com.example.honjarang.domain.videochat.entity.Category;
 import com.example.honjarang.domain.videochat.entity.VideoChatParticipant;
 import com.example.honjarang.domain.videochat.entity.VideoChatRoom;
-import com.example.honjarang.domain.videochat.exception.ExistVideoChatException;
 import com.example.honjarang.domain.videochat.repository.VideoChatParticipantRepository;
 import com.example.honjarang.domain.videochat.repository.VideoChatRoomRepository;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,10 +23,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -136,17 +131,20 @@ public class VideoChatService {
     }
 
     @Transactional
-    public void closeConnection(String sessionId, User user)
+    public void closeConnection(Long userId)
         throws OpenViduJavaClientException, OpenViduHttpException {
-        VideoChatRoom videoChatRoom = videoChatRoomRepository.findBySessionId(sessionId);
-        videoChatParticipantRepository.deleteByUserIdAndVideoChatRoom(user.getId(), videoChatRoom);
 
-        if (videoChatParticipantRepository.countByVideoChatRoom(videoChatRoom) == 0)
-            videoChatRoomRepository.deleteById(videoChatRoom.getId());
+        VideoChatParticipant videoChatParticipant = videoChatParticipantRepository.findByUserId(userId);
+        videoChatParticipantRepository.deleteByUserId(userId);
+
+        Optional<VideoChatRoom> videoChatRoom = videoChatRoomRepository.findById(videoChatParticipant.getVideoChatRoom().getId());
+        if (videoChatParticipantRepository.countByVideoChatRoom(videoChatRoom.get()) == 0)
+            videoChatRoomRepository.deleteById(videoChatParticipant.getId());
     }
 
     @Transactional(readOnly = true)
-    public List<VideoChatListDto> getSessionList(String category) {
+    public List<VideoChatListDto> getSessionList(String category, int page, String keyword) {
+        Pageable pageable = PageRequest.of(page -1, 15);
 
         Category option = Category.FREE;
 
@@ -160,7 +158,7 @@ public class VideoChatService {
         }
 
 
-        List<VideoChatRoom> videoChatRooms = videoChatRoomRepository.findByCategory(option);
+        List<VideoChatRoom> videoChatRooms = videoChatRoomRepository.findAllByCategoryAndTitleContainingIgnoreCaseOrderByCreatedAtDesc(option, keyword, pageable).toList();
         List<VideoChatListDto> videoChatRoomList = new ArrayList<>();
         for(VideoChatRoom videoChatRoom  : videoChatRooms) {
             Integer count = videoChatParticipantRepository.countByVideoChatRoom(videoChatRoom);
@@ -170,4 +168,21 @@ public class VideoChatService {
     }
 
 
+    @Transactional(readOnly = true)
+    public Integer getChatRoomPageCount(String category, Integer size, String keyword) {
+
+
+        Category option = Category.FREE;
+
+        switch(category) {
+            case "free": option = Category.FREE; break;
+            case "game": option = Category.GAME; break;
+            case "study": option = Category.STUDY; break;
+            case "mukbang": option = Category.MUKBANG; break;
+            case "help": option = Category.HELP; break;
+            case "honsul": option = Category.HONSUL; break;
+        }
+
+        return (int) Math.ceil((double) videoChatRoomRepository.findAllByCategoryAndTitleContainingIgnoreCase(option, keyword) / size);
+    }
 }

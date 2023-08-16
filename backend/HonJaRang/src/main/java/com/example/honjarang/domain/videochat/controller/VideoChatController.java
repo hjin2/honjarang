@@ -46,31 +46,22 @@ public class VideoChatController {
     }
 
     // 화상 채팅 방 퇴장
-    @DeleteMapping("/{sessionId}/connections")
-    public ResponseEntity<Long> closeConnection(@PathVariable("sessionId") String sessionId,
-                                                @CurrentUser User user) throws OpenViduJavaClientException, OpenViduHttpException {
-        videoChatService.closeConnection(sessionId, user);
+    @DeleteMapping("/{userId}/connections")
+    public ResponseEntity<Long> closeConnection(@PathVariable("userId") Long userId)
+            throws OpenViduJavaClientException, OpenViduHttpException {
+        videoChatService.closeConnection(userId);
         return ResponseEntity.ok().build();
     }
 
     // 화상 채팅 방 목록 조회
     @GetMapping("/{category}")
-    public List<VideoChatListDto> getSessionList(@PathVariable("category") String category) {
-        return videoChatService.getSessionList(category);
+    public List<VideoChatListDto> getSessionList(@PathVariable("category") String category, @RequestParam(value="page", defaultValue = "1") int page,
+                                                 @RequestParam(value="keyword", defaultValue = "") String keyword) {
+        return videoChatService.getSessionList(category, page, keyword);
     }
-//
-//    @GetMapping("/page")
-//    public ResponseEntity<Integer> getPostsPageCount(@RequestParam Integer size, @RequestParam(value="keyword", defaultValue = "")String keyword) {
-//        return ResponseEntity.ok(postService.getPostsPageCount(size,keyword));
-//    }
-//
-//    @GetMapping("")
-//    public List<PostListDto> getPosts(@RequestParam(value = "page", defaultValue = "1") int page,
-//                                      @RequestParam(value = "keyword", defaultValue = "") String keyword) {
-//        return postService.getPostList(page, keyword);
-//    }
-//
 
-
-
+    @GetMapping("/{category}/page")
+    public ResponseEntity<Integer> getVideoChatRoomPageCount(@PathVariable("category") String category, @RequestParam Integer size, @RequestParam(value="keyword", defaultValue = "")String keyword) {
+        return ResponseEntity.ok(videoChatService.getChatRoomPageCount(category, size,keyword));
+    }
 }
