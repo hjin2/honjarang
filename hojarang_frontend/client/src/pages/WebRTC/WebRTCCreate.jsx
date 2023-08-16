@@ -65,16 +65,33 @@ export default function WebRTCCreate() {
   return (
     <div className="border rounded-lg max-w-2xl mx-auto mt-10 pb-3 p-5 space-y-5 w-5/12">
       <div>
-        <div>제목</div>
-        <input type="text" aria-label="title" onChange={handleTitle}/>
+        <div className="text-lg mb-1">카테고리</div>
+        <form action="" value="카테고리">
+          <select value={category} className="border border-gray2 focus:outline-main2 rounded-lg h-8 w-24" onChange={handleCategory}>
+            <option value="FREE">자유</option>
+            <option value="HELP">도와주세요</option>
+            <option value="HONBABSUL">혼밥/혼술</option>
+            <option value="GAME">게임</option>
+            <option value="STUDY">스터디</option>
+          </select>
+        </form>
       </div>
       <div>
-        <div>참여 가능 인원(최대 8명까지 입력 가능)</div>
-        <input type="text" onChange={handleNumPeople}/>
+        <div className="text-lg mb-1">제목</div>
+        <input type="text" aria-label="title" onChange={handleTitle}
+        className="border border-gray2 focus:outline-main2 h-8 p-1 w-60"/>
       </div>
+      {/* <div>
+        <div className="flex flex-row mb-1">
+          <p className="text-lg">참여 가능 인원</p>
+          <p className="ml-1 text-gray4 text-sm flex items-end mb-1">(최대 8명까지 입력 가능)</p>
+        </div> 
+        <input type="text" onChange={handleNumPeople}
+        className="border border-gray2 focus:outline-main2 h-8 p-1 w-60"/>
+      </div> */}
       <div className="flex bg-main4 justify-between p-5 rounded-lg">
         <div>
-          <div className="font-bold text-lg">only voice</div>
+          <div className="font-bold text-lg">only Voice</div>
           <div className="text-sm">체크하면 음성만 on으로 방이 생성됩니다.</div>
         </div>
         <div className="my-auto">
@@ -90,27 +107,17 @@ export default function WebRTCCreate() {
         </div>
       </div>
       <div>
-        <div>썸네일 설정</div>
+        <div className="text-lg mb-1">썸네일 설정</div>
         <input 
           type="file"
           accept="image/jpg,image/png,image/jpeg"
           name="thumnail_image"
           onChange={handleImage} 
+          className="border border-gray2 focus:outline-main2 h-8 p-1 w-60"
         />
       </div>
-      <div>
-        <div>카테고리</div>
-        <form action="" value="카테고리">
-          <select value={category} className="border" onChange={handleCategory}>
-            <option value="FREE">자유</option>
-            <option value="HONBABSUL">혼밥/혼술</option>
-            <option value="STUDY">스터디</option>
-            <option value="HELP">도와주세요</option>
-            <option value="GAME">게임</option>
-          </select>
-        </form>
-      </div>
-      <button type="button" className='main1-full-button w-20' onClick={createWebRTC}>생성하기</button>
+
+      <button type="button" className='main1-full-button w-32' onClick={createWebRTC}>생성하기</button>
     </div>
   )
 }

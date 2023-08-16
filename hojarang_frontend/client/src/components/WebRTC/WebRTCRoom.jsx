@@ -8,6 +8,14 @@ export default function WebRTCRoom(roomData) {
     console.log(roomData)
     navigate(`/webrtc/${sessionId}`)
   }
+
+  const MAX_TITLE_LENGTH = 9;
+  let adjustedTitle = title;
+  if (title.length > MAX_TITLE_LENGTH) {
+    adjustedTitle = title.substring(0, MAX_TITLE_LENGTH) + '...';
+  }
+ 
+
   return (
     <div >
       <div className="border-2 border-gray1 p-2 rounded-lg">
@@ -23,8 +31,18 @@ export default function WebRTCRoom(roomData) {
             </div>
           </div>
           <div>
-            <div>[{category}] {title}</div>
-            <div>{count}명/6명</div>
+            <div className="flex flex-row">
+              <p className="mr-1 font-semibold">[{category}] </p>
+              <p>{adjustedTitle}</p>
+            </div>
+            <div className="flex flex-row">
+            <p
+              className={`count ${count >= 4 ? (`${count >= 7 ? 'text-main5':'text-main2'}`) : 'text-black'}`}
+            >
+              {count}
+            </p>
+            <p>명/8명</p>
+              </div>
           </div>
           <button className='main1-full-button w-24' onClick={onClick}>참여하기</button>
         </div>
