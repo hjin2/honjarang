@@ -31,6 +31,7 @@ import FirebaseMessaging from '@/pages/PushTest/PushTest';
 import { useEffect } from 'react';
 import Main from './pages/Main/Main';
 import SetNewPassword from './pages/FindPassword/SetNewPassword';
+import Refresh from './pages/Token/Refresh';
 
 function App() {
 
@@ -45,9 +46,9 @@ function App() {
   return (
     <div className="app">
       <BrowserRouter>
+        <Refresh />
         <Routes>
           <Route element={<DefaultLayout />}>
-            <Route path="/signup" element={<Signup />} />
             <Route path="/webrtc" element={<WebRTC />} />
             <Route path="/webrtc/create" element={<WebRTCCreate/>}/>
             <Route path="/chatting" element={<Chatting />} />
@@ -81,6 +82,7 @@ function App() {
           <Route path="/chatting/:id" element={<Chat />} />
           <Route exact path="/" element={<Main />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/webrtc/:sessionid" element={<FreeChat/>}/>
           <Route path="/checkout/:price" element={<Checkout />} />
           <Route path="/checkout/fail" element={<Fail />} />
