@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import Chatting from '@/pages/Chatting/Chatting';
+import Chat from '@/pages/Chatting/Chat';
 import Login from '@/pages/login/login';
 import Signup from '@/pages/signup/signup';
 import Notfound from '@/pages/Notfound/Notfound';
@@ -61,6 +62,7 @@ function App() {
             <Route path="/market/transactiondetail/:id" element={<TransactionDetail/>}></Route>
             <Route path="/board" element={<Board />} />
             <Route path="/map" element={<Map1 />} />
+            <Route path="/chatting/:id" element={<Chat />} />
             <Route path="/mypage/:id" element={<MyPage />} />
             <Route path="/findpassword" element={<FindPassword />} />
             <Route

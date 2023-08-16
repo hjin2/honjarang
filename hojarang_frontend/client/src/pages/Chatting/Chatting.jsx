@@ -1,5 +1,4 @@
-import ChatList from "@/components/Chatting/ChatList"
-import Chat from "@/components/Chatting/Chat";
+import ChatList from "../../components/Chatting/ChatList"
 import { useState, useEffect } from "react";
 import axios from 'axios'
 
@@ -8,6 +7,7 @@ export default function Chatting() {
   const [Lists, setLists] = useState([]);
   const [chatId, setChatId] = useState(0)
   const [title, setTitle] = useState("")
+
 
 
   useEffect(() => {

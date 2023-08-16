@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 
 
 
-function ChatList({list, setChatId}) {
+function ChatList({list}) {
   const [Diff, setDiff] = useState('')
   const [msg, setmsg] = useState('')
   const navigate = useNavigate()

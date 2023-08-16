@@ -18,145 +18,11 @@ const Chat = ({chatId, setChatId, title}) => {
   const [socket, setSocket] = useState(null);
   const [stomp, setStomp] = useState(null);
 
-  const token = localStorage.getItem('access_token');
+  const onChange = (e) => {
+    setMsg(e.target.value)
+  }
 
-  const stompClientRef = useRef(null);
-
-  const connect = () => {
-    const serverAddress = 'https://honjarang.kro.kr/chat';
-    const socket = new SockJS(serverAddress);
-    const stompClient = Stomp.over(socket);
-
-    stompClient.connect('guest', 'guest', (frame) => {
-      stompClient.subscribe(`/topic/room.${Key}`, (message) => {
-        console.log(message);
-        showMessage(JSON.parse(message.body));
-      });
-      stompClient.send(`/app/chat/connect.${Key}`, {}, JSON.stringify({ token: token }));
-
-      stompClientRef.current = stompClient;
-      setSocket(socket);
-      setStomp(stompClient);
-    });
-  };
-
-  const showMessage = (message) => {
-    console.log(message);
-    setMessages((prevMessages) => {
-      if (!prevMessages.includes(message)) {
-        return [...prevMessages, message];
-      }
-      return prevMessages;
-    });
-  };
-
-  const sendMessage = () => {
-    const messageToSend = {
-      room_id: Key,
-      content: message,
-      nickname: Nickname
-    };
-
-    stomp.send(`/app/chat/message.${Key}`, {}, JSON.stringify(messageToSend));
-    setMessage('');
-    
-    // Scroll to bottom after sending message
-    scrollToBottom();
-  };
-
-  const scrollToBottom = () => {
-    const chatArea = document.getElementById('ChatArea');
-    chatArea.scrollTop = chatArea.scrollHeight;
-  };
-
-  const handleBack = () => {
-    if (stompClientRef.current) {
-      console.log('Attempting to disconnect Stomp...');
-      stompClientRef.current.disconnect(() => {
-        console.log('Stomp disconnected.');
-        if (socket) {
-          socket.onclose = (event) => {
-            console.log('Socket closed.', event);
-            navigate('/chatting');
-          };
-          socket.close();
-        } else {
-          navigate('/chatting');
-        }
-      });
-    } else if (socket) {
-      console.log('Closing socket...');
-      socket.onclose = (event) => {
-        console.log('Socket closed.', event);
-        navigate('/chatting');
-      };
-      socket.close();
-    } else {
-      navigate('/chatting');
-    }
-  };
-
-  useEffect(() => {
-    const cleanup = () => {
-      if (stompClientRef.current) {
-        console.log('Attempting to disconnect Stomp...');
-        stompClientRef.current.disconnect(() => {
-          console.log('Stomp disconnected.');
-          if (socket) {
-            socket.onclose = (event) => {
-              console.log('Socket closed.', event);
-              // 원하는 함수 실행
-            };
-            socket.close();
-          } else {
-            // 원하는 함수 실행
-          }
-        });
-      } else if (socket) {
-        console.log('Closing socket...');
-        socket.onclose = (event) => {
-          console.log('Socket closed.', event);
-          // 원하는 함수 실행
-        };
-        socket.close();
-      } else {
-        // 원하는 함수 실행
-      }
-    };
-
-    // 컴포넌트가 언마운트될 때 실행될 함수 등록
-    return cleanup;
-  }, []);
-
-
-  useEffect(() => {
-    connect();
-  }, [chatId]);
-
-  const onKeyEnter = (e) => {
-    if (e.key === 'Enter') {
-      sendMessage();
-    }
-  };
-
-  useEffect(() => {
-    const URL = import.meta.env.VITE_APP_API
-    const id = localStorage.getItem('user_id')
-    axios.get(`${URL}/api/v1/users/info`,
-      {
-        params : {id : id},
-        headers : {'Authorization' : `Bearer ${token}`}
-      },
-      )
-      .then(function(response){
-        console.log(response.data)
-        setNickname(response.data.nickname)
-      })
-      .catch(function(error){
-        console.log(error)
-      })
-  },[]);
-
+  
   return (
     <div className="w-3/5 h-12/12 flex flex-col border-2 rounded-lg bg-white">
       <div className="p-2"style={{height:"10%"}}>{title}</div>
@@ -172,7 +38,7 @@ const Chat = ({chatId, setChatId, title}) => {
       </div>
       {/* <button onClick={handleBack} className="bg-red-500 text-white rounded px-4 py-2 mt-2 mx-4 self-center hover:bg-red-600">뒤로가기</button> */}
     </div>
-  );
-};
+  )
+}
 
-export default Chat;
+export default Chat
