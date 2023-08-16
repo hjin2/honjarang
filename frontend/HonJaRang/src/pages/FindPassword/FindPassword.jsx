@@ -40,7 +40,10 @@ export default function FindPassword() {
   }
 
   function change_password() {
-    movePage('/setnewpassword');
+    movePage('/setnewpassword',{
+      replace:true,
+      state:{email}
+    });
   }
   
   const email_code = () => {
