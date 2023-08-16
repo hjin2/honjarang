@@ -99,8 +99,8 @@ public class UserController {
     }
 
     @PostMapping("/set-new-password")
-    public void setNewPassword(@RequestBody Map<String, Object> body, @CurrentUser User user) {
-        userService.setNewPassword((String) body.get("new_password"), user);
+    public void setNewPassword(@RequestBody PasswordSetDto passwordSetDto) {
+        userService.setNewPassword(passwordSetDto);
     }
 
     @PutMapping("/users")
