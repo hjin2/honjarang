@@ -29,6 +29,7 @@ import FreeChat from '@/pages/WebRTC/FreeChat';
 import FirebaseMessaging from '@/pages/PushTest/PushTest';
 import { useEffect } from 'react';
 import Main from './pages/Main/Main';
+import SetNewPassword from './pages/FindPassword/SetNewPassword';
 
 function App() {
 
@@ -67,6 +68,7 @@ function App() {
               path="/findpassword/changepassword"
               element={<ChangePassword />}
             ></Route>
+            <Route path="/setnewpassword" element={<SetNewPassword/>}></Route>
             <Route
               path="/board/articlecreate"
               element={<ArticleCreate />}
