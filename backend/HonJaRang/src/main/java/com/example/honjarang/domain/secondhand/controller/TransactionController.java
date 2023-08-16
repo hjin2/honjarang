@@ -23,11 +23,11 @@ public class TransactionController {
     private final TransactionService transactionService;
 
 
-        @PostMapping("")
-        public ResponseEntity<Long> createSecondHandTransaction(@RequestPart(value = "transaction_image", required = false) MultipartFile transactionImage, @ModelAttribute(name="transactionCreateDto") TransactionCreateDto transactionCreateDto, @CurrentUser User user) {
-            Long result = transactionService.createSecondHandTransaction(transactionCreateDto, transactionImage, user);
-            return ResponseEntity.status(201).body(result);
-        }
+    @PostMapping("")
+    public ResponseEntity<Long> createSecondHandTransaction(@RequestPart(value = "transaction_image", required = false) MultipartFile transactionImage, @ModelAttribute(name="transactionCreateDto") TransactionCreateDto transactionCreateDto, @CurrentUser User user) {
+       Long result = transactionService.createSecondHandTransaction(transactionCreateDto, transactionImage, user);
+        return ResponseEntity.status(201).body(result);
+    }
 
     @PutMapping("/{transactionId}")
     public ResponseEntity<Void> updateSecondHandTransaction(@RequestPart(value = "transaction_image", required = false) MultipartFile transactionImage, @ModelAttribute TransactionUpdateDto transactionUpdateDto, @PathVariable Long transactionId, @CurrentUser User user) throws IOException {

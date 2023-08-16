@@ -964,7 +964,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .param("size","3"))
                 .andExpect(status().isOk())
-                .andDo(document("users/pageCount/joinedpurchase",
+                .andDo(document("new/pageCount/joint-purchase",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(
@@ -984,7 +984,7 @@ class UserControllerTest {
                         .contentType("application/json")
                         .param("size","3"))
                 .andExpect(status().isOk())
-                .andDo(document("users/pageCount/joined-joined-purchase",
+                .andDo(document("new/pageCount/joined-joint-purchase",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         queryParameters(

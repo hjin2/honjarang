@@ -47,5 +47,23 @@ public class TransactionDto {
         this.buyerId = buyerId;
     }
 
+    public TransactionDto(Transaction transaction){
+        this.id = transaction.getId();
+        this.sellerId = transaction.getSeller().getId();
+        this.sellerNickname = transaction.getSeller().getNickname();
+        this.title = transaction.getTitle();
+        this.content = transaction.getContent();
+        this.price = transaction.getPrice();
+        this.isCompleted = transaction.getIsCompleted();
+        this.createdAt = DateTimeUtils.formatLocalDateTime(transaction.getCreatedAt());
+        this.isReceived = transaction.getIsReceived();
+
+        if(transaction.getTransactionImage().equals("")){
+            this.transactionImage = "";
+        }else{
+            this.transactionImage = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/transactionImage/" + transaction.getTransactionImage();
+        }
+    }
+
 
 }
