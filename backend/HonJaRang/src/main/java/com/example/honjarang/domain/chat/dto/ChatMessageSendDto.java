@@ -14,4 +14,5 @@ public class ChatMessageSendDto {
     private String content;
     private Long roomId;
     private String nickname;
+    private String profileImageUrl;
 }
