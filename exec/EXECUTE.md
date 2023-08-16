@@ -24,10 +24,8 @@ docker run --name some-nginx -d -p 80:80 443:443 some-content-nginx
 
 [백엔드 서버 설치](INSTALL_BE.md)
 
-[백엔드 서버 구성](CONFIG_BE.md)
-
 [프론트엔드 서버 설치](INSTALL_FE.md)
 
-[프론트엔드 서버 구성](CONFIG_FE.md)
+[서버 구성](CONFIG.md)
 
 

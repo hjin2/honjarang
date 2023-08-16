@@ -1,8 +1,6 @@
 ### 카카오 REST API 키 발급 및 설정
 1. [Kakao Developers](https://developers.kakao.com/) 사이트에 접속하여 로그인 후 내 애플리케이션 메뉴에 가서 애플리케이션 추가하기를 클릭
-
 2. 앱 이름과 회사 이름을 아무거나 입력하고 저장하여 앱을 생성
-
 3. REST API 키 복사
 
 ### 네이버 클라이언트 ID 및 시크릿 발급 및 설정
@@ -36,10 +34,28 @@
 2. 프로젝트 이름을 입력하고 프로젝트 만들기 버튼 클릭 후 계속 버튼 클릭
 3. Google 애널리틱스 구성에서 Google 애널리틱스 계정을 선택하고 프로젝트 만들기 버튼 클릭
 4. 앱에 Firebase를 추가하여 시작하기에서 웹을 선택하고 앱 닉네임에 아무거나 입력 후 앱 등록 버튼 클릭
-5. Firebase 프로젝트 설정의 서비스 계정 탭에서 새 비공개 키 생성 버튼 클릭
+5. Firebase 프로젝트 설정의 일반 탭에서 firebaseConfig의 내용을 복사
+6. Firebase 프로젝트 설정의 서비스 계정 탭에서 새 비공개 키 생성 버튼 클릭
 6. 비공개 키 생성 버튼 클릭
 7. 다운받은 키 파일 열어서 복사
 8. Firebase 프로젝트 설정의 클라우드 메시징 탭에서 웹 푸시 인증서 정보에서 키 페어 생성 후 복사
+
+### .env 파일 구성
+- .env 파일은 프론트엔드 프로젝트 최상단에 위치해야 합니다.
+```dotenv
+VITE_APP_FIREBASE_APIKEY="firebaseConfig의 apiKey"
+VITE_APP_FIREBASE_AUTHDOMAIN="firebaseConfig의 authDomain"
+VITE_APP_FIREBASE_PROJECTID="firebaseConfig의 projectId"
+VITE_APP_FIREBASE_STORAGEBUCKET="firebaseConfig의 storageBucket"
+VITE_APP_FIREBASE_MESSAGINGSENDERID="firebaseConfig의 messagingSenderId"
+VITE_APP_FIREBASE_APPID="firebaseConfig의 appId"
+VITE_APP_FIREBASE_MEASUREMENTID="firebaseConfig의 measurementId"
+VITE_APP_FIREBASE_VAPIDKEY="키 페어 생성 후 복사한 값"
+VITE_APP_TOSS_CLIENTKEY="토스 결제 클라이언트 키"
+VITE_APP_TOSS_CUSTOMERKEY="토스 결제 고객 키"
+VITE_APP_STOMP_CLIENTID="RabbitMQ STOMP 클라이언트 ID"
+VITE_APP_STOMP_PASSWORD="RabbitMQ STOMP 비밀번호"
+```
 
 ### 쿠버네티스 시크릿 파일 구성
 - 아래의 파일을 작성하여 secret.yml 파일을 생성해야 합니다.
@@ -89,10 +105,10 @@ kubectl apply -f secret.yml
 # OpenVidu configuration
 # ----------------------
 # 도메인 또는 퍼블릭IP 주소
-DOMAIN_OR_PUBLIC_IP=
+DOMAIN_OR_PUBLIC_IP=도메인주소
 
 # 오픈비두 서버와 통신을 위한 시크릿 키 
-OPENVIDU_SECRET=MY_SECRET
+OPENVIDU_SECRET=시크릿  키
 
 # Certificate type
 # ----------------
@@ -104,13 +120,7 @@ HTTP_PORT=8442
 
 # HTTPS port(해당 포트를 통해 오픈비두 서버와 연결)
 HTTPS_PORT=8443
-
-
 ```
-
-
-
-
 
 ### 리버스 프록시 설정 적용
 ```shell
@@ -173,16 +183,11 @@ server {
     server {
 				# HTTP 설정
         listen 80;
-					
 				# 서버 도메인 OR IP 
         server_name honjarang.kro.kr;
-
 				# HTTP로 진입 시 HTTPS로 리다이렉트
         location / {
             return 301 https://$server_name$request_uri;
         }
-
-
     }
-
 ```
