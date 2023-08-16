@@ -132,7 +132,7 @@ public class TransactionService {
     @Transactional(readOnly = true)
     public List<TransactionListDto> getSecondHandTransactions(Integer page, Integer size, String keyword) {
         Pageable pageable = Pageable.ofSize(size).withPage(page - 1);
-        List<Transaction> transactionList = transactionRepository.findAllByTitleContainingIgnoreCaseOrderByIdDesc(keyword, pageable);
+        List<Transaction> transactionList = transactionRepository.findAllByTitleContainingIgnoreCaseAndIsCompletedFalseOrderByIdDesc(keyword, pageable);
         List<TransactionListDto> transactionListDtos = new ArrayList<>();
         for (Transaction tmp : transactionList) {
             TransactionListDto transactionListDto = new TransactionListDto(tmp);

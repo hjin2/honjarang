@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction,Long> {
-    List<Transaction> findAllByTitleContainingIgnoreCaseOrderByIdDesc(String keyword, Pageable pageable);
+    List<Transaction> findAllByTitleContainingIgnoreCaseAndIsCompletedFalseOrderByIdDesc(String keyword, Pageable pageable);
 
     Page<Transaction> findAllBySellerId(Long id, Pageable pageable);
 
