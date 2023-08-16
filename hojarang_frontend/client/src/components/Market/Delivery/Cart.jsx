@@ -62,8 +62,9 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
       menu_id: selectedMenu.id,
       quantity: quantity
     }
-    if((detail.my_point - (selectedMenu.price * quantity)) >= 0){
-      // 장바구니 추가
+
+    // 글 작성자면 포인트 차감 안 됨 
+    if(isWriter){
       axios.post(`${URL}/api/v1/joint-deliveries/${detail.id}/carts`, data, 
         {headers : {
             "Authorization" : `Bearer ${token}`,
@@ -81,7 +82,27 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
       })
     }
     else{
-      window.alert("포인트가 부족합니다.")
+      if((detail.my_point - (selectedMenu.price * quantity)) >= 0){
+        // 장바구니 추가
+        axios.post(`${URL}/api/v1/joint-deliveries/${detail.id}/carts`, data, 
+          {headers : {
+              "Authorization" : `Bearer ${token}`,
+              "Content-Type" : "application/json"
+            }
+          })
+        .then((res) => {
+          console.log(res)
+          console.log(res.data)
+          setIsAdd(true)
+          setModalState(false)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+      }
+      else{
+        window.alert("포인트가 부족합니다.")
+      }
     }
   }
   
@@ -157,7 +178,7 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
         <div className="mt-5">
           <button onClick={createCart} className="main1-full-button w-36">장바구니에 담기</button>
         </div>
-        <p className="text-gray3 text-xs mt-2">첫 메뉴를 담을 때 선배달비 1,000원이 차감됩니다.</p>
+        <p className="text-gray3 text-xs mt-2">첫 메뉴를 담을 때 선배달비 1,000 포인트가 차감됩니다.</p>
         <p className="text-gray3 text-xs">배달비의 차액은 수령확인 후 돌려드립니다.</p>
       </div>
     </div>

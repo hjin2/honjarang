@@ -79,9 +79,10 @@ export default function TransactionCreate() {
       <div>
         <button 
           type="button" 
-          className="main1-full-button w-20"
+          className="main1-full-button w-32"
           onClick={saveTransaction}
         >작성완료</button>
+        <p className="text-gray3 text-xs mt-2">모집글 생성시 보증금 1,000포인트가 차감됩니다.</p>
       </div>
     </div>
   )
