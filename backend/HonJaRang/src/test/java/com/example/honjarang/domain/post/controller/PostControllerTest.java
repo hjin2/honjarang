@@ -130,7 +130,7 @@ public class PostControllerTest {
                 .andExpect(status().isCreated())
                 .andDo(document("/posts/create",
                         preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
+//                        preprocessResponse(prettyPrint()),
                         requestParts(
                                  partWithName("post_image").description("이미지 첨부"),
                                 partWithName("title").description("제목"),
