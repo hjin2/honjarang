@@ -157,7 +157,7 @@ public class TransactionServiceTest {
     void getSecondHandTransactions() {
         // given
         List<Transaction> transactionList = List.of(transaction);
-        given(transactionRepository.findAllByTitleContainingIgnoreCaseOrderByIdDesc(any(String.class), any(Pageable.class))).willReturn(transactionList);
+        given(transactionRepository.findAllByTitleContainingIgnoreCaseAndIsCompletedFalseOrderByIdDesc(any(String.class), any(Pageable.class))).willReturn(transactionList);
 
         // when
         List<TransactionListDto> result = transactionService.getSecondHandTransactions(1, 15, "");
