@@ -12,6 +12,7 @@ import com.example.honjarang.domain.post.entity.Post;
 import com.example.honjarang.domain.post.repository.PostRepository;
 import com.example.honjarang.domain.post.service.PostService;
 import com.example.honjarang.domain.user.dto.LoginDto;
+import com.example.honjarang.domain.user.dto.PasswordSetDto;
 import com.example.honjarang.domain.user.dto.UserCreateDto;
 import com.example.honjarang.domain.user.dto.UserInfoDto;
 import com.example.honjarang.domain.user.entity.EmailVerification;
@@ -567,11 +568,12 @@ class UserServiceTest {
     @DisplayName("새 비밀번호 설정 성공")
     void setNewPassword_Success() {
         // given
-        given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
+        PasswordSetDto passwordSetDto = new PasswordSetDto("test@test.com", "new1234");
+        given(userRepository.findByEmail("test@test.com")).willReturn(Optional.ofNullable(user));
         given(emailVerificationRepository.findByEmail(user.getEmail())).willReturn(Optional.ofNullable(emailVerification));
 
         // when
-        userService.setNewPassword("new1234", user);
+        userService.setNewPassword(passwordSetDto);
 
         // then
         assertThat(user.getPassword()).isEqualTo(passwordEncoder.encode("new1234"));
