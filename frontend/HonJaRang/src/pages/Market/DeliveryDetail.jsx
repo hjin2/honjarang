@@ -7,6 +7,7 @@ import CartList from '../../components/Market/Delivery/CartList';
 import { API } from '@/apis/config';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComments } from '@fortawesome/free-regular-svg-icons';
+import DefaultMenu from '@/assets/default_menu.jpg'
 
 export default function DeliveryDetail() {
 
@@ -64,8 +65,6 @@ export default function DeliveryDetail() {
     setModalState(true)
   }
 
-  // 이미지 없을 때 대체 이미지 넣기
-  const defaultImage = '/src/assets/noimage.png';
 
   // 마감시간 나타내기
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -137,7 +136,7 @@ export default function DeliveryDetail() {
         <div className="menu-container overflow-y-scroll max-h-96 border rounded-md px-10">
             {menuList.map((menu) => (
               <div key={menu.id} className="flex justify-between items-center space-x-4 my-2">
-                <img src={menu.image || defaultImage} alt={menu.name} className="w-16 h-16" />
+                <img src={menu.image || DefaultMenu} alt={menu.name} className="w-16 h-16" />
                 <div className="text-center">
                   <p className="font-semibold">{menu.name}</p>
                   <p>{menu.price.toLocaleString()}원</p>
