@@ -2,36 +2,29 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { API } from '@/apis/config';
 
-export default function CartList({id, loginId, isAdd, cart, setCart}) {
+export default function CartList({id, loginId, cart, setCart, showCartList, setIsPurchase, calculateGroupedCart, setGroupedCart, groupedCart}) {
 
   const token = localStorage.getItem("access_token")
   const headers = {'Authorization': `Bearer ${token}`};
-
-  const [showCartList, setShowCartList] = useState(false)
-
-  useEffect(() => {
-    axios.get(`${API.DELIVERIES}/${id}/carts`, { headers })
-      .then((res) => {
-        console.log(res.data)
-        setCart(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [showCartList, id, isAdd]);
-
-  const onClick = () => {
-    setShowCartList(!showCartList);
-  };
-  
-
-
+  const userId = localStorage.getItem("user_id")
   const deleteMenu = (menuId) => {
     console.log(menuId)
     axios.delete(`${API.DELIVERIES}/${id}/carts/${menuId}`, {headers})
     .then((res) => {
       console.log(res)
       const updatedCart = cart.filter(menu => menu.id !== menuId);
+      if(updatedCart.length!=0){
+        for(let i=0;i<updatedCart.length;i++){
+          if(updatedCart[i].user_id == userId){
+            setIsPurchase(true)
+            break
+          }else{
+            setIsPurchase(false)
+          }
+        }
+      }else{
+        setIsPurchase(false)
+      }
       setCart(updatedCart);
     })
     .catch((err) => {
@@ -39,25 +32,20 @@ export default function CartList({id, loginId, isAdd, cart, setCart}) {
     })
   }
   // 내가 담은 메뉴가 있는지
-  const hasMyMenu = cart.some(menu => menu.user_id === Number(loginId));
 
   // 사용자별로 장바구니 묶기
-  const groupedCart = Object.entries(
-    cart.reduce((acc, menu) => {
-      if (!acc[menu.user_nickname]) {
-        acc[menu.user_nickname] = [];
-      }
-      acc[menu.user_nickname].push(menu);
-      return acc;
-    }, {})
-  )
+
+  
+  useEffect(() => {
+    console.log(cart)
+    const calculatedGroupedCart = calculateGroupedCart(cart);
+    setGroupedCart(calculatedGroupedCart);
+  }, [cart]);
 
   return (
     <div className="flex items-center flex-col">
-      {hasMyMenu && (
-        <button className="main2-button w-40 mt-3" onClick={onClick}>장바구니 목록</button>
-      )}
-      {showCartList && hasMyMenu && (
+
+      {showCartList && (
         <div className="flex flex-col text-start">
           {/* 사용자 별로 메뉴 보여주기*/}
           {groupedCart.map(([nickname,  menus]) => (
