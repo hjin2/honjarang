@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { API } from '@/apis/config';
+import DefaultStore from '@/assets/default_store.jpg'
 
 export default function Stores({ modalState, setModalState, onStoreClick }) {
   
@@ -43,8 +44,7 @@ export default function Stores({ modalState, setModalState, onStoreClick }) {
     }
   };
 
-  // 이미지 없을 때 대체 이미지 넣기
-  const defaultImage = '/src/assets/noimage.png';
+
 
   return (
     <div className="relative border bg-white m-auto rounded-lg w-3/6 p-3">
@@ -67,7 +67,7 @@ export default function Stores({ modalState, setModalState, onStoreClick }) {
           <div key={store.id} className="flex justify-between m-3">
             <div className="flex flex-row">
             <img className="h-16 w-16 mr-4 rounded-md" 
-            src={store.image !== "null" ? store.image : defaultImage} alt={store.keyword} />
+            src={store.image !== "null" ? store.image : DefaultStore} alt={store.keyword} />
               <div> 
                 <p className="font-semibold">{store.name}</p>
                 <p>{store.address}</p>
