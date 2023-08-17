@@ -40,16 +40,6 @@ export default function Header() {
           </Link>
           <div className="flex space-x-12 font-ImcreSoojin">
             <NavLink
-              to="/board"
-              className={({ isActive }) =>
-                isActive
-                  ? 'text-gray5 font-bold'
-                  : 'text-gray3 hover:text-gray5 hover:font-bold'
-              }
-            >
-              게시판
-            </NavLink>
-            <NavLink
               to="/market"
               className={({ isActive }) =>
                 isActive
@@ -58,6 +48,16 @@ export default function Header() {
               }
             >
               장터
+            </NavLink>
+            <NavLink
+              to="/board"
+              className={({ isActive }) =>
+                isActive
+                  ? 'text-gray5 font-bold'
+                  : 'text-gray3 hover:text-gray5 hover:font-bold'
+              }
+            >
+              게시판
             </NavLink>
             <NavLink
               to="/webrtc"
