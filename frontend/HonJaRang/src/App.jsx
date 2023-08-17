@@ -32,6 +32,7 @@ import Main from './pages/Main/Main';
 import SetNewPassword from './pages/FindPassword/SetNewPassword';
 import { useSelector } from 'react-redux';
 import AuthRoute from '@/components/AuthRoute';
+import Refresh from './pages/Token/Refresh';
 
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
   return (
     <div className="app">
       <BrowserRouter>
+        <Refresh />
         <Routes>
           <Route element={<DefaultLayout />}>
             <Route path="/webrtc" element={<AuthRoute component={<WebRTC/>} isLogged={isLogged} />} />
