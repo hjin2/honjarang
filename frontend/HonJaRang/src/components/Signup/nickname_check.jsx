@@ -46,7 +46,7 @@ else {
           <button className='w-20 h-10 main4-full-button my-2 text-base ml-2'
           onClick = { nickname_check } disabled={NicknameDisalbed}>중복 확인</button>
         </div>
-        <span className="font-semibold text-lg text-red-600">{nicknameMsg}</span>
+        <span className="font-semibold text-xs text-main5">{nicknameMsg}</span>
       </div>
     </div>
   )
