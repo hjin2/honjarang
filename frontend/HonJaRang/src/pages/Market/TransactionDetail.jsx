@@ -136,15 +136,14 @@ export default function TransactionDetail() {
         <button className="main1-full-button w-24" onClick={startChat}>1:1 채팅</button>
       </div>
       <hr />
-      <div className="my-3">
+      <div className="mt-3">
         {detail.transaction_image ? (
           <img 
             src={`${detail.transaction_image}`} 
             alt="상품이미지"
-            className="mx-auto"
           />
         ):(null)}
-        <div className="my-3">
+        <div className="my-10">
           {detail.content}
         </div>
         {!isWriter && (

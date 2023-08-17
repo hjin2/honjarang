@@ -92,35 +92,23 @@ export default function Header() {
           </div>
           <div className="flex space-x-4">
             <button type="button" className="">
-              <Link to={`/mypage/${id}`}>
-                <svg
-                  className="h-8 w-8"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
+              <Link to={`/mypage/${id}`} className='font-semibold font-ImcreSoojin text-lg my-2 mx-4'>
+                마이페이지
               </Link>
             </button>
             {IsLogged ?  (<button type="button" onClick = {Clear}>
               <Link
                 to="/login"
-                className="text-sm px-4 py-2 border rounded text-white bg-black"
+                className="font-semibold font-ImcreSoojin text-lg my-2 mx-4"
               >
-                LogOut
+                로그아웃
               </Link>
             </button>) : (<button type="button">
               <Link
                 to="/login"
-                className="text-sm px-4 py-2 border rounded text-white bg-black"
+                className="font-semibold font-ImcreSoojin text-lg my-2 mx-4"
               >
-                Login
+                로그인
               </Link>
             </button>)}
             

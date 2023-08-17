@@ -24,7 +24,7 @@ export default function DeliveryDetail() {
   const [cart, setCart] = useState([])
 
   const enter = () =>{
-    navigate(`/chatting/${detail.chat_room_id}`)
+    navigate(`/chatting/${detail.chat_room_id}`, {state : {title : `${detail.store_name} 공동배달 참여방`}})
   }
 
 
