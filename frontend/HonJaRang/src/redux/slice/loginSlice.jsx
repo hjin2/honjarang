@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 // 리덕스에서 관리할 상태 정의
 const initialState = {
-  isLogged: false,
+  isLogged: true,
 };
 
 const loginSlice = createSlice({
