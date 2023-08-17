@@ -22,6 +22,9 @@
   .main3-full-button {
     @apply h-8 rounded-lg bg-main3 text-white text-xs font-bold;
   }
+  .main4-full-button {
+    @apply h-8 rounded-lg bg-main4 text-white text-xs font-bold;
+  }
 }
 
 @font-face {

@@ -62,15 +62,16 @@ export default function Verify_check({ email, ChangeEmailValid }) {
   }
 
   return (
-    <div className="mb-3">
-      <div>
-        <label className="font-semibold text-lg text-main2">인증번호 입력</label>
-        <br />
-        <input type="text" onChange={onChange} disabled={Check} 
-        className="inline-block border-gray2 rounded-lg block w-60 h-10 p-2 focus:outline-main2"/>
-        <button className='w-32 h-10 main1-full-button my-10 text-base ml-2'
-          onClick={NumberCheck} disabled={Check}>인증번호 확인</button>
-        <span className="font-semibold text-lg ml-2">{parseInt(time / 60)} : {getSeconds(time)}</span>
+    <div className="mb-3 mt-3">
+      <div className="flex flex-col">
+        <label className="font-semibold text-lg text-main2 mb-1">인증번호 입력</label>
+        <div className="flex ">
+          <input type="text" onChange={onChange} disabled={Check} 
+          className=" border-gray2 rounded-lg block w-60 h-10 p-2 focus:outline-main2"/>
+          <button className='w-32 h-10 main4-full-button text-base ml-2'
+            onClick={NumberCheck} disabled={Check}>인증번호 확인</button>
+          <span className="font-semibold text-lg ml-2 flex items-center">{parseInt(time / 60)} : {getSeconds(time)}</span>
+        </div>
       </div>
     </div>
   )
