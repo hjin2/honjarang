@@ -14,9 +14,8 @@ export default function Login() {
   const dispatch = useDispatch()
 
   const navigate = useNavigate()
-  const goMypage = () => {
-    const id = localStorage.getItem("user_id")
-    navigate(`/mypage/${id}`)
+  const goMarket = () => {
+    navigate(`/market`)
   };
   const login = (e) => {
     e.preventDefault()
@@ -31,7 +30,7 @@ export default function Login() {
       localStorage.setItem('refresh_token', res.data.refresh_token)
       localStorage.setItem('user_id', res.data.user_id)
       dispatch(setLoginStatus(true))
-      goMypage()
+      goMarket()
     })
     .catch((err) => {
       console.log(err)
