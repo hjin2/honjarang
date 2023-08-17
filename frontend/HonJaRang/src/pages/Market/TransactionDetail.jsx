@@ -22,7 +22,7 @@ export default function TransactionDetail() {
     axios.post(`${API.CHATS}/one-to-one`,data,{ headers:{'Authorization': `Bearer ${token}`, "Content-Type":"Application/json"}})
       .then((res) => {
         console.log(res)
-        navigate(`/chatting/${res.data}`)
+        navigate(`/chatting/${res.data}`,{state : {title : detail.seller_nickname}})
       })
       .catch((err) => console.log(err))
   }

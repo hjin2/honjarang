@@ -67,11 +67,6 @@ function App() {
             <Route path="/map" element={<AuthRoute component={<Map1/>} isLogged={isLogged} />} />
             <Route path="/mypage/:id" element={<AuthRoute component={<MyPage/>} isLogged={isLogged} />} />
             <Route
-              path="/findpassword/changepassword"
-              element={<AuthRoute component={<ChangePassword/>} isLogged={isLogged} />}
-            ></Route>
-            <Route path="/setnewpassword" element={<AuthRoute component={<SetNewPassword/>} isLogged={isLogged}/>}></Route>
-            <Route
               path="/board/articlecreate"
               element={<AuthRoute component={<ArticleCreate/>} isLogged={isLogged} />}
             ></Route>
@@ -89,6 +84,11 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/findpassword" element={<FindPassword />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/setnewpassword" element={<SetNewPassword/>}></Route>
+          <Route
+            path="/findpassword/changepassword"
+            element={<AuthRoute component={<ChangePassword/>} isLogged={isLogged} />}
+          ></Route>
         </Routes>
       </BrowserRouter>
     </div>
