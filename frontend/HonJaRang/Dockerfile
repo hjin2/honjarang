@@ -10,7 +10,6 @@ COPY package*.json ./
 
 # 의존성을 설치합니다. (pnpm을 사용하여 설치합니다)
 RUN npm install -g pnpm
-RUN npm install -g babel
 RUN pnpm install
 
 # 호스트의 모든 파일들을 이미지의 /app 디렉토리로 복사합니다.
@@ -20,7 +19,6 @@ COPY . .
 # Vite를 사용하여 React 앱을 빌드합니다.
 RUN pnpm run build
 
-RUN babel src --out-dir dist
 
 # 빌드된 정적 파일을 호스팅하기 위해 간단한 웹 서버를 사용합니다.
 # (여기서는 serve 패키지를 사용하여 정적 파일을 제공합니다)
