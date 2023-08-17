@@ -458,7 +458,7 @@ public class JointDeliveryService {
 
         // 목표 금액을 못 채운 경우
         Integer totalPrice = 0;
-        List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryIdAndUserId(jointDeliveryId, loginUser.getId());
+        List<JointDeliveryCart> jointDeliveryCartList = jointDeliveryCartRepository.findAllByJointDeliveryId(jointDeliveryId);
         for (JointDeliveryCart jointDeliveryCart : jointDeliveryCartList) {
             Menu menu = menuRepository.findById(new ObjectId(jointDeliveryCart.getMenuId()))
                     .orElseThrow(() -> new MenuNotFoundException("메뉴를 찾을 수 없습니다."));
