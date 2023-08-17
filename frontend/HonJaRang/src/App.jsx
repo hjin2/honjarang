@@ -33,16 +33,20 @@ import SetNewPassword from './pages/FindPassword/SetNewPassword';
 import { useSelector } from 'react-redux';
 import AuthRoute from '@/components/AuthRoute';
 import Refresh from './pages/Token/Refresh';
-
+import { useEffect } from 'react';
 
 function App() {
-  // useEffect(() =>{
-  //   const currentURL = window.location.href
-  //   if (currentURL === 'https://i9d202.p.ssafy.io/') {
-  //   // 원하는 도메인으로 리다이렉트합니다.
-  //   window.location.href = 'https://honjarang.kro.kr/';
-  //   }
-  // }, []);
+  useEffect(() =>{
+    const currentURL = window.location.href
+    if (currentURL === 'https://i9d202.p.ssafy.io/') {
+    // 원하는 도메인으로 리다이렉트합니다.
+    window.location.href = 'https://honjarang.kro.kr/';
+    }
+  }, []);
+  if (process.env.NODE_ENV === "production") {
+    console.log = function no_console() {};
+    console.warn = function no_console() {};
+  }
   const isLogged = useSelector((state) => state.login.isLogged)
   return (
     <div className="app">
