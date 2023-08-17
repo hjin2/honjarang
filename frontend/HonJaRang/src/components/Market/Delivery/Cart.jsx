@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { API } from '@/apis/config';
+import DefaultImage from '@/assets/default_image.jpg'
 
 export default function Cart({ selectedMenu, detail, modalState, setModalState, setIsAdd, cart, isWriter}) {
 
@@ -106,10 +107,6 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
     }
   }
   
-  // 이미지 없을 때 대체 이미지 넣기
-  const defaultImage = '/src/assets/noimage.png';
-
-
 
   return (
     <div className="relative bg-white m-auto border rounded-lg space-y-5 w-6/12 p-9">
@@ -120,7 +117,7 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
         <div>
           <p className="font-semibold p-1">{selectedMenu.name}</p>
           <div className="flex flex-row">
-            <img src={selectedMenu.image|| defaultImage} alt={selectedMenu.name} className="w-36 h-36 mr-5 shadow-md shadow-gray3/30 p-1" />
+            <img src={selectedMenu.image|| DefaultImage} alt={selectedMenu.name} className="w-36 h-36 mr-5 shadow-md shadow-gray3/30 p-1" />
             <div className="flex flex-col justify-around ml-3">
               {/* 가격 */}
               <div className="">

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import defaultImage from "@/assets/noimage.png"
+import Logo from '@/assets/2.png';
 
 export default function TransactionRoom(roomData) {
   const navigate = useNavigate()
@@ -23,8 +23,8 @@ export default function TransactionRoom(roomData) {
               <img src={`https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/transactionImage/${transaction_image}`} alt="상품 이미지" className="w-full h-full rounded-lg" />
             </div>
           ):(
-            <div className="h-32">
-              <img src={defaultImage} alt="기본이미지" />
+            <div className="h-32 flex items-center w-4/5">
+              <img src={Logo} alt="기본이미지" />
             </div>
           )}
 
