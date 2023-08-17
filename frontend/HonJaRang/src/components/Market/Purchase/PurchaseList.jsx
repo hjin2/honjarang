@@ -7,12 +7,8 @@ import "../pagination.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { API } from "@/apis/config"
-import { initializeApp } from 'firebase/app';
-import {
-  getMessaging,
-  getToken,
-  onMessage,
-} from 'firebase/messaging';
+
+import { useCallback } from "react"
 
 
 export default function PurchaseList() {
@@ -42,15 +38,15 @@ export default function PurchaseList() {
     .catch((err)=>{
       console.log(err)
     })
-  },[])
+  },[keyword])
   
   useEffect(() => {
     fetchPurChaseData()
   },[currentPage])
 
-  const setPage = (error) => {
+  const setPage = useCallback((error) => {
     setCurrentPage(error);
-  };
+  },[]);
 
   const search = (e) =>{
     e.preventDefault()
@@ -61,99 +57,35 @@ export default function PurchaseList() {
     setKeyword(e.target.value)
   }
 
-  const firebaseConfig = {
-    apiKey: import.meta.env.VITE_APP_FIREBASE_APIKEY,
-    authDomain: import.meta.env.VITE_APP_FIREBASE_AUTHDOMAIN,
-    projectId: import.meta.env.VITE_APP_FIREBASE_PROJECTID,
-    storageBucket: import.meta.env.VITE_APP_FIREBASE_STORAGEBUCKET,
-    messagingSenderId: import.meta.env.VITE_APP_FIREBASE_MESSAGINGSENDERID,
-    appId: import.meta.env.VITE_APP_FIREBASE_APPID,
-    measurementId: import.meta.env.VITE_APP_FIREBASE_MEASUREMENTID
-  };
-  const app = initializeApp(firebaseConfig);
-  const messaging = getMessaging(app);
-  useEffect(() => {
-    requestPermission();
-    getToken(messaging, {
-      vapidKey: import.meta.env.VITE_APP_FIREBASE_VAPIDKEY,
-    })
-      .then((currentToken) => {
-        if (currentToken) {
-          localStorage.setItem('fcm_token', currentToken)
-          Push(currentToken)
-        } else {
-          console.log('No registration token available. Request permission to generate one.');
-        }
-      })
-      .catch((err) => {
-        console.log('An error occurred while retrieving token. ', err);
-      });
-
-    onMessage(messaging, (payload) => {
-      console.log('Message received. ', payload);
-      const { title, body } = payload.notification;
-      const options = {
-        body,
-        icon: '/firebase-logo.png',
-      };
-      new Notification(title, options);
-    });
-  }, []);
-
-  const requestPermission = () => {
-    console.log('Requesting permission...');
-    Notification.requestPermission().then((permission) => {
-      if (permission === 'granted') {
-        console.log('Notification permission granted.');
-      } else {
-        console.log('Unable to get permission to notify.');
-      }
-    });
-  };
-
-
-  const Push = (currentToken) => {
-    const token = currentToken
-    const access_token = localStorage.getItem('access_token')
-    axios.post(`${API.USER}/fcm-token`,
-    {fcm_token : token},
-    {headers: {
-      'Authorization' : `Bearer ${access_token}`
-    }})
-    .then((res) => {
-      console.log(res)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-  }
-
-
-
-
 
   return (
     <div className="h-full">
       <div className="flex justify-end mb-5">
-        <form action="" className="space-x-2" onSubmit={search}>
-          <input className="border border-gray2 focus:outline-main2 h-10 p-2" type="text" placeholder="검색어" onChange={handleKeyword}/>
-          <button>
-            <FontAwesomeIcon icon={faMagnifyingGlass} style={{color: "#008b28",}} />
-          </button>
-        </form>
-      </div>
-      <Rooms roomsData={purchaseData} component={PurchaseRoom}/>
-      <div className="flex justify-center">
-        <Pagination
-          activePage={currentPage}
-          itemsCountPerPage={12}
-          totalItemsCount={12*pageSize}
-          pageRangeDisplayed={10}
-          prevPageText={"<"}
-          nextPageText={">"}
-          onChange={setPage}
-        />
-      </div>
+      <form action="" className="space-x-2" onSubmit={search}>
+        <input className="border border-gray2 focus:outline-main2 h-10 p-2" type="text" placeholder="검색어" onChange={handleKeyword}/>
+        <button>
+          <FontAwesomeIcon icon={faMagnifyingGlass} style={{color: "#008b28",}} />
+        </button>
+      </form>
+    </div>
+      {purchaseData.length > 0 ? (
+        <>
+        <Rooms roomsData={purchaseData} component={PurchaseRoom}/>
+        <div className="flex justify-center">
+          <Pagination
+            activePage={currentPage}
+            itemsCountPerPage={12}
+            totalItemsCount={12*pageSize}
+            pageRangeDisplayed={10}
+            prevPageText={"<"}
+            nextPageText={">"}
+            onChange={setPage}
+            />
+        </div>
+      </>
+      ):(
+        <div className="text-center mt-10 font-bold text-xl">공동구매 목록이 없습니다</div>
+      )}
     </div>
   )
 }

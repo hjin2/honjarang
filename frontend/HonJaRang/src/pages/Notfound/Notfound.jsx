@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 export default function Notfound() {
   const navigate = useNavigate()
   const onClick = () =>{
-    navigate("/board")
+    navigate("/")
   }
   return (
   <div className="flex flex-col items-center mt-10">

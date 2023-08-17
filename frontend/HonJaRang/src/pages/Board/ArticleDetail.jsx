@@ -26,7 +26,6 @@ export const ArticleDetail = () => {
   }
 
   const clickUser = () =>{
-    console.log(user)
     navigate(`/mypage/${detail.user_id}`)
   }
   const addComment = () =>{
@@ -214,12 +213,14 @@ export const ArticleDetail = () => {
       {comments.length>0 ? (
         <div className="space-y-2 px-2">
           {comments.map((comment)=>(
-            <Comment
-              key={comment.id}
+            <div key={comment.id}>
+              <Comment
               comment={comment}
               id = {detail.id}
               updateComments = {updateComments}
-            />
+              />
+              <hr />
+            </div>
           ))}
         </div>
       ):(

@@ -42,7 +42,7 @@ export default function WebRTC() {
     },
     {
       title : "혼밥/혼술",
-      category : "honbobsul"
+      category : "honbabsul"
     },
 
     {

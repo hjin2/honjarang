@@ -18,7 +18,7 @@ export default function Login() {
 
   const navigate = useNavigate()
   const goMarket = () => {
-    navigate(`/market`)
+    navigate(`/`)
   };
   const login = (e) => {
     e.preventDefault()

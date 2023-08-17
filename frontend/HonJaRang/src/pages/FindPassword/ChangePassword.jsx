@@ -78,7 +78,7 @@ export default function ChangePassword() {
     <div className="flex flex-col justify-center items-center h-screen space-y-4">
       <img src={Logo} className="w-2/12 mb-8"/>
       <div>
-        비밀번호
+        <label className="text-main2 text-lg font-semibold">비밀번호</label>
         <br />
         <input 
           type="password"
@@ -87,7 +87,7 @@ export default function ChangePassword() {
         />
       </div>
       <div>
-        새로운 비밀번호
+        <label className="text-main2 text-lg font-semibold">새로운 비밀번호</label>
         <br />
         <input 
           type="password" 
@@ -97,7 +97,7 @@ export default function ChangePassword() {
         <span className="text-xs text-main5 font-semibold">{pwdMsg}</span>
       </div>
       <div>
-        새로운 비밀번호 확인
+        <label className="text-main2 text-lg font-semibold">새로운 비밀번호 확인</label>
         <input 
           type="password" 
           className="border-gray2 rounded-lg block w-72 h-10 text-base p-2 focus:outline-main2"
@@ -106,7 +106,7 @@ export default function ChangePassword() {
         />
         <span className="text-xs text-main5 font-semibold">{pwdcfmMsg}</span>
       </div>
-      <button disabled={Valid} onClick={Password_Change} className="main1-full-button w-72 h-10">비밀번호 변경</button>
+      <button disabled={Valid} onClick={Password_Change} className="main1-full-button w-72 h-10 text-base">비밀번호 변경</button>
     </div>
   )
 }

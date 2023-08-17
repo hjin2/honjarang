@@ -103,6 +103,10 @@ export default function DeliveryDetail() {
       .catch((err) => console.log(err))
   }
 
+  const clickUser = () =>{
+    navigate(`/mypage/${detail.user_id}`)
+  }
+
   const deadline = new Date(detail.deadline)
   const timeDiff = deadline - currentTime;
   const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
@@ -119,7 +123,7 @@ export default function DeliveryDetail() {
             <div className="font-bold text-3xl flex items-end">{detail.store_name}</div>
           </div>
           <div>
-            <div className="font-semibold text-right">{detail.nickname}</div>
+            <div className="font-semibold text-right cursor-pointer" onClick={clickUser}>{detail.nickname}</div>
             <div className="text-right ">{detail.created_at?.slice(0,16)} </div>
           </div>
         </div>

@@ -94,6 +94,11 @@ export default function TransactionDetail() {
       })
       .catch((err) => console.log(err))
   },[])
+
+  const clickUser = () =>{
+    navigate(`/mypage/${detail.seller_id}`)
+  }
+
   return (
     <div className="w-6/12 mx-auto mt-5 border rounded-lg p-5">
       <div className="flex justify-between">
@@ -103,7 +108,7 @@ export default function TransactionDetail() {
         </div>
         <div className="flex">
           <div>
-            <div className="font-semibold text-right">{detail.seller_nickname}</div>
+            <div className="font-semibold text-right cursor-pointer" onClick={clickUser}>{detail.seller_nickname}</div>
             <div>{detail.created_at?.slice(0,10)}</div>
           </div>
           {isWriter ? (
