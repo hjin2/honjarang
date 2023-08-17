@@ -23,7 +23,7 @@ export default {
       },
       fontFamily:{
         ImcreSoojin : ["ImcreSoojin"],
-        omyu_pretty : ["omyu_pretty"]
+        Suite : ["SUITE-Regular"]
 
       }
     },
