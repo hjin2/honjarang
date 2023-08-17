@@ -68,7 +68,6 @@ export default function FreeChat() {
   };
 
   const toggleVideo = () => {
-    console.log(publishVideo);
     setPublishVideo(!publishVideo);
     publisher.publishVideo(!publishVideo);
   };
