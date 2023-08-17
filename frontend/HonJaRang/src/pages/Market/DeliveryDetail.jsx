@@ -91,14 +91,15 @@ export default function DeliveryDetail() {
   }
 
   // 수령 확인
-  const [received, setReceived] = useState(false)
+  // const [received, setReceived] = useState(false)
 
   const handleCheck = () =>{
+    console.log(id)
     axios.put(`${API.DELIVERIES}/${id}/receive`,[], {headers})
       .then((res) =>{
         console.log(res)
+        // setReceived(true)
         window.alert("수령하셨습니다")
-        setReceived(true)
       })  
       .catch((err) => console.log(err))
   }
@@ -180,10 +181,12 @@ export default function DeliveryDetail() {
           <div className='space-y-5'>
             <div className="text-main5 flex justify-center">모집 마감</div>
             {detail.target_min_price - detail.current_total_price <= 0 ? (
-              <button onClick={handleCheck} 
-                className={`main1-full-button w-40 ${received ? 'main3-full-button' : ''}`}
-                >{received ? '수령 완료' : '수령 확인'}
-              </button>
+              // <button onClick={handleCheck} 
+              //   className={`main1-full-button w-40 ${received ? 'main3-full-button' : ''}`}
+              // >{received ? '수령 완료' : '수령 확인'}
+              <button onClick={handleCheck} className='main1-full-button w-40'>
+                수령확인
+              </button>  
             ) : ('')}
           </div>
         )}
