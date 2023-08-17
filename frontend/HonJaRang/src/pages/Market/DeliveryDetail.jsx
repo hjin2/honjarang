@@ -128,14 +128,11 @@ export default function DeliveryDetail() {
     });
   }
 
-  useEffect(() => {
-    fetchCart()
-  }, [cart]);
 
   useEffect(()=>{
     const calculatedGroupedCart = calculateGroupedCart(cart);
     setGroupedCart(calculatedGroupedCart);
-  },[fetchCart])
+  },[cart])
 
   const [showCartList, setShowCartList] = useState(false)
   const onClick = () => {

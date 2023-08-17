@@ -87,6 +87,7 @@ export const ArticleDetail = () => {
   const fetchComments = useCallback(() =>{
     axios.get(`${API.POST}/${id}/comments`, {headers})
     .then((res)=>{
+      console.log(res.data)
       setComments(res.data)
     })
     .catch((err)=>{
@@ -157,6 +158,7 @@ export const ArticleDetail = () => {
       </div>
       <div className="flex justify-between px-2 my-3">
         <div className='flex'>
+          <img className='w-10 h-10 rounded-full mr-2' src={user.profile_image} alt="profile_image" />
           <div> 
             <div className='text-xs font-semibold cursor-pointer' onClick={clickUser}>{detail.nickname}</div>
             <div className='text-xs'>{detail.created_at?.slice(0,16)}</div>
@@ -190,7 +192,7 @@ export const ArticleDetail = () => {
         {detail.post_image ? (
           <img src={detail?.post_image} alt="image" loading="lazy" />
         ):(null)}
-        <div className="mt-2">
+        <div className="mt-5">
           {detail.content}
         </div>
         <div className='flex justify-center mt-10' onClick={handleLike}>
@@ -218,6 +220,7 @@ export const ArticleDetail = () => {
               comment={comment}
               id = {detail.id}
               updateComments = {updateComments}
+              fetchUser = {fetchUser}
               />
               <hr />
             </div>
