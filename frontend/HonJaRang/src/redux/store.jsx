@@ -8,7 +8,7 @@ const store = configureStore({
   reducer: {
     login: loginSlice,
     articles: articleSlice.reducer,
-    userinfo : UserinfoSlice.reducer,
+    userinfo: UserinfoSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }),

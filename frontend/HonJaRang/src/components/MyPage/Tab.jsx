@@ -1,5 +1,5 @@
 import React from 'react';
-import Highlight from '@/assets/Highlight.png'
+import Highlight from '@/assets/Highlight.png';
 
 const Tab = ({ tabs, activeTabIndex, setActiveTabIndex }) => {
   const activetabStyles = {
@@ -12,7 +12,7 @@ const Tab = ({ tabs, activeTabIndex, setActiveTabIndex }) => {
     padding: '10px',
     cursor: 'pointer',
     transition: 'background-color 0.3s',
-    fontWeight : "900"
+    fontWeight: '900',
   };
   const tabStyles = {
     display: 'flex',
@@ -22,11 +22,9 @@ const Tab = ({ tabs, activeTabIndex, setActiveTabIndex }) => {
     padding: '10px',
     cursor: 'pointer',
     transition: 'background-color 0.3s',
-    color : "#888888",
-    fontWeight : "bold"
-  }
-  
-
+    color: '#888888',
+    fontWeight: 'bold',
+  };
 
   return (
     <div className="flex space-x-14 mx-auto ">
@@ -46,10 +44,7 @@ const Tab = ({ tabs, activeTabIndex, setActiveTabIndex }) => {
           </li>
         ))}
       </ul>
-      <div
-        className="basis-5/6"
-        style={{ minHeight: '400px'}}
-      >
+      <div className="basis-5/6" style={{ minHeight: '400px' }}>
         {tabs[activeTabIndex].content}
       </div>
     </div>

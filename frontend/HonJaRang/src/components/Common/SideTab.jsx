@@ -1,4 +1,4 @@
-import Highlight from '@/assets/Highlight.png'
+import Highlight from '@/assets/Highlight.png';
 
 const activetabStyles = {
   display: 'flex',
@@ -10,7 +10,7 @@ const activetabStyles = {
   padding: '10px',
   cursor: 'pointer',
   transition: 'background-color 0.3s',
-  fontWeight : "900"
+  fontWeight: '900',
 };
 const tabStyles = {
   display: 'flex',
@@ -20,21 +20,19 @@ const tabStyles = {
   padding: '10px',
   cursor: 'pointer',
   transition: 'background-color 0.3s',
-  color : "#888888",
-  fontWeight : "bold"
-}
+  color: '#888888',
+  fontWeight: 'bold',
+};
 
-
-export default function SideTab({ tabs, activeTabIndex, setActiveTabIndex }){
-
+export default function SideTab({ tabs, activeTabIndex, setActiveTabIndex }) {
   return (
-    <div className='space-x-14 mx-auto'>
+    <div className="space-x-14 mx-auto">
       <ul className="space-y-10 my-10 mx-auto">
         {tabs.map((tab, index) => (
           <li
             key={index}
             onClick={() => setActiveTabIndex(index)}
-            className='w-32 mx-auto'
+            className="w-32 mx-auto"
             style={
               activeTabIndex === index
                 ? { ...activetabStyles, fontWeight: 'bold' }
@@ -46,5 +44,5 @@ export default function SideTab({ tabs, activeTabIndex, setActiveTabIndex }){
         ))}
       </ul>
     </div>
-  )
+  );
 }

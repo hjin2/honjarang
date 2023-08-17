@@ -13,7 +13,7 @@ export default function PurchaseApply({
 }) {
   const [quantity, setQuantity] = useState(1); // 시작 수량을 1로 설정
   const [afterPoint, setAfterPoint] = useState(0);
-  const token = localStorage.getItem("access_token")
+  const token = localStorage.getItem('access_token');
 
   useEffect(() => {
     const calculatedPoint = point - (price * quantity + deliveryCharge);
@@ -39,7 +39,10 @@ export default function PurchaseApply({
     const inputQuantity = parseInt(e.target.value);
     if (!isNaN(inputQuantity)) {
       const calculatedPoint = point - (price * inputQuantity + deliveryCharge);
-      const newQuantity = calculatedPoint >= 0 ? inputQuantity : Math.floor((point - deliveryCharge) / price);
+      const newQuantity =
+        calculatedPoint >= 0
+          ? inputQuantity
+          : Math.floor((point - deliveryCharge) / price);
       const newAfterPoint = calculatedPoint >= 0 ? calculatedPoint : 0;
       setAfterPoint(newAfterPoint);
       setQuantity(newQuantity >= 1 ? newQuantity : 1);
@@ -48,28 +51,28 @@ export default function PurchaseApply({
 
   const purchase = () => {
     const data = {
-      joint_purchase_id : purchaseId,
-      quantity : quantity,
-    }
-    console.log(data)
-    if((point-(price * quantity + deliveryCharge))>=0){
-      axios.post(`${API.PURCHASES}/${purchaseId}/applicants`,data,
-        {
-          headers:{
-            "Authorization" : `Bearer ${token}`,
-            "Content-Type" : "application/json"
-          }
+      joint_purchase_id: purchaseId,
+      quantity: quantity,
+    };
+    console.log(data);
+    if (point - (price * quantity + deliveryCharge) >= 0) {
+      axios
+        .post(`${API.PURCHASES}/${purchaseId}/applicants`, data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         })
         .then((res) => {
-          console.log(res)
-          setIsPurchase(true)
-          handleToggleAside()
+          console.log(res);
+          setIsPurchase(true);
+          handleToggleAside();
         })
-        .catch((err) => console.log(err))
-    }else{
-      window.alert("포인트가 부족합니다.")
+        .catch((err) => console.log(err));
+    } else {
+      window.alert('포인트가 부족합니다.');
     }
-  }
+  };
 
   return (
     <>
@@ -82,7 +85,10 @@ export default function PurchaseApply({
           }`}
         >
           <div className="flex flex-col items-center">
-            <button onClick={handleToggleAside} className="my-2 hover:text-main2">
+            <button
+              onClick={handleToggleAside}
+              className="my-2 hover:text-main2"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -91,11 +97,20 @@ export default function PurchaseApply({
                 stroke="currentColor"
                 className="w-6 h-6"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                />
               </svg>
             </button>
             <div>
-              <button onClick={handleDecrement} className="border px-2 font-semibold hover:border-main2 w-8 rounded-l-sm">-</button>
+              <button
+                onClick={handleDecrement}
+                className="border px-2 font-semibold hover:border-main2 w-8 rounded-l-sm"
+              >
+                -
+              </button>
               <input
                 type="number"
                 name="quantity"
@@ -103,7 +118,12 @@ export default function PurchaseApply({
                 onChange={handleChange}
                 className=" w-28 text-center border-gray1 rounded-none focus:outline-none focus:border-main2 "
               />
-              <button onClick={handleIncrement} className="border px-2 font-semibold hover:border-main2 w-8 rounded-r-sm">+</button>
+              <button
+                onClick={handleIncrement}
+                className="border px-2 font-semibold hover:border-main2 w-8 rounded-r-sm"
+              >
+                +
+              </button>
             </div>
             <div className="my-3 w-6/12">
               <div className="flex justify-between mb-2">
@@ -112,16 +132,22 @@ export default function PurchaseApply({
               </div>
               <div className="flex justify-between">
                 <p className="">보유 포인트</p>
-                <p className="">{(point).toLocaleString()}P</p>
+                <p className="">{point.toLocaleString()}P</p>
               </div>
-                {/* <p className="">차감 포인트 : {price * quantity + deliveryCharge}P</p> */}
+              {/* <p className="">차감 포인트 : {price * quantity + deliveryCharge}P</p> */}
               <div className="flex justify-between">
                 <p className="">차감 후 포인트</p>
-                <p className="">{(afterPoint).toLocaleString()}P</p>
+                <p className="">{afterPoint.toLocaleString()}P</p>
               </div>
-              <p className="text-gray2 text-sm mt-2">(배송비/목표인원) 만큼의 포인트가 함께 차감됩니다.</p>
+              <p className="text-gray2 text-sm mt-2">
+                (배송비/목표인원) 만큼의 포인트가 함께 차감됩니다.
+              </p>
             </div>
-            <button type="button" className="main1-full-button w-32 mb-3" onClick={purchase}>
+            <button
+              type="button"
+              className="main1-full-button w-32 mb-3"
+              onClick={purchase}
+            >
               구매하기
             </button>
           </div>

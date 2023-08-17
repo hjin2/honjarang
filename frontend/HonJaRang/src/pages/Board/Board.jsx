@@ -1,9 +1,9 @@
-import ArticleList from "@/components/Board/ArticleList"
+import ArticleList from '@/components/Board/ArticleList';
 
 export default function Board() {
   return (
     <div>
-      <ArticleList/>
+      <ArticleList />
     </div>
   );
 }

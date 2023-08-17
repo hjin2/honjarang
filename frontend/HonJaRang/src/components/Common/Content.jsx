@@ -1,9 +1,5 @@
-import React from 'react'
+import React from 'react';
 
 export default function Content({ tabs, activeTabIndex, setActiveTabIndex }) {
-  return (
-    <>
-      {tabs[activeTabIndex].content}
-    </>
-  )
+  return <>{tabs[activeTabIndex].content}</>;
 }
