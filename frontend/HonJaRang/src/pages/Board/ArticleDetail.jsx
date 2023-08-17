@@ -190,7 +190,7 @@ export const ArticleDetail = () => {
         {detail.post_image ? (
           <img src={detail?.post_image} alt="image" loading="lazy" />
         ):(null)}
-        <div>
+        <div className="mt-2">
           {detail.content}
         </div>
         <div className='flex justify-center mt-10' onClick={handleLike}>

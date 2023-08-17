@@ -22,6 +22,7 @@ export default function DeliveryDetail() {
   const [menuList, setMenuList] = useState([]); // 메뉴 리스트
   const [isAdd, setIsAdd] = useState(false)
   const [cart, setCart] = useState([])
+  const [isPurchase, setIsPurchase] = useState(false)
 
   const enter = () =>{
     navigate(`/chatting/${detail.chat_room_id}`, {state : {title : `${detail.store_name} 공동배달 참여방`}})
@@ -39,6 +40,7 @@ export default function DeliveryDetail() {
       }else{
         setIsWriter(false)
       }
+      fetchCart()
     })
     .catch((err) => {
       console.log(err)
@@ -92,7 +94,7 @@ export default function DeliveryDetail() {
 
   // 수령 확인
   // const [received, setReceived] = useState(false)
-
+  
   const handleCheck = () =>{
     console.log(id)
     axios.put(`${API.DELIVERIES}/${id}/receive`,[], {headers})
@@ -107,6 +109,52 @@ export default function DeliveryDetail() {
   const clickUser = () =>{
     navigate(`/mypage/${detail.user_id}`)
   }
+  const userId = localStorage.getItem("user_id")
+  const fetchCart = () =>{
+    axios.get(`${API.DELIVERIES}/${id}/carts`, { headers })
+    .then((res) => {
+      console.log(res.data)
+      setCart(res.data);
+      console.log(cart)
+      for(let i=0;i<res.data.length;i++){
+        if(res.data[i].user_id == userId){
+          setIsPurchase(true)
+          break
+        }
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }
+
+  useEffect(() => {
+    fetchCart()
+  }, [cart]);
+
+  useEffect(()=>{
+    const calculatedGroupedCart = calculateGroupedCart(cart);
+    setGroupedCart(calculatedGroupedCart);
+  },[fetchCart])
+
+  const [showCartList, setShowCartList] = useState(false)
+  const onClick = () => {
+    setShowCartList(!showCartList);
+  };
+
+  const calculateGroupedCart = (cart) => {
+    return Object.entries(
+      cart.reduce((acc, menu) => {
+        if (!acc[menu.user_nickname]) {
+          acc[menu.user_nickname] = [];
+        }
+        acc[menu.user_nickname].push(menu);
+        return acc;
+      }, {})
+    );
+  };
+  
+  const [groupedCart, setGroupedCart] = useState([]);
 
   const deadline = new Date(detail.deadline)
   const timeDiff = deadline - currentTime;
@@ -128,10 +176,12 @@ export default function DeliveryDetail() {
             <div className="text-right ">{detail.created_at?.slice(0,16)} </div>
           </div>
         </div>
-        <div className='space-x-2 cursor-pointer w-fit flex' onClick={enter}>
-          <FontAwesomeIcon icon={faComments} style={{color: "#008b57",}} />
-          <div className='text-sm text-main1 font-bold'>채팅</div>
-        </div>
+        {isPurchase&&
+          <div className='space-x-2 cursor-pointer w-fit flex' onClick={enter}>
+            <FontAwesomeIcon icon={faComments} style={{color: "#008b57",}} />
+            <div className='text-sm text-main1 font-bold'>채팅</div>
+          </div>
+        }
         <hr />
         <div className="m-2 whitespace-pre-line">
           {detail.content}
@@ -166,6 +216,9 @@ export default function DeliveryDetail() {
                 setIsAdd = {setIsAdd}
                 cart = {cart}
                 isWriter={isWriter}
+                setCart={setCart}
+                setGroupedCart={setGroupedCart}
+                calculateGroupedCart={calculateGroupedCart}
                 />
             </Modal>
           )}
@@ -191,7 +244,21 @@ export default function DeliveryDetail() {
           </div>
         )}
         {/* 메뉴를 담으면 장바구니 버튼 활성화 */}
-        <CartList id={id} loginId={loginId} cart={cart} setCart={setCart} />
+        {isPurchase && (
+        <button className="main2-button w-40 mt-3" onClick={onClick}>장바구니 목록</button>
+        )}
+        <CartList 
+          id={id} 
+          loginId={loginId} 
+          cart={cart} 
+          setCart={setCart} 
+          showCartList={showCartList} 
+          setShowCartList={setShowCartList}
+          setIsPurchase={setIsPurchase}
+          setGroupedCart={setGroupedCart}
+          groupedCart={groupedCart}
+          calculateGroupedCart={calculateGroupedCart}
+        />
         {isWriter && timeDiff>0 ? (
           <button className="main5-full-button w-40 mt-3" onClick={deleteDelivery}>모집 취소</button>
           ):null}    
