@@ -6,7 +6,7 @@ import Nickname_check from '../../components/Signup/nickname_check'
 import Address_check from '../../components/Signup/address_check'
 import Password_check from '../../components/Signup/Password_check'
 import { useNavigate } from 'react-router-dom'
-import image2 from '@/assets/2.png'
+import Logo from '@/assets/2.png'
 import { API } from '@/apis/config'
 
 
@@ -67,19 +67,23 @@ export default function Signup() {
     })
   }
   return (
-    <div className="m-auto w-4/5 h-fit border border-solid border-gray2 rounded-md
-    flex flex-col items-start justify-around p-2">
-          <img src={image2} alt="" className='mx-auto w-2/12'/>
-          <Email_verify Email = {Email} setEmail = {setEmail} ChangeEmailValid = {ChangeEmailValid}/>
-          <Nickname_check Nickname = {Nickname} setNickname = {setNickname} ChangeNicknameValid = {ChangeNicknameValid}/>
-          <Password_check Pwd = {Pwd} setPwd = {setPwd} setPwdValid={setPwdValid}/>
-          <Address_check Address = {Address} setAddress = {setAddress}
-          Latitude = {Latitude} setLatitude = {setLatitude}
-          Longitude = {Longitude} setLongitude = {setLongitude}
-          ChangeAddressValid = {ChangeAddressValid}/>
-          {SignupValid ? <button disabled = {SignupValid} className="m-auto main3-full-button w-28 h-10 text-lg text-red-600" 
-          onClick={onClick} >회원가입</button> : <button disabled = {SignupValid} className="m-auto main3-full-button w-28 h-10 text-lg" 
-          onClick={onClick} >회원가입</button>}
+    <div className="m-auto w-4/5 h-screen flex flex-col justify-center items-center p-2">
+      <img src={Logo} alt="" className='mx-auto w-2/12 mb-8'/>
+      <div className="flex flex-col items-start">
+        <Email_verify Email = {Email} setEmail = {setEmail} ChangeEmailValid = {ChangeEmailValid} />
+        <Nickname_check Nickname = {Nickname} setNickname = {setNickname} ChangeNicknameValid = {ChangeNicknameValid} />
+        <Password_check Pwd = {Pwd} setPwd = {setPwd} setPwdValid={setPwdValid}/>
+        <Address_check Address = {Address} setAddress = {setAddress}
+        Latitude = {Latitude} setLatitude = {setLatitude}
+        Longitude = {Longitude} setLongitude = {setLongitude}
+        ChangeAddressValid = {ChangeAddressValid}/>
+        {SignupValid ? 
+        <button disabled = {SignupValid} className="main1-full-button w-28 h-10 text-lg" 
+        onClick={onClick} >회원가입</button> 
+        : 
+        <button disabled = {SignupValid} className="main1-full-button w-28 h-10 text-lg" 
+        onClick={onClick} >회원가입</button>}
+      </div>
     </div>
   )
 }

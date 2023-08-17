@@ -58,22 +58,22 @@ const PwdValidCheck = () => {
     
     
   return (
-    <div className="mb-3">
-      <div>
-      <label className="font-semibold text-lg text-main2">비밀번호</label>
-        <br />
-        <input type="password" onChange = {onChange_password} maxLength="15"
-        className="inline-block border-gray2 rounded-lg block w-60 h-10 p-2 focus:outline-main2"/>
-        <br />
-        <span className="font-semibold text-lg text-red-600">{pwdMsg}</span>
+    <div className="mb-3 mt-2">
+      <div >
+        <label className="font-semibold text-lg text-main2 mb-1">비밀번호</label>
+        <div>
+          <input type="password" onChange = {onChange_password} maxLength="15"
+            className=" border-gray2 rounded-lg  w-60 h-10 p-2 focus:outline-main2"/>
+          <span className="font-semibold text-lg text-red-600 ml-2">{pwdMsg}</span>
+        </div>
       </div>
       <div className="mt-4">
-        <label className="font-semibold text-lg text-main2">비밀번호 확인</label>
-        <br />
-        <input type="password" onChange = {onChange_password_cfm} maxLength="15"
-          className="inline-block border-gray2 rounded-lg block w-60 h-10 p-2 focus:outline-main2"/>
-        <br />
-        <span className="font-semibold text-lg text-red-600">{pwdcfmMsg}</span>
+        <label className="font-semibold text-lg text-main2 mb-1">비밀번호 확인</label>
+        <div>
+          <input type="password" onChange = {onChange_password_cfm} maxLength="15"
+            className=" border-gray2 rounded-lg w-60 h-10 p-2 focus:outline-main2"/>
+          <span className="font-semibold text-lg text-red-600 ml-2">{pwdcfmMsg}</span>
+        </div>
       </div>
     </div>
   )

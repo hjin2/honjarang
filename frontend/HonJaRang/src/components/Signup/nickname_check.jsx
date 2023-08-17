@@ -37,15 +37,15 @@ else {
 }}
 
   return (
-    <div className="mb-3">
+    <div className="mb-3 mt-2">
       <div>
         <label className="font-semibold text-lg text-main2">닉네임</label>
-        <br />
-        <input type="text" name="nickname" onChange={onChange} value={nickname} maxLength="15" disabled={NicknameDisalbed}
-        className="inline-block border-gray2 rounded-lg block w-60 h-10 p-2 focus:outline-main2"/>
-        <button className='w-20 h-10 main1-full-button my-10 text-base ml-2'
-        onClick = { nickname_check } disabled={NicknameDisalbed}>중복 확인</button>
-        <br />
+        <div>
+          <input type="text" name="nickname" onChange={onChange} value={nickname} maxLength="15" disabled={NicknameDisalbed}
+          className=" border-gray2 rounded-lg w-60 h-10 p-2 focus:outline-main2"/>
+          <button className='w-20 h-10 main4-full-button my-2 text-base ml-2'
+          onClick = { nickname_check } disabled={NicknameDisalbed}>중복 확인</button>
+        </div>
         <span className="font-semibold text-lg text-red-600">{nicknameMsg}</span>
       </div>
     </div>
