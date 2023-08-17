@@ -1,10 +1,6 @@
 import React, { useEffect } from 'react';
 import { initializeApp } from 'firebase/app';
-import {
-  getMessaging,
-  getToken,
-  onMessage,
-} from 'firebase/messaging';
+import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import axios from 'axios';
 import { API } from '@/apis/config';
 
@@ -16,7 +12,7 @@ const FirebaseMessaging = () => {
     storageBucket: import.meta.env.VITE_APP_FIREBASE_STORAGEBUCKET,
     messagingSenderId: import.meta.env.VITE_APP_FIREBASE_MESSAGINGSENDERID,
     appId: import.meta.env.VITE_APP_FIREBASE_APPID,
-    measurementId: import.meta.env.VITE_APP_FIREBASE_MEASUREMENTID
+    measurementId: import.meta.env.VITE_APP_FIREBASE_MEASUREMENTID,
   };
   const app = initializeApp(firebaseConfig);
   const messaging = getMessaging(app);
@@ -29,10 +25,12 @@ const FirebaseMessaging = () => {
     })
       .then((currentToken) => {
         if (currentToken) {
-          localStorage.setItem('fcm_token', currentToken)
+          localStorage.setItem('fcm_token', currentToken);
           console.log(currentToken);
         } else {
-          console.log('No registration token available. Request permission to generate one.');
+          console.log(
+            'No registration token available. Request permission to generate one.',
+          );
         }
       })
       .catch((err) => {
@@ -62,18 +60,22 @@ const FirebaseMessaging = () => {
   };
 
   const PushTest = () => {
-    const token = localStorage.getItem('fcm_token')
-    const access_token = localStorage.getItem('access_token')
-    axios.post(`${API.USER}/fcm-token`,
-    {fcm_token : token},
-    {headers: {
-      'Authorization' : `Bearer ${access_token}`
-    }})
-    .then((res) => {
-      console.log(res)
-    })
-  }
-
+    const token = localStorage.getItem('fcm_token');
+    const access_token = localStorage.getItem('access_token');
+    axios
+      .post(
+        `${API.USER}/fcm-token`,
+        { fcm_token: token },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        },
+      )
+      .then((res) => {
+        console.log(res);
+      });
+  };
 
   return (
     <div>

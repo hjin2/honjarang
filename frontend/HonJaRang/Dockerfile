@@ -19,6 +19,8 @@ COPY . .
 # Vite를 사용하여 React 앱을 빌드합니다.
 RUN pnpm run build
 
+RUN babel src --out-dir dist
+
 # 빌드된 정적 파일을 호스팅하기 위해 간단한 웹 서버를 사용합니다.
 # (여기서는 serve 패키지를 사용하여 정적 파일을 제공합니다)
 

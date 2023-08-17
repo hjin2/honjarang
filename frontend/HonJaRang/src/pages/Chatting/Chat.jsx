@@ -10,25 +10,24 @@ import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
-
 const Chat = () => {
-  const location = useLocation()
-  const [Nickname, setNickname] = useState('')
+  const location = useLocation();
+  const [Nickname, setNickname] = useState('');
   const params = useParams();
-  const Key = params["id"];
+  const Key = params['id'];
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [socket, setSocket] = useState(null);
   const [stomp, setStomp] = useState(null);
-  const [image, setImage] = useState("")
-  const title =location.state.title
+  const [image, setImage] = useState('');
+  const title = location.state.title;
   const token = localStorage.getItem('access_token');
 
   const stompClientRef = useRef(null);
 
   const connect = () => {
-    console.log(title)
+    console.log(title);
     const serverAddress = 'https://honjarang.kro.kr/chat';
     const socket = new SockJS(serverAddress);
     const stompClient = Stomp.over(socket);
@@ -38,7 +37,11 @@ const Chat = () => {
         console.log(message);
         showMessage(JSON.parse(message.body));
       });
-      stompClient.send(`/app/chat/connect.${Key}`, {}, JSON.stringify({ token: token }));
+      stompClient.send(
+        `/app/chat/connect.${Key}`,
+        {},
+        JSON.stringify({ token: token }),
+      );
 
       stompClientRef.current = stompClient;
       setSocket(socket);
@@ -61,12 +64,12 @@ const Chat = () => {
       room_id: Key,
       content: message,
       nickname: Nickname,
-      profile_image_url : image
+      profile_image_url: image,
     };
 
     stomp.send(`/app/chat/message.${Key}`, {}, JSON.stringify(messageToSend));
     setMessage('');
-    
+
     // Scroll to bottom after sending message
     scrollToBottom();
   };
@@ -135,7 +138,6 @@ const Chat = () => {
     return cleanup;
   }, []);
 
-
   useEffect(() => {
     connect();
   }, []);
@@ -147,39 +149,46 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    const id = localStorage.getItem('user_id')
-    axios.get(`${API.USER}/info`,
-      {
-        params : {id : id},
-        headers : {'Authorization' : `Bearer ${token}`}
-      },
-      )
-      .then(function(response){
-        console.log(response.data)
-        setNickname(response.data.nickname)
-        setImage(response.data.profile_image)
+    const id = localStorage.getItem('user_id');
+    axios
+      .get(`${API.USER}/info`, {
+        params: { id: id },
+        headers: { Authorization: `Bearer ${token}` },
       })
-      .catch(function(error){
-        console.log(error)
+      .then(function (response) {
+        console.log(response.data);
+        setNickname(response.data.nickname);
+        setImage(response.data.profile_image);
       })
-  },[]);
+      .catch(function (error) {
+        console.log(error);
+      });
+  }, []);
 
   return (
     <div className="w-6/12 h-[82vh] flex flex-col m-auto border-4 rounded-lg p-4 border-main4">
-        <div className='flex space-x-5 mb-5'>
-          <button onClick={handleBack}>
-            <FontAwesomeIcon icon={faArrowLeft} style={{color: "#000000",}} />
-          </button>
-          <div className="text-lg ">{title}</div>
-        </div>
-        <hr />
-        <Talks messages={messages} id={Key} Nickname = {Nickname}/>
-        <div className="py-2 px-4 border-t border-gray-300 flex justify-around">
-          <input type="text" id="message" placeholder="채팅..." value={message} onChange={(e) => setMessage(e.target.value)} className="border rounded p-2 w-10/12 focus:outline-main2" onKeyDown={onKeyEnter} />
-          <button onClick={sendMessage} className="bg-main1 w-10 rounded-lg">
-            <FontAwesomeIcon icon={faPaperPlane} style={{color: "#000000",}} />
-          </button>
-        </div>
+      <div className="flex space-x-5 mb-5">
+        <button onClick={handleBack}>
+          <FontAwesomeIcon icon={faArrowLeft} style={{ color: '#000000' }} />
+        </button>
+        <div className="text-lg ">{title}</div>
+      </div>
+      <hr />
+      <Talks messages={messages} id={Key} Nickname={Nickname} />
+      <div className="py-2 px-4 border-t border-gray-300 flex justify-around">
+        <input
+          type="text"
+          id="message"
+          placeholder="채팅..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="border rounded p-2 w-10/12 focus:outline-main2"
+          onKeyDown={onKeyEnter}
+        />
+        <button onClick={sendMessage} className="bg-main1 w-10 rounded-lg">
+          <FontAwesomeIcon icon={faPaperPlane} style={{ color: '#000000' }} />
+        </button>
+      </div>
     </div>
   );
 };

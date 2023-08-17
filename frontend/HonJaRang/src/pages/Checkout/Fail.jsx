@@ -1,4 +1,4 @@
-import logoImage from "@/assets/2.png"
+import logoImage from '@/assets/2.png';
 
 export default function Fail() {
   const searchParams = new URLSearchParams(window.location.search);
@@ -7,7 +7,7 @@ export default function Fail() {
 
   return (
     <div className="flex flex-col items-center mt-24">
-      <img src={logoImage} className="w-3/12"/>
+      <img src={logoImage} className="w-3/12" />
       <div className="text-2xl">결제실패</div>
       {/* <div>{`사유: ${searchParams.get('message')}`}</div> */}
     </div>
