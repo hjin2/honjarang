@@ -42,6 +42,9 @@ export default function Refresh() {
             window.location.reload()
           })
         }
+        else {
+          return Promise.reject(err)
+        }
       }
     )
     return () => {
@@ -49,4 +52,3 @@ export default function Refresh() {
     }
   },[])
 }
-
