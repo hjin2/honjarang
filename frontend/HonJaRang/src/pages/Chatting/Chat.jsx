@@ -51,9 +51,7 @@ const Chat = () => {
     setMessages((prevMessages) => {
       if (!prevMessages.includes(message)) {
         return [...prevMessages, message];
-        
       }
-
       return prevMessages;
     });
   };
@@ -167,13 +165,14 @@ const Chat = () => {
   },[]);
 
   return (
-    <div className="w-5/12 h-[82vh] flex flex-col m-auto">
+    <div className="w-6/12 h-[82vh] flex flex-col m-auto border-4 rounded-lg p-4 border-main4">
         <div className='flex space-x-5 mb-5'>
           <button onClick={handleBack}>
             <FontAwesomeIcon icon={faArrowLeft} style={{color: "#000000",}} />
           </button>
           <div className="text-lg ">{title}</div>
-        </div>  
+        </div>
+        <hr />
         <Talks messages={messages} id={Key} Nickname = {Nickname}/>
         <div className="py-2 px-4 border-t border-gray-300 flex justify-around">
           <input type="text" id="message" placeholder="채팅..." value={message} onChange={(e) => setMessage(e.target.value)} className="border rounded p-2 w-10/12 focus:outline-main2" onKeyDown={onKeyEnter} />
