@@ -14,7 +14,7 @@ export default function FreeChatList({category}) {
   const [pageSize, setPageSize] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   useEffect(() => {
-    axios.get(`${API.WEBRTC}/sessions/${category}`)
+    axios.get(`${API.WEBRTC}/sessions/${category}/page`,{params : {size:12}})
     .then((res) => {
       console.log(2,res.data)
       setPageSize(res.data)
@@ -25,7 +25,7 @@ export default function FreeChatList({category}) {
   },[])
 
   useEffect(() => {
-    axios.get(`${API.WEBRTC}/sessions/${category}/${currentPage}`,)
+    axios.get(`${API.WEBRTC}/sessions/${category}`,{params : {page : currentPage}})
     .then((res) =>{
       console.log(1,res.data)
       setChatData(res.data)
