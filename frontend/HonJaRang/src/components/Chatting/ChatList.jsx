@@ -72,16 +72,16 @@ useEffect(() => {
 return (
   <div  className=" cursor-pointer m-2" onClick={onClick}>
     <div className='grid-raw-10'>
-    <span>{finalTitle}</span>
-    {list.participant_count === 2 ? null : <span className='text-xs mb-2 ml-2'>{list.participant_count}</span>}
-    <br />
-    {list.last_message_created_at===null ? <span className='text-sm'>아직 작성된 대화가 없습니다.</span> :
-    <span className='text-sm'>{list.last_message}</span>
-    }
-    {list.last_message_created_at===null ? null :
-    <span className='text-xs ml-2'>{Diff}{msg}</span>
-    }
-    {list.unread_message_count === 0 ? null : <div className='w-5 h-5 text-center bg-red-400 mr-auto float-right text-white rounded'>{list.unread_message_count}</div>}
+      <span className="text-lg font-semibold">{finalTitle}</span>
+      {list.participant_count === 2 ? null : <span className='text-xs mb-2 ml-2'>{list.participant_count}</span>}
+      <br />
+      {list.last_message_created_at===null ? <span className='text-sm'>아직 작성된 대화가 없습니다.</span> :
+      <span className='text-sm'>{list.last_message}</span>
+      }
+      {list.last_message_created_at===null ? null :
+      <span className='text-xs ml-2'>{Diff}{msg}</span>
+      }
+      {list.unread_message_count === 0 ? null : <div className='w-5 h-5 text-center bg-red-400 mr-auto float-right text-white rounded'>{list.unread_message_count}</div>}
     
     </div>
   </div>
