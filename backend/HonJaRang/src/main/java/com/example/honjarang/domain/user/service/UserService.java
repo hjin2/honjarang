@@ -157,7 +157,7 @@ public class UserService {
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void setNewPassword(PasswordSetDto passwordSetDto)
     {
         EmailVerification emailVerification = emailVerificationRepository.findByEmail(passwordSetDto.getEmail()).orElseThrow(() -> new EmailNotVerifiedException("이메일 인증이 되지 않았습니다."));
