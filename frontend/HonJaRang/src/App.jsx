@@ -78,8 +78,8 @@ function App() {
             <Route path="/board/article/:id" element={<AuthRoute component={<ArticleDetail/>} isLogged={isLogged} />} />
             <Route path="/board/articleupdate/:id" element={<AuthRoute component={<ArticleUpdate/>} isLogged={isLogged}/>}></Route>
             <Route path="/*" element={<Notfound />} />
+            <Route path="/chatting/:id" element={<AuthRoute component={<Chat/>} isLogged={isLogged} />} />
           </Route>
-          <Route path="/chatting/:id" element={<AuthRoute component={<Chat/>} isLogged={isLogged} />} />
           <Route path="/webrtc/:sessionid" element={<AuthRoute component={<FreeChat/>} isLogged={isLogged}/>}/>
           <Route path="/checkout/:price" element={<AuthRoute component={<Checkout/>} isLogged={isLogged} />} />
           <Route path="/checkout/fail" element={<AuthRoute component={<Fail/>} isLogged={isLogged} />} />

@@ -25,9 +25,8 @@ export default function Chat({chatMessages, sendChatMessage}) {
         }}
         >
         <div className="chat-messages"
-
-  ref={containerRef}
-  >
+          ref={containerRef}
+        >
           {chatMessages.map((message, index) => (
             <div key={index} className="chat-message">
               <strong>{message.sender}:</strong> {message.text}
