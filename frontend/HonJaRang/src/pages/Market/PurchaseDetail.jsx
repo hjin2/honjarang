@@ -140,7 +140,7 @@ export default function PurchaseDetail() {
       .catch((err) => console.log(err))
   }
   const enter = () =>{
-    navigate(`/chatting/${detail.chat_room_id}`)
+    navigate(`/chatting/${detail.chat_room_id}`, {state : {title : `${detail.product_name} 공동구매 채팅방`}})
   }
 
   return (
