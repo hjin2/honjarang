@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLoginStatus } from '../../redux/slice/loginSlice';
-import image2 from '@/assets/2.png'
+import Logo from '@/assets/2.png'
 import { API } from '@/apis/config';
 
 export default function Login() {
@@ -41,7 +41,7 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen" >
-      <img src={image2} alt="" className='mx-auto w-2/12'/>
+      <img src={Logo} alt="" className='mx-auto w-2/12 mb-8'/>
       <form className="space-y-4 md:space-y-6" onSubmit={login}>
         <div>
           <label htmlFor="email" className="block mb-1 font-semibold text-lg text-main2">
