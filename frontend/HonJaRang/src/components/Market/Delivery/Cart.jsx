@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { API } from '@/apis/config';
-import DefaultImage from '@/assets/default_image.jpg'
+import DefaultMenu from '@/assets/default_menu.jpg'
 
 export default function Cart({ selectedMenu, detail, modalState, setModalState, setIsAdd, cart, isWriter}) {
 
@@ -117,7 +117,7 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
         <div>
           <p className="font-semibold p-1">{selectedMenu.name}</p>
           <div className="flex flex-row">
-            <img src={selectedMenu.image|| DefaultImage} alt={selectedMenu.name} className="w-36 h-36 mr-5 shadow-md shadow-gray3/30 p-1" />
+            <img src={selectedMenu.image|| DefaultMenu} alt={selectedMenu.name} className="w-36 h-36 mr-5 shadow-md shadow-gray3/30 p-1" />
             <div className="flex flex-col justify-around ml-3">
               {/* 가격 */}
               <div className="">

@@ -7,7 +7,7 @@ import CartList from '../../components/Market/Delivery/CartList';
 import { API } from '@/apis/config';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComments } from '@fortawesome/free-regular-svg-icons';
-import DefaultImage from '@/assets/default_image.jpg'
+import DefaultMenu from '@/assets/default_menu.jpg'
 
 export default function DeliveryDetail() {
 
@@ -136,7 +136,7 @@ export default function DeliveryDetail() {
         <div className="menu-container overflow-y-scroll max-h-96 border rounded-md px-10">
             {menuList.map((menu) => (
               <div key={menu.id} className="flex justify-between items-center space-x-4 my-2">
-                <img src={menu.image || DefaultImage} alt={menu.name} className="w-16 h-16" />
+                <img src={menu.image || DefaultMenu} alt={menu.name} className="w-16 h-16" />
                 <div className="text-center">
                   <p className="font-semibold">{menu.name}</p>
                   <p>{menu.price.toLocaleString()}원</p>
