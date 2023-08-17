@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import defaultImage from '@/assets/noimage.png'
 
 export default function WebRTCRoom(roomData) {
   const navigate = useNavigate()
@@ -22,12 +21,7 @@ export default function WebRTCRoom(roomData) {
         {/* 이미지와 그 위 텍스트 */}
           <div className="flex justify-center">
             <div className="h-32">
-              {thumbnail ? (
-                <img alt="썸네일" className="h-32" src={thumbnail
-                }/>
-              ):(
-                <img alt="썸네일" className="h-32" src={defaultImage}/>
-              )}
+              <img alt="썸네일" className="h-32" src={thumbnail}/>
             </div>
           </div>
           <div>

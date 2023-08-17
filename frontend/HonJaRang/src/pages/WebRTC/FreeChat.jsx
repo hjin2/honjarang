@@ -14,6 +14,7 @@ import { faMicrophoneSlash } from "@fortawesome/free-solid-svg-icons";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { useSelector } from "react-redux";
 import logoImage from "@/assets/2.png"
+import { API } from "@/apis/config";
 
 export default function FreeChat() {
   const [session, setSession] = useState(undefined)
@@ -40,16 +41,16 @@ export default function FreeChat() {
     if (session) {
       session.disconnect();
     }
-
-    // Reset all states and OpenVidu object
     OV.current = new OpenVidu();
     setSession(undefined);
     setSubscribers([]);
     setPublisher(undefined);
-    axios.delete(`${URL}/api/v1/video-room/${localStorage.getItem("user_id")}/connections`,{headers : {"Authorization" : `Bearer ${token}`}})
+    axios.delete(`${API.WEBRTC}/sessions/${localStorage.getItem("user_id")}/connections`)
       .then((res) => console.log(res))
       .catch((err) => console.log(err))
     navigate('/webrtc')
+
+    // Reset all states and OpenVidu object
   }, [session]);
 
 
