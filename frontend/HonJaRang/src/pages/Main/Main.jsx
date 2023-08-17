@@ -12,11 +12,16 @@ import FacilityFood from '@/assets/main/facility_food.png'
 export default function Main() {
   return (
     <div className=" h-screen">
-      <div className="flex m-4 justify-between">
+      <div className="flex m-4 mx-8 justify-between">
         <img src={Logo} alt="" className="h-10"/>
-        <Link to="/login">
-          <button className="font-semibold font-ImcreSoojin text-lg my-2 mx-4">로그인</button>
-        </Link>
+        <div>
+          <Link to="/login">
+            <button className="font-semibold font-ImcreSoojin text-lg my-2 mx-4">로그인</button>
+          </Link>        
+          <Link to="/signup">
+            <button className="font-semibold font-ImcreSoojin text-lg my-2 mx-4">회원가입</button>
+          </Link>
+        </div>
       </div>
       <div className="h-10"></div>
       {/* 공동배달, 공동구매 */}

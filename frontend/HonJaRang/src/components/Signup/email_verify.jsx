@@ -85,30 +85,32 @@ function Email_verify({Email, setEmail, ChangeEmailValid}) {
 return (
     <div className='mb-2'>
       <div>
-      <label htmlFor="email" className="font-semibold text-lg text-main2 m-0">이메일</label>
-      <br />
-            <input type="text" name="id" onChange={onChange} value={id} disabled={EmailDisalbed}
-            className="inline-block border-gray2 rounded-lg block w-60 h-10 p-2 focus:outline-main2 m-0"/>
-            <span className='ml-2 mr-2 text-lg'>@</span>
-            {Manual ?  <input type="text" onChange={onAddress} disabled={EmailDisalbed} className="inline-block border-gray2 rounded-lg block w-60 h-10 text-base p-2 m-0 focus:outline-main2"/>
-            : <select name="email" id="email" className="inline-block border border-gray2 rounded-lg block w-60 h-10 p-2 m-0 focus:outline-main2" value={address} onChange={onSelect} disabled={EmailDisalbed}
-            >
-            <option value="default" >--이메일 선택--</option>
-            <option value="naver.com">naver.com</option>
-            <option value="gmail.com">gmail.com</option>
-            <option value="nate.com"> nate.com</option>
-            <option value="hanmail.net" > hanmail.net</option>
-            <option value="manual">직접 입력</option>
-          </select>}
-            <button className='w-32 h-10 main1-full-button my-10 text-base ml-2'
-            onClick={EmailDuplicate} disabled={EmailDisalbed}>이메일 중복 확인</button>
-            <br />
-            <span className="font-semibold text-lg text-red-600">{emailMsg}</span>
-            {emailCheck && <Verify_check email={email} ChangeEmailValid = {ChangeEmailValid}/>}
-          </div>
-          
-          
-    </div>
+      <label htmlFor="email" className="font-semibold text-lg text-main2 mb-1">이메일</label>
+      <div className="flex">
+        <input type="text" name="id" onChange={onChange} value={id} disabled={EmailDisalbed}
+        className=" border-gray2 rounded-lg block w-60 h-10 p-2 focus:outline-main2 m-0"/>
+        <span className='ml-2 mr-2 text-lg'>@</span>
+        {Manual ?  
+        (<input type="text" onChange={onAddress} disabled={EmailDisalbed} 
+        className=" border-gray2 rounded-lg block w-60 h-10 text-base p-2 m-0 focus:outline-main2"/>)
+        : 
+        (<select name="email" id="email" className=" border border-gray2 rounded-lg block w-60 h-10 p-2 m-0 focus:outline-main2" 
+        value={address} onChange={onSelect} disabled={EmailDisalbed}
+        >
+          <option value="default" >--이메일 선택--</option>
+          <option value="naver.com">naver.com</option>
+          <option value="gmail.com">gmail.com</option>
+          <option value="nate.com"> nate.com</option>
+          <option value="hanmail.net" > hanmail.net</option>
+          <option value="manual">직접 입력</option>
+        </select>)}
+        <button className='w-32 h-10 main4-full-button text-base ml-2'
+        onClick={EmailDuplicate} disabled={EmailDisalbed}>이메일 중복 확인</button>
+      </div>
+      <span className="font-semibold text-lg text-red-600">{emailMsg}</span>
+      {emailCheck && <Verify_check email={email} ChangeEmailValid = {ChangeEmailValid}/>}
+    </div>        
+  </div>
   )
 
 }

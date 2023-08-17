@@ -43,15 +43,16 @@ function Address_check(props) {
   };
   return (
     <div>
-      <div className='w-full'>
-            <label className="font-semibold text-lg text-main2">주소</label>
-            <br />
-            <input type="text" disabled value = {address} className="inline-block border-gray2 rounded-lg block w-80 h-10 p-2 focus:outline-main2"
-            />
-            <button className='w-20 h-10 main1-full-button my-10 text-base ml-2'
-            onClick={handleClick}>
-              주소 검색
-            </button>
+      <div>
+        <label className="font-semibold text-lg text-main2 mb-2">주소</label>
+        <div className="mb-4">
+          <input type="text" disabled value = {address} 
+          className=" border-gray2 rounded-lg w-80 h-10 p-2 focus:outline-main2"/>
+          <button className='w-20 h-10 main4-full-button text-base ml-2'
+          onClick={handleClick}>
+            주소 검색
+          </button>
+        </div>
           </div>
     </div>
   )
