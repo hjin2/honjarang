@@ -6,6 +6,7 @@ import JointChat from '@/assets/main/joint_chat.png'
 import VideoPeople from '@/assets/main/video_people.png'
 import VideoAll from '@/assets/main/video_all.png'
 import FacilityFood from '@/assets/main/facility_food.png'
+import FacilityMap from '@/assets/main/facility_map.png'
 import Header from '@/components/Header/Header'
 import { useSelector } from 'react-redux'
 import axios from 'axios'
@@ -125,21 +126,21 @@ export default function Main() {
         <div>
           <p className="text-5xl font-ImcreSoojin m-1">공동배달</p>
           <p className="text-5xl font-ImcreSoojin m-1">공동구매</p>
-          <p className="text-xl text-gray4 mt-4">근처 자취생들과 함께 이용하며<br/>다양한 선택과 절약으로 더욱 풍성한<br/>자취 생활을 만들어 보아요.</p>
+          <p className="text-xl text-gray4 mt-4 font-Suite">근처 자취생들과 함께 이용하며<br/>다양한 선택과 절약으로 더욱 풍성한<br/>자취 생활을 만들어 보아요.</p>
         </div>
         <div className="flex items-end">
           <div className="mx-4">
-            <p>반경 10km 내<br/>사람들과 함께</p>
+            <p className="font-Suite">반경 10km 내<br/>사람들과 함께</p>
             <img src={JointLocation} alt="" 
             className="h-16 w-16 rounded-full p-3 bg-white bg-opacity-50 mt-2"/>
           </div>
           <div className="mx-4">
-            <p>포인트 제도로<br/>자동 정산</p>
+            <p className="font-Suite">포인트 제도로<br/>자동 정산</p>
             <img src={JointPoint} alt="" 
             className="h-16 w-16 rounded-full p-3 bg-white bg-opacity-50 mt-2"/>
           </div>
           <div className="mx-4">
-            <p>단체 채팅으로<br/>정보 공유</p>
+            <p className="font-Suite">단체 채팅으로<br/>정보 공유</p>
             <img src={JointChat} alt="" 
             className="h-16 w-16 rounded-full p-3 bg-white bg-opacity-50 mt-2"/>
           </div>
@@ -170,19 +171,19 @@ export default function Main() {
       <div className="flex p-10 py-20 my-5 flex-row bg-white bg-opacity-75 justify-around">
         <div className="flex items-end">
           <div className="mx-4">
-            <p>여러 카테고리로<br/>다양한 사람들과의 만남</p>
-            <img src={VideoPeople} alt="" 
+            <p className="font-Suite">영상, 음성, 채팅<br/>모두 한번에</p>
+            <img src={VideoAll} alt="" 
             className="h-16 w-16 rounded-full p-3 bg-main3 bg-opacity-50 mt-2"/>
           </div>
           <div className="mx-4">
-            <p>영상, 음성, 채팅<br/>모두 한번에</p>
-            <img src={VideoAll} alt="" 
+            <p className="font-Suite">여러 카테고리로<br/>다양한 사람들과의 만남</p>
+            <img src={VideoPeople} alt="" 
             className="h-16 w-16 rounded-full p-3 bg-main3 bg-opacity-50 mt-2"/>
           </div>
         </div>
         <div>
           <p className="text-5xl font-ImcreSoojin m-1">화상채팅</p>
-          <p className="text-xl text-gray4 mt-4">시간과 거리의 제약없이<br />소통의 즐거움을 느껴보세요.</p>
+          <p className="text-xl text-gray4 mt-4 font-Suite">시간과 거리의 제약없이<br />소통의 즐거움을 느껴보세요.</p>
         </div>
       </div>
       <div className="h-16"></div>
@@ -190,11 +191,16 @@ export default function Main() {
       <div className="flex p-10 py-32 my-5 flex-row bg-main4 bg-opacity-75 justify-around">
         <div>
           <p className="text-5xl font-ImcreSoojin m-1">편의시설 조회</p>
-          <p className="text-xl text-gray4 mt-4">집 근처에 있는 편의 시설을 한눈에<br/>확인하세요</p>
+          <p className="text-xl text-gray4 mt-4 font-Suite">집 근처에 있는 편의 시설을 한눈에<br/>확인하세요.</p>
         </div>
         <div className="flex items-end">
           <div className="mx-4">
-            <p>은행부터 카페까지</p>
+            <p className="font-Suite">검색없이<br/>클릭 한 번으로</p>
+            <img src={FacilityMap} alt="" 
+            className="h-16 w-16 rounded-full p-3 bg-white bg-opacity-50 mt-2"/>
+          </div>
+          <div className="mx-4">
+            <p className="font-Suite">은행부터 카페까지</p>
             <img src={FacilityFood} alt="" 
             className="h-16 w-16 rounded-full p-3 bg-white bg-opacity-50 mt-2"/>
           </div>
