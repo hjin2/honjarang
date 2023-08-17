@@ -5,10 +5,14 @@ import Stomp from 'stompjs';
 import { useNavigate } from 'react-router';
 import axios from 'axios';
 import Talks from '@/components/Chatting/Talks';
-import { useSelector } from 'react-redux';
 import { API } from '@/apis/config';
+import { useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+
 
 const Chat = () => {
+  const location = useLocation()
   const [Nickname, setNickname] = useState('')
   const params = useParams();
   const Key = params["id"];
@@ -18,12 +22,13 @@ const Chat = () => {
   const [socket, setSocket] = useState(null);
   const [stomp, setStomp] = useState(null);
   const [image, setImage] = useState("")
-
+  const title = location.state.title
   const token = localStorage.getItem('access_token');
 
   const stompClientRef = useRef(null);
 
   const connect = () => {
+    console.log(title)
     const serverAddress = 'https://honjarang.kro.kr/chat';
     const socket = new SockJS(serverAddress);
     const stompClient = Stomp.over(socket);
@@ -162,13 +167,20 @@ const Chat = () => {
   },[]);
 
   return (
-    <div className="w-3/5 h-screen flex flex-col m-auto">
-      <Talks messages={messages} id={Key} Nickname = {Nickname}/>
-      <div className="py-2 px-4 border-t border-gray-300 flex justify-around">
-        <input type="text" id="message" value={message} onChange={(e) => setMessage(e.target.value)} className="border rounded p-2 w-10/12 focus:outline-main2" onKeyDown={onKeyEnter} />
-        <button onClick={sendMessage} className="w-1/12 bg-main1 text-white rounded px-4 py-2 hover:bg-main1">전송</button>
-      </div>
-      <button onClick={handleBack} className="bg-red-500 text-white rounded px-4 py-2 mt-2 mx-4 self-center hover:bg-red-600">뒤로가기</button>
+    <div className="w-5/12 h-screen flex flex-col m-auto">
+        <div className='flex space-x-5 mb-5'>
+          <button onClick={handleBack}>
+            <FontAwesomeIcon icon={faArrowLeft} style={{color: "#000000",}} />
+          </button>
+          <div className="text-lg ">{title}</div>
+        </div>  
+        <Talks messages={messages} id={Key} Nickname = {Nickname}/>
+        <div className="py-2 px-4 border-t border-gray-300 flex justify-around">
+          <input type="text" id="message" placeholder="채팅..." value={message} onChange={(e) => setMessage(e.target.value)} className="border rounded p-2 w-10/12 focus:outline-main2" onKeyDown={onKeyEnter} />
+          <button onClick={sendMessage} className="bg-main1 w-10 rounded-lg">
+            <FontAwesomeIcon icon={faPaperPlane} style={{color: "#000000",}} />
+          </button>
+        </div>
     </div>
   );
 };
