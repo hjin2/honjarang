@@ -2,7 +2,7 @@ import { useState,useEffect } from "react";
 import axios from "axios";
 import { API } from "@/apis/config";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import Logo from "@/assets/2.png"
 
 export default function SetNewPassword() {
   const navigate = useNavigate()
@@ -73,22 +73,33 @@ export default function SetNewPassword() {
     
     
   return (
-    <div>
+    <div className="flex flex-col items-center space-y-4 mt-40">
+      <img src={Logo} className="w-2/12 mb-8"/>
       <div>
         비밀번호
         <br />
-        <input type="password" onChange = {onChange_password} maxLength="15"/>
+        <input 
+          type="password" 
+          onChange = {onChange_password} 
+          maxLength="15"
+          className="border-gray2 rounded-lg w-72 h-10 text-base p-2 focus:outline-main2" 
+        />
         <br />
-        <span>{pwdMsg}</span>
+        <span className="text-xs font-semibold text-main5">{pwdMsg}</span>
       </div>
       <div className="mt-4">
         비밀번호 확인
         <br />
-        <input type="password" onChange = {onChange_password_cfm} maxLength="15"/>
+        <input 
+          type="password" 
+          onChange = {onChange_password_cfm} 
+          maxLength="15"
+          className="border-gray2 rounded-lg w-72 h-10 text-base p-2 focus:outline-main2"   
+        />
         <br />
-        <span>{pwdcfmMsg}</span>
+        <span className="text-xs font-semibold text-main5 h-10">{pwdcfmMsg}</span>
       </div>
-      <button disabled={Valid} onClick={Password_Change}>비밀번호 변경</button>
+      <button disabled={Valid} onClick={Password_Change} className="main1-full-button w-72">비밀번호 변경</button>
     </div>
   )
 }
