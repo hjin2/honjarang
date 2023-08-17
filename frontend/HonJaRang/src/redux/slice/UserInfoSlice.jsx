@@ -43,19 +43,16 @@ const UserinfoSlice = createSlice({
       state.point = state.point - action.payload;
     },
     imageUpload: (state, action) => {
-      console.log(action.payload);
       const profile_image = action.payload;
       if (profile_image) {
         state.profile_image = profile_image;
       } else {
         state.profile_image =
           'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
-        console.log(1);
       }
     },
     setUserNickname: (state, action) => {
       state.nickname = action.payload;
-      console.log(1);
     },
   },
 });
