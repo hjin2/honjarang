@@ -54,7 +54,6 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
   //   cartItems: PropTypes.func.isRequired,
   // };
   const token = localStorage.getItem("access_token")
-  const URL = import.meta.env.VITE_APP_API
 
   const createCart = () => {
     // const headers = {'Authorization': `Bearer ${token}`}
@@ -73,8 +72,7 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
           }
         })
       .then((res) => {
-        console.log(res)
-        console.log(res.data)
+        console.log(cart)
         setIsAdd(true)
         setModalState(false)
       })
@@ -92,8 +90,6 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
             }
           })
         .then((res) => {
-          console.log(res)
-          console.log(res.data)
           setIsAdd(true)
           setModalState(false)
         })
@@ -106,6 +102,8 @@ export default function Cart({ selectedMenu, detail, modalState, setModalState, 
       }
     }
   }
+
+
   
 
   return (
