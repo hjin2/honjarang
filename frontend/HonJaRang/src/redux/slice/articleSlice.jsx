@@ -1,13 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-
 // const initialState = {
 //   articles: [],
 // }
 
 export const articleSlice = createSlice({
   name: 'article',
-  initialState:[],
+  initialState: [],
   reducers: {
     createArticle: (state, action) => {
       // const newArticle = action.payload;
@@ -25,14 +24,15 @@ export const articleSlice = createSlice({
       }
     },
     deleteArticle: (state, action) => {
-      const {id} = action.payload;
-     
-      const existingArticle = state.find(article => article.id === id);
-      if (existingArticle){
-        return state.filter(article => article.id != id);
+      const { id } = action.payload;
+
+      const existingArticle = state.find((article) => article.id === id);
+      if (existingArticle) {
+        return state.filter((article) => article.id != id);
       }
     },
   },
 });
-export const { createArticle, updateArticle, deleteArticle } = articleSlice.actions;
+export const { createArticle, updateArticle, deleteArticle } =
+  articleSlice.actions;
 export default articleSlice;

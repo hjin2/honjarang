@@ -7,10 +7,10 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 export default function RTC() {
-  const nickname = useSelector((state) => state.userinfo.nickname)
-  const [mySessionId, setMySessionId] = useState('SessionA')
-  const [myUserName, setMyUserName] = useState(nickname)
-  const navigate = useNavigate()
+  const nickname = useSelector((state) => state.userinfo.nickname);
+  const [mySessionId, setMySessionId] = useState('SessionA');
+  const [myUserName, setMyUserName] = useState(nickname);
+  const navigate = useNavigate();
 
   // const [numOfVideos, setNumOfVideos] = useState(0);
   const handleChangeSessionId = useCallback((e) => {
@@ -21,10 +21,9 @@ export default function RTC() {
     setMyUserName(e.target.value);
   }, []);
 
-
-  const joinRoom = () =>{
-    navigate(`/webrtc/${mySessionId}`)
-  }
+  const joinRoom = () => {
+    navigate(`/webrtc/${mySessionId}`);
+  };
 
   return (
     <div className="container">
@@ -55,11 +54,16 @@ export default function RTC() {
               />
             </p>
             <p className="text-center">
-              <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
+              <input
+                className="btn btn-lg btn-success"
+                name="commit"
+                type="submit"
+                value="JOIN"
+              />
             </p>
           </form>
+        </div>
       </div>
-    </div>
     </div>
   );
 }

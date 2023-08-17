@@ -6,29 +6,35 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API } from '@/apis/config';
 
-export default function UserInfo({id, isMe}) {
-  const navigate = useNavigate()
+export default function UserInfo({ id, isMe }) {
+  const navigate = useNavigate();
   const [modalState, setModalState] = useState(false);
-  const token = localStorage.getItem("access_token")
+  const token = localStorage.getItem('access_token');
   const onModalOpen = () => {
     setModalState(!modalState);
   };
   const image = useSelector((state) => state.userinfo.profile_image);
   const nickname = useSelector((state) => state.userinfo.nickname);
-  const point = useSelector((state) => state.userinfo.point)
+  const point = useSelector((state) => state.userinfo.point);
   const startChat = () => {
-    const data = {target_id : Number(id)}
-    axios.post(`${API.CHATS}/one-to-one`,data,{ headers:{'Authorization': `Bearer ${token}`, "Content-Type":"Application/json"}})
-      .then((res) => {
-        console.log(res)
-        navigate(`/chatting/${res.data}`, {state:{title:nickname}})
+    const data = { target_id: Number(id) };
+    axios
+      .post(`${API.CHATS}/one-to-one`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'Application/json',
+        },
       })
-      .catch((err) => console.log(err))
-  }
+      .then((res) => {
+        console.log(res);
+        navigate(`/chatting/${res.data}`, { state: { title: nickname } });
+      })
+      .catch((err) => console.log(err));
+  };
 
   return (
     <div className="flex justify-center space-x-10">
-      <img className="h-20 w-20 rounded-full" src={image} loading='lazy'></img>
+      <img className="h-20 w-20 rounded-full" src={image} loading="lazy"></img>
       <div className="space-y-2">
         <div className="flex">
           <div className="font-bold text-lg mr-3">{nickname}</div>
@@ -49,18 +55,20 @@ export default function UserInfo({id, isMe}) {
                 />
               </svg>
             </button>
-          ):(null)}
+          ) : null}
         </div>
-        <div className='flex items-baseline space-x-4'>
-          <div className='text-sm text-gray3 font-semibold'>포인트</div>
+        <div className="flex items-baseline space-x-4">
+          <div className="text-sm text-gray3 font-semibold">포인트</div>
           <div className="text-lg text-gray5 font-semibold">{point}P</div>
         </div>
-        {isMe ? (null):(
-          <button className="main1-full-button w-24" onClick={startChat}>1:1 채팅하기</button>
+        {isMe ? null : (
+          <button className="main1-full-button w-24" onClick={startChat}>
+            1:1 채팅하기
+          </button>
         )}
         {modalState && (
           <Modal modalState={modalState} setModalState={setModalState}>
-            <Edit modalState={modalState} setModalState={setModalState}/>
+            <Edit modalState={modalState} setModalState={setModalState} />
           </Modal>
         )}
       </div>

@@ -1,19 +1,18 @@
-import React, { useState, useRef, useEffect } from "react";
-import axios from "axios";
-import { API } from "@/apis/config";
+import React, { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
+import { API } from '@/apis/config';
 
 function Talks({ messages, id, Nickname, chatKey, setChatId }) {
-  const token = localStorage.getItem("access_token");
+  const token = localStorage.getItem('access_token');
   const chatAreaRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [pages, setPages] = useState(1);
   const [msg, setMsg] = useState([]);
-  const [hour, setHour] = useState("");
-  const [minute, setMinute] = useState("");
+  const [hour, setHour] = useState('');
+  const [minute, setMinute] = useState('');
   const [isChat, setIsChat] = useState(false);
   const Key = id;
-    const isInitialLoad = useRef(true);
-
+  const isInitialLoad = useRef(true);
 
   useEffect(() => {
     timeline();
@@ -25,11 +24,11 @@ function Talks({ messages, id, Nickname, chatKey, setChatId }) {
 
   useEffect(() => {
     if (chatAreaRef.current) {
-      chatAreaRef.current.addEventListener("scroll", handleChatAreaScroll);
+      chatAreaRef.current.addEventListener('scroll', handleChatAreaScroll);
     }
     return () => {
       if (chatAreaRef.current) {
-        chatAreaRef.current.removeEventListener("scroll", handleChatAreaScroll);
+        chatAreaRef.current.removeEventListener('scroll', handleChatAreaScroll);
       }
     };
   }, []);
@@ -148,7 +147,7 @@ function Talks({ messages, id, Nickname, chatKey, setChatId }) {
 
   const scrollToBottom = () => {
     if (chatAreaRef.current) {
-      chatAreaRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+      chatAreaRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
   };
 
@@ -162,33 +161,35 @@ function Talks({ messages, id, Nickname, chatKey, setChatId }) {
         <div
           key={idx}
           className={
-            ms.nickname === Nickname
-              ? "flex flex-row justify-end"
-              : "m-1"
+            ms.nickname === Nickname ? 'flex flex-row justify-end' : 'm-1'
           }
         >
           {ms.nickname === Nickname ? (
             <div key={idx} className="flex flex-row justify-end">
-              <div className="flex items-end py-3 text-gray3 text-sm">{ms.created_at?.slice(11,16)}</div>
-              <div className = "whitespace-pre-line float-right text-right inline-block border rounded-lg bg-main3 bg-opacity-50 px-2 py-1 m-2" >
+              <div className="flex items-end py-3 text-gray3 text-sm">
+                {ms.created_at?.slice(11, 16)}
+              </div>
+              <div className="whitespace-pre-line float-right text-right inline-block border rounded-lg bg-main3 bg-opacity-50 px-2 py-1 m-2">
                 {ms.content}
               </div>
             </div>
           ) : (
             <div key={idx} className="m-1">
-            <div className="flex felx-row">
-              <img src={ms.profile_image_url} alt="" className="h-10 w-10"/>
-              <div className="ml-1">
-                <p className="text-sm">{ms.nickname}</p>
-                <div className="flex">
-                  <div className = "whitespace-pre-line inline-block text-left border rounded-lg bg-main4 bg-opacity-50 px-2 py-1 m-1" >
-                    {ms.content}
+              <div className="flex felx-row">
+                <img src={ms.profile_image_url} alt="" className="h-10 w-10" />
+                <div className="ml-1">
+                  <p className="text-sm">{ms.nickname}</p>
+                  <div className="flex">
+                    <div className="whitespace-pre-line inline-block text-left border rounded-lg bg-main4 bg-opacity-50 px-2 py-1 m-1">
+                      {ms.content}
+                    </div>
+                    <div className="flex items-end py-1 text-gray3 text-sm">
+                      {ms.created_at?.slice(11, 16)}
+                    </div>
                   </div>
-                  <div className="flex items-end py-1 text-gray3 text-sm">{ms.created_at?.slice(11,16)}</div>
                 </div>
               </div>
             </div>
-        </div>
           )}
         </div>
       ))}
@@ -197,29 +198,31 @@ function Talks({ messages, id, Nickname, chatKey, setChatId }) {
         <div
           key={idx}
           className={
-            msg.nickname === Nickname
-              ? "flex flex-row justify-end"
-              : "m-1"
+            msg.nickname === Nickname ? 'flex flex-row justify-end' : 'm-1'
           }
         >
           {msg.nickname === Nickname ? (
             <div key={idx} className="flex flex-row justify-end">
-              <div className="flex items-end py-3 text-gray3 text-sm">{hour}:{minute}</div>
-              <div className = "whitespace-pre-line float-right text-right inline-block border rounded-lg bg-main3 bg-opacity-50 px-2 py-1 m-2" >
+              <div className="flex items-end py-3 text-gray3 text-sm">
+                {hour}:{minute}
+              </div>
+              <div className="whitespace-pre-line float-right text-right inline-block border rounded-lg bg-main3 bg-opacity-50 px-2 py-1 m-2">
                 {msg.content}
               </div>
             </div>
           ) : (
             <div key={idx} className="m-1">
               <div className="flex felx-row">
-                <img src={msg.profile_image_url} alt="" className="h-10 w-10"/>
+                <img src={msg.profile_image_url} alt="" className="h-10 w-10" />
                 <div className="ml-1">
                   <p className="text-sm">{msg.nickname}</p>
                   <div className="flex">
-                    <div className = "whitespace-pre-line inline-block text-left border rounded-lg bg-main4 bg-opacity-50 px-2 py-1 m-1" >
+                    <div className="whitespace-pre-line inline-block text-left border rounded-lg bg-main4 bg-opacity-50 px-2 py-1 m-1">
                       {msg.content}
                     </div>
-                    <div className="flex items-end py-1 text-gray3 text-sm">{hour}:{minute}</div>
+                    <div className="flex items-end py-1 text-gray3 text-sm">
+                      {hour}:{minute}
+                    </div>
                   </div>
                 </div>
               </div>
