@@ -16,8 +16,52 @@
 5. 액세스 키 및 모범 사례 및 대안에서 AWS 외부에서 실행되는 애플리케이션 선택후 다음 클릭 후 액세스 키 만들기 버튼 클릭
 6. 액세스 키와 비밀 액세스 키 복사
 7. [AWS S3](https://s3.console.aws.amazon.com/s3/home) 사이트에 접속하여 로그인 후 버킷 생성을 클릭
-8. 버킷 이름에 'honjarang' 입력하고 리전을 서울로 설정하고 버킷 생성을 클릭
-9. 추가 작성 예정
+8. 버킷 이름에 'honjarang-bucket' 입력하고 리전을 서울로 설정하고 버킷 생성을 클릭
+9. 객체 소유권을 ACL 비활성화됨(권장) 선택
+10. 이 버킷의 퍼블릭 액세스 차단 설정에서 모든 퍼블릭 액세스 차단 체크
+11. 버킷 버전 관리 비활성화 설정
+12. 기본암호화는 Amazon S3 관리형 키를 사용한 서버 측 암호화 설정, 버킷키는 활성화
+13. 버킷생성 후 권한에 가서 버킷정책에 아래 내용 추가
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1639632673739",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::honjarang-bucket",
+                "arn:aws:s3:::honjarang-bucket/*"
+            ]
+        }
+    ]
+}
+```
+14. 버킷생성 후 권한에 가서 CORS(Cross-origin 리소스 공유)에 아래 내용 추가
+```
+[
+    {
+        "AllowedHeaders": [
+            "*"
+        ],
+        "AllowedMethods": [
+            "PUT",
+            "POST",
+            "DELETE",
+            "GET"
+        ],
+        "AllowedOrigins": [
+            "*"
+        ],
+        "ExposeHeaders": []
+    }
+]
+```
 
 ### AWS IAM 계정 생성 및 SES 설정
 1. [AWS IAM](https://console.aws.amazon.com/iam/home) 사이트에 접속하여 로그인 후 액세스 관리 메뉴에 가서 사용자를 클릭
