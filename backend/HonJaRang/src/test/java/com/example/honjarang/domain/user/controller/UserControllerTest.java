@@ -521,6 +521,7 @@ class UserControllerTest {
         TokenDto tokenDto = new TokenDto(1L, "access_token", "refresh_token");
 
         given(tokenService.generateToken(1L, "test@test.com", ROLE_USER)).willReturn(tokenDto);
+        given(tokenService.getUserByToken(anyString())).willReturn(user);
 
         // when & then
         mockMvc.perform(post("/api/v1/users/refresh")
