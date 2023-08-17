@@ -64,7 +64,7 @@ const PwdValidCheck = () => {
         <div>
           <input type="password" onChange = {onChange_password} maxLength="15"
             className=" border-gray2 rounded-lg  w-60 h-10 p-2 focus:outline-main2"/>
-          <span className="font-semibold text-lg text-red-600 ml-2">{pwdMsg}</span>
+          <span className="font-semibold text-xs text-main5 ml-2">{pwdMsg}</span>
         </div>
       </div>
       <div className="mt-4">
@@ -72,7 +72,7 @@ const PwdValidCheck = () => {
         <div>
           <input type="password" onChange = {onChange_password_cfm} maxLength="15"
             className=" border-gray2 rounded-lg w-60 h-10 p-2 focus:outline-main2"/>
-          <span className="font-semibold text-lg text-red-600 ml-2">{pwdcfmMsg}</span>
+          <span className="font-semibold text-xs text-main5 ml-2">{pwdcfmMsg}</span>
         </div>
       </div>
     </div>

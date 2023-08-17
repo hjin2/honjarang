@@ -40,7 +40,7 @@ export default function Signup() {
     setAddressValid(true)
   }
 
-  const SignupValid =  (EmailValid&&NicknameValid&&PwdValid&&AddressValid ? false:true)
+  const SignupinValid =  (EmailValid&&NicknameValid&&PwdValid&&AddressValid ? false:true)
 
   // 회원가입 성공 시 로그인 페이지로 이동하도록 구현
   const navigate = useNavigate()
@@ -77,11 +77,11 @@ export default function Signup() {
         Latitude = {Latitude} setLatitude = {setLatitude}
         Longitude = {Longitude} setLongitude = {setLongitude}
         ChangeAddressValid = {ChangeAddressValid}/>
-        {SignupValid ? 
-        <button disabled = {SignupValid} className="main1-full-button w-28 h-10 text-lg" 
+        {SignupinValid ? 
+        <button disabled = {true} className="gray3-full-button w-28 h-10 text-lg" 
         onClick={onClick} >회원가입</button> 
         : 
-        <button disabled = {SignupValid} className="main1-full-button w-28 h-10 text-lg" 
+        <button className="main1-full-button w-28 h-10 text-lg" 
         onClick={onClick} >회원가입</button>}
       </div>
     </div>

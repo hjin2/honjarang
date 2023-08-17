@@ -104,8 +104,12 @@ return (
           <option value="hanmail.net" > hanmail.net</option>
           <option value="manual">직접 입력</option>
         </select>)}
-        <button className='w-32 h-10 main4-full-button text-base ml-2'
-        onClick={EmailDuplicate} disabled={EmailDisalbed}>이메일 중복 확인</button>
+        {EmailDisalbed ? (
+          <button className="gray3-full-button w-32 ml-2">전송완료</button>
+        ):(
+          <button className='w-32 h-10 main4-full-button text-base ml-2'
+          onClick={EmailDuplicate} disabled={EmailDisalbed}>이메일 중복 확인</button>
+        )}
       </div>
       <span className="font-semibold text-lg text-red-600">{emailMsg}</span>
       {emailCheck && <Verify_check email={email} ChangeEmailValid = {ChangeEmailValid}/>}
