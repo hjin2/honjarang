@@ -9,7 +9,7 @@ import { API } from '@/apis/config';
 export default function Header() {
   const IsLogged = useSelector((state) => state.login.isLogged)
   const dispatch = useDispatch()
-  const fcm = localStorage.getItem('fcm_token')
+  
 
   useEffect(() => {
     if (localStorage.length >= 3) {
@@ -21,8 +21,13 @@ export default function Header() {
   })
 
   const Clear = () => {
+    let fcm = localStorage.getItem('fcm_token')
+    if (localStorage.getItem('fcm_token') === null) {
+      fcm = ''
+    }
     axios.post(`${API.USER}/logout`,{fcm_token : fcm},{headers:{"Authorization" : `Bearer ${localStorage.getItem("access_token")}`}})
     .then((res) => {
+      console.log(fcm)
       localStorage.clear()
       dispatch(setLoginStatus(false))
       alert('로그아웃 되었습니다.')
