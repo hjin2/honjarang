@@ -29,6 +29,9 @@ dependencies:
   axios:
     specifier: ^1.4.0
     version: 1.4.0
+  babel-plugin-transform-remove-console:
+    specifier: ^6.9.4
+    version: 6.9.4
   browser-image-compression:
     specifier: ^2.0.2
     version: 2.0.2
@@ -4683,6 +4686,10 @@ packages:
 
   /babel-plugin-transform-react-remove-prop-types@0.4.24:
     resolution: {integrity: sha512-eqj0hVcJUR57/Ug2zE1Yswsw4LhuqqHhD+8v120T1cl3kjg76QwtyBrdIk4WVwK+lAhBJVYCd/v+4nc4y+8JsA==}
+    dev: false
+
+  /babel-plugin-transform-remove-console@6.9.4:
+    resolution: {integrity: sha512-88blrUrMX3SPiGkT1GnvVY8E/7A+k6oj3MNvUtTIxJflFzXTw1bHkuJ/y039ouhFMp2prRn5cQGzokViYi1dsg==}
     dev: false
 
   /babel-preset-current-node-syntax@1.0.1(@babel/core@7.22.10):
