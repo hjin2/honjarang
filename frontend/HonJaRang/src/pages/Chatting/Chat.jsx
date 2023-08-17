@@ -105,37 +105,37 @@ const Chat = () => {
     }
   };
 
-  useEffect(() => {
-    const cleanup = () => {
-      if (stompClientRef.current) {
-        console.log('Attempting to disconnect Stomp...');
-        stompClientRef.current.disconnect(() => {
-          console.log('Stomp disconnected.');
-          if (socket) {
-            socket.onclose = (event) => {
-              console.log('Socket closed.', event);
-              // 원하는 함수 실행
-            };
-            socket.close();
-          } else {
-            // 원하는 함수 실행
-          }
-        });
-      } else if (socket) {
-        console.log('Closing socket...');
-        socket.onclose = (event) => {
-          console.log('Socket closed.', event);
-          // 원하는 함수 실행
-        };
-        socket.close();
-      } else {
-        // 원하는 함수 실행
-      }
-    };
+  // useEffect(() => {
+  //   const cleanup = () => {
+  //     if (stompClientRef.current) {
+  //       console.log('Attempting to disconnect Stomp...');
+  //       stompClientRef.current.disconnect(() => {
+  //         console.log('Stomp disconnected.');
+  //         if (socket) {
+  //           socket.onclose = (event) => {
+  //             console.log('Socket closed.', event);
+  //             // 원하는 함수 실행
+  //           };
+  //           socket.close();
+  //         } else {
+  //           // 원하는 함수 실행
+  //         }
+  //       });
+  //     } else if (socket) {
+  //       console.log('Closing socket...');
+  //       socket.onclose = (event) => {
+  //         console.log('Socket closed.', event);
+  //         // 원하는 함수 실행
+  //       };
+  //       socket.close();
+  //     } else {
+  //       // 원하는 함수 실행
+  //     }
+  //   };
 
-    // 컴포넌트가 언마운트될 때 실행될 함수 등록
-    return cleanup;
-  }, [socket]);
+  //   // 컴포넌트가 언마운트될 때 실행될 함수 등록
+  //   return cleanup;
+  // }, [socket]);
 
 
   useEffect(() => {
