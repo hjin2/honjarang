@@ -10,6 +10,7 @@ COPY package*.json ./
 
 # 의존성을 설치합니다. (pnpm을 사용하여 설치합니다)
 RUN npm install -g pnpm
+RUN npm install -g babel
 RUN pnpm install
 
 # 호스트의 모든 파일들을 이미지의 /app 디렉토리로 복사합니다.
