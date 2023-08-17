@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { API } from "@/apis/config";
 
 export default function Refresh() {
   const navigate = useNavigate()
 
   useEffect(() => {
     const refreshAPI = axios.create({
-      baseURL: `${import.meta.env.VITE_APP_API}`,
+      baseURL: "https://honjarnag.kro.kr/api/v1",
       headers: {"Content-Type" : "application/json"},
     })
 
@@ -23,7 +24,7 @@ export default function Refresh() {
         if (status === 401) {
 
           await axios({
-            url: `${import.meta.env.VITE_APP_API}/api/v1/users/refresh`,
+            url: `${API.USER}/refresh`,
             method: 'Post',
             headers: {
               refresh_token: localStorage.getItem('refresh_token')
