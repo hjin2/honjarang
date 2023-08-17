@@ -25,6 +25,9 @@
   .main4-full-button {
     @apply h-8 rounded-lg bg-main4 text-white text-xs font-bold;
   }
+  .gray3-full-button {
+    @apply h-10 rounded-lg bg-gray2 text-white text-base font-bold;
+  }
 }
 
 @font-face {
