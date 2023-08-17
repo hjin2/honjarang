@@ -135,7 +135,7 @@ const Chat = () => {
 
     // 컴포넌트가 언마운트될 때 실행될 함수 등록
     return cleanup;
-  }, []);
+  }, [socket]);
 
 
   useEffect(() => {
