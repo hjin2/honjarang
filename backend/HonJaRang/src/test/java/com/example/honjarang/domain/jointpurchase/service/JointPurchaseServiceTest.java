@@ -468,10 +468,10 @@ class JointPurchaseServiceTest {
     @DisplayName("공동구매 페이지 수 조회 성공")
     void getJointPurchasePageCount_Success() {
         // given
-        given(jointPurchaseRepository.countByIsCanceledFalseAndDeadlineAfterAndContentContainingIgnoreCase(any(LocalDateTime.class), eq("테스트"))).willReturn(1);
+        given(jointPurchaseRepository.countByIsCanceledFalseAndDeadlineAfterAndContentContainingIgnoreCase(any(LocalDateTime.class), eq(37.123456), eq(127.123456), eq("테스트"))).willReturn(1);
 
         // when
-        Integer jointPurchasePageCount = jointPurchaseService.getJointPurchasePageCount(10, "테스트");
+        Integer jointPurchasePageCount = jointPurchaseService.getJointPurchasePageCount(10, "테스트", user);
 
         // then
         assertThat(jointPurchasePageCount).isEqualTo(1);

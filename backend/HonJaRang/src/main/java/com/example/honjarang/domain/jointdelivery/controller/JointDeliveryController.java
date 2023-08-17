@@ -83,7 +83,7 @@ public class JointDeliveryController {
     }
 
     @GetMapping("/page")
-    public ResponseEntity<Integer> getJointDeliveryPage(@RequestParam Integer size, @RequestParam(value="keyword", defaultValue = "") String keyword) {
-        return ResponseEntity.ok(jointDeliveryService.getJointDeliveryPageCount(size,keyword));
+    public ResponseEntity<Integer> getJointDeliveryPage(@RequestParam Integer size, @RequestParam(value="keyword", defaultValue = "") String keyword, @CurrentUser User user) {
+        return ResponseEntity.ok(jointDeliveryService.getJointDeliveryPageCount(size,keyword, user));
     }
 }

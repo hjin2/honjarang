@@ -687,10 +687,10 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
     @DisplayName("공동배달 페이지 수 조회 성공")
     void getJointDeliveryPageCount_Success() {
         // given
-        given(jointDeliveryRepository.countByIsCanceledFalseAndDeadlineAfterAndContentContainingIgnoreCase(any(LocalDateTime.class), eq("테스트"))).willReturn(1);
+        given(jointDeliveryRepository.countByIsCanceledFalseAndDeadlineAfterAndContentContainingIgnoreCase(any(LocalDateTime.class), eq(37.123456), eq(127.123456), eq("테스트"))).willReturn(1);
 
         // when
-        Integer jointDeliveryPageCount = jointDeliveryService.getJointDeliveryPageCount(10, "테스트");
+        Integer jointDeliveryPageCount = jointDeliveryService.getJointDeliveryPageCount(10, "테스트", user);
 
         // then
         assertThat(jointDeliveryPageCount).isEqualTo(1);
