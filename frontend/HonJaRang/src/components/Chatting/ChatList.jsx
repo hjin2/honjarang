@@ -8,10 +8,16 @@ function ChatList({list}) {
   const [msg, setmsg] = useState('')
   const navigate = useNavigate()
   const onClick = () => {
-    navigate(`./${list.id}`)
+    navigate(`./${list.id}`,{state:{title : finalTitle}})
   }
   const splitTitle = list.name?.split('&')[1]
   const isContain = list.name.includes("공동")
+  let finalTitle = ""
+  if(isContain){
+    finalTitle = list.name
+  }else{
+    finalTitle = splitTitle.split("1")[0]
+  }
   
   const Diff_cal = () => {
   let today = new Date();   
@@ -66,11 +72,7 @@ useEffect(() => {
 return (
   <div  className=" cursor-pointer m-2" onClick={onClick}>
     <div className='grid-raw-10'>
-    {!isContain ? (
-      <span>{splitTitle?.split("1")[0]}</span> 
-      ):(
-      <span>{list.name}</span>
-    )}
+    <span>{finalTitle}</span>
     {list.participant_count === 2 ? null : <span className='text-xs mb-2 ml-2'>{list.participant_count}</span>}
     <br />
     {list.last_message_created_at===null ? <span className='text-sm'>아직 작성된 대화가 없습니다.</span> :
