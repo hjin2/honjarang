@@ -63,7 +63,7 @@ public class VideoChatService {
                 if(params.getCategory()!=null) {
                     switch (params.getCategory()) {
                         case FREE -> thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/free.png";
-                        case MUKBANG -> thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/mukbang.png";
+                        case HONBABSUL -> thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/mukbang.png";
                         case GAME -> thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/game.png";
                         case HELP -> thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/help.png";
                     }
@@ -144,7 +144,7 @@ public class VideoChatService {
 
     @Transactional(readOnly = true)
     public List<VideoChatListDto> getSessionList(String category, int page) {
-        Pageable pageable = PageRequest.of(page -1, 15);
+        Pageable pageable = PageRequest.of(page -1, 12);
 
         Category option = Category.FREE;
 
@@ -152,9 +152,8 @@ public class VideoChatService {
             case "free": option = Category.FREE; break;
             case "game": option = Category.GAME; break;
             case "study": option = Category.STUDY; break;
-            case "mukbang": option = Category.MUKBANG; break;
+            case "honbabsul": option = Category.HONBABSUL; break;
             case "help": option = Category.HELP; break;
-            case "honsul": option = Category.HONSUL; break;
         }
 
 
@@ -179,9 +178,8 @@ public class VideoChatService {
                 break;
             case "game": option = Category.GAME; break;
             case "study": option = Category.STUDY; break;
-            case "mukbang": option = Category.MUKBANG; break;
+            case "honbabsul": option = Category.HONBABSUL; break;
             case "help": option = Category.HELP; break;
-            case "honsul": option = Category.HONSUL; break;
         }
 
         return (int) Math.ceil((double) videoChatRoomRepository.countByCategoryOrderByCreatedAtDesc(option) / size);
