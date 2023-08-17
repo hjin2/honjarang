@@ -28,22 +28,23 @@ const Chat = () => {
   const stompClientRef = useRef(null);
 
   const connect = () => {
-    console.log(title)
     const serverAddress = 'https://honjarang.kro.kr/chat';
     const socket = new SockJS(serverAddress);
     const stompClient = Stomp.over(socket);
-
-    stompClient.connect('guest', 'guest', (frame) => {
-      stompClient.subscribe(`/topic/room.${Key}`, (message) => {
-        console.log(message);
-        showMessage(JSON.parse(message.body));
+  
+    if (messages.length > 0) {
+      stompClient.connect('guest', 'guest', (frame) => {
+        stompClient.subscribe(`/topic/room.${Key}`, (message) => {
+          console.log(message);
+          showMessage(JSON.parse(message.body));
+        });
+        stompClient.send(`/app/chat/connect.${Key}`, {}, JSON.stringify({ token: token }));
+  
+        stompClientRef.current = stompClient;
+        setSocket(socket);
+        setStomp(stompClient);
       });
-      stompClient.send(`/app/chat/connect.${Key}`, {}, JSON.stringify({ token: token }));
-
-      stompClientRef.current = stompClient;
-      setSocket(socket);
-      setStomp(stompClient);
-    });
+    }
   };
 
   const showMessage = (message) => {
@@ -105,37 +106,37 @@ const Chat = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const cleanup = () => {
-  //     if (stompClientRef.current) {
-  //       console.log('Attempting to disconnect Stomp...');
-  //       stompClientRef.current.disconnect(() => {
-  //         console.log('Stomp disconnected.');
-  //         if (socket) {
-  //           socket.onclose = (event) => {
-  //             console.log('Socket closed.', event);
-  //             // 원하는 함수 실행
-  //           };
-  //           socket.close();
-  //         } else {
-  //           // 원하는 함수 실행
-  //         }
-  //       });
-  //     } else if (socket) {
-  //       console.log('Closing socket...');
-  //       socket.onclose = (event) => {
-  //         console.log('Socket closed.', event);
-  //         // 원하는 함수 실행
-  //       };
-  //       socket.close();
-  //     } else {
-  //       // 원하는 함수 실행
-  //     }
-  //   };
+  useEffect(() => {
+    const cleanup = () => {
+      if (stompClientRef.current) {
+        console.log('Attempting to disconnect Stomp...');
+        stompClientRef.current.disconnect(() => {
+          console.log('Stomp disconnected.');
+          if (socket) {
+            socket.onclose = (event) => {
+              console.log('Socket closed.', event);
+              // 원하는 함수 실행
+            };
+            socket.close();
+          } else {
+            // 원하는 함수 실행
+          }
+        });
+      } else if (socket) {
+        console.log('Closing socket...');
+        socket.onclose = (event) => {
+          console.log('Socket closed.', event);
+          // 원하는 함수 실행
+        };
+        socket.close();
+      } else {
+        // 원하는 함수 실행
+      }
+    };
 
-  //   // 컴포넌트가 언마운트될 때 실행될 함수 등록
-  //   return cleanup;
-  // }, [socket]);
+    // 컴포넌트가 언마운트될 때 실행될 함수 등록
+    return cleanup;
+  }, []);
 
 
   useEffect(() => {
