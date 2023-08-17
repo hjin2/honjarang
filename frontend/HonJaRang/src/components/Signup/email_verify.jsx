@@ -46,12 +46,7 @@ function Email_verify({Email, setEmail, ChangeEmailValid}) {
         if (result) {
           setEmailDisalbed(true)
           setemailMsg('')
-  
-        }
-        else {
-          setemailMsg('')
-        }
-        axios.post(`${API.USER}/send-verification-code`,
+          axios.post(`${API.USER}/send-verification-code`,
         {
           email: email
         })
@@ -66,6 +61,12 @@ function Email_verify({Email, setEmail, ChangeEmailValid}) {
         .catch(function (error) {
           console.log(error)
         })
+  
+        }
+        else {
+          setemailMsg('')
+        }
+        
       }    
       )
       .catch((err) => {
