@@ -22,6 +22,15 @@ export default function Login() {
   };
   const login = (e) => {
     e.preventDefault()
+
+    if (Email === '') {
+      setIdMsg('이메일을 입력해주세요.')
+    }
+    else if (Pwd === '') {
+      setPwdMsg('비밀번호를 입력해주세요.')
+    }
+
+    else {
     axios.post(`${API.USER}/login`, {
       email: Email,
       password: Pwd
@@ -46,7 +55,7 @@ export default function Login() {
         alert('존재하지 않는 아이디입니다.')
       }
     })
-  }
+  }}
 
   useEffect(() => {
     setIdMsg('')
