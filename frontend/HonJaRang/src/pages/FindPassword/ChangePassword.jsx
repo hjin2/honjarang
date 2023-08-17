@@ -2,6 +2,7 @@ import { useState,useEffect } from "react";
 import axios from "axios";
 import { API } from "@/apis/config";
 import { useNavigate } from "react-router-dom";
+import Logo from "@/assets/2.png"
 
 export default function ChangePassword() {
   // 비밀번호, 비밀번호 확인, 오류메시지
@@ -74,28 +75,38 @@ export default function ChangePassword() {
     
     
   return (
-    <div>
+    <div className="flex flex-col justify-center items-center h-screen space-y-4">
+      <img src={Logo} className="w-2/12 mb-8"/>
       <div>
         비밀번호
         <br />
-        <input type="password" onChange={onChange_ordinaryPassword} maxLength="15"/>
+        <input 
+          type="password"
+          className="border-gray2 rounded-lg block w-72 h-10 text-base p-2 focus:outline-main2"
+          onChange={onChange_ordinaryPassword} maxLength="15"
+        />
       </div>
       <div>
         새로운 비밀번호
         <br />
-        <input type="password" onChange = {onChange_password} maxLength="15"/>
-        <br />
-        <span>{pwdMsg}</span>
+        <input 
+          type="password" 
+          className="border-gray2 rounded-lg block w-72 h-10 text-base p-2 focus:outline-main2"
+          onChange = {onChange_password} maxLength="15"
+        />
+        <span className="text-xs text-main5 font-semibold">{pwdMsg}</span>
       </div>
-      <div className="mt-4">
+      <div>
         새로운 비밀번호 확인
-        <br />
-        <input type="password" onChange = {onChange_password_cfm} maxLength="15"/>
-        <br />
-        <span>{pwdcfmMsg}</span>
+        <input 
+          type="password" 
+          className="border-gray2 rounded-lg block w-72 h-10 text-base p-2 focus:outline-main2"
+          onChange = {onChange_password_cfm} 
+          maxLength="15"
+        />
+        <span className="text-xs text-main5 font-semibold">{pwdcfmMsg}</span>
       </div>
-      
-      <button disabled={Valid} onClick={Password_Change}>비밀번호 변경</button>
+      <button disabled={Valid} onClick={Password_Change} className="main1-full-button w-72 h-10">비밀번호 변경</button>
     </div>
   )
 }

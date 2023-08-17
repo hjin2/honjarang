@@ -22,7 +22,7 @@ const Chat = () => {
   const [socket, setSocket] = useState(null);
   const [stomp, setStomp] = useState(null);
   const [image, setImage] = useState("")
-  const title = location.state.title
+  const title =location.state.title
   const token = localStorage.getItem('access_token');
 
   const stompClientRef = useRef(null);

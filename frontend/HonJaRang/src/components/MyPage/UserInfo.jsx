@@ -9,7 +9,6 @@ import { API } from '@/apis/config';
 export default function UserInfo({id, isMe}) {
   const navigate = useNavigate()
   const [modalState, setModalState] = useState(false);
-  const URL = import.meta.env.VITE_APP_API
   const token = localStorage.getItem("access_token")
   const onModalOpen = () => {
     setModalState(!modalState);
@@ -22,7 +21,7 @@ export default function UserInfo({id, isMe}) {
     axios.post(`${API.CHATS}/one-to-one`,data,{ headers:{'Authorization': `Bearer ${token}`, "Content-Type":"Application/json"}})
       .then((res) => {
         console.log(res)
-        navigate(`/chatting/${res.data}`)
+        navigate(`/chatting/${res.data}`, {state:{title:nickname}})
       })
       .catch((err) => console.log(err))
   }
