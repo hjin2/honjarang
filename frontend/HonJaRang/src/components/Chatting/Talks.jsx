@@ -17,7 +17,7 @@ function Talks({messages, id, Nickname, chatKey, setChatId}) {
 
   useEffect(() => {
     timeline()
-  })
+  },[])
 
   const timeline = () => {
     let time = new Date()
@@ -92,7 +92,7 @@ function Talks({messages, id, Nickname, chatKey, setChatId}) {
       chatAreaRef.current.removeEventListener('scroll', handleChatAreaScroll);
     }
   };
-})
+},[])
 
 
 
