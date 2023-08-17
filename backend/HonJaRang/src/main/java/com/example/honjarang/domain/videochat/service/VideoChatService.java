@@ -1,5 +1,6 @@
 package com.example.honjarang.domain.videochat.service;
 
+import com.example.honjarang.domain.DateTimeUtils;
 import com.example.honjarang.domain.user.entity.User;
 import com.example.honjarang.domain.videochat.dto.VideoChatListDto;
 import com.example.honjarang.domain.videochat.dto.VideoChatRoomCreateDto;
@@ -66,7 +67,7 @@ public class VideoChatService {
                         case HONBABSUL -> thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/mukbang.png";
                         case GAME -> thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/game.png";
                         case HELP -> thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/help.png";
-                        case STUDY -> thumbnail = "[https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/study.png](https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/study.png)";
+                        case STUDY -> thumbnail = "https://honjarang-bucket.s3.ap-northeast-2.amazonaws.com/thumbnail/study.png";
                     }
                 }
             }else{

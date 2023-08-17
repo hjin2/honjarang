@@ -21,8 +21,9 @@ public interface TransactionRepository extends JpaRepository<Transaction,Long> {
 
      Integer countAllByBuyerId(Long id);
 
+
      long count();
 
-     Integer countAllByTitleContainingIgnoreCase(String keyword);
+     Integer countAllByTitleContainingIgnoreCaseAndIsCompletedFalse(String keyword);
 
 }

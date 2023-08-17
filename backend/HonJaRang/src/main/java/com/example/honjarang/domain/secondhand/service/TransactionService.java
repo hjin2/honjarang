@@ -177,7 +177,7 @@ public class TransactionService {
 
     @Transactional(readOnly = true)
     public Integer getTransactionsPageCount(Integer size, String keyword) {
-        return (int) Math.ceil((double) transactionRepository.countAllByTitleContainingIgnoreCase(keyword) / size) ;
+        return (int) Math.ceil((double) transactionRepository.countAllByTitleContainingIgnoreCaseAndIsCompletedFalse(keyword) / size) ;
     }
 
 }
