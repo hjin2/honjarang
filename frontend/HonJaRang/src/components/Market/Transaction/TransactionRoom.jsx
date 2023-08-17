@@ -31,7 +31,7 @@ export default function TransactionRoom(roomData) {
         </div>
         {/* 상품 제목 */}
         <div className="flex justify-between my-4">
-          <div>{adjustedtitleName}</div>
+          <div className="text-lg font-bold">{adjustedtitleName}</div>
           <div className="text-sm">{price.toLocaleString()}원</div>
         </div>
         {/* 참여버튼 */}
@@ -41,7 +41,7 @@ export default function TransactionRoom(roomData) {
           ):(
             <div className="text-main1 font-bold">판매중</div>
           )}
-          <button type="button" className="main1-full-button w-20" onClick={onClick}>채팅하기</button>
+          <button type="button" className="main1-full-button w-20" onClick={onClick}>참여하기</button>
         </div>
       </div>
     </div>
