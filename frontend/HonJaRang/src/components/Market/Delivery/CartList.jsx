@@ -36,11 +36,6 @@ export default function CartList({id, loginId, cart, setCart, showCartList, setI
   // 사용자별로 장바구니 묶기
 
   
-  useEffect(() => {
-    console.log(cart)
-    const calculatedGroupedCart = calculateGroupedCart(cart);
-    setGroupedCart(calculatedGroupedCart);
-  }, [cart]);
 
   return (
     <div className="flex items-center flex-col">

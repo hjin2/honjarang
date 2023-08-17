@@ -1,6 +1,7 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { API } from "@/apis/config"
+import { useCallback } from "react"
 
 export default function Comment({comment, id, updateComments}) {
   const token = localStorage.getItem("access_token")
@@ -8,6 +9,7 @@ export default function Comment({comment, id, updateComments}) {
   const [user, setUser] = useState({})
   const LoginId = localStorage.getItem("user_id")
   const [isWriter, setIsWriter] = useState(false)
+
   const deleteComment = () =>{
     axios.delete(`${API.POST}/${id}/comments/${comment.id}`,{headers})
       .then((res) =>{
