@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { API } from '@/apis/config';
 import Logo from "@/assets/2.png"
 
@@ -8,18 +8,51 @@ export default function FindPassword() {
   const [Id, setId] = useState('')
   const [Address, setAddress] = useState('');
   const [Check, setCheck] = useState(false)
-  const [Number, setNumber] = useState('')
+  const [Code, setCode] = useState('')
+  const [Manual, setManual] = useState(false)
+  const [EmailValid, setEmailValid] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [time, setTime] = useState(300)
+  const [timer, setTimer] = useState(null); // 타이머 상태 추가
+
+  const getSeconds = (time) => {
+    const seconds = Number(time % 60);
+    if (seconds < 0) {
+      return "00"
+    } else if (seconds < 10) {
+      return "0" + String(seconds);
+    } else {
+      return String(seconds);
+    }
+  }
+
+  useEffect(() => {
+    if (time < 0) {
+      clearInterval(timer);
+      location.reload();
+      alert("인증 시간 초과입니다");
+    }
+  }, [time, timer]); // timer 상태 추가
+
+
   const onChange = (e) => {
     setId(e.target.value)
   }
 
   const onSelect = (e) => {
+    if (e.target.value === 'manual') {
+      setManual(true)
+    }
+    setAddress(e.target.value)
+  }
+
+
+  const onAddress = (e) => {
     setAddress(e.target.value)
   }
 
   const onCode = (e) => {
-    setNumber(e.target.value)
+    setCode(e.target.value)
   }
 
   const movePage = useNavigate();
@@ -29,7 +62,7 @@ export default function FindPassword() {
     axios.post(`${API.USER}/verify-code`,
     {
       email: email,
-      code: Number
+      code: Code
     })
     .then((res) => {
       console.log(res.data)
@@ -37,6 +70,7 @@ export default function FindPassword() {
     })
     .catch((err) => {
       console.log(err)
+      alert('인증번호가 틀렸습니다.')
     })
   }
 
@@ -63,6 +97,7 @@ export default function FindPassword() {
       }    
       )
       .catch((err) => {
+        setEmailValid(true)
         console.log(err)
         axios.post(`${API.USER}/send-verification-code`,
         {
@@ -73,6 +108,11 @@ export default function FindPassword() {
           setErrorMessage("")
           setCheck(true)
           alert('인증번호를 전송했습니다!')
+          setTimer(
+            setInterval(() => {
+              setTime((prev) => prev - 1);
+            }, 1000)
+          );
       })
   
         .catch(function (error) {
@@ -91,18 +131,26 @@ export default function FindPassword() {
           <label htmlFor="email">가입된 이메일</label>
           <br />
           <input 
+            disabled={EmailValid}
             type="text" 
             name="id"
             className="border-gray2 rounded-lg w-72 h-10 text-base p-2 focus:outline-main2" 
             onChange={onChange}/>
               @
-              <select name="email" id="email" className="border-solid border h-10 border-black rounded-lg" onChange={onSelect}>
-                <option value="default">--이메일 선택--</option>
-                <option value="naver.com">naver.com</option>
-                <option value="gmail.com">gmail.com</option>
-                <option value="nate.com">nate.com</option>
-                <option value="hanmail.net">hanmail.net</option>
-              </select>
+              {Manual ?  
+        (<input type="text" onChange={onAddress} disabled={EmailValid}
+        className="border-solid border h-10 border-black rounded-lg"/>)
+        : 
+        (<select name="email" id="email" disabled={EmailValid} className="border-solid border h-10 border-black rounded-lg" 
+        value={Address} onChange={onSelect}
+        >
+          <option value="default" >--이메일 선택--</option>
+          <option value="naver.com">naver.com</option>
+          <option value="gmail.com">gmail.com</option>
+          <option value="nate.com"> nate.com</option>
+          <option value="hanmail.net" > hanmail.net</option>
+          <option value="manual">직접 입력</option>
+        </select>)}
           {Check ? (
             <button disabled={Check} className="main5-full-button ml-4 w-24 h-10">전송완료</button>
           ) : (
@@ -122,7 +170,9 @@ export default function FindPassword() {
             onChange={onCode}
           />
           <button onClick={check_number} className="main1-full-button ml-4 w-24 h-10">인증하기</button>
+          <span className="font-semibold text-lg ml-2 flex items-center">{parseInt(time / 60)} : {getSeconds(time)}</span>
         </div> : ''}
+        
       </div>
     </div>
   );

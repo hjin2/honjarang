@@ -53,7 +53,7 @@ export default function FreeChatList({category}) {
           </div>
         </div>
       ):(
-        <div>화상채팅방이 없습니다.</div>
+        <div className="text-center mt-10 font-bold text-xl">화상채팅방이 없습니다</div>
       )}
       
     </div>

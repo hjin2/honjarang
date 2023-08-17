@@ -9,7 +9,7 @@ import { API } from '@/apis/config';
 export default function Header() {
   const IsLogged = useSelector((state) => state.login.isLogged)
   const dispatch = useDispatch()
-  const fcm = localStorage.getItem('fcm_token')
+  
 
   useEffect(() => {
     if (localStorage.length >= 3) {
@@ -21,8 +21,13 @@ export default function Header() {
   })
 
   const Clear = () => {
+    let fcm = localStorage.getItem('fcm_token')
+    if (localStorage.getItem('fcm_token') === null) {
+      fcm = ''
+    }
     axios.post(`${API.USER}/logout`,{fcm_token : fcm},{headers:{"Authorization" : `Bearer ${localStorage.getItem("access_token")}`}})
     .then((res) => {
+      console.log(fcm)
       localStorage.clear()
       dispatch(setLoginStatus(false))
       alert('로그아웃 되었습니다.')
@@ -35,7 +40,7 @@ export default function Header() {
     <div className="Header">
       <nav className="py-6">
         <div className="flex items-center justify-between text-lg">
-          <Link to={`/mypage/${id}`} className="font-ImcreSoojin text-3xl text-main2 hover:text-main1">
+          <Link to={`/`} className="font-ImcreSoojin text-3xl text-main2 hover:text-main1">
             혼자랑
           </Link>
           <div className="flex space-x-12 font-ImcreSoojin">
@@ -92,35 +97,23 @@ export default function Header() {
           </div>
           <div className="flex space-x-4">
             <button type="button" className="">
-              <Link to={`/mypage/${id}`}>
-                <svg
-                  className="h-8 w-8"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
+              <Link to={`/mypage/${id}`} className='font-semibold font-ImcreSoojin text-lg'>
+                마이페이지
               </Link>
             </button>
             {IsLogged ?  (<button type="button" onClick = {Clear}>
               <Link
-                to="/login"
-                className="text-sm px-4 py-2 border rounded text-white bg-black"
+                to="/"
+                className="font-semibold font-ImcreSoojin text-lg mx-4"
               >
-                LogOut
+                로그아웃
               </Link>
             </button>) : (<button type="button">
               <Link
                 to="/login"
-                className="text-sm px-4 py-2 border rounded text-white bg-black"
+                className="font-semibold font-ImcreSoojin text-lg mx-4"
               >
-                Login
+                로그인
               </Link>
             </button>)}
             

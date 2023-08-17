@@ -140,7 +140,11 @@ export default function PurchaseDetail() {
       .catch((err) => console.log(err))
   }
   const enter = () =>{
-    navigate(`/chatting/${detail.chat_room_id}`)
+    navigate(`/chatting/${detail.chat_room_id}`, {state : {title : `${detail.product_name} 공동구매 채팅방`}})
+  }
+
+  const clickUser = () =>{
+    navigate(`/mypage/${detail.user_id}`)
   }
 
   return (
@@ -152,7 +156,7 @@ export default function PurchaseDetail() {
             <div className="text-main5 mt-3">{detail.price?.toLocaleString()}원</div>
           </div>
           <div>
-            <div className="font-semibold text-right">{detail.nickname}</div>
+            <div className="font-semibold text-right cursor-pointer" onClick={clickUser}>{detail.nickname}</div>
             <div className="text-right ">{detail.created_at?.slice(0,10)}</div>
           </div>
         </div>

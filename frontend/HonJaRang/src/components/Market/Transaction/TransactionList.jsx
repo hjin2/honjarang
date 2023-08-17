@@ -31,7 +31,7 @@ export default function TransactionList() {
       setPageSize(res.data)
     })
     .catch((err) => console.log(err))
-  },[])
+  },[keyword])
 
   useEffect(() => {
     fetchPageSize()
@@ -70,20 +70,27 @@ export default function TransactionList() {
           </button>
         </form>
       </div>
-      <div className="flex justify-center">
-        <Rooms roomsData={transactionData} component={TransactionRoom}/>
-      </div>
-      <div className="flex justify-center" style={{height:"10%"}}>
-        <Pagination
-          activePage={currentPage}
-          itemsCountPerPage={12}
-          totalItemsCount={12*pageSize}
-          pageRangeDisplayed={10}
-          prevPageText={"<"}
-          nextPageText={">"}
-          onChange={setPage}
-        />
-      </div>
+      {transactionData.length > 0 ? (
+
+        <>
+        <div className="flex justify-center">
+          <Rooms roomsData={transactionData} component={TransactionRoom}/>
+        </div>
+        <div className="flex justify-center" style={{height:"10%"}}>
+          <Pagination
+            activePage={currentPage}
+            itemsCountPerPage={12}
+            totalItemsCount={12*pageSize}
+            pageRangeDisplayed={10}
+            prevPageText={"<"}
+            nextPageText={">"}
+            onChange={setPage}
+            />
+        </div>
+      </>
+      ): (
+        <div className="text-center mt-10 font-bold text-xl">중고거래 목록이 없습니다</div>
+      )}
     </div>
   )
 }

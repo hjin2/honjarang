@@ -39,6 +39,7 @@
     "router": "^1.3.8",
     "sockjs-client": "^1.6.1",
     "stompjs": "^2.3.3",
+    "tailwind-scrollbar-hide": "^1.1.7",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

@@ -94,6 +94,11 @@ export default function TransactionDetail() {
       })
       .catch((err) => console.log(err))
   },[])
+
+  const clickUser = () =>{
+    navigate(`/mypage/${detail.seller_id}`)
+  }
+
   return (
     <div className="w-6/12 mx-auto mt-5 border rounded-lg p-5">
       <div className="flex justify-between">
@@ -103,7 +108,7 @@ export default function TransactionDetail() {
         </div>
         <div className="flex">
           <div>
-            <div className="font-semibold text-right">{detail.seller_nickname}</div>
+            <div className="font-semibold text-right cursor-pointer" onClick={clickUser}>{detail.seller_nickname}</div>
             <div>{detail.created_at?.slice(0,10)}</div>
           </div>
           {isWriter ? (
@@ -136,15 +141,14 @@ export default function TransactionDetail() {
         <button className="main1-full-button w-24" onClick={startChat}>1:1 채팅</button>
       </div>
       <hr />
-      <div className="my-3">
+      <div className="mt-3">
         {detail.transaction_image ? (
           <img 
             src={`${detail.transaction_image}`} 
             alt="상품이미지"
-            className="mx-auto"
           />
         ):(null)}
-        <div className="my-3">
+        <div className="my-10">
           {detail.content}
         </div>
         {!isWriter && (

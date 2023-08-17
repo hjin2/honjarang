@@ -1,19 +1,110 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 import Logo from '@/assets/2.png'
 import JointLocation from '@/assets/main/joint_location.png'
 import JointPoint from '@/assets/main/joint_point.png'
 import JointChat from '@/assets/main/joint_chat.png'
-import UsedChat from '@/assets/main/used_chat.png'
 import VideoPeople from '@/assets/main/video_people.png'
 import VideoAll from '@/assets/main/video_all.png'
 import FacilityFood from '@/assets/main/facility_food.png'
 import FacilityMap from '@/assets/main/facility_map.png'
+import Header from '@/components/Header/Header'
+import { useSelector } from 'react-redux'
+import axios from 'axios'
+import { initializeApp } from 'firebase/app';
+import {
+  getMessaging,
+  getToken,
+  onMessage,
+} from 'firebase/messaging';
+import { useEffect } from 'react'
+import { API } from '@/apis/config'
 
 export default function Main() {
+  const isLogged = useSelector((state) => state.login.isLogged)
+
+  const firebaseConfig = {
+    apiKey: import.meta.env.VITE_APP_FIREBASE_APIKEY,
+    authDomain: import.meta.env.VITE_APP_FIREBASE_AUTHDOMAIN,
+    projectId: import.meta.env.VITE_APP_FIREBASE_PROJECTID,
+    storageBucket: import.meta.env.VITE_APP_FIREBASE_STORAGEBUCKET,
+    messagingSenderId: import.meta.env.VITE_APP_FIREBASE_MESSAGINGSENDERID,
+    appId: import.meta.env.VITE_APP_FIREBASE_APPID,
+    measurementId: import.meta.env.VITE_APP_FIREBASE_MEASUREMENTID
+  };
+  const app = initializeApp(firebaseConfig);
+  const messaging = getMessaging(app);
+  const token = localStorage.getItem("access_token")
+  useEffect(() => {
+    if(token){
+      requestPermission();
+      getToken(messaging, {
+        vapidKey: import.meta.env.VITE_APP_FIREBASE_VAPIDKEY,
+      })
+      .then((currentToken) => {
+        if (currentToken) {
+          localStorage.setItem('fcm_token', currentToken)
+          Push(currentToken)
+        } else {
+          console.log('No registration token available. Request permission to generate one.');
+        }
+      })
+      .catch((err) => {
+        console.log('An error occurred while retrieving token. ', err);
+      });
+      
+      onMessage(messaging, (payload) => {
+        console.log('Message received. ', payload);
+        const { title, body } = payload.notification;
+        const options = {
+          body,
+          icon: '/firebase-logo.png',
+        };
+        new Notification(title, options);
+      });
+    }
+  }, []);
+
+  const requestPermission = () => {
+    if(token){
+      console.log('Requesting permission...');
+      Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+          console.log('Notification permission granted.');
+        } else {
+          console.log('Unable to get permission to notify.');
+        }
+      });
+    }
+  };
+
+
+  const Push = (currentToken) => {
+    if(token){
+      const token = currentToken
+      const access_token = localStorage.getItem('access_token')
+      axios.post(`${API.USER}/fcm-token`,
+      {fcm_token : token},
+      {headers: {
+        'Authorization' : `Bearer ${access_token}`
+      }})
+        .then((res) => {
+          console.log(res)
+        })
+      .catch((err) => {
+        console.log(err)
+      })
+    }
+  }
   return (
     <div className=" h-screen">
-      <div className="flex m-4 mx-8 justify-between">
+      {isLogged ? (
+        <div className="bg-white w-full h-20 fixed">
+          <div className='w-5/6 mx-auto'>
+            <Header/>
+          </div>
+        </div>
+      ):(
+      <div className="flex m-4 w-5/6 mx-auto pb-5 justify-between">
         <img src={Logo} alt="" className="h-10"/>
         <div>
           <Link to="/login">
@@ -24,7 +115,12 @@ export default function Main() {
           </Link>
         </div>
       </div>
-      <div className="h-10"></div>
+      )}
+      {isLogged ? (
+        <div className='h-10'></div>
+      ):(
+        null
+      )}
       {/* 공동배달, 공동구매 */}
       <div className="flex p-10 py-32 my-5 flex-row bg-main4 bg-opacity-75 justify-around">
         <div>

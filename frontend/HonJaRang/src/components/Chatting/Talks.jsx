@@ -17,7 +17,7 @@ function Talks({messages, id, Nickname, chatKey, setChatId}) {
 
   useEffect(() => {
     timeline()
-  })
+  },[])
 
   const timeline = () => {
     let time = new Date()
@@ -43,11 +43,12 @@ function Talks({messages, id, Nickname, chatKey, setChatId}) {
       console.log(res.data)
       if(res.data >0){
         setIsChat(true)
+        setPages(res.data);
+        loadChats(res.data);
       }else{
         setIsChat(false)
       }
-      setPages(res.data);
-      loadChats(res.data);
+
     });
   };
   
@@ -92,7 +93,7 @@ function Talks({messages, id, Nickname, chatKey, setChatId}) {
       chatAreaRef.current.removeEventListener('scroll', handleChatAreaScroll);
     }
   };
-})
+},[])
 
 
 

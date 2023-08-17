@@ -21,25 +21,24 @@ export default function Refresh() {
         // const msg = err.response.data.message
         const status = err.response.status
 
-        if (status === 401) {
+        if (status === 403) {
 
-          await axios({
-            url: `${API.USER}/refresh`,
-            method: 'Post',
-            headers: {
-              refresh_token: localStorage.getItem('refresh_token')
-            }
+          await axios.post(`${API.USER}/refresh`,{
+            refresh_token: localStorage.getItem('refresh_token')
           })
           .then((res) => {
             localStorage.setItem('access_token', res.data.access_token)
             localStorage.setItem('refresh_token', res.data.refresh_token)
   
             originalConfig.headers["Autorization"] = "Bearer "+res.data.access_token
-  
+            window.location.reload()
             return refreshAPI(originalConfig)
           })
           .then((res) => {
             window.location.reload()
+          })
+          .catch((err) => {
+            console.log(err)
           })
         }
         else {
