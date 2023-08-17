@@ -25,7 +25,7 @@ export default function DeliveryList() {
     .catch((err)=>{
       console.log(err)
     })
-  },[])
+  },[keyword])
 
   const fetchDeliveryData = () => {
     axios.get(`${API.DELIVERIES}`,{params:{page:currentPage, size:12, keyword:keyword}, headers})
@@ -56,7 +56,7 @@ export default function DeliveryList() {
 
   return (
     <div>
-      {/* {deliveryData.length > 0 ? ( */}
+      {deliveryData.length > 0 ? (
         <div className="h-full">
           <div className="flex justify-end mb-5">
             <form action="" className="space-x-2" onSubmit={search}>
@@ -79,9 +79,9 @@ export default function DeliveryList() {
               />
           </div>
         </div>
-      {/* ):(
-        <div>배달 목록이 없습니다.</div>
-      )} */}
+       ):(
+        <div className="text-center mt-10 font-bold text-xl">배달 목록이 없습니다.</div>
+      )}
     </div>
   )
 }
