@@ -21,7 +21,7 @@ export default function Refresh() {
         // const msg = err.response.data.message
         const status = err.response.status
 
-        if (status === 401 || status === 403) {
+        if (status === 403) {
 
           await axios.post(`${API.USER}/refresh`,{
             refresh_token: localStorage.getItem('refresh_token')
