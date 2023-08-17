@@ -28,23 +28,22 @@ const Chat = () => {
   const stompClientRef = useRef(null);
 
   const connect = () => {
+    console.log(title)
     const serverAddress = 'https://honjarang.kro.kr/chat';
     const socket = new SockJS(serverAddress);
     const stompClient = Stomp.over(socket);
-  
-    if (messages.length > 0) {
-      stompClient.connect('guest', 'guest', (frame) => {
-        stompClient.subscribe(`/topic/room.${Key}`, (message) => {
-          console.log(message);
-          showMessage(JSON.parse(message.body));
-        });
-        stompClient.send(`/app/chat/connect.${Key}`, {}, JSON.stringify({ token: token }));
-  
-        stompClientRef.current = stompClient;
-        setSocket(socket);
-        setStomp(stompClient);
+
+    stompClient.connect('guest', 'guest', (frame) => {
+      stompClient.subscribe(`/topic/room.${Key}`, (message) => {
+        console.log(message);
+        showMessage(JSON.parse(message.body));
       });
-    }
+      stompClient.send(`/app/chat/connect.${Key}`, {}, JSON.stringify({ token: token }));
+
+      stompClientRef.current = stompClient;
+      setSocket(socket);
+      setStomp(stompClient);
+    });
   };
 
   const showMessage = (message) => {
