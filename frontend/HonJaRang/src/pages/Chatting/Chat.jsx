@@ -167,7 +167,7 @@ const Chat = () => {
   },[]);
 
   return (
-    <div className="w-5/12 h-screen flex flex-col m-auto">
+    <div className="w-5/12 h-[82vh] flex flex-col m-auto">
         <div className='flex space-x-5 mb-5'>
           <button onClick={handleBack}>
             <FontAwesomeIcon icon={faArrowLeft} style={{color: "#000000",}} />
