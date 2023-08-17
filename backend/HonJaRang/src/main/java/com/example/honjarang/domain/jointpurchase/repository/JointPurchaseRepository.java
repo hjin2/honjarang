@@ -20,9 +20,15 @@ public interface JointPurchaseRepository extends JpaRepository<JointPurchase, Lo
             "AND (SELECT COUNT (jp) FROM JointPurchaseApplicant jp WHERE jp.jointPurchase = j) < j.targetPersonCount " +
             "ORDER BY j.createdAt DESC")
     Page<JointPurchase> findAllByIsCanceledFalseAndDeadlineAfterAndDistanceLessThanAndTargetPersonCountGreaterThanOrderByCreatedAtDesc(LocalDateTime now, Double latitude, Double longitude, String keyword, Pageable pageable);
-    Integer countByIsCanceledFalseAndDeadlineAfter(LocalDateTime now);
 
-    Integer countByIsCanceledFalseAndDeadlineAfterAndContentContainingIgnoreCase(LocalDateTime now, String keyword);
+    @Query("SELECT COUNT (j) FROM JointPurchase j " +
+            "WHERE j.isCanceled = false " +
+            "AND j.deadline > :now " +
+            "AND j.productName LIKE %:keyword% " +
+            "AND (6371 * acos(cos(radians(:latitude)) * cos(radians(j.latitude)) * cos(radians(j.longitude) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(j.latitude)))) < 10 " +
+            "AND (SELECT COUNT (jp) FROM JointPurchaseApplicant jp WHERE jp.jointPurchase = j) < j.targetPersonCount " +
+            "ORDER BY j.createdAt DESC")
+    Integer countByIsCanceledFalseAndDeadlineAfterAndContentContainingIgnoreCase(LocalDateTime now, Double latitude, Double longitude, String keyword);
 
     Page<JointPurchase> findAllByUserId(Long id, Pageable pageable);
 

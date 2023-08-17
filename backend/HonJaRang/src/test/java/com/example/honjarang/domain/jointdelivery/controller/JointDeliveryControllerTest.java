@@ -433,7 +433,7 @@ class JointDeliveryControllerTest {
     @DisplayName("공동배달 페이지 수 조회")
     void getJointDeliveryPage() throws Exception {
         // given
-        given(jointDeliveryService.getJointDeliveryPageCount(10, "테스트")).willReturn(1);
+        given(jointDeliveryService.getJointDeliveryPageCount(eq(10), eq("테스트"), any(User.class))).willReturn(1);
 
         // when & then
         mockMvc.perform(get("/api/v1/joint-deliveries/page")
