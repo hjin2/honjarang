@@ -623,7 +623,7 @@ JointDeliveryCartCreateDto jointDeliveryCartCreateDto = new JointDeliveryCartCre
         jointDelivery.setDeadlineForTest(DateTimeUtils.parseLocalDateTime("2000-01-01 00:00:00"));
         jointDelivery.setUserForTest(userForTest);
         given(jointDeliveryApplicantRepository.findByJointDeliveryIdAndUserId(1L, 1L)).willReturn(Optional.of(jointDeliveryApplicant));
-        given(jointDeliveryCartRepository.findAllByJointDeliveryIdAndUserId(1L, 1L)).willReturn(List.of(jointDeliveryCart));
+        given(jointDeliveryCartRepository.findAllByJointDeliveryId(1L)).willReturn(List.of(jointDeliveryCart));
         given(menuRepository.findById(new ObjectId("60f0b0b7e0b9a72e7c7b3b3a"))).willReturn(Optional.of(menu));
         given(userRepository.findById(1L)).willReturn(Optional.of(user));
         given(jointDeliveryApplicantRepository.countByJointDeliveryId(1L)).willReturn(1);
