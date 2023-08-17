@@ -12,7 +12,8 @@ public interface VideoChatParticipantRepository extends JpaRepository <VideoChat
 
     VideoChatParticipant findByUserId(Long userId);
 
-    Integer countByVideoChatRoom(VideoChatRoom videoChatRoom);
+    int countByVideoChatRoom(VideoChatRoom videoChatRoom);
     
     void deleteByUserId(Long userId);
+
 }

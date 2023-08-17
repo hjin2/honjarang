@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @NoArgsConstructor
 @Getter
@@ -22,6 +24,7 @@ public class VideoChatParticipant extends BaseTimeEntity {
 
     @JoinColumn(name = "room_id")
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private VideoChatRoom videoChatRoom;
 
     @JoinColumn(name = "user_id")
