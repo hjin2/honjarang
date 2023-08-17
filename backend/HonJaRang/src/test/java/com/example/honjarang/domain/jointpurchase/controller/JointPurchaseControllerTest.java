@@ -346,7 +346,7 @@ class JointPurchaseControllerTest {
     @DisplayName("공동구매 페이지 수 조회")
     void getJointPurchasePage() throws Exception{
         // given
-        given(jointPurchaseService.getJointPurchasePageCount(10, "테스트")).willReturn(1);
+        given(jointPurchaseService.getJointPurchasePageCount(eq(10), eq("테스트"), any(User.class))).willReturn(1);
 
         // when & then
         mockMvc.perform(get("/api/v1/joint-purchases/page")

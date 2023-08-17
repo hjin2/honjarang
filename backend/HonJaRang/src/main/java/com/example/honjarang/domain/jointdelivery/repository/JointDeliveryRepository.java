@@ -27,7 +27,15 @@ public interface JointDeliveryRepository extends JpaRepository<JointDelivery, Lo
 
     Integer countByIsCanceledFalseAndDeadlineAfter(LocalDateTime now);
 
-    Integer countByIsCanceledFalseAndDeadlineAfterAndContentContainingIgnoreCase(LocalDateTime now, String keyword);
+    @Query("SELECT COUNT (j) FROM JointDelivery j " +
+            "LEFT JOIN Store s " +
+            "ON j.store = s " +
+            "WHERE j.isCanceled = false " +
+            "AND j.deadline > :now " +
+            "AND j.store.storeName LIKE %:keyword% " +
+            "AND (6371 * acos(cos(radians(:latitude)) * cos(radians(s.latitude)) * cos(radians(s.longitude) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(s.latitude)))) < 10 " +
+            "ORDER BY j.createdAt DESC")
+    Integer countByIsCanceledFalseAndDeadlineAfterAndContentContainingIgnoreCase(LocalDateTime now, Double latitude, Double longitude, String keyword);
 
     Integer countAllByUserId(Long userId);
 }

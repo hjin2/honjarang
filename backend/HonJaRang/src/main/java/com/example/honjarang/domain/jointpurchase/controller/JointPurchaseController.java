@@ -61,14 +61,13 @@ public class JointPurchaseController {
 
     @PutMapping("/{jointPurchaseId}/receive")
     public ResponseEntity<Void> confirmReceived(@PathVariable Long jointPurchaseId, @CurrentUser User user) {
-        log.info("수령 확인 요청");
         jointPurchaseService.confirmReceived(jointPurchaseId, user);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/page")
-    public ResponseEntity<Integer> getJointPurchasePage(@RequestParam Integer size, @RequestParam(value="keyword", defaultValue = "")String keyword) {
-        Integer jointPurchasePage = jointPurchaseService.getJointPurchasePageCount(size, keyword);
+    public ResponseEntity<Integer> getJointPurchasePage(@RequestParam Integer size, @RequestParam(value="keyword", defaultValue = "")String keyword, @CurrentUser User user) {
+        Integer jointPurchasePage = jointPurchaseService.getJointPurchasePageCount(size, keyword, user);
         return ResponseEntity.ok(jointPurchasePage);
     }
 }
