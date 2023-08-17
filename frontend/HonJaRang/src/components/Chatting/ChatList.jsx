@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-
+import personImage from "@/assets/person.png"
+import peopleImage from "@/assets/people.png"
 
 
 function ChatList({list}) {
@@ -71,18 +72,31 @@ useEffect(() => {
   
 return (
   <div  className=" cursor-pointer m-2" onClick={onClick}>
-    <div className='grid-raw-10'>
-      <span className="text-lg font-semibold">{finalTitle}</span>
-      {list.participant_count === 2 ? null : <span className='text-xs mb-2 ml-2'>{list.participant_count}</span>}
-      <br />
-      {list.last_message_created_at===null ? <span className='text-sm'>아직 작성된 대화가 없습니다.</span> :
-      <span className='text-sm'>{list.last_message}</span>
-      }
-      {list.last_message_created_at===null ? null :
-      <span className='text-xs ml-2'>{Diff}{msg}</span>
-      }
-      {list.unread_message_count === 0 ? null : <div className='w-5 h-5 text-center bg-red-400 mr-auto float-right text-white rounded'>{list.unread_message_count}</div>}
-    
+    <div className='flex justify-between'>
+      <div className='flex'>
+        {finalTitle.includes("공동") ? (
+          <img src={peopleImage} className='h-10 w-10 m-auto mr-2'/>
+          ):(
+            <img src={personImage} className='h-10 w-10 m-auto mr-2' />
+            )}
+          <div>
+          <div className='flex items-baseline'>
+            <div className="text-lg font-semibold">{finalTitle}</div>
+            {list.participant_count === 2 ? null : <div className='text-xs mb-2 ml-2 text-gray3'>{list.participant_count}</div>}
+          </div>
+          <div>
+            {list.last_message_created_at===null ? <div className='text-xs text-gray3'>아직 작성된 대화가 없습니다.</div> :
+            <div className='text-xs text-gray3'>{list.last_message}</div>
+          }
+          </div>
+        </div> 
+      </div>
+      <div>
+        {list.last_message_created_at===null ? null :
+        <div className='text-xs ml-2 text-gray3'>{Diff}{msg}</div>
+        }
+        {list.unread_message_count === 0 ? null : <div className='w-5 h-5 bg-main5 text-white rounded-full flex justify-center items-center ml-auto text-xs'>{list.unread_message_count}</div>}
+      </div>
     </div>
   </div>
 )

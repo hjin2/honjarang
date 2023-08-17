@@ -42,9 +42,9 @@ export default function Chatting() {
 
 
   return (
-    <div className="w-7/12 mx-auto mt-4 h-[82vh]">
-        <div className="text-lg p-4 font-bold w-24 text-center mb-4" style={{backgroundImage : `url(${highlight})`, backgroundSize: "cover"}}>채팅</div>
-        <div className={`mx-auto rounded-md border-2 overflow-y-scroll ${showScrollbar ? '' : 'scrollbar-hide'}`} style={{height:"85%"}} ref={listRef}>
+    <div className="w-6/12 mx-auto mt-4 h-[82vh]">
+      <div className="text-lg p-4 font-bold w-24 text-center mb-4" style={{backgroundImage : `url(${highlight})`, backgroundSize: "cover"}}>채팅</div>
+        <div className={`mx-auto rounded-lg border-4 border-main4 overflow-y-scroll ${showScrollbar ? '' : 'scrollbar-hide'}`} style={{height:"85%"}} ref={listRef}>
           {Lists.length ? Lists.map(list => (
             <div key={list.id} className="hover:bg-main4 p-1">
               <ChatList list={list}/>
