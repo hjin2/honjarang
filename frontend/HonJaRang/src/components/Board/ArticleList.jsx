@@ -86,7 +86,7 @@ export default function AricleList() {
         </div>
       </div>
     ) : (
-      <div className="text-center text-lg">작성된 게시글이 없습니다</div>
+      <div className="text-center mt-10 font-bold text-xl">작성된 게시글이 없습니다</div>
     )}
     <footer className='w-3/5 mx-auto'>
     <div className='flex justify-between mt-5'>

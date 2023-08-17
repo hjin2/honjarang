@@ -40,7 +40,7 @@ export default function Header() {
     <div className="Header">
       <nav className="py-6">
         <div className="flex items-center justify-between text-lg">
-          <Link to={`/mypage/${id}`} className="font-ImcreSoojin text-3xl text-main2 hover:text-main1">
+          <Link to={`/`} className="font-ImcreSoojin text-3xl text-main2 hover:text-main1">
             혼자랑
           </Link>
           <div className="flex space-x-12 font-ImcreSoojin">
@@ -97,21 +97,21 @@ export default function Header() {
           </div>
           <div className="flex space-x-4">
             <button type="button" className="">
-              <Link to={`/mypage/${id}`} className='font-semibold font-ImcreSoojin text-lg my-2 mx-4'>
+              <Link to={`/mypage/${id}`} className='font-semibold font-ImcreSoojin text-lg'>
                 마이페이지
               </Link>
             </button>
             {IsLogged ?  (<button type="button" onClick = {Clear}>
               <Link
-                to="/login"
-                className="font-semibold font-ImcreSoojin text-lg my-2 mx-4"
+                to="/"
+                className="font-semibold font-ImcreSoojin text-lg mx-4"
               >
                 로그아웃
               </Link>
             </button>) : (<button type="button">
               <Link
                 to="/login"
-                className="font-semibold font-ImcreSoojin text-lg my-2 mx-4"
+                className="font-semibold font-ImcreSoojin text-lg mx-4"
               >
                 로그인
               </Link>
