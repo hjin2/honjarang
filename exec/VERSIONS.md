@@ -1,16 +1,39 @@
 ### 버전
+
 - Ubuntu 20.04 LTS
+
 - Java 17
+
 - Spring Boot 3.1.1
+
 - MySQL 8.0.34
+
 - MongoDB 6.0.8
+
 - Redis 6.2.6 e
+
 - RabbitMQ 3.13.0
+
 - OpenVidu 2.28.0
+
 - Nginx 1.25.1
+
 - React 18.2.0
+
 - Redux 4.2.1
+
 - Redux Toolkit 1.9.5
+
 - Jenkins 2.419
+
 - IntelliJ IDEA Ultimate 2023.2
+
 - Visual Studio Code 1.81
+
+- axios : 1.4.0
+
+- react-router-dom : 6.14.2
+
+- stompjs : 2.3.3
+
+- openvidu-browser : 2.28.0
