@@ -43,11 +43,11 @@ function App() {
       window.location.href = 'https://honjarang.kro.kr/';
     }
   }, []);
-  // if (process.env.NODE_ENV === "production") {
-  //   console.log = function no_console() {};
-  //   console.warn = function no_console() {};
-  //   console.warn = function () {};
-  // }
+  if (process.env.NODE_ENV === "production") {
+    console.log = function no_console() {};
+    console.warn = function no_console() {};
+    console.warn = function () {};
+  }
   const isLogged = useSelector((state) => state.login.isLogged);
   return (
     <div className="app">
