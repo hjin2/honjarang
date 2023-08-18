@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import personImage from '@/assets/person.png';
 import peopleImage from '@/assets/people.png';
+import axios from 'axios';
+import { API } from '@/apis/config';
 
 function ChatList({ list }) {
   const [Diff, setDiff] = useState('');
@@ -10,13 +12,26 @@ function ChatList({ list }) {
   const onClick = () => {
     navigate(`./${list.id}`, { state: { title: finalTitle } });
   };
-  const splitTitle = list.name?.split('&')[1];
+  const [user, setUser] = useState()
+  let splitTitle = "";
   const isContain = list.name.includes('공동');
   let finalTitle = '';
   if (isContain) {
     finalTitle = list.name;
   } else {
-    finalTitle = splitTitle.split('1')[0];
+    if(list.name.split('&')[1].includes(user?.nickname)){
+      splitTitle = list.name.split('&')[0];
+    }else{
+      splitTitle = list.name.split('&')[1];
+    }
+
+    if(splitTitle.includes("1")){
+      finalTitle = splitTitle.split("1")[0]
+    }
+    else{
+      finalTitle = splitTitle
+    }
+    console.log(finalTitle)
   }
 
   const Diff_cal = () => {
@@ -58,6 +73,11 @@ function ChatList({ list }) {
 
   useEffect(() => {
     Diff_cal();
+    axios.get(`${API.USER}/info`, {params:{id:localStorage.getItem("user_id")},headers:{"Authorization" : `Bearer ${localStorage.getItem("access_token")}`}})
+      .then((res) => {
+
+        setUser(res.data)
+      })
   }, []);
 
   return (
