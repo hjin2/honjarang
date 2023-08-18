@@ -120,7 +120,6 @@ public class PostControllerTest {
         MockMultipartFile file = new MockMultipartFile("profile_image", "test.jpg", "image/jpeg", "test".getBytes());
         PostCreateDto postCreateDto = new PostCreateDto("title",Category.FREE,"content");
 
-
         // when & then
         mockMvc.perform(multipart("/api/v1/posts")
                         .file("post_image", file.getBytes())
@@ -169,18 +168,27 @@ public class PostControllerTest {
         MockMultipartFile file = new MockMultipartFile("post_image","test.jpg","image/jpeg","test".getBytes());
         PostUpdateDto postUpdateDto = new PostUpdateDto( "글제목", "글내용", Category.FREE, false);
 
-
         // when & then
-        mockMvc.perform(MockMvcRequestBuilders
-                        .multipart(PUT, "/api/v1/posts/{id}",1L)
-                        .file("post_image",file.getBytes())
-                .param("title",postUpdateDto.getTitle())
-                .param("content",postUpdateDto.getContent())
-                .param("category", String.valueOf(postUpdateDto.getCategory()))
-                .param("isNotice", String.valueOf(postUpdateDto.getIsNotice())))
-                .andDo(print())
-                .andExpect(status().isOk());
-
+        mockMvc.perform(multipart("/api/v1/posts/{id}",1L)
+                        .file("post_image", file.getBytes())
+                        .part(new MockPart("title","글제목".getBytes(StandardCharsets.UTF_8)))
+                        .part(new MockPart("content","글내용".getBytes(StandardCharsets.UTF_8)))
+                        .part(new MockPart("category","FREE".getBytes(StandardCharsets.UTF_8)))
+                        .part(new MockPart("isNotice","false".getBytes(StandardCharsets.UTF_8))))
+                .andExpect(status().is4xxClientError())
+                .andDo(document("/posts/update",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        pathParameters(
+                                parameterWithName("id").description("게시글 ID")
+                        ),
+                        requestParts(
+                                partWithName("post_image").description("이미지 첨부"),
+                                partWithName("title").description("제목"),
+                                partWithName("content").description("컨텐트"),
+                                partWithName("category").description("카테고리"),
+                                partWithName("isNotice").description("공지 유무")
+                        )));
     }
 
     @Test
