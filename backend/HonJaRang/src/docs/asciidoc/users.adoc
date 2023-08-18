@@ -1,0 +1,95 @@
+== 회원
+
+=== 로그인
+operation::new/users/login[snippets='http-request,request-fields,response-fields']
+
+=== 회원가입
+operation::new/users/signup[snippets='http-request,request-fields']
+
+=== 이메일 중복 확인
+operation::new/users/check-email[snippets='http-request,query-parameters']
+
+=== 인증번호 전송
+operation::new/users/send-verification-code[snippets='http-request,request-fields']
+
+=== 인증번호 확인
+operation::new/users/verify-code[snippets='http-request,request-fields']
+
+=== 닉네임 중복 확인
+operation::new/users/check-nickname[snippets='http-request,query-parameters']
+
+=== 로그아웃
+operation::new/users/logout[snippets='http-request,request-fields']
+
+=== 토큰 갱신
+operation::new/users/refresh[snippets='http-request,request-fields,response-fields']
+
+=== FCM 토큰 등록
+operation::new/users/fcm-token[snippets='http-request,request-fields']
+
+=== 새 비밀번호 설정
+operation::new/users/set-new-password[snippets='http-request,request-fields']
+
+=== 비밀번호 변경
+operation::new/users/change-password[snippets='http-request,request-fields']
+
+=== 회원 정보 수정
+operation::new/users/change-user-info[snippets='http-request,request-fields']
+
+=== 프로필 이미지 변경
+operation::new/users/profile-image[snippets='http-request,request-parts']
+
+=== 포인트 충전
+operation::new/users/payment[snippets='http-request,request-fields']
+
+=== 포인트 환급
+operation::new/users/withdraw[snippets='http-request,request-fields']
+
+=== 탈퇴하기
+operation::new/users/deleteUser[snippets='http-request,path-parameters']
+
+=== 회원 정보 조회
+operation::new/users/info[snippets='http-request,query-parameters,response-fields']
+
+=== 내가 작성한 글 목록 조회
+operation::new/users/my-written-post-list[snippets='http-request,query-parameters,response-fields']
+
+=== 내가 작성한 공동배달 글 목록 조회
+operation::new/users/joint-deliveries-writing[snippets='http-request,query-parameters,response-fields']
+
+=== 내가 작성한 중고거래 글 목록 조회
+operation::new/users/joint-deliveries-participating[snippets='http-request,query-parameters,response-fields']
+
+=== 내가 작성한 공동구매 글 목록 조회
+operation::new/users/joint-purchase-writing[snippets='http-request,query-parameters,response-fields']
+
+=== 내가 참여하는 중고거래 글 목록 조회
+operation::new/users/joint-transaction-join[snippets='http-request,query-parameters,response-fields']
+
+=== 내가 참여하는 공동배달 글 조회
+operation::new/users/joint-deliveries-participating[snippets='http-request,query-parameters,response-fields']
+
+=== 내가 참여하는 공동구매 글 목록 조회
+operation::new/users/joint-purchase-participating[snippets='http-request,query-parameters,response-fields']
+
+=== 내가 작성한 게시판 글 페이지 수 조회
+operation::new/pagecnt/iwrite/board[snippets='http-request,path-parameters,query-parameters,response-body']
+
+=== 내가 작성한 공동배달 게시글 페이지 수 조회
+operation::new/pagecnt/joint-delivery-write[snippets='http-request,query-parameters,response-body']
+
+=== 내가 작성한 중고거래 게시글 페이지 수 조회
+operation::new/pagecnt/transaction-write[snippets='http-request,query-parameters,response-body']
+
+=== 내가 작성한 공동구매 게시글 페이지 수 조회
+operation::new/pagecnt/joint-purchase-write[snippets='http-request,query-parameters,response-body']
+
+=== 내가 참여한 공동배달 게시글 페이지 수 조회
+operation::new/pagecnt/joint-delivery-join[snippets='http-request,query-parameters,response-body']
+
+=== 내가 참여한 중고거래 게시글 페이지 수 조회
+operation::new/pagecnt/transaction-join[snippets='http-request,query-parameters,response-body']
+
+=== 내가 참여한 공동구매 게시글 페이지 수 조회
+operation::new/pagecnt/joint-purchase-join[snippets='http-request,query-parameters,response-body']
+
