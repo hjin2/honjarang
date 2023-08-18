@@ -14,3 +14,7 @@
 - Jenkins 2.419
 - IntelliJ IDEA Ultimate 2023.2
 - Visual Studio Code 1.81
+- axios : 1.4.0
+- react-router-dom : 6.14.2
+- stompjs : 2.3.3
+- openvidu-browser : 2.28.0
