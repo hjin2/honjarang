@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .main1-button {
+    @apply border-2 h-8 rounded-lg border-main1 text-main1 text-xs font-bold;
+  }
+  .main2-button {
+    @apply border-2 h-8 rounded-lg border-main2 text-main2 text-xs font-bold;
+  }
+
+  .main5-button {
+    @apply border-2 h-8 rounded-lg border-main5 text-main5 text-xs font-bold;
+  }
+  .main1-full-button {
+    @apply h-8 rounded-lg bg-main1 text-white text-xs font-bold;
+  }
+  .main5-full-button {
+    @apply h-8 rounded-lg bg-main5 text-white text-xs font-bold;
+  }
+  .main3-full-button {
+    @apply h-8 rounded-lg bg-main3 text-white text-xs font-bold;
+  }
+  .main4-full-button {
+    @apply h-8 rounded-lg bg-main4 text-white text-xs font-bold;
+  }
+  .gray3-full-button {
+    @apply h-10 rounded-lg bg-gray2 text-white text-base font-bold;
+  }
+}
+
+@font-face {
+  font-family: 'ImcreSoojin';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.3/ImcreSoojin.woff')
+    format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SUITE-Regular';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/SUITE-Regular.woff2')
+    format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
