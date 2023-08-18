@@ -99,7 +99,7 @@ export default function WebRTCCreate() {
         <input type="text" onChange={handleNumPeople}
         className="border border-gray2 focus:outline-main2 h-8 p-1 w-60"/>
       </div> */}
-      <div className="flex bg-main4 justify-between p-5 rounded-lg">
+      {/* <div className="flex bg-main4 justify-between p-5 rounded-lg">
         <div>
           <div className="font-bold text-lg">only Voice</div>
           <div className="text-sm">체크하면 음성만 on으로 방이 생성됩니다.</div>
@@ -121,7 +121,7 @@ export default function WebRTCCreate() {
             ) : null}
           </button>
         </div>
-      </div>
+      </div> */}
       <div>
         <div className="text-lg mb-1">썸네일 설정</div>
         <input
@@ -129,7 +129,7 @@ export default function WebRTCCreate() {
           accept="image/jpg,image/png,image/jpeg"
           name="thumnail_image"
           onChange={handleImage}
-          className="border border-gray2 focus:outline-main2 h-8 p-1 w-60"
+          className="border border-gray2 focus:outline-main2 h-10 p-1 w-60"
         />
       </div>
 
