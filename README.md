@@ -129,6 +129,7 @@
     <li>RabbitMQ 3.13.0</li> 
     <li>OpenVidu 2.28.0</li> 
   </ul>
+  </div>
 </details>
 
 <details>
@@ -142,6 +143,7 @@
     <li>stompjs 2.3.3</li> 
     <li>tailwind CSS</li> 
   </ul>
+  </div>
 </details>
 
 <details>
@@ -151,6 +153,7 @@
     <li>IntelliJ IDEA Ultimate 2023.2</li>  
     <li>Visual Studio Code 1.81</li> 
   </ul>
+  </div>
 </details>
 
 <details>
@@ -164,9 +167,10 @@
     <li>SSL</li> 
     <li>Docker</li> 
   </ul>
+  </div>
 </details>
 
-## 
+##
 
 ## 🗂 파일 구조
 
