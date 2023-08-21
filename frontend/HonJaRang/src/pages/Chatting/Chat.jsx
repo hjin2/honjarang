@@ -32,7 +32,7 @@ const Chat = () => {
     const socket = new SockJS(serverAddress);
     const stompClient = Stomp.over(socket);
 
-    stompClient.connect('guest', 'guest', (frame) => {
+    stompClient.connect( import.meta.env.VITE_APP_STOMP_CLIENTID,  import.meta.env.VITE_APP_STOMP_PASSWORD, (frame) => {
       stompClient.subscribe(`/topic/room.${Key}`, (message) => {
         console.log(message);
         showMessage(JSON.parse(message.body));
